@@ -263,7 +263,7 @@ function Projects() {
     <section className="section" id="projects" aria-labelledby="projects-title">
       <div className="shell">
         <div className="section-heading">
-          <p className="eyebrow">Featured projects</p>
+          <p className="eyebrow">Public repositories</p>
           <h2 id="projects-title">Concrete technical work with visible scope, constraints and tradeoffs.</h2>
         </div>
         <div className="project-grid">

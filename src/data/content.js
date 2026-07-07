@@ -105,6 +105,20 @@ export const projects = [
     ]
   },
   {
+    id: 'cnesform',
+    title: 'CnesForm',
+    eyebrow: 'Health-data form tooling',
+    description:
+      'Python application work around CNES form workflows, with schemas and local data assets kept close to the executable entrypoint for repeatable validation and iteration.',
+    proof: ['Python application entrypoint', 'Schema definitions', 'Local data assets', 'CNES workflow focus'],
+    stack: ['Python', 'Schemas', 'Data validation', 'JavaScript', 'HTML', 'Shell'],
+    links: [
+      { label: 'View repository', href: 'https://github.com/VINIClUS/CnesForm', external: true },
+      { label: 'Read case study', href: '#case-cnesform' },
+      { label: 'Technical notes', href: 'https://github.com/VINIClUS/CnesForm#readme', external: true }
+    ]
+  },
+  {
     id: 'esus-pec-bootstrap',
     title: 'e-SUS PEC Bootstrap',
     eyebrow: 'Public-health operations automation',
@@ -119,6 +133,20 @@ export const projects = [
     ]
   },
   {
+    id: 'infra-ansible',
+    title: 'infra-ansible',
+    eyebrow: 'Infrastructure automation standards',
+    description:
+      'Generic Ansible infrastructure repository for server baselines, SSH hardening, users, firewall, backup, monitoring and Proxmox provisioning without storing production inventory or secrets.',
+    proof: ['Server baseline roles', 'SSH hardening scope', 'Example inventories', 'Containerized Ansible tooling'],
+    stack: ['Ansible', 'PowerShell', 'Dockerfile', 'YAML', 'Proxmox', 'MinIO', 'Infisical'],
+    links: [
+      { label: 'View repository', href: 'https://github.com/VINIClUS/infra-ansible', external: true },
+      { label: 'Read case study', href: '#case-infra-ansible' },
+      { label: 'Technical notes', href: 'https://github.com/VINIClUS/infra-ansible#readme', external: true }
+    ]
+  },
+  {
     id: 'aquafarm',
     title: 'AquaFarm API',
     eyebrow: 'Operational sensor ingestion',
@@ -130,6 +158,34 @@ export const projects = [
       { label: 'View repository', href: 'https://github.com/VINIClUS/aquafarm', external: true },
       { label: 'Read case study', href: '#case-aquafarm' },
       { label: 'Technical notes', href: 'https://github.com/VINIClUS/aquafarm#readme', external: true }
+    ]
+  },
+  {
+    id: 'vinicius-santana-career-site',
+    title: 'Career Landing Page',
+    eyebrow: 'Recruiter-focused static site',
+    description:
+      'This React and Vite career site, built for GitHub Pages with accessible navigation, optimized professional images, SEO metadata and direct recruiter CTAs.',
+    proof: ['React + Vite build', 'GitHub Pages deployment', 'Responsive image formats', 'SEO + JSON-LD metadata'],
+    stack: ['React', 'Vite', 'JavaScript', 'CSS', 'HTML', 'GitHub Actions'],
+    links: [
+      { label: 'View repository', href: 'https://github.com/VINIClUS/vinicius-santana-career-site', external: true },
+      { label: 'Read case study', href: '#case-vinicius-santana-career-site' },
+      { label: 'Technical notes', href: 'https://github.com/VINIClUS/vinicius-santana-career-site#readme', external: true }
+    ]
+  },
+  {
+    id: 'vinicius-santana-linguist',
+    title: 'Linguist Landing Page',
+    eyebrow: 'Bilingual professional profile',
+    description:
+      'Repository for a bilingual EN/PT-BR landing page concept focused on technical translation, localization and language-support services for a professional web presence.',
+    proof: ['Bilingual EN/PT-BR scope', 'GitHub Pages target', 'Static-site structure', 'Standalone preview plan'],
+    stack: ['React', 'Vite', 'JavaScript', 'CSS', 'HTML', 'GitHub Pages'],
+    links: [
+      { label: 'View repository', href: 'https://github.com/VINIClUS/vinicius-santana-linguist', external: true },
+      { label: 'Read case study', href: '#case-vinicius-santana-linguist' },
+      { label: 'Technical notes', href: 'https://github.com/VINIClUS/vinicius-santana-linguist#readme', external: true }
     ]
   }
 ];
@@ -149,6 +205,19 @@ export const caseNotes = [
     outcome: 'A clearer path from raw operational extracts to auditable reconciliation results, with fewer manual handoffs and stronger failure visibility.'
   },
   {
+    id: 'case-cnesform',
+    title: 'CnesForm: form tooling around CNES workflows',
+    context:
+      'CNES-related operational work benefits from smaller tools that keep schemas, executable code and local reference data together while workflows are still being refined.',
+    approach: [
+      'Kept a direct Python entrypoint so form processing can be run locally without a large service boundary.',
+      'Separated schema definitions from executable flow to make expected data shape visible.',
+      'Tracked local data assets with the project so validation behavior can be repeated during iteration.',
+      'Kept the public repository narrowly focused on the form workflow instead of mixing it with the larger reconciliation platform.'
+    ],
+    outcome: 'A focused utility repository that can evolve alongside CNES data-entry and validation needs.'
+  },
+  {
     id: 'case-esus-pec-bootstrap',
     title: 'e-SUS PEC Bootstrap: operational reliability through automation',
     context:
@@ -162,6 +231,19 @@ export const caseNotes = [
     outcome: 'A more maintainable operations baseline for e-SUS PEC environments, with runbooks and validators close to the scripts they support.'
   },
   {
+    id: 'case-infra-ansible',
+    title: 'infra-ansible: reusable infrastructure contracts without production secrets',
+    context:
+      'Infrastructure automation needs reusable roles, examples and validation while keeping real inventories, IPs and secret values out of public code.',
+    approach: [
+      'Defined generic Ansible scope for baselines, SSH hardening, users, firewall, backup, monitoring and Proxmox provisioning.',
+      'Documented repository limits so production inventory, vault values and sensitive endpoints stay outside the public repository.',
+      'Used example inventories and docs as the shareable contract for how private runtime configuration should connect.',
+      'Included validation commands and containerized tooling so Ansible checks can run consistently.'
+    ],
+    outcome: 'A cleaner boundary between reusable infrastructure automation and private operational configuration.'
+  },
+  {
     id: 'case-aquafarm',
     title: 'AquaFarm API: asynchronous ingestion for sensor data',
     context:
@@ -173,6 +255,32 @@ export const caseNotes = [
       'Added automated tests to protect the ingestion contract.'
     ],
     outcome: 'A small but concrete service boundary for operational data capture, suitable for extending into dashboards, alerts and quality-control workflows.'
+  },
+  {
+    id: 'case-vinicius-santana-career-site',
+    title: 'Career Landing Page: recruiter signal in a static site',
+    context:
+      'A career site for technical recruiting needs quick role fit, proof of work, accessible navigation and fast static delivery without a backend dependency.',
+    approach: [
+      'Centralized profile, project, stack and contact copy in a content module so updates stay low-risk.',
+      'Used React and Vite for a lightweight static build that deploys cleanly to GitHub Pages.',
+      'Added optimized AVIF/WebP/JPG image paths and metadata for recruiter sharing previews.',
+      'Kept CTAs direct: email, resume, GitHub, LinkedIn and project links.'
+    ],
+    outcome: 'A maintainable landing page that turns public repositories and operational experience into a clearer hiring narrative.'
+  },
+  {
+    id: 'case-vinicius-santana-linguist',
+    title: 'Linguist Landing Page: bilingual service positioning',
+    context:
+      'A professional language-services profile needs to present technical translation and localization experience in both English and Brazilian Portuguese.',
+    approach: [
+      'Scoped the repository around a static bilingual landing page suitable for GitHub Pages.',
+      'Planned a language switcher and mirrored EN/PT-BR sections for services, expertise, process, about and contact.',
+      'Documented custom-domain setup and standalone preview behavior for low-friction publishing.',
+      'Kept contact and professional details explicit so placeholders can be replaced before launch.'
+    ],
+    outcome: 'A public repository that captures the intended structure for a bilingual professional services site.'
   }
 ];
 
