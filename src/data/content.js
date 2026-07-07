@@ -105,20 +105,6 @@ export const projects = [
     ]
   },
   {
-    id: 'cnesform',
-    title: 'CnesForm',
-    eyebrow: 'Health-data form tooling',
-    description:
-      'Python application work around CNES form workflows, with schemas and local data assets kept close to the executable entrypoint for repeatable validation and iteration.',
-    proof: ['Python application entrypoint', 'Schema definitions', 'Local data assets', 'CNES workflow focus'],
-    stack: ['Python', 'Schemas', 'Data validation', 'JavaScript', 'HTML', 'Shell'],
-    links: [
-      { label: 'View repository', href: 'https://github.com/VINIClUS/CnesForm', external: true },
-      { label: 'Read case study', href: '#case-cnesform' },
-      { label: 'Technical notes', href: 'https://github.com/VINIClUS/CnesForm#readme', external: true }
-    ]
-  },
-  {
     id: 'esus-pec-bootstrap',
     title: 'e-SUS PEC Bootstrap',
     eyebrow: 'Public-health operations automation',
@@ -147,6 +133,20 @@ export const projects = [
     ]
   },
   {
+    id: 'packer-proxmox-templates',
+    title: 'Packer Proxmox Templates',
+    eyebrow: 'Golden-image automation',
+    description:
+      'Infrastructure-as-code repository for building immutable, auditable Proxmox VE golden images with HashiCorp Packer across Linux and Windows template families.',
+    proof: ['Packer HCL2 templates', 'Proxmox API builds', 'Linux cloud-init images', 'Windows unattended installs'],
+    stack: ['Packer', 'Proxmox VE', 'HCL2', 'PowerShell', 'Bash', 'Cloud-init', 'Sysprep'],
+    links: [
+      { label: 'View repository', href: 'https://github.com/VINIClUS/packer-proxmox-templates', external: true },
+      { label: 'Read case study', href: '#case-packer-proxmox-templates' },
+      { label: 'Technical notes', href: 'https://github.com/VINIClUS/packer-proxmox-templates#readme', external: true }
+    ]
+  },
+  {
     id: 'aquafarm',
     title: 'AquaFarm API',
     eyebrow: 'Operational sensor ingestion',
@@ -158,34 +158,6 @@ export const projects = [
       { label: 'View repository', href: 'https://github.com/VINIClUS/aquafarm', external: true },
       { label: 'Read case study', href: '#case-aquafarm' },
       { label: 'Technical notes', href: 'https://github.com/VINIClUS/aquafarm#readme', external: true }
-    ]
-  },
-  {
-    id: 'vinicius-santana-career-site',
-    title: 'Career Landing Page',
-    eyebrow: 'Recruiter-focused static site',
-    description:
-      'This React and Vite career site, built for GitHub Pages with accessible navigation, optimized professional images, SEO metadata and direct recruiter CTAs.',
-    proof: ['React + Vite build', 'GitHub Pages deployment', 'Responsive image formats', 'SEO + JSON-LD metadata'],
-    stack: ['React', 'Vite', 'JavaScript', 'CSS', 'HTML', 'GitHub Actions'],
-    links: [
-      { label: 'View repository', href: 'https://github.com/VINIClUS/vinicius-santana-career-site', external: true },
-      { label: 'Read case study', href: '#case-vinicius-santana-career-site' },
-      { label: 'Technical notes', href: 'https://github.com/VINIClUS/vinicius-santana-career-site#readme', external: true }
-    ]
-  },
-  {
-    id: 'vinicius-santana-linguist',
-    title: 'Linguist Landing Page',
-    eyebrow: 'Bilingual professional profile',
-    description:
-      'Repository for a bilingual EN/PT-BR landing page concept focused on technical translation, localization and language-support services for a professional web presence.',
-    proof: ['Bilingual EN/PT-BR scope', 'GitHub Pages target', 'Static-site structure', 'Standalone preview plan'],
-    stack: ['React', 'Vite', 'JavaScript', 'CSS', 'HTML', 'GitHub Pages'],
-    links: [
-      { label: 'View repository', href: 'https://github.com/VINIClUS/vinicius-santana-linguist', external: true },
-      { label: 'Read case study', href: '#case-vinicius-santana-linguist' },
-      { label: 'Technical notes', href: 'https://github.com/VINIClUS/vinicius-santana-linguist#readme', external: true }
     ]
   }
 ];
@@ -203,19 +175,6 @@ export const caseNotes = [
       'Kept validation rules testable and documented so new municipalities can reuse the engine.'
     ],
     outcome: 'A clearer path from raw operational extracts to auditable reconciliation results, with fewer manual handoffs and stronger failure visibility.'
-  },
-  {
-    id: 'case-cnesform',
-    title: 'CnesForm: form tooling around CNES workflows',
-    context:
-      'CNES-related operational work benefits from smaller tools that keep schemas, executable code and local reference data together while workflows are still being refined.',
-    approach: [
-      'Kept a direct Python entrypoint so form processing can be run locally without a large service boundary.',
-      'Separated schema definitions from executable flow to make expected data shape visible.',
-      'Tracked local data assets with the project so validation behavior can be repeated during iteration.',
-      'Kept the public repository narrowly focused on the form workflow instead of mixing it with the larger reconciliation platform.'
-    ],
-    outcome: 'A focused utility repository that can evolve alongside CNES data-entry and validation needs.'
   },
   {
     id: 'case-esus-pec-bootstrap',
@@ -244,6 +203,19 @@ export const caseNotes = [
     outcome: 'A cleaner boundary between reusable infrastructure automation and private operational configuration.'
   },
   {
+    id: 'case-packer-proxmox-templates',
+    title: 'Packer Proxmox Templates: reproducible Proxmox golden images',
+    context:
+      'Proxmox environments need repeatable Linux and Windows templates that avoid manual installation drift and keep sensitive hypervisor configuration outside tracked code.',
+    approach: [
+      'Used HashiCorp Packer and HCL2 definitions to automate VM creation, bootstrapping and template sealing.',
+      'Separated global config, shared scripts and OS-specific Linux and Windows template families.',
+      'Documented unattended installation paths for cloud-init, preseed, Kickstart, Autounattend, Sysprep and Cloudbase-Init flows.',
+      'Kept Proxmox credentials in ignored runtime variable files while tracking examples, runbooks and validation scripts.'
+    ],
+    outcome: 'A reproducible image-build baseline for faster Proxmox provisioning with stronger auditability and fewer manual setup steps.'
+  },
+  {
     id: 'case-aquafarm',
     title: 'AquaFarm API: asynchronous ingestion for sensor data',
     context:
@@ -255,32 +227,6 @@ export const caseNotes = [
       'Added automated tests to protect the ingestion contract.'
     ],
     outcome: 'A small but concrete service boundary for operational data capture, suitable for extending into dashboards, alerts and quality-control workflows.'
-  },
-  {
-    id: 'case-vinicius-santana-career-site',
-    title: 'Career Landing Page: recruiter signal in a static site',
-    context:
-      'A career site for technical recruiting needs quick role fit, proof of work, accessible navigation and fast static delivery without a backend dependency.',
-    approach: [
-      'Centralized profile, project, stack and contact copy in a content module so updates stay low-risk.',
-      'Used React and Vite for a lightweight static build that deploys cleanly to GitHub Pages.',
-      'Added optimized AVIF/WebP/JPG image paths and metadata for recruiter sharing previews.',
-      'Kept CTAs direct: email, resume, GitHub, LinkedIn and project links.'
-    ],
-    outcome: 'A maintainable landing page that turns public repositories and operational experience into a clearer hiring narrative.'
-  },
-  {
-    id: 'case-vinicius-santana-linguist',
-    title: 'Linguist Landing Page: bilingual service positioning',
-    context:
-      'A professional language-services profile needs to present technical translation and localization experience in both English and Brazilian Portuguese.',
-    approach: [
-      'Scoped the repository around a static bilingual landing page suitable for GitHub Pages.',
-      'Planned a language switcher and mirrored EN/PT-BR sections for services, expertise, process, about and contact.',
-      'Documented custom-domain setup and standalone preview behavior for low-friction publishing.',
-      'Kept contact and professional details explicit so placeholders can be replaced before launch.'
-    ],
-    outcome: 'A public repository that captures the intended structure for a bilingual professional services site.'
   }
 ];
 

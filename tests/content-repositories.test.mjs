@@ -3,12 +3,10 @@ import { caseNotes, projects } from '../src/data/content.js';
 
 const expectedPublicRepositoryUrls = [
   'https://github.com/VINIClUS/CnesData',
-  'https://github.com/VINIClUS/CnesForm',
   'https://github.com/VINIClUS/aquafarm',
   'https://github.com/VINIClUS/esus-pec-bootstrap',
   'https://github.com/VINIClUS/infra-ansible',
-  'https://github.com/VINIClUS/vinicius-santana-career-site',
-  'https://github.com/VINIClUS/vinicius-santana-linguist'
+  'https://github.com/VINIClUS/packer-proxmox-templates'
 ];
 
 const repositoryUrls = projects
