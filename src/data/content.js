@@ -119,6 +119,34 @@ export const projects = [
     ]
   },
   {
+    id: 'infra-ansible',
+    title: 'infra-ansible',
+    eyebrow: 'Infrastructure automation standards',
+    description:
+      'Generic Ansible infrastructure repository for server baselines, SSH hardening, users, firewall, backup, monitoring and Proxmox provisioning without storing production inventory or secrets.',
+    proof: ['Server baseline roles', 'SSH hardening scope', 'Example inventories', 'Containerized Ansible tooling'],
+    stack: ['Ansible', 'PowerShell', 'Dockerfile', 'YAML', 'Proxmox', 'MinIO', 'Infisical'],
+    links: [
+      { label: 'View repository', href: 'https://github.com/VINIClUS/infra-ansible', external: true },
+      { label: 'Read case study', href: '#case-infra-ansible' },
+      { label: 'Technical notes', href: 'https://github.com/VINIClUS/infra-ansible#readme', external: true }
+    ]
+  },
+  {
+    id: 'packer-proxmox-templates',
+    title: 'Packer Proxmox Templates',
+    eyebrow: 'Golden-image automation',
+    description:
+      'Infrastructure-as-code repository for building immutable, auditable Proxmox VE golden images with HashiCorp Packer across Linux and Windows template families.',
+    proof: ['Packer HCL2 templates', 'Proxmox API builds', 'Linux cloud-init images', 'Windows unattended installs'],
+    stack: ['Packer', 'Proxmox VE', 'HCL2', 'PowerShell', 'Bash', 'Cloud-init', 'Sysprep'],
+    links: [
+      { label: 'View repository', href: 'https://github.com/VINIClUS/packer-proxmox-templates', external: true },
+      { label: 'Read case study', href: '#case-packer-proxmox-templates' },
+      { label: 'Technical notes', href: 'https://github.com/VINIClUS/packer-proxmox-templates#readme', external: true }
+    ]
+  },
+  {
     id: 'aquafarm',
     title: 'AquaFarm API',
     eyebrow: 'Operational sensor ingestion',
@@ -160,6 +188,32 @@ export const caseNotes = [
       'Kept secrets out of tracked files and made environment configuration explicit.'
     ],
     outcome: 'A more maintainable operations baseline for e-SUS PEC environments, with runbooks and validators close to the scripts they support.'
+  },
+  {
+    id: 'case-infra-ansible',
+    title: 'infra-ansible: reusable infrastructure contracts without production secrets',
+    context:
+      'Infrastructure automation needs reusable roles, examples and validation while keeping real inventories, IPs and secret values out of public code.',
+    approach: [
+      'Defined generic Ansible scope for baselines, SSH hardening, users, firewall, backup, monitoring and Proxmox provisioning.',
+      'Documented repository limits so production inventory, vault values and sensitive endpoints stay outside the public repository.',
+      'Used example inventories and docs as the shareable contract for how private runtime configuration should connect.',
+      'Included validation commands and containerized tooling so Ansible checks can run consistently.'
+    ],
+    outcome: 'A cleaner boundary between reusable infrastructure automation and private operational configuration.'
+  },
+  {
+    id: 'case-packer-proxmox-templates',
+    title: 'Packer Proxmox Templates: reproducible Proxmox golden images',
+    context:
+      'Proxmox environments need repeatable Linux and Windows templates that avoid manual installation drift and keep sensitive hypervisor configuration outside tracked code.',
+    approach: [
+      'Used HashiCorp Packer and HCL2 definitions to automate VM creation, bootstrapping and template sealing.',
+      'Separated global config, shared scripts and OS-specific Linux and Windows template families.',
+      'Documented unattended installation paths for cloud-init, preseed, Kickstart, Autounattend, Sysprep and Cloudbase-Init flows.',
+      'Kept Proxmox credentials in ignored runtime variable files while tracking examples, runbooks and validation scripts.'
+    ],
+    outcome: 'A reproducible image-build baseline for faster Proxmox provisioning with stronger auditability and fewer manual setup steps.'
   },
   {
     id: 'case-aquafarm',
