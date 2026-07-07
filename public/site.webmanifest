@@ -1,0 +1,16 @@
+{
+  "name": "Vinicius Santana — Data Engineer & Software Engineer",
+  "short_name": "Vinicius Santana",
+  "description": "Career landing page for Vinicius Santana.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#06111f",
+  "theme_color": "#06111f",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
