@@ -1,0 +1,24 @@
+{
+  "name": "vinicius-santana-career-site",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Static career landing page for Vinicius Santana, built with React and Vite for GitHub Pages.",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^5.4.14"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  }
+}
