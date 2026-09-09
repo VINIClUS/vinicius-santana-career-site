@@ -107,7 +107,13 @@ const statusLabels = {
               <span class={`status status-${item.status}`}>{statusLabels[item.status]}</span>
               <h3>{item.label}</h3>
               <p>{item.description}</p>
-              <ExternalLink class="evidence-link" href={item.url}>Open public evidence</ExternalLink>
+              <ExternalLink
+                class="evidence-link"
+                href={item.url}
+                ariaLabel={`Open ${item.label} in a new tab`}
+              >
+                Open public evidence
+              </ExternalLink>
             </article>
           ))}
         </div>

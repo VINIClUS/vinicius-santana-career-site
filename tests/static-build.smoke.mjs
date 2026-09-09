@@ -41,12 +41,14 @@ const caseStudies = [
     slug: 'cnesdata',
     title: 'CnesData',
     repositoryUrls: ['https://github.com/VINIClUS/CnesData'],
+    evidenceLabels: ['CnesData public repository', 'Architecture documentation'],
     statuses: ['Implemented', 'Planned']
   },
   {
     slug: 'limnopulse',
     title: 'Limnopulse',
     repositoryUrls: ['https://github.com/VINIClUS/limnopulse'],
+    evidenceLabels: ['Limnopulse public repository', 'Alert evaluator operations', 'Notification operations'],
     statuses: ['Implemented', 'Documented']
   },
   {
@@ -56,6 +58,11 @@ const caseStudies = [
       'https://github.com/VINIClUS/infra-ansible',
       'https://github.com/VINIClUS/packer-proxmox-templates',
       'https://github.com/VINIClUS/esus-pec-bootstrap'
+    ],
+    evidenceLabels: [
+      'infra-ansible public repository',
+      'packer-proxmox-templates public repository',
+      'esus-pec-bootstrap public repository'
     ],
     statuses: ['Implemented', 'Illustrative']
   }
@@ -91,6 +98,14 @@ for (const caseStudy of caseStudies) {
 
   for (const repositoryUrl of caseStudy.repositoryUrls) {
     assert.match(caseHtml, new RegExp(`href="${repositoryUrl}"`, 'i'), `${caseStudy.slug} must link public evidence`);
+  }
+
+  for (const evidenceLabel of caseStudy.evidenceLabels) {
+    assert.match(
+      caseHtml,
+      new RegExp(`aria-label="Open ${evidenceLabel} in a new tab"`, 'i'),
+      `${caseStudy.slug} must give each evidence link a distinct accessible name`
+    );
   }
 
   assert.match(caseHtml, /target="_blank"/i, `${caseStudy.slug} must open external evidence separately`);

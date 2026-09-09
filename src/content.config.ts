@@ -1,6 +1,7 @@
 import { defineCollection } from 'astro:content';
 import { file } from 'astro/loaders';
 import { z } from 'astro/zod';
+import { publicEvidenceUrl } from './content/publicEvidenceUrl.js';
 
 const capabilityStatus = z.enum(['implemented', 'documented', 'planned', 'historical', 'illustrative']);
 const nonEmptyText = z.string().trim().min(1);
@@ -14,7 +15,7 @@ const architectureItem = z.object({
 const evidenceItem = z.object({
   label: nonEmptyText,
   status: capabilityStatus,
-  url: z.string().url(),
+  url: publicEvidenceUrl,
   description: nonEmptyText
 });
 
