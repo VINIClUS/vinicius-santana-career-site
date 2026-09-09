@@ -1,0 +1,213 @@
+- id: cnesdata
+  order: 1
+  title: CnesData
+  eyebrow: Distributed health-data platform
+  summary: >-
+    A contract-led platform for moving municipal source extracts from edge environments into a tenant-isolated central data layer.
+  technologies:
+    - Python
+    - FastAPI
+    - Go
+    - PostgreSQL
+    - Parquet
+    - Docker
+    - React
+  problem: >-
+    Municipal source systems produce operational data at the edge, while reconciliation and downstream analysis need stable contracts, source provenance, and an explicit boundary between tenants.
+  context: >-
+    CnesData is developed as a public software platform. The repository demonstrates the application boundaries and local development path; this case study does not claim a municipal rollout, production scale, or processing results.
+  contribution:
+    - Defined canonical domain contracts and generated schemas shared by clients and services.
+    - Built the Go edge-agent path for source extraction, compressed Parquet files, and manifest registration.
+    - Implemented central API workflows for orchestration, device activation, access, and dashboard reads.
+    - Kept tenant context explicit across authentication, persistence, and row-level isolation.
+    - Developed the web dashboard around typed API contracts and operational state.
+  architecture:
+    - title: Canonical contracts
+      status: implemented
+      description: Shared models and exported schemas establish one vocabulary for landing work, clients, and downstream services.
+    - title: Go edge agent
+      status: implemented
+      description: Edge extraction writes compressed Parquet artifacts and registers multi-file manifests with the central platform.
+    - title: Central API and manifests
+      status: implemented
+      description: A FastAPI service coordinates activation, extraction requests, manifest registration, and landing metadata.
+    - title: Tenant isolation
+      status: implemented
+      description: Tenant context is carried through authorization and PostgreSQL row-level security boundaries.
+    - title: Web dashboard
+      status: implemented
+      description: The typed dashboard presents activation, agent state, access, and overview workflows.
+    - title: Complete Parquet-to-Gold processing
+      status: planned
+      description: Worker foundations exist, but the full landing-to-Gold processing path is not presented as complete.
+    - title: Kubernetes deployment
+      status: planned
+      description: Kubernetes is a target deployment shape rather than a published production claim.
+  decisions:
+    - Use generated contracts to reduce drift between services instead of allowing each application to define payloads independently.
+    - Register a manifest for a complete extraction so file membership and storage references remain explicit.
+    - Preserve tenant context at the storage boundary rather than relying only on application-level filtering.
+    - Keep audit-rule execution outside this repository and expose stable data contracts for downstream consumers.
+  reliability:
+    - Contract and OpenAPI artifacts can be regenerated from source models and checked for drift.
+    - Landing work has explicit states and ownership boundaries so incomplete processing is visible.
+    - Local development composes the API, object storage, identity provider, database, agent, and dashboard without implying production deployment.
+  outcomes:
+    - The public implementation provides a coherent path from edge extraction to tenant-scoped landing records.
+    - Shared contracts make incomplete and planned portions visible instead of hiding them behind broad platform claims.
+  limitations:
+    - Full Parquet-to-Gold processing remains planned and is not described as complete.
+    - Kubernetes remains a target deployment model; this page makes no production availability or scale claim.
+    - No municipal records, health data, or quantitative operational results are published here.
+  evidence:
+    - label: CnesData public repository
+      status: implemented
+      url: https://github.com/VINIClUS/CnesData
+      description: Source code, contracts, application boundaries, tests, and current-status documentation.
+    - label: Architecture documentation
+      status: documented
+      url: https://github.com/VINIClUS/CnesData/blob/main/docs/architecture.md
+      description: Public system model and service-boundary reference.
+
+- id: limnopulse
+  order: 2
+  title: Limnopulse
+  eyebrow: Tenant-scoped telemetry and alerting
+  summary: >-
+    An API and evaluation runtime for authorized telemetry reads, alert rules, durable incidents, and notification delivery.
+  technologies:
+    - Python
+    - FastAPI
+    - Go
+    - DynamoDB
+    - InfluxDB
+    - SQS
+    - OpenTofu
+  problem: >-
+    Telemetry becomes operationally useful only when access, alert evaluation, incident state, and notification delivery remain attributable to the correct tenant and device context.
+  context: >-
+    Limnopulse is a software implementation with local integration scaffolding and a separately documented cloud-infrastructure path. Its device and broker examples are development contracts, not evidence of a deployed sensor fleet.
+  contribution:
+    - Implemented tenant membership checks and pond ownership checks around telemetry reads.
+    - Built versioned rule configuration, durable alert events, and role-aware incident transitions.
+    - Developed a one-shot Go evaluator with explicit replay and work-ownership behavior.
+    - Separated email and Telegram notification queues, workers, bindings, and delivery state.
+    - Documented cloud resources and operational prerequisites with OpenTofu modules.
+  architecture:
+    - title: Tenant-scoped telemetry API
+      status: implemented
+      description: FastAPI authorizes membership and resource ownership before querying time-series readings.
+    - title: Rules and durable alert events
+      status: implemented
+      description: Versioned rules feed durable opening, acknowledgement, resolution, and recovery workflows.
+    - title: One-shot evaluator
+      status: implemented
+      description: A Go runtime evaluates owned work and exits, leaving scheduling as an external responsibility.
+    - title: Notification delivery
+      status: implemented
+      description: Separate email and Telegram paths preserve authoritative delivery, attempt, and idempotency state.
+    - title: Local MQTT ingestion
+      status: implemented
+      description: MQTT, Telegraf, and sample publishers form a loopback-only local ingestion scaffold.
+    - title: Cloud infrastructure path
+      status: documented
+      description: OpenTofu describes the intended managed resources and their operational prerequisites.
+    - title: Production device and broker layer
+      status: planned
+      description: A hardened broker, device credentials, fleet operations, and production sensor hardware remain outside the verified implementation.
+  decisions:
+    - Authorize telemetry through the API so clients never receive direct time-series database access.
+    - Keep the evaluator one-shot so retries, backfill, and scheduling remain observable operational concerns.
+    - Use durable domain state as the authority while treating queues as at-least-once transports.
+    - Separate Telegram and email delivery contracts to avoid leaking channel-specific identity into shared jobs.
+  reliability:
+    - Optimistic versions and idempotency keys make conflicting rule changes and replacement replays explicit.
+    - Durable outboxes connect alert transitions to notification work without treating queue delivery as authoritative state.
+    - Local fakes and emulators exercise integration boundaries without being represented as hosted services.
+  outcomes:
+    - The implementation connects authorized readings, configurable rules, durable incidents, and delivery workers through explicit tenant boundaries.
+    - Channel isolation and replay-oriented operations make failure modes inspectable in code and documentation.
+  limitations:
+    - No production sensor fleet or hardware deployment is verified.
+    - MQTT ingestion is demonstrated only as a local scaffold; production broker TLS, device credentials, and access controls remain planned.
+    - Cloud infrastructure is documented as code, but this page does not claim a live hosted environment or notification volume.
+  evidence:
+    - label: Limnopulse public repository
+      status: implemented
+      url: https://github.com/VINIClUS/limnopulse
+      description: Public API, evaluator, notification workers, local integration scaffolding, and tests.
+    - label: Alert evaluator operations
+      status: documented
+      url: https://github.com/VINIClUS/limnopulse/blob/main/docs/alert-evaluator-phase-3b.md
+      description: Public replay, sharding, scheduling, and failure-handling contract.
+    - label: Notification operations
+      status: documented
+      url: https://github.com/VINIClUS/limnopulse/blob/main/docs/notifications-phase-3c-a.md
+      description: Public delivery-state, retry, rollout, and recovery documentation.
+
+- id: infrastructure
+  order: 3
+  title: Infrastructure & Operations
+  eyebrow: Reusable automation and operational contracts
+  summary: >-
+    Public infrastructure work that separates reusable automation, image-building, and system runbooks from private runtime configuration.
+  technologies:
+    - Ansible
+    - Packer
+    - Proxmox VE
+    - Python
+    - PowerShell
+    - Bash
+    - Docker
+  problem: >-
+    Infrastructure work needs repeatable baselines, image builds, validations, and recovery documentation without publishing the runtime details that identify real environments.
+  context: >-
+    This case study combines only public evidence from three repositories. Its system view is a sanitized, illustrative reference topology, not a production inventory or a map of any real environment.
+  contribution:
+    - Defined reusable Ansible roles and playbook contracts for server baselines, access hardening, firewall, backup, monitoring, and provisioning concerns.
+    - Built repeatable Packer templates and validation routines for Linux and Windows image families.
+    - Organized e-SUS PEC automation, validators, and operational runbooks in a dedicated lifecycle boundary.
+    - Kept public examples separate from runtime inventory, credentials, endpoints, and environment state.
+  architecture:
+    - title: Reusable Ansible contracts
+      status: implemented
+      description: Generic roles, playbooks, example inputs, and validators define the shareable automation boundary.
+    - title: Reproducible image builds
+      status: implemented
+      description: Packer definitions and supporting scripts establish repeatable Linux and Windows template workflows.
+    - title: System-specific operational automation
+      status: implemented
+      description: Dedicated scripts, validators, and runbooks keep application operations separate from base-image lifecycle work.
+    - title: Reference topology
+      status: illustrative
+      description: The relationship among automation control, image building, target systems, monitoring, and backup is deliberately generalized.
+  decisions:
+    - Separate generic infrastructure contracts from system-specific bootstraps so each lifecycle can evolve independently.
+    - Rebuild immutable templates through Packer instead of depending on undocumented manual image changes.
+    - Pair operational scripts with validation and runbook updates so maintenance knowledge stays near the automation.
+    - Publish examples and interfaces while keeping all environment-specific configuration outside the portfolio content.
+  reliability:
+    - Static validation, syntax checks, and preflight scripts provide cheap feedback before infrastructure code reaches a target.
+    - Runbooks cover prerequisites, verification, rollback, and evidence expectations for operational changes.
+    - Backup and monitoring concerns are represented as reusable contracts without exposing live destinations or endpoints.
+  outcomes:
+    - The public repositories demonstrate repeatable infrastructure practices across configuration, image, and application-operation layers.
+    - Explicit repository boundaries reduce duplication and make ownership of automation and documentation clearer.
+  limitations:
+    - The topology is illustrative and cannot be used to infer a real deployment, inventory, network, or secret layout.
+    - Public evidence demonstrates reusable contracts and workflows, not the current state or availability of any target system.
+    - No private repository names, IP addresses, hostnames, credential locations, or real operational identifiers are included.
+  evidence:
+    - label: infra-ansible public repository
+      status: implemented
+      url: https://github.com/VINIClUS/infra-ansible
+      description: Generic Ansible roles, playbooks, examples, validation, and public scope boundaries.
+    - label: packer-proxmox-templates public repository
+      status: implemented
+      url: https://github.com/VINIClUS/packer-proxmox-templates
+      description: Packer definitions, image-build scripts, validation, and public operational documentation.
+    - label: esus-pec-bootstrap public repository
+      status: implemented
+      url: https://github.com/VINIClUS/esus-pec-bootstrap
+      description: System-specific automation, validators, and public runbooks for application operations.

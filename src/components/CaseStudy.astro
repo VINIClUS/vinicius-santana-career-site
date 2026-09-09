@@ -1,0 +1,321 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import ExternalLink from './ExternalLink.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+interface Props {
+  caseStudy: CollectionEntry<'caseStudies'>['data'];
+}
+
+const { caseStudy } = Astro.props;
+const canonicalPath = `/work/${caseStudy.id}/`;
+const statusLabels = {
+  implemented: 'Implemented',
+  documented: 'Documented',
+  planned: 'Planned',
+  historical: 'Historical',
+  illustrative: 'Illustrative'
+} as const;
+---
+
+<BaseLayout
+  title={`${caseStudy.title} — Vinicius Santana`}
+  description={caseStudy.summary}
+  canonicalPath={canonicalPath}
+>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <nav class="case-nav shell" aria-label="Case study navigation">
+    <a class="back-link" href="/#projects">← Back to selected work</a>
+  </nav>
+
+  <main id="main">
+    <header class="case-hero shell">
+      <p class="eyebrow">{caseStudy.eyebrow}</p>
+      <h1>{caseStudy.title}</h1>
+      <p class="summary">{caseStudy.summary}</p>
+      <ul class="technology-list" aria-label="Technologies used">
+        {caseStudy.technologies.map((technology) => <li>{technology}</li>)}
+      </ul>
+    </header>
+
+    <div class="case-body shell">
+      <section aria-labelledby="problem-heading">
+        <h2 id="problem-heading">Problem</h2>
+        <p>{caseStudy.problem}</p>
+      </section>
+
+      <section aria-labelledby="context-heading">
+        <h2 id="context-heading">Context</h2>
+        <p>{caseStudy.context}</p>
+      </section>
+
+      <section aria-labelledby="contribution-heading">
+        <h2 id="contribution-heading">Contribution</h2>
+        <ul class="detail-list">
+          {caseStudy.contribution.map((item) => <li>{item}</li>)}
+        </ul>
+      </section>
+
+      <section class="wide-section" aria-labelledby="architecture-heading">
+        <h2 id="architecture-heading">Architecture</h2>
+        <div class="architecture-grid">
+          {caseStudy.architecture.map((item) => (
+            <article class="architecture-card">
+              <div class="card-heading">
+                <h3>{item.title}</h3>
+                <span class={`status status-${item.status}`}>{statusLabels[item.status]}</span>
+              </div>
+              <p>{item.description}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section aria-labelledby="decisions-heading">
+        <h2 id="decisions-heading">Decisions</h2>
+        <ul class="detail-list">
+          {caseStudy.decisions.map((item) => <li>{item}</li>)}
+        </ul>
+      </section>
+
+      <section aria-labelledby="reliability-heading">
+        <h2 id="reliability-heading">Reliability</h2>
+        <ul class="detail-list">
+          {caseStudy.reliability.map((item) => <li>{item}</li>)}
+        </ul>
+      </section>
+
+      <section aria-labelledby="outcomes-heading">
+        <h2 id="outcomes-heading">Outcomes</h2>
+        <ul class="detail-list">
+          {caseStudy.outcomes.map((item) => <li>{item}</li>)}
+        </ul>
+      </section>
+
+      <section class="limitations" aria-labelledby="limitations-heading">
+        <h2 id="limitations-heading">Limitations</h2>
+        <ul class="detail-list">
+          {caseStudy.limitations.map((item) => <li>{item}</li>)}
+        </ul>
+      </section>
+
+      <section class="wide-section" aria-labelledby="evidence-heading">
+        <h2 id="evidence-heading">Evidence</h2>
+        <div class="evidence-grid">
+          {caseStudy.evidence.map((item) => (
+            <article class="evidence-card">
+              <span class={`status status-${item.status}`}>{statusLabels[item.status]}</span>
+              <h3>{item.label}</h3>
+              <p>{item.description}</p>
+              <ExternalLink
+                class="evidence-link"
+                href={item.url}
+                ariaLabel={`Open ${item.label} in a new tab`}
+              >
+                Open public evidence
+              </ExternalLink>
+            </article>
+          ))}
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="case-footer shell">
+    <a class="back-link" href="/#projects">← Back to selected work</a>
+  </footer>
+</BaseLayout>
+
+<style>
+  .case-nav {
+    padding-block: 24px;
+  }
+
+  .back-link,
+  .evidence-link {
+    color: var(--accent);
+    font-weight: 800;
+  }
+
+  .case-hero {
+    padding-block: clamp(54px, 9vw, 112px);
+  }
+
+  .case-hero h1 {
+    max-width: 960px;
+  }
+
+  .summary {
+    max-width: 820px;
+    color: var(--muted-strong);
+    font-size: clamp(1.15rem, 2.4vw, 1.5rem);
+  }
+
+  .technology-list,
+  .detail-list {
+    padding: 0;
+    list-style: none;
+  }
+
+  .technology-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+    margin: 30px 0 0;
+  }
+
+  .technology-list li {
+    padding: 8px 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface-soft);
+    color: var(--muted-strong);
+    font-weight: 700;
+  }
+
+  .case-body {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    padding-bottom: clamp(70px, 10vw, 128px);
+  }
+
+  .case-body > section {
+    padding: clamp(24px, 4vw, 38px);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: linear-gradient(180deg, var(--surface-soft), var(--surface-softer));
+  }
+
+  .case-body h2 {
+    font-size: clamp(1.7rem, 3vw, 2.5rem);
+  }
+
+  .case-body p,
+  .detail-list li {
+    color: var(--muted-strong);
+  }
+
+  .wide-section {
+    grid-column: 1 / -1;
+  }
+
+  .architecture-grid,
+  .evidence-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .architecture-card,
+  .evidence-card {
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md);
+    background: rgba(3, 9, 20, 0.38);
+  }
+
+  .card-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+  }
+
+  .card-heading h3,
+  .evidence-card h3 {
+    letter-spacing: -0.035em;
+  }
+
+  .status {
+    display: inline-flex;
+    flex: 0 0 auto;
+    padding: 6px 9px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    background: rgba(132, 244, 230, 0.08);
+    color: var(--accent);
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.07em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .status-planned,
+  .status-illustrative {
+    border-color: rgba(255, 211, 128, 0.35);
+    background: rgba(255, 211, 128, 0.08);
+    color: #ffe1a8;
+  }
+
+  .status-documented,
+  .status-historical {
+    border-color: rgba(171, 190, 255, 0.35);
+    background: rgba(171, 190, 255, 0.08);
+    color: #cad5ff;
+  }
+
+  .detail-list {
+    display: grid;
+    gap: 14px;
+    margin: 0;
+  }
+
+  .detail-list li {
+    position: relative;
+    padding-left: 24px;
+  }
+
+  .detail-list li::before {
+    position: absolute;
+    top: 0.7em;
+    left: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    content: '';
+    transform: translateY(-50%);
+  }
+
+  .limitations {
+    border-color: rgba(255, 211, 128, 0.28) !important;
+  }
+
+  .evidence-card {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .evidence-card h3 {
+    margin-top: 18px;
+  }
+
+  .evidence-link {
+    margin-top: auto;
+  }
+
+  .case-footer {
+    padding-block: 32px;
+    border-top: 1px solid var(--line);
+  }
+
+  @media (max-width: 820px) {
+    .case-body,
+    .architecture-grid,
+    .evidence-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .wide-section {
+      grid-column: auto;
+    }
+
+    .card-heading {
+      align-items: flex-start;
+      flex-direction: column-reverse;
+    }
+  }
+</style>
