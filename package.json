@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "astro dev --host 0.0.0.0",
     "build": "astro build",
-    "test": "node tests/case-study-schema.test.mjs",
+    "test": "npm run typecheck:simulation && node --experimental-strip-types --test tests/*.test.mjs",
+    "typecheck:simulation": "tsc --project tsconfig.simulation.json",
     "smoke": "node tests/static-build.smoke.mjs",
     "preview": "astro preview --host 0.0.0.0"
   },
@@ -18,7 +19,8 @@
   "devDependencies": {
     "@astrojs/react": "6.0.5",
     "@astrojs/sitemap": "3.7.4",
-    "astro": "7.3.2"
+    "astro": "7.3.2",
+    "typescript": "5.9.3"
   },
   "engines": {
     "node": ">=22.12.0",

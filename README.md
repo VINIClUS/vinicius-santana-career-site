@@ -60,6 +60,10 @@ npm run smoke
 
 The smoke command validates files in `dist/`, so always run the build first.
 
+`npm test` checks the pure simulation TypeScript modules and runs the focused
+Node tests. The [CnesData simulation API](docs/cnesdata-simulation.md) documents
+the synthetic engine and generated transcripts for the SO-06 explorer.
+
 ## Project structure
 
 ```txt
