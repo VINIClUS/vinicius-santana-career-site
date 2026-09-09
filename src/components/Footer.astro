@@ -1,0 +1,16 @@
+---
+import { profile } from '../data/content.js';
+import ExternalLink from './ExternalLink.astro';
+---
+
+<footer class="footer">
+  <div class="shell footer-grid">
+    <p>© 2026 Vinicius Santana. Built as a static Astro site and hosted on GitHub Pages.</p>
+    <ul aria-label="Footer links">
+      <li><ExternalLink href={profile.github}>GitHub</ExternalLink></li>
+      <li><ExternalLink href={profile.linkedin}>LinkedIn</ExternalLink></li>
+      <li><a href={profile.mailto}>Email</a></li>
+      <li><a href={profile.resume} download>Resume</a></li>
+    </ul>
+  </div>
+</footer>

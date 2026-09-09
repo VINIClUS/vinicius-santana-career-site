@@ -1,0 +1,60 @@
+---
+import { personStructuredData, siteMetadata } from '../config/siteMetadata';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  canonicalPath?: string;
+}
+
+const {
+  title = siteMetadata.title,
+  description = siteMetadata.description,
+  canonicalPath = '/'
+} = Astro.props;
+const canonicalUrl = new URL(canonicalPath, siteMetadata.site).toString();
+const imageUrl = new URL(siteMetadata.imagePath, siteMetadata.site).toString();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#06111f" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="description" content={description} />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="preload" as="image" href="/assets/images/vinicius-hero-desktop.avif" type="image/avif" media="(min-width: 780px)" />
+    <link rel="preload" as="image" href="/assets/images/vinicius-portrait-mobile.avif" type="image/avif" media="(max-width: 779px)" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:site_name" content="Vinicius Santana" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={siteMetadata.openGraphDescription} />
+    <meta property="og:image" content={imageUrl} />
+    <meta property="og:image:secure_url" content={imageUrl} />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={siteMetadata.imageAlt} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={siteMetadata.twitterDescription} />
+    <meta name="twitter:image" content={imageUrl} />
+    <meta name="twitter:image:alt" content="Professional profile card for Vinicius Santana" />
+
+    <script type="application/ld+json" set:html={JSON.stringify(personStructuredData)}></script>
+    <title>{title}</title>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

@@ -1,0 +1,65 @@
+---
+import { navLinks, profile } from '../data/content.js';
+import ExternalLink from './ExternalLink.astro';
+---
+
+<header class="site-header">
+  <nav class="nav shell" aria-label="Primary navigation">
+    <a class="brand" href="#top" aria-label="Vinicius Santana home" data-nav-link>
+      <span class="brand-mark" aria-hidden="true">VS</span>
+      <span>{profile.name}</span>
+    </a>
+
+    <button
+      class="menu-toggle"
+      type="button"
+      aria-label="Open navigation menu"
+      aria-expanded="false"
+      aria-controls="primary-navigation-menu"
+      data-menu-toggle
+    >
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </button>
+
+    <div class="nav-panel" id="primary-navigation-menu" data-open="false" data-nav-panel>
+      <ul class="nav-links">
+        {navLinks.map((link) => (
+          <li><a href={link.href} data-nav-link>{link.label}</a></li>
+        ))}
+      </ul>
+      <div class="nav-actions">
+        <ExternalLink class="button button-ghost" href={profile.github} ariaLabel="View Vinicius Santana on GitHub">
+          View GitHub
+        </ExternalLink>
+        <a class="button button-small" href={profile.mailto}>Contact me</a>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+  const panel = document.querySelector<HTMLElement>('[data-nav-panel]');
+
+  const setMenuOpen = (isOpen: boolean) => {
+    if (!toggle || !panel) return;
+    toggle.setAttribute('aria-expanded', String(isOpen));
+    toggle.setAttribute('aria-label', isOpen ? 'Close navigation menu' : 'Open navigation menu');
+    panel.dataset.open = String(isOpen);
+    document.body.classList.toggle('nav-open', isOpen);
+  };
+
+  toggle?.addEventListener('click', () => {
+    setMenuOpen(toggle.getAttribute('aria-expanded') !== 'true');
+  });
+
+  document.querySelectorAll<HTMLElement>('[data-nav-link], [data-nav-panel] a').forEach((link) => {
+    link.addEventListener('click', () => setMenuOpen(false));
+  });
+
+  window.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') setMenuOpen(false);
+  });
+</script>
