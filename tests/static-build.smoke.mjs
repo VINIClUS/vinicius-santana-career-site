@@ -56,8 +56,13 @@ await Promise.all(
     'dist/robots.txt',
     'dist/sitemap.xml',
     'dist/assets/images/vinicius-hero-desktop.avif',
+    'dist/assets/images/vinicius-hero-desktop.webp',
     'dist/assets/images/vinicius-portrait-mobile.avif',
+    'dist/assets/images/vinicius-portrait-mobile.webp',
+    'dist/assets/images/vinicius-portrait-mobile.jpg',
     'dist/assets/images/vinicius-about.avif',
+    'dist/assets/images/vinicius-about.webp',
+    'dist/assets/images/vinicius-about.jpg',
     'dist/assets/images/og-image.jpg'
   ].map(assertFile)
 );
