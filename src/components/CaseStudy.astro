@@ -1,7 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import ExternalLink from './ExternalLink.astro';
-import BaseLayout from '../layouts/BaseLayout.astro';
+import EditorialLayout from '../layouts/EditorialLayout.astro';
 
 interface Props {
   caseStudy: CollectionEntry<'caseStudies'>['data'];
@@ -18,27 +18,26 @@ const statusLabels = {
 } as const;
 ---
 
-<BaseLayout
+<EditorialLayout
   title={`${caseStudy.title} — Vinicius Santana`}
   description={caseStudy.summary}
   canonicalPath={canonicalPath}
+  currentPath="/work/"
 >
-  <a class="skip-link" href="#main">Skip to content</a>
   <nav class="case-nav shell" aria-label="Case study navigation">
-    <a class="back-link" href="/#projects">← Back to selected work</a>
+    <a class="back-link" href="/work/">← Back to selected work</a>
   </nav>
 
-  <main id="main">
-    <header class="case-hero shell">
+  <header class="case-hero shell">
       <p class="eyebrow">{caseStudy.eyebrow}</p>
       <h1>{caseStudy.title}</h1>
       <p class="summary">{caseStudy.summary}</p>
       <ul class="technology-list" aria-label="Technologies used">
         {caseStudy.technologies.map((technology) => <li>{technology}</li>)}
       </ul>
-    </header>
+  </header>
 
-    <div class="case-body shell">
+  <div class="case-body shell">
       <section aria-labelledby="problem-heading">
         <h2 id="problem-heading">Problem</h2>
         <p>{caseStudy.problem}</p>
@@ -118,13 +117,12 @@ const statusLabels = {
           ))}
         </div>
       </section>
-    </div>
-  </main>
+  </div>
 
-  <footer class="case-footer shell">
-    <a class="back-link" href="/#projects">← Back to selected work</a>
-  </footer>
-</BaseLayout>
+  <nav class="case-footer shell" aria-label="Case study footer navigation">
+    <a class="back-link" href="/work/">← Back to selected work</a>
+  </nav>
+</EditorialLayout>
 
 <style>
   .case-nav {

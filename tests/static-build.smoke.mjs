@@ -12,6 +12,19 @@ async function assertFile(relativePath) {
   assert.ok(details.isFile(), `${relativePath} must be a file`);
 }
 
+async function readBuiltPage(relativePath) {
+  await assertFile(relativePath);
+  return readFile(fromRoot(relativePath), 'utf8');
+}
+
+function assertEditorialShell(html, pageName) {
+  assert.match(html, /<header\b/i, `${pageName} must include the global header`);
+  assert.match(html, /<nav\b[^>]*aria-label="Primary navigation"/i, `${pageName} must include primary navigation`);
+  assert.match(html, /<main\b[^>]*id="main"/i, `${pageName} must include the main landmark`);
+  assert.match(html, /<footer\b/i, `${pageName} must include the global footer`);
+  assert.doesNotMatch(html, /href="\/explore\/?"/i, `${pageName} must not link to Explore before M2`);
+}
+
 const html = await readFile(fromRoot('dist/index.html'), 'utf8');
 
 assert.match(html, /<main\b[^>]*id="main"/i, 'home must render its main content as static HTML');
@@ -21,17 +34,50 @@ for (const id of ['about', 'experience', 'projects', 'stack', 'contact']) {
   assert.match(html, new RegExp(`id=["']${id}["']`), `home must preserve #${id}`);
 }
 
-for (const id of [
-  'case-cnesdata',
-  'case-esus-pec-bootstrap',
-  'case-infra-ansible',
-  'case-packer-proxmox-templates',
-  'case-aquafarm'
-]) {
+for (const id of ['case-cnesdata', 'case-aquafarm', 'case-esus-pec-bootstrap', 'case-infra-ansible', 'case-packer-proxmox-templates']) {
   assert.match(html, new RegExp(`id=["']${id}["']`), `home must preserve #${id}`);
 }
 
 assert.match(html, /href="\/assets\/vinicius-santana-resume\.pdf"/i, 'home must link to the resume');
+assertEditorialShell(html, 'home');
+
+const homeSectionOrder = ['hero-title', 'projects', 'contact', 'about', 'experience', 'stack'].map((marker) => {
+  const offset = html.indexOf(`id="${marker}"`);
+  assert.notEqual(offset, -1, `home must include #${marker}`);
+  return offset;
+});
+assert.deepEqual(homeSectionOrder, [...homeSectionOrder].sort((left, right) => left - right), 'home must use recruiter-first section order');
+
+const editorialPages = {
+  work: await readBuiltPage('dist/work/index.html'),
+  about: await readBuiltPage('dist/about/index.html'),
+  resume: await readBuiltPage('dist/resume/index.html'),
+  privacy: await readBuiltPage('dist/privacy/index.html'),
+  notFound: await readBuiltPage('dist/404.html')
+};
+
+for (const [pageName, pageHtml] of Object.entries(editorialPages)) {
+  assertEditorialShell(pageHtml, pageName);
+  assert.match(pageHtml, new RegExp(`<title>[^<]+ — Vinicius Santana<\\/title>`, 'i'), `${pageName} must have a specific title`);
+}
+
+assert.match(editorialPages.work, /<a[^>]*aria-current="page"[^>]*>Work<\/a>/i, 'Work navigation must expose the active page');
+const workCardOffsets = ['CnesData', 'Limnopulse', 'Infrastructure &amp; Operations'].map((title) => editorialPages.work.indexOf(title));
+assert.ok(workCardOffsets.every((offset) => offset >= 0), 'Work must list all three selected case studies');
+assert.deepEqual(workCardOffsets, [...workCardOffsets].sort((left, right) => left - right), 'Work must follow collection order');
+for (const slug of ['cnesdata', 'limnopulse', 'infrastructure']) {
+  assert.match(editorialPages.work, new RegExp(`href="/work/${slug}/"`, 'i'), `Work must link to ${slug}`);
+}
+
+assert.match(editorialPages.about, /aria-current="page"[^>]*>About</i, 'About navigation must expose the active page');
+assert.match(editorialPages.resume, /aria-current="page"[^>]*>Resume</i, 'Resume navigation must expose the active page');
+assert.match(editorialPages.resume, /href="\/assets\/vinicius-santana-resume\.pdf"[^>]*target="_blank"/i, 'Resume must offer an open action');
+assert.match(editorialPages.resume, /href="\/assets\/vinicius-santana-resume\.pdf"[^>]*download/i, 'Resume must offer a download action');
+assert.match(editorialPages.privacy, /does not use analytics/i, 'Privacy must disclose the absence of analytics');
+assert.match(editorialPages.privacy, /does not set[^<]*cookies/i, 'Privacy must disclose the absence of first-party cookies');
+assert.match(editorialPages.privacy, /does not include[^<]*form/i, 'Privacy must disclose the absence of forms');
+assert.match(editorialPages.privacy, /does not provide[^<]*account/i, 'Privacy must disclose the absence of accounts');
+assert.match(editorialPages.notFound, /<meta name="robots" content="noindex,nofollow">/i, '404 must be noindex');
 assert.doesNotMatch(html, /id=["']root["']/i, 'home must not include the former React mount point');
 assert.doesNotMatch(html, /src\/main\.jsx/i, 'home must not load the former Vite entry point');
 assert.doesNotMatch(html, /<astro-island\b/i, 'home must not ship hydrated React islands');
@@ -77,6 +123,7 @@ for (const caseStudy of caseStudies) {
     new RegExp(`<link rel="canonical" href="https://dev\\.vinisantana\\.com/work/${caseStudy.slug}/">`, 'i')
   );
   assert.match(caseHtml, /<main\b[^>]*id="main"/i, `${caseStudy.slug} must render a semantic main landmark`);
+  assertEditorialShell(caseHtml, caseStudy.slug);
 
   for (const heading of [
     'Problem',

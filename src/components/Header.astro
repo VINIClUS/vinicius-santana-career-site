@@ -1,11 +1,17 @@
 ---
 import { navLinks, profile } from '../data/content.js';
 import ExternalLink from './ExternalLink.astro';
+
+interface Props {
+  currentPath?: string;
+}
+
+const { currentPath = '/' } = Astro.props;
 ---
 
 <header class="site-header">
   <nav class="nav shell" aria-label="Primary navigation">
-    <a class="brand" href="#top" aria-label="Vinicius Santana home" data-nav-link>
+    <a class="brand" href="/" aria-label="Vinicius Santana home" data-nav-link>
       <span class="brand-mark" aria-hidden="true">VS</span>
       <span>{profile.name}</span>
     </a>
@@ -26,14 +32,14 @@ import ExternalLink from './ExternalLink.astro';
     <div class="nav-panel" id="primary-navigation-menu" data-open="false" data-nav-panel>
       <ul class="nav-links">
         {navLinks.map((link) => (
-          <li><a href={link.href} data-nav-link>{link.label}</a></li>
+          <li><a href={link.href} aria-current={currentPath === link.href ? 'page' : undefined} data-nav-link>{link.label}</a></li>
         ))}
       </ul>
       <div class="nav-actions">
         <ExternalLink class="button button-ghost" href={profile.github} ariaLabel="View Vinicius Santana on GitHub">
           View GitHub
         </ExternalLink>
-        <a class="button button-small" href={profile.mailto}>Contact me</a>
+        <a class="button button-small" href="/#contact">Contact me</a>
       </div>
     </div>
   </nav>
@@ -60,6 +66,9 @@ import ExternalLink from './ExternalLink.astro';
   });
 
   window.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') setMenuOpen(false);
+    if (event.key === 'Escape' && toggle?.getAttribute('aria-expanded') === 'true') {
+      setMenuOpen(false);
+      toggle.focus();
+    }
   });
 </script>

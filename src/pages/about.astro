@@ -1,0 +1,71 @@
+---
+import ExternalLink from '../components/ExternalLink.astro';
+import { experience, profile, roleFit, stackGroups } from '../data/content.js';
+import EditorialLayout from '../layouts/EditorialLayout.astro';
+---
+
+<EditorialLayout
+  title="About — Vinicius Santana"
+  description="About Vinicius Santana, a software and data engineer working across backend systems, data quality and operations."
+  canonicalPath="/about/"
+>
+  <header class="page-hero shell">
+    <p class="eyebrow">About</p>
+    <h1>Engineering grounded in operational reality.</h1>
+    <p class="summary">
+      I’m Vinicius Santana, a software and data engineer based in Brazil. I build systems that make data movement,
+      operational state and failure boundaries easier to understand and maintain.
+    </p>
+  </header>
+
+  <section class="section section-muted" aria-labelledby="experience-heading">
+    <div class="shell experience-grid">
+      <div class="section-heading">
+        <p class="eyebrow">Experience</p>
+        <h2 id="experience-heading">Public-health data and software work.</h2>
+        <p>{experience.summary}</p>
+      </div>
+      <article class="timeline-card">
+        <div class="timeline-meta"><span>{experience.period}</span><span>{experience.organization}</span></div>
+        <h3>{experience.role}</h3>
+        <ul class="check-list">{experience.highlights.map((item) => <li>{item}</li>)}</ul>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="approach-heading">
+    <div class="shell">
+      <div class="section-heading">
+        <p class="eyebrow">How I work</p>
+        <h2 id="approach-heading">Make contracts explicit, keep claims attributable, document the boundary.</h2>
+        <p>
+          I prefer small, inspectable interfaces; tests around important contracts; and operational documentation close
+          to the code. When part of a system is planned, illustrative or unverified, I label it that way.
+        </p>
+      </div>
+      <div class="role-fit-cards">
+        {roleFit.map((item) => <article class="role-card"><h3>{item.title}</h3><p>{item.text}</p></article>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-muted" aria-labelledby="stack-heading">
+    <div class="shell">
+      <div class="section-heading"><p class="eyebrow">Stack</p><h2 id="stack-heading">Tools chosen in context.</h2></div>
+      <div class="stack-grid">
+        {stackGroups.map((group) => <article class="stack-card"><h3>{group.title}</h3><ul>{group.items.map((item) => <li>{item}</li>)}</ul></article>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section contact-section" aria-labelledby="about-contact-title">
+    <div class="shell contact-card">
+      <div><p class="eyebrow">Next step</p><h2 id="about-contact-title">Start with the work or start a conversation.</h2></div>
+      <div class="contact-actions">
+        <a class="button" href="/work/">View selected work</a>
+        <a class="button button-secondary" href={profile.mailto}>Email me</a>
+        <ExternalLink class="button button-ghost" href={profile.linkedin} ariaLabel="Open Vinicius Santana on LinkedIn">LinkedIn</ExternalLink>
+      </div>
+    </div>
+  </section>
+</EditorialLayout>
