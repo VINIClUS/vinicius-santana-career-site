@@ -25,6 +25,27 @@ function assertEditorialShell(html, pageName) {
   assert.doesNotMatch(html, /href="\/explore\/?"/i, `${pageName} must not link to Explore before M2`);
 }
 
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function assertMetadata(html, route, origin) {
+  const canonicalUrl = new URL(route, origin).href;
+  const expectedUrl = escapeRegExp(canonicalUrl);
+  const expectedImageUrl = escapeRegExp(new URL('/assets/images/og-image.jpg', origin).href);
+
+  assert.match(html, new RegExp(`<link rel="canonical" href="${expectedUrl}">`, 'i'), `${route} must use the configured origin for its canonical URL`);
+  assert.match(html, new RegExp(`<meta property="og:url" content="${expectedUrl}">`, 'i'), `${route} must keep og:url aligned with canonical`);
+  assert.match(html, new RegExp(`<meta property="og:image" content="${expectedImageUrl}">`, 'i'), `${route} must use an absolute Open Graph image URL`);
+  assert.match(html, new RegExp(`<meta name="twitter:image" content="${expectedImageUrl}">`, 'i'), `${route} must use an absolute Twitter image URL`);
+
+  const structuredDataMatch = html.match(/<script type="application\/ld\+json">([^<]+)<\/script>/i);
+  assert.ok(structuredDataMatch, `${route} must include Person structured data`);
+  const structuredData = JSON.parse(structuredDataMatch[1]);
+  assert.equal(structuredData.url, origin, `${route} structured data must use the configured origin`);
+  assert.equal(structuredData.image, new URL('/assets/images/og-image.jpg', origin).href, `${route} structured data image must use the configured origin`);
+}
+
 const html = await readFile(fromRoot('dist/index.html'), 'utf8');
 
 assert.match(html, /<main\b[^>]*id="main"/i, 'home must render its main content as static HTML');
@@ -55,6 +76,21 @@ const editorialPages = {
   privacy: await readBuiltPage('dist/privacy/index.html'),
   notFound: await readBuiltPage('dist/404.html')
 };
+
+const publicCname = await readFile(fromRoot('public/CNAME'));
+const origin = `https://${publicCname.toString().trim()}`;
+const routePages = new Map([
+  ['/', html],
+  ['/work/', editorialPages.work],
+  ['/about/', editorialPages.about],
+  ['/resume/', editorialPages.resume],
+  ['/privacy/', editorialPages.privacy],
+  ['/404.html', editorialPages.notFound]
+]);
+
+for (const [route, pageHtml] of routePages) {
+  assertMetadata(pageHtml, route, origin);
+}
 
 for (const [pageName, pageHtml] of Object.entries(editorialPages)) {
   assertEditorialShell(pageHtml, pageName);
@@ -117,10 +153,12 @@ const caseStudies = [
 for (const caseStudy of caseStudies) {
   const caseHtml = await readFile(fromRoot(`dist/work/${caseStudy.slug}/index.html`), 'utf8');
 
+  assertMetadata(caseHtml, `/work/${caseStudy.slug}/`, origin);
+
   assert.match(caseHtml, new RegExp(`<title>${caseStudy.title} — Vinicius Santana<\\/title>`, 'i'));
   assert.match(
     caseHtml,
-    new RegExp(`<link rel="canonical" href="https://dev\\.vinisantana\\.com/work/${caseStudy.slug}/">`, 'i')
+    new RegExp(`<link rel="canonical" href="${escapeRegExp(new URL(`/work/${caseStudy.slug}/`, origin).href)}">`, 'i')
   );
   assert.match(caseHtml, /<main\b[^>]*id="main"/i, `${caseStudy.slug} must render a semantic main landmark`);
   assertEditorialShell(caseHtml, caseStudy.slug);
@@ -183,11 +221,17 @@ assert.doesNotMatch(
   'Infrastructure must not expose private repository names or real network addresses'
 );
 
-const [publicCname, builtCname, publicResume, builtResume] = await Promise.all([
-  readFile(fromRoot('public/CNAME')),
+assert.match(html, /href="\/work\/"/i, 'home must link to Work');
+assert.match(editorialPages.work, /href="\/work\/cnesdata\/"/i, 'Work must link to CnesData');
+assert.match(editorialPages.resume, /href="mailto:[^"]+"/i, 'Resume must provide a direct contact link');
+
+const [builtCname, publicResume, builtResume, robots, sitemapIndex, sitemap] = await Promise.all([
   readFile(fromRoot('dist/CNAME')),
   readFile(fromRoot('public/assets/vinicius-santana-resume.pdf')),
-  readFile(fromRoot('dist/assets/vinicius-santana-resume.pdf'))
+  readFile(fromRoot('dist/assets/vinicius-santana-resume.pdf')),
+  readFile(fromRoot('dist/robots.txt'), 'utf8'),
+  readFile(fromRoot('dist/sitemap-index.xml'), 'utf8'),
+  readFile(fromRoot('dist/sitemap-0.xml'), 'utf8')
 ]);
 
 assert.deepEqual(builtCname, publicCname, 'build must preserve CNAME byte for byte');
@@ -195,13 +239,24 @@ assert.equal(builtCname.toString().trim(), 'dev.vinisantana.com');
 assert.deepEqual(builtResume, publicResume, 'build must preserve the resume byte for byte');
 assert.equal(createHash('sha256').update(builtResume).digest('hex'), expectedResumeHash);
 
+assert.match(robots, /^User-agent: \*$/m, 'robots.txt must address all crawlers');
+assert.match(robots, /^Allow: \/$/m, 'robots.txt must allow the site');
+assert.match(robots, new RegExp(`^Sitemap: ${escapeRegExp(new URL('/sitemap-index.xml', origin).href)}$`, 'm'), 'robots.txt must reference the generated sitemap index');
+assert.match(sitemapIndex, new RegExp(`<loc>${escapeRegExp(new URL('/sitemap-0.xml', origin).href)}</loc>`), 'sitemap index must reference the generated page sitemap');
+
+const indexableRoutes = ['/', '/about/', '/privacy/', '/resume/', '/work/', '/work/cnesdata/', '/work/infrastructure/', '/work/limnopulse/'];
+const sitemapLocations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]).sort();
+assert.deepEqual(sitemapLocations, indexableRoutes.map((route) => new URL(route, origin).href).sort(), 'sitemap must contain exactly the eight M1 indexable routes');
+assert.doesNotMatch(sitemap, /\/404(?:\.html|\/)?<\/loc>/i, 'sitemap must exclude the 404 page');
+
 await Promise.all(
   [
     'dist/404.html',
     'dist/favicon.svg',
     'dist/site.webmanifest',
     'dist/robots.txt',
-    'dist/sitemap.xml',
+    'dist/sitemap-index.xml',
+    'dist/sitemap-0.xml',
     'dist/assets/images/vinicius-hero-desktop.avif',
     'dist/assets/images/vinicius-hero-desktop.webp',
     'dist/assets/images/vinicius-portrait-mobile.avif',

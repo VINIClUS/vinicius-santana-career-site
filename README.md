@@ -21,6 +21,8 @@ dev.vinisantana.com
 
 ## Local development
 
+Node.js 22 LTS or newer (minimum `22.12.0`) and npm 10 or newer are supported.
+
 Install dependencies:
 
 ```bash
@@ -47,6 +49,17 @@ npm run preview
 
 The static build is generated in `dist/`.
 
+Run the same validation sequence used by CI:
+
+```bash
+npm ci
+npm test
+npm run build
+npm run smoke
+```
+
+The smoke command validates files in `dist/`, so always run the build first.
+
 ## Project structure
 
 ```txt
@@ -58,8 +71,6 @@ The static build is generated in `dist/`.
 │   │   └── vinicius-santana-resume.pdf
 │   ├── CNAME
 │   ├── favicon.svg
-│   ├── robots.txt
-│   ├── sitemap.xml
 │   └── site.webmanifest
 ├── src/
 │   ├── components/
@@ -82,8 +93,9 @@ The static build is generated in `dist/`.
 1. Push the project to the repository's `main` branch.
 2. In GitHub, open **Settings → Pages**.
 3. Under **Build and deployment**, choose **GitHub Actions**.
-4. Push to `main` or run the workflow manually.
-5. The workflow builds the Astro site and deploys `dist/` using GitHub Pages.
+4. Open a pull request against `main` to run install, tests, build and smoke checks without publishing a Pages preview.
+5. Merge to `main` or run the workflow manually on `main` after validation.
+6. The workflow uploads and deploys `dist/` only from `main`.
 
 ## Configure the custom domain
 
@@ -102,12 +114,12 @@ Value: viniclus.github.io
 
 Then in GitHub, open **Settings → Pages → Custom domain**, enter `dev.vinisantana.com`, save, wait for DNS verification and enable HTTPS.
 
-To use another subdomain, update:
+To use another subdomain, update only:
 
 - `public/CNAME`
-- `src/config/siteMetadata.ts` canonical, Open Graph and Twitter image URLs
-- `public/robots.txt`
-- `public/sitemap.xml`
+- `site` in `astro.config.mjs`
+
+Astro then derives canonical, Open Graph, Twitter, JSON-LD, robots and sitemap URLs from that configured site URL.
 
 ## Resume
 
@@ -169,6 +181,7 @@ selected work, `src/data/content.js` for shared details, and the relevant page f
 ## Quality checklist before publishing
 
 - [ ] `npm run build` completes successfully.
+- [ ] `npm run smoke` passes against the fresh `dist/` build.
 - [ ] Hero communicates role fit in under 10 seconds.
 - [ ] CTAs are visible above the fold on mobile and desktop.
 - [ ] Resume PDF is final, current and downloadable.

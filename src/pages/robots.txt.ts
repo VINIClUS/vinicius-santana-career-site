@@ -1,0 +1,14 @@
+import type { APIRoute } from 'astro';
+
+export const GET: APIRoute = ({ site }) => {
+  if (!site) {
+    throw new Error('Astro site URL must be configured');
+  }
+
+  const sitemapUrl = new URL('/sitemap-index.xml', site).href;
+  const body = `User-agent: *\nAllow: /\n\nSitemap: ${sitemapUrl}\n`;
+
+  return new Response(body, {
+    headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+  });
+};
