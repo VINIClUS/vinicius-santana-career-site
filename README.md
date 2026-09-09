@@ -56,7 +56,6 @@ The static build is generated in `dist/`.
 │   ├── assets/
 │   │   ├── images/
 │   │   └── vinicius-santana-resume.pdf
-│   ├── 404.html
 │   ├── CNAME
 │   ├── favicon.svg
 │   ├── robots.txt
@@ -65,9 +64,13 @@ The static build is generated in `dist/`.
 ├── src/
 │   ├── components/
 │   ├── config/
+│   ├── content/case-studies.yaml
 │   ├── data/content.js
 │   ├── layouts/
-│   ├── pages/index.astro
+│   ├── pages/
+│   │   ├── work/
+│   │   ├── 404.astro
+│   │   └── index.astro
 │   └── styles/global.css
 ├── astro.config.mjs
 ├── package.json
@@ -114,7 +117,7 @@ The resume CTA points to:
 public/assets/vinicius-santana-resume.pdf
 ```
 
-Replace this placeholder with the final resume before publishing broadly. Keep the same filename to avoid changing site links.
+Keep the same filename when explicitly updating the resume so existing site links remain valid.
 
 ## Images
 
@@ -148,13 +151,20 @@ Recommended replacements, if new photos are added later:
 
 ## Content updates
 
-Most text, links, project descriptions, stack groups and CTAs are defined in:
+Shared profile, navigation, experience and stack content is defined in:
 
 ```txt
 src/data/content.js
 ```
 
-Update that file when adding new projects, changing availability, replacing links or refining positioning.
+The three selected case studies and their evidence links are defined in:
+
+```txt
+src/content/case-studies.yaml
+```
+
+Page-specific editorial copy and CTAs live with their routes under `src/pages/`. Update the collection when changing
+selected work, `src/data/content.js` for shared details, and the relevant page for route-specific positioning.
 
 ## Quality checklist before publishing
 

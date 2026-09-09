@@ -1,11 +1,17 @@
 ---
 import { navLinks, profile } from '../data/content.js';
 import ExternalLink from './ExternalLink.astro';
+
+interface Props {
+  currentPath?: string;
+}
+
+const { currentPath = '/' } = Astro.props;
 ---
 
 <header class="site-header">
   <nav class="nav shell" aria-label="Primary navigation">
-    <a class="brand" href="#top" aria-label="Vinicius Santana home" data-nav-link>
+    <a class="brand" href="/" aria-label="Vinicius Santana home" data-nav-link>
       <span class="brand-mark" aria-hidden="true">VS</span>
       <span>{profile.name}</span>
     </a>
@@ -26,14 +32,14 @@ import ExternalLink from './ExternalLink.astro';
     <div class="nav-panel" id="primary-navigation-menu" data-open="false" data-nav-panel>
       <ul class="nav-links">
         {navLinks.map((link) => (
-          <li><a href={link.href} data-nav-link>{link.label}</a></li>
+          <li><a href={link.href} aria-current={currentPath === link.href ? 'page' : undefined} data-nav-link>{link.label}</a></li>
         ))}
       </ul>
       <div class="nav-actions">
         <ExternalLink class="button button-ghost" href={profile.github} ariaLabel="View Vinicius Santana on GitHub">
           View GitHub
         </ExternalLink>
-        <a class="button button-small" href={profile.mailto}>Contact me</a>
+        <a class="button button-small" href="/#contact">Contact me</a>
       </div>
     </div>
   </nav>
@@ -42,6 +48,7 @@ import ExternalLink from './ExternalLink.astro';
 <script>
   const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
   const panel = document.querySelector<HTMLElement>('[data-nav-panel]');
+  const mobileNavigation = window.matchMedia('(max-width: 820px)');
 
   const setMenuOpen = (isOpen: boolean) => {
     if (!toggle || !panel) return;
@@ -55,11 +62,30 @@ import ExternalLink from './ExternalLink.astro';
     setMenuOpen(toggle.getAttribute('aria-expanded') !== 'true');
   });
 
-  document.querySelectorAll<HTMLElement>('[data-nav-link], [data-nav-panel] a').forEach((link) => {
-    link.addEventListener('click', () => setMenuOpen(false));
+  document.querySelectorAll<HTMLAnchorElement>('[data-nav-link], [data-nav-panel] a').forEach((link) => {
+    link.addEventListener('click', (event) => {
+      setMenuOpen(false);
+      if (event.detail !== 0) return;
+
+      const destination = new URL(link.href);
+      const isCurrentDocument = destination.origin === window.location.origin && destination.pathname === window.location.pathname;
+      const target = isCurrentDocument && destination.hash
+        ? document.querySelector<HTMLElement>(destination.hash)
+        : null;
+
+      if (target) requestAnimationFrame(() => target.focus());
+      else toggle?.focus();
+    });
   });
 
   window.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') setMenuOpen(false);
+    if (event.key === 'Escape' && toggle?.getAttribute('aria-expanded') === 'true') {
+      setMenuOpen(false);
+      toggle.focus();
+    }
+  });
+
+  mobileNavigation.addEventListener('change', (event) => {
+    if (!event.matches) setMenuOpen(false);
   });
 </script>

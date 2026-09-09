@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "astro dev --host 0.0.0.0",
     "build": "astro build",
-    "test": "node tests/content-repositories.test.mjs && node tests/case-study-schema.test.mjs",
+    "test": "node tests/case-study-schema.test.mjs",
     "smoke": "node tests/static-build.smoke.mjs",
     "preview": "astro preview --host 0.0.0.0"
   },

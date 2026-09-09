@@ -1,0 +1,20 @@
+---
+import EditorialLayout from '../layouts/EditorialLayout.astro';
+---
+
+<EditorialLayout
+  title="Page Not Found — Vinicius Santana"
+  description="The requested page could not be found."
+  canonicalPath="/404.html"
+  noIndex
+>
+  <section class="page-hero shell error-page" aria-labelledby="not-found-title">
+    <p class="eyebrow">404 · Page not found</p>
+    <h1 id="not-found-title">This route does not lead to a published page.</h1>
+    <p class="summary">Return home or continue with the selected engineering work.</p>
+    <div class="hero-actions">
+      <a class="button" href="/">Return home</a>
+      <a class="button button-secondary" href="/work/">View selected work</a>
+    </div>
+  </section>
+</EditorialLayout>

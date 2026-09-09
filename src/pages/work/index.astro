@@ -1,0 +1,27 @@
+---
+import { getCollection } from 'astro:content';
+import SelectedWorkCard from '../../components/SelectedWorkCard.astro';
+import EditorialLayout from '../../layouts/EditorialLayout.astro';
+
+const caseStudies = (await getCollection('caseStudies')).sort((left, right) => left.data.order - right.data.order);
+---
+
+<EditorialLayout
+  title="Selected Work — Vinicius Santana"
+  description="Selected software, data and infrastructure case studies by Vinicius Santana."
+  canonicalPath="/work/"
+>
+  <header class="page-hero shell">
+    <p class="eyebrow">Selected work</p>
+    <h1>Systems explained through decisions, evidence and limitations.</h1>
+    <p class="summary">Three case studies covering a data platform, telemetry and alerting, and infrastructure operations.</p>
+  </header>
+  <section class="section page-section" aria-labelledby="work-list-title">
+    <div class="shell">
+      <h2 id="work-list-title" class="visually-hidden">Case studies</h2>
+      <div class="project-grid">
+        {caseStudies.map(({ data: caseStudy }) => <SelectedWorkCard caseStudy={caseStudy} />)}
+      </div>
+    </div>
+  </section>
+</EditorialLayout>

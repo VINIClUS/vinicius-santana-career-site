@@ -1,0 +1,35 @@
+---
+import { profile } from '../data/content.js';
+import EditorialLayout from '../layouts/EditorialLayout.astro';
+---
+
+<EditorialLayout
+  title="Resume — Vinicius Santana"
+  description="Open or download Vinicius Santana's software and data engineering resume."
+  canonicalPath="/resume/"
+>
+  <header class="page-hero shell">
+    <p class="eyebrow">Resume</p>
+    <h1>Software and data engineering, in one concise document.</h1>
+    <p class="summary">
+      The PDF is the maintained source for detailed employment history, education and credentials. This page keeps the
+      quickest actions visible without duplicating that content.
+    </p>
+    <div class="hero-actions" aria-label="Resume actions">
+      <a class="button" href={profile.resume} target="_blank" rel="noreferrer noopener">Open resume PDF</a>
+      <a class="button button-secondary" href={profile.resume} download>Download resume PDF</a>
+      <a class="button button-ghost" href={profile.mailto}>Contact me</a>
+    </div>
+  </header>
+  <section class="section section-muted" aria-labelledby="resume-summary-title">
+    <div class="shell editorial-copy">
+      <p class="eyebrow">At a glance</p>
+      <h2 id="resume-summary-title">Backend services, data systems and operational automation.</h2>
+      <p>
+        My recent work sits at the intersection of public-health data, software delivery and infrastructure operations,
+        with an emphasis on explicit contracts, reliability and maintainability.
+      </p>
+      <p><a class="text-link" href="/work/">See those practices in selected case studies</a></p>
+    </div>
+  </section>
+</EditorialLayout>

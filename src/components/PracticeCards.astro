@@ -1,0 +1,12 @@
+---
+import { roleFit } from '../data/content.js';
+---
+
+<div class="role-fit-cards" aria-label="Areas of practice">
+  {roleFit.map((item) => (
+    <article class="role-card">
+      <h3>{item.title}</h3>
+      <p>{item.text}</p>
+    </article>
+  ))}
+</div>

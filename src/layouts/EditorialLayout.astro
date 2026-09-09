@@ -1,0 +1,25 @@
+---
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  canonicalPath?: string;
+  currentPath?: string;
+  noIndex?: boolean;
+  preloadPortrait?: boolean;
+}
+
+const { title, description, canonicalPath = '/', currentPath = canonicalPath, noIndex = false, preloadPortrait = false } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} canonicalPath={canonicalPath} noIndex={noIndex} preloadPortrait={preloadPortrait}>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <Header currentPath={currentPath} />
+  <main id="main">
+    <slot />
+  </main>
+  <Footer />
+</BaseLayout>
