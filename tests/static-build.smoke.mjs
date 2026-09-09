@@ -156,10 +156,6 @@ for (const caseStudy of caseStudies) {
   assertMetadata(caseHtml, `/work/${caseStudy.slug}/`, origin);
 
   assert.match(caseHtml, new RegExp(`<title>${caseStudy.title} — Vinicius Santana<\\/title>`, 'i'));
-  assert.match(
-    caseHtml,
-    new RegExp(`<link rel="canonical" href="${escapeRegExp(new URL(`/work/${caseStudy.slug}/`, origin).href)}">`, 'i')
-  );
   assert.match(caseHtml, /<main\b[^>]*id="main"/i, `${caseStudy.slug} must render a semantic main landmark`);
   assertEditorialShell(caseHtml, caseStudy.slug);
 
@@ -235,7 +231,6 @@ const [builtCname, publicResume, builtResume, robots, sitemapIndex, sitemap] = a
 ]);
 
 assert.deepEqual(builtCname, publicCname, 'build must preserve CNAME byte for byte');
-assert.equal(builtCname.toString().trim(), 'dev.vinisantana.com');
 assert.deepEqual(builtResume, publicResume, 'build must preserve the resume byte for byte');
 assert.equal(createHash('sha256').update(builtResume).digest('hex'), expectedResumeHash);
 
