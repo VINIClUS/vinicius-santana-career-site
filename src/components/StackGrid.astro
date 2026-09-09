@@ -1,0 +1,12 @@
+---
+import { stackGroups } from '../data/content.js';
+---
+
+<div class="stack-grid">
+  {stackGroups.map((group) => (
+    <article class="stack-card">
+      <h3>{group.title}</h3>
+      <ul>{group.items.map((item) => <li>{item}</li>)}</ul>
+    </article>
+  ))}
+</div>

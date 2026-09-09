@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import SelectedWorkCard from '../../components/SelectedWorkCard.astro';
 import EditorialLayout from '../../layouts/EditorialLayout.astro';
 
 const caseStudies = (await getCollection('caseStudies')).sort((left, right) => left.data.order - right.data.order);
@@ -19,17 +20,7 @@ const caseStudies = (await getCollection('caseStudies')).sort((left, right) => l
     <div class="shell">
       <h2 id="work-list-title" class="visually-hidden">Case studies</h2>
       <div class="project-grid">
-        {caseStudies.map(({ data: caseStudy }) => (
-          <article class="project-card">
-            <p class="project-eyebrow">{caseStudy.eyebrow}</p>
-            <h3>{caseStudy.title}</h3>
-            <p>{caseStudy.summary}</p>
-            <ul class="tech-list" aria-label={`${caseStudy.title} technologies`}>
-              {caseStudy.technologies.map((technology) => <li>{technology}</li>)}
-            </ul>
-            <div class="project-actions"><a class="text-link" href={`/work/${caseStudy.id}/`}>Read case study</a></div>
-          </article>
-        ))}
+        {caseStudies.map(({ data: caseStudy }) => <SelectedWorkCard caseStudy={caseStudy} />)}
       </div>
     </div>
   </section>

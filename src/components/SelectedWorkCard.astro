@@ -1,0 +1,24 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  caseStudy: CollectionEntry<'caseStudies'>['data'];
+  legacyAnchors?: {
+    primary: string;
+    aliases: string[];
+  };
+}
+
+const { caseStudy, legacyAnchors } = Astro.props;
+---
+
+<article class="project-card" id={legacyAnchors?.primary}>
+  {legacyAnchors?.aliases.map((alias) => <span class="legacy-anchor" id={alias} aria-hidden="true"></span>)}
+  <p class="project-eyebrow">{caseStudy.eyebrow}</p>
+  <h3>{caseStudy.title}</h3>
+  <p>{caseStudy.summary}</p>
+  <ul class="tech-list" aria-label={`${caseStudy.title} technologies`}>
+    {caseStudy.technologies.map((technology) => <li>{technology}</li>)}
+  </ul>
+  <div class="project-actions"><a class="text-link" href={`/work/${caseStudy.id}/`}>Read case study</a></div>
+</article>

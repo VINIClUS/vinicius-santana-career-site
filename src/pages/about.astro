@@ -1,6 +1,8 @@
 ---
 import ExternalLink from '../components/ExternalLink.astro';
-import { experience, profile, roleFit, stackGroups } from '../data/content.js';
+import PracticeCards from '../components/PracticeCards.astro';
+import StackGrid from '../components/StackGrid.astro';
+import { experience, profile } from '../data/content.js';
 import EditorialLayout from '../layouts/EditorialLayout.astro';
 ---
 
@@ -43,18 +45,14 @@ import EditorialLayout from '../layouts/EditorialLayout.astro';
           to the code. When part of a system is planned, illustrative or unverified, I label it that way.
         </p>
       </div>
-      <div class="role-fit-cards">
-        {roleFit.map((item) => <article class="role-card"><h3>{item.title}</h3><p>{item.text}</p></article>)}
-      </div>
+      <PracticeCards />
     </div>
   </section>
 
   <section class="section section-muted" aria-labelledby="stack-heading">
     <div class="shell">
       <div class="section-heading"><p class="eyebrow">Stack</p><h2 id="stack-heading">Tools chosen in context.</h2></div>
-      <div class="stack-grid">
-        {stackGroups.map((group) => <article class="stack-card"><h3>{group.title}</h3><ul>{group.items.map((item) => <li>{item}</li>)}</ul></article>)}
-      </div>
+      <StackGrid />
     </div>
   </section>
 

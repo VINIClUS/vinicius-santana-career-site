@@ -61,8 +61,20 @@ const { currentPath = '/' } = Astro.props;
     setMenuOpen(toggle.getAttribute('aria-expanded') !== 'true');
   });
 
-  document.querySelectorAll<HTMLElement>('[data-nav-link], [data-nav-panel] a').forEach((link) => {
-    link.addEventListener('click', () => setMenuOpen(false));
+  document.querySelectorAll<HTMLAnchorElement>('[data-nav-link], [data-nav-panel] a').forEach((link) => {
+    link.addEventListener('click', (event) => {
+      setMenuOpen(false);
+      if (event.detail !== 0) return;
+
+      const destination = new URL(link.href);
+      const isCurrentDocument = destination.origin === window.location.origin && destination.pathname === window.location.pathname;
+      const target = isCurrentDocument && destination.hash
+        ? document.querySelector<HTMLElement>(destination.hash)
+        : null;
+
+      if (target) requestAnimationFrame(() => target.focus());
+      else toggle?.focus();
+    });
   });
 
   window.addEventListener('keydown', (event) => {
