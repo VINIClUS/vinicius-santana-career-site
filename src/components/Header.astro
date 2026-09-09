@@ -48,6 +48,7 @@ const { currentPath = '/' } = Astro.props;
 <script>
   const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
   const panel = document.querySelector<HTMLElement>('[data-nav-panel]');
+  const mobileNavigation = window.matchMedia('(max-width: 820px)');
 
   const setMenuOpen = (isOpen: boolean) => {
     if (!toggle || !panel) return;
@@ -82,5 +83,9 @@ const { currentPath = '/' } = Astro.props;
       setMenuOpen(false);
       toggle.focus();
     }
+  });
+
+  mobileNavigation.addEventListener('change', (event) => {
+    if (!event.matches) setMenuOpen(false);
   });
 </script>

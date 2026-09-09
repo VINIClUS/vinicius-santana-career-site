@@ -50,10 +50,6 @@ body {
   line-height: 1.6;
 }
 
-body.nav-open {
-  overflow: hidden;
-}
-
 body::before {
   position: fixed;
   inset: 0;
@@ -1052,6 +1048,10 @@ h3 {
 
   .site-header {
     min-height: var(--header-height);
+  }
+
+  body.nav-open {
+    overflow: hidden;
   }
 
   .nav {

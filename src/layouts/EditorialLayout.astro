@@ -9,12 +9,13 @@ interface Props {
   canonicalPath?: string;
   currentPath?: string;
   noIndex?: boolean;
+  preloadPortrait?: boolean;
 }
 
-const { title, description, canonicalPath = '/', currentPath = canonicalPath, noIndex = false } = Astro.props;
+const { title, description, canonicalPath = '/', currentPath = canonicalPath, noIndex = false, preloadPortrait = false } = Astro.props;
 ---
 
-<BaseLayout title={title} description={description} canonicalPath={canonicalPath} noIndex={noIndex}>
+<BaseLayout title={title} description={description} canonicalPath={canonicalPath} noIndex={noIndex} preloadPortrait={preloadPortrait}>
   <a class="skip-link" href="#main">Skip to content</a>
   <Header currentPath={currentPath} />
   <main id="main">

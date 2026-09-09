@@ -7,13 +7,15 @@ interface Props {
   description?: string;
   canonicalPath?: string;
   noIndex?: boolean;
+  preloadPortrait?: boolean;
 }
 
 const {
   title = siteMetadata.title,
   description = siteMetadata.description,
   canonicalPath = '/',
-  noIndex = false
+  noIndex = false,
+  preloadPortrait = false
 } = Astro.props;
 const socialDescription = Astro.props.description === undefined ? undefined : description;
 const canonicalUrl = new URL(canonicalPath, siteMetadata.site).toString();
@@ -32,8 +34,12 @@ const imageUrl = new URL(siteMetadata.imagePath, siteMetadata.site).toString();
     <link rel="canonical" href={canonicalUrl} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="/site.webmanifest" />
-    <link rel="preload" as="image" href="/assets/images/vinicius-hero-desktop.avif" type="image/avif" media="(min-width: 780px)" />
-    <link rel="preload" as="image" href="/assets/images/vinicius-portrait-mobile.avif" type="image/avif" media="(max-width: 779px)" />
+    {preloadPortrait && (
+      <>
+        <link rel="preload" as="image" href="/assets/images/vinicius-hero-desktop.avif" type="image/avif" media="(min-width: 780px)" />
+        <link rel="preload" as="image" href="/assets/images/vinicius-portrait-mobile.avif" type="image/avif" media="(max-width: 779px)" />
+      </>
+    )}
 
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="en_US" />
