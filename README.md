@@ -2,7 +2,7 @@
 
 Static career landing page for **Vinicius Santana**, focused on Data Engineering, Software Engineering and platform-adjacent work in public-health and operational systems.
 
-Built with **React + Vite** and designed for GitHub Pages under:
+Built with **Astro** and designed for GitHub Pages under:
 
 ```txt
 dev.vinisantana.com
@@ -24,7 +24,7 @@ dev.vinisantana.com
 Install dependencies:
 
 ```bash
-npm install
+npm ci
 ```
 
 Start the development server:
@@ -51,7 +51,7 @@ The static build is generated in `dist/`.
 
 ```txt
 .
-├── .github/workflows/deploy.yml
+├── .github/workflows/deploy-site.yml
 ├── public/
 │   ├── assets/
 │   │   ├── images/
@@ -63,13 +63,15 @@ The static build is generated in `dist/`.
 │   ├── sitemap.xml
 │   └── site.webmanifest
 ├── src/
+│   ├── components/
+│   ├── config/
 │   ├── data/content.js
-│   ├── main.jsx
-│   └── styles.css
-├── CNAME
-├── index.html
+│   ├── layouts/
+│   ├── pages/index.astro
+│   └── styles/global.css
+├── astro.config.mjs
 ├── package.json
-└── vite.config.js
+└── tsconfig.json
 ```
 
 ## Publish to GitHub Pages
@@ -78,11 +80,11 @@ The static build is generated in `dist/`.
 2. In GitHub, open **Settings → Pages**.
 3. Under **Build and deployment**, choose **GitHub Actions**.
 4. Push to `main` or run the workflow manually.
-5. The workflow builds the Vite app and deploys `dist/` using GitHub Pages.
+5. The workflow builds the Astro site and deploys `dist/` using GitHub Pages.
 
 ## Configure the custom domain
 
-The repository includes both a root-level `CNAME` file and `public/CNAME` so Vite copies the custom domain into the deployed output.
+The repository includes `public/CNAME`, which Astro copies unchanged into the deployed output.
 
 ```txt
 dev.vinisantana.com
@@ -99,9 +101,8 @@ Then in GitHub, open **Settings → Pages → Custom domain**, enter `dev.vinisa
 
 To use another subdomain, update:
 
-- `CNAME`
 - `public/CNAME`
-- `index.html` canonical, Open Graph and Twitter image URLs
+- `src/config/siteMetadata.ts` canonical, Open Graph and Twitter image URLs
 - `public/robots.txt`
 - `public/sitemap.xml`
 
