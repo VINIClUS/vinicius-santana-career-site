@@ -1,5 +1,5 @@
 ---
-import { personStructuredData, siteMetadata } from '../config/siteMetadata';
+import { createPersonStructuredData, siteMetadata } from '../config/siteMetadata';
 import '../styles/global.css';
 
 interface Props {
@@ -18,8 +18,12 @@ const {
   preloadPortrait = false
 } = Astro.props;
 const socialDescription = Astro.props.description === undefined ? undefined : description;
-const canonicalUrl = new URL(canonicalPath, siteMetadata.site).toString();
-const imageUrl = new URL(siteMetadata.imagePath, siteMetadata.site).toString();
+if (!Astro.site) {
+  throw new Error('Astro site URL must be configured');
+}
+const canonicalUrl = new URL(canonicalPath, Astro.site).href;
+const imageUrl = new URL(siteMetadata.imagePath, Astro.site).href;
+const personStructuredData = createPersonStructuredData(Astro.site);
 ---
 
 <!doctype html>
