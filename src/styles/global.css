@@ -1075,13 +1075,15 @@ h3 {
     overflow-y: auto;
     pointer-events: none;
     transform: translateY(-10px);
-    transition: opacity 160ms ease, transform 160ms ease;
+    visibility: hidden;
+    transition: opacity 160ms ease, transform 160ms ease, visibility 160ms ease;
   }
 
   .nav-panel[data-open="true"] {
     opacity: 1;
     pointer-events: auto;
     transform: translateY(0);
+    visibility: visible;
   }
 
   .nav-links,
