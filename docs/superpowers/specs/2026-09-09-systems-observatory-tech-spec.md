@@ -1,92 +1,106 @@
 # Systems Observatory — Tech Spec
 
 **Date:** 2026-09-09  
+**Revision:** 2026-09-10 — visual-direction alignment  
 **Status:** Approved for implementation  
 **Epic:** #4  
 **Repository:** `VINIClUS/vinicius-santana-career-site`
 
 ## 1. Product decision
 
-Redesign the current portfolio into a recruiter-first static site with three flagship engineering case studies and an optional **Systems Observatory** for visual exploration.
+Build the portfolio as a **dark, visual, systems-oriented engineering showcase**. The approved concept image is now the primary reference for composition, density, visual hierarchy and art direction:
 
-The site must remain fast to change and easy to maintain. This is a personal portfolio, not a regulated or high-risk platform; implementation quality should therefore focus on **working behavior, integration, truthful content, and straightforward maintenance** rather than heavyweight verification programs.
+![Approved Systems Observatory visual reference](../../design/systems-observatory-visual-reference.jpg)
 
-The public name of the experience is:
+The previous implementation direction over-indexed on a conventional editorial portfolio and treated 3D as an optional secondary feature. This revision corrects that drift.
+
+The target experience is the one expressed by the reference:
+
+- recruiter-first dark home with a large technical/globe visual;
+- image-led Work overview;
+- dense but readable project-detail dashboards;
+- a prominent isometric Systems Observatory;
+- small, purposeful simulations embedded in project views;
+- responsive mobile versions of the same hierarchy.
+
+The image is **normative for visual direction, not factual content**. Text, project state, metrics, system topology and performance numbers shown inside the concept are placeholders unless independently supported by the portfolio's approved content.
+
+Public name:
 
 > **Systems Observatory — interactive engineering portfolio**
 
-The Observatory is a didactic representation of engineering systems. It is not a digital twin, production dashboard, benchmark, or live view of municipal infrastructure.
+The Observatory is a didactic representation of engineering systems, not a live production dashboard or digital twin.
 
-## 2. Goals
+## 2. Delivery principles
 
-1. A recruiter should understand role fit, selected work, resume, and contact from the home page quickly.
-2. Engineering readers should be able to open deeper case studies with architecture, decisions, trade-offs, contribution, and limits.
-3. Backend/data/infrastructure work should become visually understandable without requiring 3D.
-4. 3D should add memorability without becoming a dependency for navigation or content.
-5. The codebase should remain small enough that a single maintainer can change copy, projects, scenes, or styling without touching a complex platform.
+1. **Visual identity is part of the product**, not post-release polish.
+2. A recruiter should understand role, domains and selected work from the first screen.
+3. Engineering readers should be able to move from visual overview to architecture, simulation, decisions and evidence.
+4. On capable devices, `/explore/` should naturally become the 3D Observatory without requiring a separate opt-in click.
+5. HTML/2D remains available immediately and is the fallback for WebGL failure, reduced-data cases and accessibility.
+6. The codebase stays small and static; no backend is introduced for visual ambition.
+7. Tests stay localized: working behavior + integration smoke, not process-heavy certification.
 
-## 3. Non-goals
+## 3. Reference panels and required correspondence
+
+| Reference panel | Implementation target |
+|---|---|
+| **01 — Home / Recruiter First** | Dark hero, identity on left, four domain pillars, two main CTAs, large globe/data-network visual on right |
+| **02 — Systems Observatory / Interactive 3D** | Central systems hub with five isometric districts, compact labels, constrained orbit/zoom, click/tap project selection |
+| **03 — Work / Projects Overview** | Dark image-led card grid with CnesData, LimnoPulse, Infrastructure and Health Systems/public-health work |
+| **04 — Project Detail / CnesData** | Project header, chips, anchor/tab row, large visual architecture/simulation panel, engineering/results sections |
+| **05 — Infrastructure Simulation** | Three generic nodes, shared layer, failure action, state change and synthetic event timeline |
+| **06 — Other Pages** | About/Resume and future Writing/Lab share the same visual system; do not create empty pages only to match the mockup |
+| **07 — Mobile Views** | Stacked versions of Home, Observatory and project detail preserving the same information hierarchy |
+| **08 — Design System** | Near-black/navy, slate surfaces, thin grid/borders, compact typography, teal/green/blue technical highlights, isometric visuals |
+
+A page does not need to be pixel-identical. It should be immediately recognizable as the same design language and composition family.
+
+## 4. Non-goals
 
 Do not add:
 
-- backend services;
-- CMS/admin UI;
-- authentication;
-- analytics/session replay in the initial release;
-- live GitHub/project APIs at runtime;
-- live infrastructure or municipal data;
-- a new hosting provider;
-- DNS migration;
-- multiple complex simulators;
-- a general plugin framework;
-- Redux or equivalent global-state framework;
-- microservices or a monorepo split;
-- exhaustive performance/compliance programs.
+- backend services, CMS/admin UI or authentication;
+- live GitHub/project/infrastructure APIs at runtime;
+- municipal production data or screenshots;
+- a new hosting provider or DNS migration;
+- free-roam/game controls;
+- a generic visualization/plugin framework;
+- Redux unless a concrete need appears;
+- exhaustive performance/compliance programs;
+- unsupported metrics merely because the reference contains number blocks.
 
-## 4. Architecture
+## 5. Architecture
 
-### 4.1 Static site
+### 5.1 Static shell
 
-Use **Astro** with static output. Pages and case studies render as HTML at build time.
+Keep **Astro static output**, npm and GitHub Pages. Pages, copy, metadata and fallback diagrams render at build time.
 
-Use React only for interactive areas that benefit from it. The 3D feature uses React + React Three Fiber + Three.js, loaded only after the user explicitly enables 3D.
+React is used only where interaction benefits from it. React Three Fiber + Three.js belong to the Explore/scene feature path, not the home bundle.
 
-Keep GitHub Pages and the existing custom-domain setup.
+### 5.2 Progressive visual loading
 
-### 4.2 Content structure
+The Home may use a lightweight raster/SVG/canvas globe/data-network visual, but it must not require the full Observatory renderer.
 
-Use a small typed content model for:
+For `/explore/`:
 
-- project metadata;
-- case-study content;
-- contribution/context;
-- evidence/status labels;
-- scene manifests;
-- scenario definitions.
+1. Astro renders the route, text, labels, fallback poster/diagram and project controls immediately.
+2. On a capable browser, the 3D renderer imports asynchronously and replaces/enhances the visual stage automatically.
+3. No explicit `Enable 3D` click is required by default.
+4. `Save-Data`, renderer/WebGL failure or a deliberate `View 2D` choice may keep the route in 2D.
+5. 3D failure must not remove navigation, project descriptions or simulations.
 
-Published content must distinguish between:
+Do not preload all project scenes on first visit.
 
-- `implemented`;
-- `documented`;
-- `planned`;
-- `historical`;
-- `illustrative`.
+### 5.3 Content and state
 
-Do not publish an unverified quantitative claim just to fill visual space. Omit it or use a qualitative statement.
+Keep the existing typed case-study content and stable explorer component IDs. Project state labels may distinguish `implemented`, `documented`, `planned`, `historical` and `illustrative`.
 
-### 4.3 Selected projects
+Simulation state remains deterministic and synthetic. Renderers consume state; they do not own business rules.
 
-The initial portfolio highlights:
+## 6. Information architecture
 
-1. **CnesData** — software/data platform and raw-ingestion contract walkthrough.
-2. **Limnopulse** — telemetry, rules, incidents, notifications, and device-oriented system design.
-3. **Infrastructure & Operations** — sanitized examples of infrastructure automation, reliability, and operational thinking.
-
-Public-health work is professional context and evidence; it is not presented as a fourth standalone product.
-
-## 5. Information architecture
-
-### M1 routes
+### Core routes
 
 - `/`
 - `/work/`
@@ -96,233 +110,274 @@ Public-health work is professional context and evidence; it is not presented as 
 - `/about/`
 - `/resume/`
 - `/privacy/`
-- `/404.html`
-
-### M2 routes
-
 - `/explore/`
 - `/explore/cnesdata/`
 - `/explore/limnopulse/`
 - `/explore/infrastructure/`
+- `/404.html`
 
-`Explore` should not appear as a primary navigation item until M2 is ready.
+`Writing` may appear in the compact navigation only when a real `/writing/` page has useful content. Do not create an empty route just to copy the mockup.
 
-## 6. Compatibility contracts
+Preserve current CNAME behavior, `/assets/vinicius-santana-resume.pdf`, useful legacy home anchors and compatibility destinations.
 
-The migration must preserve:
+## 7. Home — target composition
 
-- `public/CNAME` and the currently configured host baseline;
-- `/assets/vinicius-santana-resume.pdf`;
-- useful home anchors including `#about`, `#experience`, `#projects`, `#stack`, and `#contact`;
-- useful destinations for existing `#case-*` fragment links.
+The current portrait-dominant editorial hero should be replaced by the reference composition.
 
-The resume already updated through PR #3 is the new baseline. Do not restore an older PDF while migrating the framework.
+### Left column
 
-## 7. Home and case-study UX
+- small eyebrow/status line;
+- **Vinicius Santana** as the dominant heading;
+- **Software & Data Engineer** immediately below;
+- concise line such as `I build reliable systems where software, data and infrastructure meet.`;
+- four icon/pillar items:
+  - Data Systems;
+  - Distributed Infrastructure;
+  - Backend Engineering;
+  - Public Health;
+- two primary actions:
+  - `View selected work`;
+  - `Explore systems`.
 
-### Home
+Resume stays clearly available in the header. Contact remains easy to find further down and/or in navigation/footer.
 
-The first screen prioritizes:
+### Right column
 
-- Vinicius Santana;
-- Software & Data Engineer positioning;
-- one concise positioning sentence;
-- selected work;
-- resume/contact;
-- optional Observatory entry after M2.
+Use a large globe/data-network visual inspired by the reference. It is a design metaphor for connected systems and geographic context, **not evidence of global traffic, deployments or customers**. Do not add map coordinates or scale claims unless they have a deliberate editorial purpose.
 
-Avoid a wall of technology chips or decorative metrics. Technologies should mostly appear where they were used.
+The professional portrait can remain on About; it should not be the main visual of Home.
 
-### Case studies
+## 8. Work overview
 
-Each flagship case should cover, as applicable:
+The Work page should be **image-led**, not an article index.
 
-- problem;
-- context/constraints;
-- personal contribution and collaboration;
-- architecture or documented contract;
-- decisions/trade-offs;
-- failures/tests/reliability considerations;
-- results when publishable;
-- limitations/current state;
-- repository/technical links.
+Desktop target: four cards in a compact grid with strong poster imagery, short summaries, small domain tags and `View project` actions.
 
-The reader should not need to switch into a special “engineering mode” to access essential information.
+Cards:
 
-## 8. Systems Observatory
+1. **CnesData** — healthcare/data platform;
+2. **LimnoPulse** — environmental/water telemetry;
+3. **Infrastructure** — Proxmox/HA/automation work;
+4. **Health Systems** — public-health software/data work and professional context.
 
-The default representation is HTML/SVG/2D.
+Health Systems is a portfolio category/case grouping, not a fabricated standalone product.
 
-The overview has three visually distinct areas:
+## 9. Project-detail pattern
 
-- data platform;
-- water telemetry;
-- infrastructure.
+Use the reference CnesData screen as the shared shell for flagship project pages.
 
-Selecting an area opens its project view. Component names, descriptions, relations, and status live in HTML or structured data, not exclusively inside a canvas.
+### Header
 
-### 8.1 3D behavior
+- back-to-work link;
+- project name + concise subtitle;
+- small domain/status chips;
+- repository/technical link where public.
 
-3D is a progressive enhancement:
+### Section navigation
 
-- load only after `Enable 3D`;
-- load only the selected scene;
-- keep the same project/scenario state when enabling or disabling 3D;
-- leave the 2D explorer usable if WebGL, a model, or the renderer fails;
-- keep at most one active canvas.
+Use anchor navigation or lightweight progressive enhancement with labels such as:
 
-Do not require game controls, free-roam navigation, drag gestures, or hover to discover essential content.
+`Overview · Architecture · Simulation · Engineering · Results`
 
-## 9. CnesData walkthrough
+Do not build a complex SPA tab router. Essential content should remain addressable/readable as normal page sections.
 
-The first and only interactive simulation in M2 demonstrates a narrow raw-object contract using synthetic state.
+### Main visual panel
 
-Scenarios:
+The project page should have one large visual architecture/simulation stage near the top, similar to the reference. It may combine isometric assets, SVG/HTML labels and animated data-flow/state highlights.
 
-1. `raw-first-write` — write object A to a new key K; one object exists.
-2. `raw-identical-replay` — replay K + A; accepted without duplication.
-3. `raw-content-conflict` — attempt K + B; conflict and A remains intact.
+For CnesData, visual stages may show municipal/source inputs, edge/ingestion, central coordination/storage, processor/Gold/dashboard/rules **only when each element's current/documented/planned status is represented truthfully**. Do not turn the concept's full pipeline into a false production claim.
 
-The simulation:
+Existing SO-05 raw write/replay/conflict scenarios remain available and should be presented inside this visual language.
 
-- does not call the CnesData backend;
-- does not authenticate mTLS;
-- does not convert DBC or create Parquet;
-- does not use real health data;
-- does not show animation duration as measured latency;
-- must carry a clear synthetic/demonstration label.
+## 10. Systems Observatory
 
-The state engine should be small and deterministic, with commands such as `SELECT_SCENARIO`, `STEP`, and `RESET`.
+The Observatory is a major portfolio surface, not a hidden enhancement.
 
-## 10. Visual direction
+### Overview composition
 
-Use a technical-atlas / architectural-model aesthetic:
+Use a central luminous systems hub and five visually distinct isometric districts:
 
-- dark navy background;
-- restrained surfaces;
-- readable typography;
-- thin grid/diagram language;
-- teal/green accent;
-- simplified isometric models;
-- motion only when it explains selection or state changes.
+1. **Data Platform / CnesData**
+2. **Public Health Systems**
+3. **Infrastructure / Proxmox & HA**
+4. **Observability / Monitoring & Insights**
+5. **LimnoPulse / Environmental Data**
 
-Avoid cyberpunk terminal clichés, world-map scale claims, fake operational dashboards, or a game-like world that delays access to work.
+Public Health and Observability are domains/layers across the work; they do not need standalone product repositories.
 
-## 11. Assets
+Districts should resemble compact architectural maquettes/technical dioramas: baseplates, buildings/racks/environmental elements, subtle grid and controlled luminous connections. Avoid reducing the scene to circles and generic boxes.
 
-Prefer simple author-created or procedurally built assets.
+Conceptual connection lines may show relationships, but must not be presented as real live traffic.
 
-For each project provide:
+### Interaction
 
-- a lightweight poster/fallback;
-- a scene manifest;
-- optional GLB/procedural geometry;
-- source/license note when third-party material is used.
+- constrained isometric camera;
+- modest zoom controls;
+- click/tap district selection;
+- subtle camera transition/highlight;
+- HTML labels and project explanation;
+- normal links to detailed work;
+- explicit `View 2D` fallback.
 
-Do not include municipal screenshots, real hostnames/IPs, sensitive topology, or real personal-health data.
+No keyboard/game movement, avatar, vehicle or free camera is required.
 
-Optimize obviously oversized assets before adding compression infrastructure. Draco/Meshopt/KTX2 are optional follow-ups only if the real assets need them.
+## 11. Simulations
 
-## 12. Deployment
+### 11.1 CnesData
 
-Keep GitHub Pages + GitHub Actions.
+Keep the existing synthetic raw-contract walkthrough:
 
-The CI/deploy path should be simple:
+- first write;
+- identical replay;
+- content conflict preserving the original object.
+
+No backend calls, real health data or measured latency.
+
+### 11.2 Infrastructure
+
+M2 now also includes the compact visual simulation shown in the reference.
+
+Synthetic reference topology:
+
+- Node 01 — online;
+- Node 02 — online → failed;
+- Node 03 — online;
+- shared storage/service layer;
+- one illustrative workload/service assignment.
+
+`Simulate node failure` deterministically marks one node failed, moves/highlights the illustrative workload on a healthy node and appends a short logical event timeline. Reset restores the initial state.
+
+Do **not** copy decorative timestamps, `<2s`, `100% uptime` or any recovery metric from the reference. Animation steps are presentation timing, not benchmark results.
+
+## 12. Visual system
+
+The reference establishes the art direction:
+
+- background: near-black/deep navy;
+- panels: dark slate with subtle elevation;
+- text: white/off-white with muted blue-gray secondary text;
+- accents: teal/green for healthy/active, blue/cyan for data/selection, red only for explicit failure states;
+- fine 1px borders and technical grids;
+- compact sans-serif UI typography; monospaced text only for technical labels/events;
+- medium-radius cards/controls;
+- isometric imagery with soft directional light and restrained glow;
+- generous negative space around the main visual stage, but higher information density inside technical panels.
+
+Avoid neon cyberpunk, terminal/hacker motifs, generic SaaS gradients, cartoon low-poly styling and bright marketing-card aesthetics.
+
+## 13. Asset kit
+
+Issue #11 owns the visual kit:
+
+- home globe/data-network visual;
+- four Work card posters;
+- five Observatory district kits + central hub;
+- CnesData architecture props/poster;
+- Infrastructure cluster props/poster;
+- mobile/fallback representations;
+- scene manifests and source/license notes.
+
+Original/procedural assets are preferred. Optimize obvious excess manually before introducing specialized compression infrastructure.
+
+## 14. Responsive behavior
+
+Desktop prioritizes the visual stage; mobile preserves the same hierarchy in stacked panels.
+
+Mobile reference intent:
+
+- compact `VS` header + menu;
+- hero copy first, visual second;
+- Observatory visual/poster followed by project selector/action;
+- project detail keeps architecture/simulation panel near the top;
+- no essential content requires hover, pinch or landscape orientation.
+
+The 3D renderer may use a lighter camera/preset or remain in 2D if device/browser constraints make the scene poor.
+
+## 15. Truthfulness and safety
+
+The reference image contains visual placeholder metrics. Specifically, do not publish `5.5k+ municipalities`, `100M+ records`, `99.9% data reliability`, `100% uptime`, `<2s failover` or similar values unless a later content change provides a publishable basis.
+
+Do not expose:
+
+- patient/professional records;
+- real municipal hostnames, IPs or network diagrams;
+- authenticated screenshots;
+- credentials/secrets;
+- simulated events presented as production telemetry.
+
+## 16. Testing policy — deliberately lean
+
+Every implementation PR should run the smallest useful verification for its scope:
 
 ```text
 npm ci
-npm run typecheck   # when configured
-npm test            # focused suite
+npm test / focused test command
 npm run build
-npm run smoke       # compact built-artifact checks
+relevant browser/smoke path
 ```
 
-The production artifact should contain static pages, public assets, CNAME, resume, sitemap/robots, and 404.
+Required when relevant:
 
-## 13. Testing policy — lean by design
+- route/build smoke;
+- focused simulation state tests;
+- one desktop and one mobile browser pass for visual changes;
+- 3D mount/selection/fallback smoke;
+- resume/public-route preservation.
 
-This project intentionally uses **localized tests**.
+Not required as release gates unless a concrete problem justifies them:
 
-Every implementation PR should prove the changed behavior and one relevant integration path. There is no coverage percentage target.
-
-### Required categories when relevant
-
-- **Foundation:** install/build smoke and preservation of resume/CNAME.
-- **Content:** schema/content validation for published records.
-- **Navigation:** a small route/anchor smoke.
-- **Simulation:** unit tests for first write, replay, conflict, reset, invalid scenario.
-- **2D explorer:** one browser smoke for project selection and a walkthrough path.
-- **3D:** focused tests for explicit lazy activation, state handoff, and failure fallback.
-- **Release:** one concise production-style smoke covering home → case → explore → resume/contact.
-
-### Explicitly not required
-
-Unless a concrete defect justifies them, do not block delivery on:
-
-- coverage thresholds;
-- soak/load tests;
-- property-based testing;
-- exhaustive browser/device matrices;
+- coverage percentage;
+- load/soak tests;
 - formal WCAG certification;
-- automated Lighthouse/FPS gates;
-- repeated 20-cycle GPU lifecycle tests;
-- complex bundle-budget infrastructure;
-- full visual regression suites.
+- large browser/device matrix;
+- Lighthouse/FPS threshold;
+- pixel-perfect visual regression;
+- repeated GPU lifecycle soak.
 
-Accessibility basics still matter: semantic HTML, visible focus, keyboard-usable primary controls, sufficient contrast, useful 2D fallback, and reduced-motion-friendly behavior. Fix concrete regressions when found.
+A visual-direction PR is blocked when the result is functionally broken or obviously no longer resembles the approved reference, not because of minor pixel differences.
 
-## 14. Merge policy
+## 17. Work map
 
-Small issue-scoped PRs are preferred.
+Completed foundation work remains valid:
 
-Block merge for:
+- #5 — Astro foundation
+- #6 — case-study content model
+- #7 — recruiter-first routes
+- #8 — deploy/SEO/smoke
+- #9 — CnesData synthetic engine
+- #10 — existing 2D explorer
 
-- broken build or feature behavior;
-- broken navigation/resume/public routes;
-- integration failure with already merged work;
-- 3D making the 2D experience unusable;
-- sensitive/private content exposure;
-- materially false or misleading claims.
+Reference-alignment work:
 
-Do not block merge solely for stylistic preferences, speculative abstractions, minor animation polish, or improvements unrelated to the issue. Track those as follow-ups when useful.
+- #21 — re-align Home, Work and project-detail UI
+- #11 — create reference-aligned posters/isometric scene kit
+- #22 — five-district mapping + synthetic Infrastructure simulation
+- #12 — primary 3D Observatory renderer with progressive loading
+- #13 — integrate/polish/release against the reference
 
-## 15. Parallel execution
+Recommended dependency flow:
 
-The epic tracker is #4.
+```text
+#21 UI alignment ────────────────┐
+#11 visual assets ──┬─> #12 3D ─┼─> #13 release
+                   └─> #22 infra/domain visuals ─┘
+completed #10 supplies 2D/controller baseline
+```
 
-Issues may run in parallel when dependencies permit. Use isolated worktrees/branches for concurrent implementation.
+#21 and #11 can start in parallel. #22 can implement state/2D while #11 produces final assets. #12 consumes #11 and the existing explorer. #13 waits for all four lanes.
 
-Shared-file ownership must be coordinated for:
+## 18. Definition of done
 
-- `package.json` / lockfile;
-- Astro config;
-- global styles/layout;
-- CI workflows;
-- central content schemas.
+The visual-alignment revision is complete when:
 
-Do not stack unrelated feature changes into one branch merely to avoid coordination.
+- Home corresponds clearly to reference panel 01;
+- Work corresponds clearly to panel 03;
+- CnesData detail corresponds clearly to panel 04;
+- Observatory corresponds clearly to panel 02 with central hub + five districts;
+- Infrastructure includes the panel-05-style synthetic failure simulation;
+- mobile preserves panel-07 hierarchy;
+- all factual content remains truthful and sanitized;
+- current resume/routes remain intact;
+- focused build/integration tests pass and GitHub Pages publishes successfully.
 
-## 16. Issue map
-
-### M1
-- #5 — SO-01 foundation/Astro migration
-- #6 — SO-02 content model/case studies
-- #7 — SO-03 recruiter-first pages/compatibility
-- #8 — SO-04 deploy/SEO/M1 smoke
-
-### M2
-- #9 — SO-05 CnesData walkthrough engine
-- #10 — SO-06 2D explorer/project views
-- #11 — SO-07 visual assets/posters/manifests
-- #12 — SO-08 optional 3D renderer/lazy launcher
-- #13 — SO-09 integration/polish/release
-
-## 17. Definition of done
-
-### M1
-The static editorial site is deployed, direct routes work, current resume/CNAME are preserved, and the three case studies communicate the work clearly without misleading claims.
-
-### M2
-The Observatory overview and three project views are deployed, the CnesData walkthrough works in 2D, the optional 3D layer can be enabled without replacing baseline content, and the release smoke succeeds.
-
-The project is complete when #5–#13 are closed and the deployed site is verified through #13.
+Minor visual polish can continue later. The release should not be delayed for exhaustive process or certification work.
