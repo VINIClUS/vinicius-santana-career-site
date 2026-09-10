@@ -217,9 +217,10 @@ No real timing or uptime values.
 - [ ] Consume #22's district registry; wire all five `DistrictId` values to selection/highlight and the HTML detail link without widening the three-value `ProjectId` union.
 - [ ] Add subtle camera/highlight transitions; no free-roam controls.
 - [ ] Load overview assets first; do not download every detail scene immediately.
-- [ ] If `Save-Data`, WebGL initialization or asset loading fails, retain/show the current 2D view.
+- [ ] When 3D mounts successfully, expose an explicit `View 2D` control that transitions the stage back to the existing 2D representation without losing the selected district, HTML details or navigation.
+- [ ] If `Save-Data`, WebGL initialization or asset loading fails, retain/show the current 2D view automatically.
 - [ ] Respect reduced-motion by reducing camera travel/continuous animation.
-- [ ] Add focused browser smoke: capable mount + district selection + forced 2D fallback + one mobile viewport.
+- [ ] Add focused browser smoke: capable mount + district selection + deliberate `View 2D` transition + forced failure fallback + one mobile viewport.
 - [ ] Build and open PR referencing #12.
 
 **Do not:** duplicate CnesData or Infrastructure transition logic in Three components.
