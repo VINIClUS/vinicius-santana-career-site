@@ -9,10 +9,14 @@
     "build": "astro build",
     "test": "npm run typecheck && node --experimental-strip-types --test tests/*.test.mjs",
     "typecheck:simulation": "tsc --project tsconfig.simulation.json",
-    "smoke": "node tests/static-build.smoke.mjs",
+    "smoke": "node tests/static-build.smoke.mjs && VERIFY_BUILT_ASSETS=1 node --experimental-strip-types --test tests/scene-assets.test.mjs",
     "preview": "astro preview --host 0.0.0.0",
-    "typecheck": "npm run typecheck:simulation && tsc --project tsconfig.explorer.json",
-    "test:explorer": "playwright test"
+    "typecheck": "npm run typecheck:simulation && tsc --project tsconfig.explorer.json && npm run typecheck:scenes",
+    "test:explorer": "playwright test",
+    "assets:generate": "node scripts/assets/generate.mjs",
+    "gallery": "node --experimental-strip-types scripts/gallery/server.mjs",
+    "typecheck:scenes": "tsc --project tsconfig.scenes.json",
+    "gallery:verify": "node --experimental-strip-types scripts/gallery/verify.mjs"
   },
   "dependencies": {
     "react": "19.2.8",
@@ -24,6 +28,8 @@
     "@playwright/test": "1.63.0",
     "astro": "7.3.2",
     "js-yaml": "4.3.2",
+    "sharp": "0.35.4",
+    "three": "0.183.2",
     "typescript": "5.9.3"
   },
   "engines": {

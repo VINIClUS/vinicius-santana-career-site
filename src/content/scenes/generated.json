@@ -1,0 +1,1332 @@
+{
+  "district-cnesdata": {
+    "posters": {
+      "desktop": {
+        "src": "/assets/posters/district-cnesdata-desktop.webp",
+        "width": 1200,
+        "height": 800,
+        "bytes": 43438
+      },
+      "mobile": {
+        "src": "/assets/posters/district-cnesdata-mobile.webp",
+        "width": 720,
+        "height": 900,
+        "bytes": 27474
+      }
+    },
+    "cameras": {
+      "desktop": {
+        "position": [
+          24.82817665807104,
+          23.122950159360382,
+          31.035220822588798
+        ],
+        "target": [
+          0,
+          2.0189999999999997,
+          0
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ],
+        "projection": "orthographic",
+        "frustum": {
+          "left": -7.49174531145581,
+          "right": 7.49174531145581,
+          "top": 4.994496874303874,
+          "bottom": -4.994496874303874,
+          "near": 0.1,
+          "far": 200
+        },
+        "zoom": 1
+      },
+      "mobile": {
+        "position": [
+          24.82817665807104,
+          23.122950159360382,
+          31.035220822588798
+        ],
+        "target": [
+          0,
+          2.0189999999999997,
+          0
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ],
+        "projection": "orthographic",
+        "frustum": {
+          "left": -6.353148633628495,
+          "right": 6.353148633628495,
+          "top": 7.941435792035619,
+          "bottom": -7.941435792035619,
+          "near": 0.1,
+          "far": 200
+        },
+        "zoom": 1
+      }
+    },
+    "camera": {
+      "position": [
+        24.82817665807104,
+        23.122950159360382,
+        31.035220822588798
+      ],
+      "target": [
+        0,
+        2.0189999999999997,
+        0
+      ],
+      "up": [
+        0,
+        1,
+        0
+      ],
+      "projection": "orthographic",
+      "frustum": {
+        "left": -7.49174531145581,
+        "right": 7.49174531145581,
+        "top": 4.994496874303874,
+        "bottom": -4.994496874303874,
+        "near": 0.1,
+        "far": 200
+      },
+      "zoom": 1
+    },
+    "model": {
+      "src": "/assets/scenes/district-cnesdata.glb",
+      "bytes": 56888,
+      "bounds": {
+        "min": [
+          -4,
+          0,
+          -4
+        ],
+        "max": [
+          4,
+          4.037999999999999,
+          4
+        ]
+      },
+      "anchors": {
+        "center": [
+          0,
+          2.0189999999999997,
+          0
+        ],
+        "base": [
+          0,
+          0,
+          0
+        ],
+        "label": [
+          0,
+          4.438,
+          0
+        ]
+      }
+    }
+  },
+  "district-public-health": {
+    "posters": {
+      "desktop": {
+        "src": "/assets/posters/district-public-health-desktop.webp",
+        "width": 1200,
+        "height": 800,
+        "bytes": 37020
+      },
+      "mobile": {
+        "src": "/assets/posters/district-public-health-mobile.webp",
+        "width": 720,
+        "height": 900,
+        "bytes": 24542
+      }
+    },
+    "cameras": {
+      "desktop": {
+        "position": [
+          24.82817665807104,
+          23.216450159360384,
+          31.035220822588798
+        ],
+        "target": [
+          0,
+          2.1125,
+          0
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ],
+        "projection": "orthographic",
+        "frustum": {
+          "left": -7.6317187280894085,
+          "right": 7.6317187280894085,
+          "top": 5.087812485392939,
+          "bottom": -5.087812485392939,
+          "near": 0.1,
+          "far": 200
+        },
+        "zoom": 1
+      },
+      "mobile": {
+        "position": [
+          24.82817665807104,
+          23.216450159360384,
+          31.035220822588798
+        ],
+        "target": [
+          0,
+          2.1125,
+          0
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ],
+        "projection": "orthographic",
+        "frustum": {
+          "left": -6.353148633628494,
+          "right": 6.353148633628494,
+          "top": 7.941435792035618,
+          "bottom": -7.941435792035618,
+          "near": 0.1,
+          "far": 200
+        },
+        "zoom": 1
+      }
+    },
+    "camera": {
+      "position": [
+        24.82817665807104,
+        23.216450159360384,
+        31.035220822588798
+      ],
+      "target": [
+        0,
+        2.1125,
+        0
+      ],
+      "up": [
+        0,
+        1,
+        0
+      ],
+      "projection": "orthographic",
+      "frustum": {
+        "left": -7.6317187280894085,
+        "right": 7.6317187280894085,
+        "top": 5.087812485392939,
+        "bottom": -5.087812485392939,
+        "near": 0.1,
+        "far": 200
+      },
+      "zoom": 1
+    },
+    "model": {
+      "src": "/assets/scenes/district-public-health.glb",
+      "bytes": 54152,
+      "bounds": {
+        "min": [
+          -4,
+          0,
+          -4
+        ],
+        "max": [
+          4,
+          4.225,
+          4
+        ]
+      },
+      "anchors": {
+        "center": [
+          0,
+          2.1125,
+          0
+        ],
+        "base": [
+          0,
+          0,
+          0
+        ],
+        "label": [
+          0,
+          4.625,
+          0
+        ]
+      }
+    }
+  },
+  "district-infrastructure": {
+    "posters": {
+      "desktop": {
+        "src": "/assets/posters/district-infrastructure-desktop.webp",
+        "width": 1200,
+        "height": 800,
+        "bytes": 32798
+      },
+      "mobile": {
+        "src": "/assets/posters/district-infrastructure-mobile.webp",
+        "width": 720,
+        "height": 900,
+        "bytes": 19062
+      }
+    },
+    "cameras": {
+      "desktop": {
+        "position": [
+          24.82817665807104,
+          22.658950159360383,
+          31.035220822588798
+        ],
+        "target": [
+          0,
+          1.5550000000000002,
+          0
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ],
+        "projection": "orthographic",
+        "frustum": {
+          "left": -6.797117874899755,
+          "right": 6.797117874899755,
+          "top": 4.531411916599837,
+          "bottom": -4.531411916599837,
+          "near": 0.1,
+          "far": 200
+        },
+        "zoom": 1
+      },
+      "mobile": {
+        "position": [
+          24.82817665807104,
+          22.658950159360383,
+          31.035220822588798
+        ],
+        "target": [
+          0,
+          1.5550000000000002,
+          0
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ],
+        "projection": "orthographic",
+        "frustum": {
+          "left": -6.353148633628494,
+          "right": 6.353148633628494,
+          "top": 7.941435792035618,
+          "bottom": -7.941435792035618,
+          "near": 0.1,
+          "far": 200
+        },
+        "zoom": 1
+      }
+    },
+    "camera": {
+      "position": [
+        24.82817665807104,
+        22.658950159360383,
+        31.035220822588798
+      ],
+      "target": [
+        0,
+        1.5550000000000002,
+        0
+      ],
+      "up": [
+        0,
+        1,
+        0
+      ],
+      "projection": "orthographic",
+      "frustum": {
+        "left": -6.797117874899755,
+        "right": 6.797117874899755,
+        "top": 4.531411916599837,
+        "bottom": -4.531411916599837,
+        "near": 0.1,
+        "far": 200
+      },
+      "zoom": 1
+    },
+    "model": {
+      "src": "/assets/scenes/district-infrastructure.glb",
+      "bytes": 42936,
+      "bounds": {
+        "min": [
+          -4,
+          0,
+          -4
+        ],
+        "max": [
+          4,
+          3.1100000000000003,
+          4
+        ]
+      },
+      "anchors": {
+        "center": [
+          0,
+          1.5550000000000002,
+          0
+        ],
+        "base": [
+          0,
+          0,
+          0
+        ],
+        "label": [
+          0,
+          3.5100000000000002,
+          0
+        ],
+        "node-01": [
+          -1.85,
+          1.7550000000000003,
+          0.006000000000000005
+        ],
+        "node-02": [
+          0,
+          1.7550000000000003,
+          0.006000000000000005
+        ],
+        "node-03": [
+          1.85,
+          1.7550000000000003,
+          0.006000000000000005
+        ]
+      }
+    }
+  },
+  "district-observability": {
+    "posters": {
+      "desktop": {
+        "src": "/assets/posters/district-observability-desktop.webp",
+        "width": 1200,
+        "height": 800,
+        "bytes": 34348
+      },
+      "mobile": {
+        "src": "/assets/posters/district-observability-mobile.webp",
+        "width": 720,
+        "height": 900,
+        "bytes": 20812
+      }
+    },
+    "cameras": {
+      "desktop": {
+        "position": [
+          24.82817665807104,
+          22.76265291870279,
+          31.035220822588798
+        ],
+        "target": [
+          0,
+          1.6587027593424075,
+          0
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ],
+        "projection": "orthographic",
+        "frustum": {
+          "left": -6.9523652496536466,
+          "right": 6.9523652496536466,
+          "top": 4.634910166435764,
+          "bottom": -4.634910166435764,
+          "near": 0.1,
+          "far": 200
+        },
+        "zoom": 1
+      },
+      "mobile": {
+        "position": [
+          24.82817665807104,
+          22.76265291870279,
+          31.035220822588798
+        ],
+        "target": [
+          0,
+          1.6587027593424075,
+          0
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ],
+        "projection": "orthographic",
+        "frustum": {
+          "left": -6.353148633628495,
+          "right": 6.353148633628495,
+          "top": 7.941435792035619,
+          "bottom": -7.941435792035619,
+          "near": 0.1,
+          "far": 200
+        },
+        "zoom": 1
+      }
+    },
+    "camera": {
+      "position": [
+        24.82817665807104,
+        22.76265291870279,
+        31.035220822588798
+      ],
+      "target": [
+        0,
+        1.6587027593424075,
+        0
+      ],
+      "up": [
+        0,
+        1,
+        0
+      ],
+      "projection": "orthographic",
+      "frustum": {
+        "left": -6.9523652496536466,
+        "right": 6.9523652496536466,
+        "top": 4.634910166435764,
+        "bottom": -4.634910166435764,
+        "near": 0.1,
+        "far": 200
+      },
+      "zoom": 1
+    },
+    "model": {
+      "src": "/assets/scenes/district-observability.glb",
+      "bytes": 68972,
+      "bounds": {
+        "min": [
+          -4,
+          0,
+          -4
+        ],
+        "max": [
+          4,
+          3.317405518684815,
+          4
+        ]
+      },
+      "anchors": {
+        "center": [
+          0,
+          1.6587027593424075,
+          0
+        ],
+        "base": [
+          0,
+          0,
+          0
+        ],
+        "label": [
+          0,
+          3.717405518684815,
+          0
+        ]
+      }
+    }
+  },
+  "district-limnopulse": {
+    "posters": {
+      "desktop": {
+        "src": "/assets/posters/district-limnopulse-desktop.webp",
+        "width": 1200,
+        "height": 800,
+        "bytes": 32348
+      },
+      "mobile": {
+        "src": "/assets/posters/district-limnopulse-mobile.webp",
+        "width": 720,
+        "height": 900,
+        "bytes": 18124
+      }
+    },
+    "cameras": {
+      "desktop": {
+        "position": [
+          24.82817665807104,
+          21.92395016114852,
+          31.035220822588798
+        ],
+        "target": [
+          0,
+          0.8200000017881394,
+          0
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ],
+        "projection": "orthographic",
+        "frustum": {
+          "left": -6.3531486336284955,
+          "right": 6.3531486336284955,
+          "top": 4.235432422418997,
+          "bottom": -4.235432422418997,
+          "near": 0.1,
+          "far": 200
+        },
+        "zoom": 1
+      },
+      "mobile": {
+        "position": [
+          24.82817665807104,
+          21.92395016114852,
+          31.035220822588798
+        ],
+        "target": [
+          0,
+          0.8200000017881394,
+          0
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ],
+        "projection": "orthographic",
+        "frustum": {
+          "left": -6.353148633628495,
+          "right": 6.353148633628495,
+          "top": 7.941435792035619,
+          "bottom": -7.941435792035619,
+          "near": 0.1,
+          "far": 200
+        },
+        "zoom": 1
+      }
+    },
+    "camera": {
+      "position": [
+        24.82817665807104,
+        21.92395016114852,
+        31.035220822588798
+      ],
+      "target": [
+        0,
+        0.8200000017881394,
+        0
+      ],
+      "up": [
+        0,
+        1,
+        0
+      ],
+      "projection": "orthographic",
+      "frustum": {
+        "left": -6.3531486336284955,
+        "right": 6.3531486336284955,
+        "top": 4.235432422418997,
+        "bottom": -4.235432422418997,
+        "near": 0.1,
+        "far": 200
+      },
+      "zoom": 1
+    },
+    "model": {
+      "src": "/assets/scenes/district-limnopulse.glb",
+      "bytes": 58816,
+      "bounds": {
+        "min": [
+          -4,
+          0,
+          -4
+        ],
+        "max": [
+          4,
+          1.6400000035762787,
+          4
+        ]
+      },
+      "anchors": {
+        "center": [
+          0,
+          0.8200000017881394,
+          0
+        ],
+        "base": [
+          0,
+          0,
+          0
+        ],
+        "label": [
+          0,
+          2.040000003576279,
+          0
+        ]
+      }
+    }
+  },
+  "hub": {
+    "posters": {
+      "desktop": {
+        "src": "/assets/posters/hub-desktop.webp",
+        "width": 1200,
+        "height": 800,
+        "bytes": 29978
+      },
+      "mobile": {
+        "src": "/assets/posters/hub-mobile.webp",
+        "width": 720,
+        "height": 900,
+        "bytes": 21804
+      }
+    },
+    "cameras": {
+      "desktop": {
+        "position": [
+          24.82817665807104,
+          22.128950147439454,
+          31.035220822588798
+        ],
+        "target": [
+          0,
+          1.024999988079071,
+          0
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ],
+        "projection": "orthographic",
+        "frustum": {
+          "left": -3.489750678581818,
+          "right": 3.489750678581818,
+          "top": 2.326500452387879,
+          "bottom": -2.326500452387879,
+          "near": 0.1,
+          "far": 200
+        },
+        "zoom": 1
+      },
+      "mobile": {
+        "position": [
+          24.82817665807104,
+          22.128950147439454,
+          31.035220822588798
+        ],
+        "target": [
+          0,
+          1.024999988079071,
+          0
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ],
+        "projection": "orthographic",
+        "frustum": {
+          "left": -2.7795025272124665,
+          "right": 2.7795025272124665,
+          "top": 3.474378159015583,
+          "bottom": -3.474378159015583,
+          "near": 0.1,
+          "far": 200
+        },
+        "zoom": 1
+      }
+    },
+    "camera": {
+      "position": [
+        24.82817665807104,
+        22.128950147439454,
+        31.035220822588798
+      ],
+      "target": [
+        0,
+        1.024999988079071,
+        0
+      ],
+      "up": [
+        0,
+        1,
+        0
+      ],
+      "projection": "orthographic",
+      "frustum": {
+        "left": -3.489750678581818,
+        "right": 3.489750678581818,
+        "top": 2.326500452387879,
+        "bottom": -2.326500452387879,
+        "near": 0.1,
+        "far": 200
+      },
+      "zoom": 1
+    },
+    "model": {
+      "src": "/assets/scenes/hub.glb",
+      "bytes": 34004,
+      "bounds": {
+        "min": [
+          -1.75,
+          0,
+          -1.75
+        ],
+        "max": [
+          1.75,
+          2.049999976158142,
+          1.75
+        ]
+      },
+      "anchors": {
+        "center": [
+          0,
+          1.024999988079071,
+          0
+        ],
+        "base": [
+          0,
+          0,
+          0
+        ],
+        "label": [
+          0,
+          2.449999976158142,
+          0
+        ]
+      }
+    }
+  },
+  "detail-cnesdata": {
+    "posters": {
+      "desktop": {
+        "src": "/assets/posters/detail-cnesdata-desktop.webp",
+        "width": 1200,
+        "height": 800,
+        "bytes": 40252
+      },
+      "mobile": {
+        "src": "/assets/posters/detail-cnesdata-mobile.webp",
+        "width": 720,
+        "height": 900,
+        "bytes": 21088
+      }
+    },
+    "cameras": {
+      "desktop": {
+        "position": [
+          24.82817665807104,
+          22.522950159360384,
+          31.035220822588798
+        ],
+        "target": [
+          0,
+          1.419,
+          0
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ],
+        "projection": "orthographic",
+        "frustum": {
+          "left": -7.941435792035618,
+          "right": 7.941435792035618,
+          "top": 5.294290528023745,
+          "bottom": -5.294290528023745,
+          "near": 0.1,
+          "far": 200
+        },
+        "zoom": 1
+      },
+      "mobile": {
+        "position": [
+          24.82817665807104,
+          22.522950159360384,
+          31.035220822588798
+        ],
+        "target": [
+          0,
+          1.419,
+          0
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ],
+        "projection": "orthographic",
+        "frustum": {
+          "left": -7.941435792035617,
+          "right": 7.941435792035617,
+          "top": 9.926794740044521,
+          "bottom": -9.926794740044521,
+          "near": 0.1,
+          "far": 200
+        },
+        "zoom": 1
+      }
+    },
+    "camera": {
+      "position": [
+        24.82817665807104,
+        22.522950159360384,
+        31.035220822588798
+      ],
+      "target": [
+        0,
+        1.419,
+        0
+      ],
+      "up": [
+        0,
+        1,
+        0
+      ],
+      "projection": "orthographic",
+      "frustum": {
+        "left": -7.941435792035618,
+        "right": 7.941435792035618,
+        "top": 5.294290528023745,
+        "bottom": -5.294290528023745,
+        "near": 0.1,
+        "far": 200
+      },
+      "zoom": 1
+    },
+    "model": {
+      "src": "/assets/scenes/detail-cnesdata.glb",
+      "bytes": 58936,
+      "bounds": {
+        "min": [
+          -5,
+          0,
+          -5
+        ],
+        "max": [
+          5,
+          2.838,
+          5
+        ]
+      },
+      "anchors": {
+        "center": [
+          0,
+          1.419,
+          0
+        ],
+        "base": [
+          0,
+          0,
+          0
+        ],
+        "label": [
+          0,
+          3.238,
+          0
+        ],
+        "canonical-contracts": [
+          -3.3000000000000003,
+          1.3189999999999997,
+          1.805
+        ],
+        "edge-agent": [
+          -1.1,
+          1.3940000000000001,
+          1.805
+        ],
+        "central-api": [
+          1.1,
+          1.469,
+          1.805
+        ],
+        "tenant-isolation": [
+          3.3000000000000003,
+          1.4,
+          1.8
+        ],
+        "web-dashboard": [
+          -3.3000000000000003,
+          1.6190000000000002,
+          -1.4949999999999999
+        ],
+        "parquet-to-gold": [
+          -1.1,
+          1.4149999999999998,
+          -1.5
+        ],
+        "kubernetes": [
+          1.1,
+          1.4149999999999998,
+          -1.5
+        ]
+      }
+    }
+  },
+  "detail-infrastructure": {
+    "posters": {
+      "desktop": {
+        "src": "/assets/posters/detail-infrastructure-desktop.webp",
+        "width": 1200,
+        "height": 800,
+        "bytes": 26528
+      },
+      "mobile": {
+        "src": "/assets/posters/detail-infrastructure-mobile.webp",
+        "width": 720,
+        "height": 900,
+        "bytes": 17864
+      }
+    },
+    "cameras": {
+      "desktop": {
+        "position": [
+          24.82817665807104,
+          23.103950159360384,
+          31.035220822588798
+        ],
+        "target": [
+          0,
+          2,
+          0
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ],
+        "projection": "orthographic",
+        "frustum": {
+          "left": -7.463301515562351,
+          "right": 7.463301515562351,
+          "top": 4.975534343708234,
+          "bottom": -4.975534343708234,
+          "near": 0.1,
+          "far": 200
+        },
+        "zoom": 1
+      },
+      "mobile": {
+        "position": [
+          24.82817665807104,
+          23.103950159360384,
+          31.035220822588798
+        ],
+        "target": [
+          0,
+          2,
+          0
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ],
+        "projection": "orthographic",
+        "frustum": {
+          "left": -6.353148633628494,
+          "right": 6.353148633628494,
+          "top": 7.941435792035618,
+          "bottom": -7.941435792035618,
+          "near": 0.1,
+          "far": 200
+        },
+        "zoom": 1
+      }
+    },
+    "camera": {
+      "position": [
+        24.82817665807104,
+        23.103950159360384,
+        31.035220822588798
+      ],
+      "target": [
+        0,
+        2,
+        0
+      ],
+      "up": [
+        0,
+        1,
+        0
+      ],
+      "projection": "orthographic",
+      "frustum": {
+        "left": -7.463301515562351,
+        "right": 7.463301515562351,
+        "top": 4.975534343708234,
+        "bottom": -4.975534343708234,
+        "near": 0.1,
+        "far": 200
+      },
+      "zoom": 1
+    },
+    "model": {
+      "src": "/assets/scenes/detail-infrastructure.glb",
+      "bytes": 22112,
+      "bounds": {
+        "min": [
+          -4,
+          0,
+          -4
+        ],
+        "max": [
+          4,
+          4,
+          4
+        ]
+      },
+      "anchors": {
+        "center": [
+          0,
+          2,
+          0
+        ],
+        "base": [
+          0,
+          0,
+          0
+        ],
+        "label": [
+          0,
+          4.4,
+          0
+        ],
+        "node-01": [
+          -2.1,
+          1.9050000000000002,
+          -0.794
+        ],
+        "node-02": [
+          0,
+          1.9050000000000002,
+          -0.794
+        ],
+        "node-03": [
+          2.1,
+          1.9050000000000002,
+          -0.794
+        ],
+        "shared-layer": [
+          0,
+          0.7,
+          2.01125
+        ],
+        "workload": [
+          0,
+          3.75,
+          -0.8
+        ]
+      }
+    }
+  },
+  "overview": {
+    "posters": {
+      "desktop": {
+        "src": "/assets/posters/overview-desktop.webp",
+        "width": 1200,
+        "height": 800,
+        "bytes": 45988
+      },
+      "mobile": {
+        "src": "/assets/posters/overview-mobile.webp",
+        "width": 720,
+        "height": 900,
+        "bytes": 47428
+      }
+    },
+    "cameras": {
+      "desktop": {
+        "position": [
+          24.82817665807104,
+          22.582700159360385,
+          31.535220822588798
+        ],
+        "target": [
+          0,
+          1.47875,
+          0.5
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ],
+        "projection": "orthographic",
+        "frustum": {
+          "left": -15.212261450521561,
+          "right": 15.212261450521561,
+          "top": 10.14150763368104,
+          "bottom": -10.14150763368104,
+          "near": 0.1,
+          "far": 200
+        },
+        "zoom": 1
+      },
+      "mobile": {
+        "position": [
+          23.43766519217813,
+          29.869564971004845,
+          23.43766519217813
+        ],
+        "target": [
+          -1.25,
+          1.47875,
+          -1.25
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ],
+        "projection": "orthographic",
+        "frustum": {
+          "left": -9.546604796268271,
+          "right": 9.546604796268271,
+          "top": 11.933255995335339,
+          "bottom": -11.933255995335339,
+          "near": 0.1,
+          "far": 200
+        },
+        "zoom": 1
+      }
+    },
+    "camera": {
+      "position": [
+        24.82817665807104,
+        22.582700159360385,
+        31.535220822588798
+      ],
+      "target": [
+        0,
+        1.47875,
+        0.5
+      ],
+      "up": [
+        0,
+        1,
+        0
+      ],
+      "projection": "orthographic",
+      "frustum": {
+        "left": -15.212261450521561,
+        "right": 15.212261450521561,
+        "top": 10.14150763368104,
+        "bottom": -10.14150763368104,
+        "near": 0.1,
+        "far": 200
+      },
+      "zoom": 1
+    },
+    "layouts": {
+      "desktop": {
+        "districtPositions": {
+          "cnesdata": [
+            -5,
+            0,
+            -6
+          ],
+          "public-health": [
+            5,
+            0,
+            -6
+          ],
+          "infrastructure": [
+            -7,
+            0,
+            4
+          ],
+          "observability": [
+            0,
+            0,
+            7
+          ],
+          "limnopulse": [
+            7,
+            0,
+            4
+          ]
+        },
+        "hubPosition": [
+          0,
+          0,
+          0
+        ],
+        "districtScale": 0.7
+      },
+      "mobile": {
+        "districtPositions": {
+          "cnesdata": [
+            -9,
+            0,
+            -4
+          ],
+          "public-health": [
+            -4,
+            0,
+            -9
+          ],
+          "infrastructure": [
+            -2.5,
+            0,
+            2.5
+          ],
+          "limnopulse": [
+            2.5,
+            0,
+            -2.5
+          ],
+          "observability": [
+            6.5,
+            0,
+            6.5
+          ]
+        },
+        "hubPosition": [
+          -3.25,
+          0,
+          -3.25
+        ],
+        "districtScale": 0.7
+      }
+    },
+    "districtPositions": {
+      "cnesdata": [
+        -5,
+        0,
+        -6
+      ],
+      "public-health": [
+        5,
+        0,
+        -6
+      ],
+      "infrastructure": [
+        -7,
+        0,
+        4
+      ],
+      "observability": [
+        0,
+        0,
+        7
+      ],
+      "limnopulse": [
+        7,
+        0,
+        4
+      ]
+    },
+    "districtScale": 0.7
+  }
+}

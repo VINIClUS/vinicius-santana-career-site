@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><title>Asset rendering harness</title
+  ><style>
+    body {
+      margin: 0;
+      background: #0b1520;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "/node_modules/three/build/three.module.js",
+        "three/addons/": "/node_modules/three/examples/jsm/"
+      }
+    }
+  </script>
+  <script type="module">
+    import * as T from "three";
+    import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+    import { GLTFExporter } from "three/addons/exporters/GLTFExporter.js";
+    import {
+      makeScene,
+      overviewPositions,
+      overviewLayouts,
+    } from "./scenes.mjs";
+    window.assetReady = true;
+    window.generateAsset = async (id, width, height) => {
+      const mobileOverview = id === "overview" && height > width;
+      const source = makeScene(id, mobileOverview ? "mobile" : "desktop");
+      source.updateMatrixWorld(true);
+      const glb = await new GLTFExporter().parseAsync(source, {
+        binary: true,
+        trs: true,
+      });
+      const object = (await new GLTFLoader().parseAsync(glb, "")).scene;
+      object.updateMatrixWorld(true);
+      object.traverse((o) => {
+        if (o.isMesh) {
+          o.castShadow = true;
+          o.receiveShadow = true;
+        }
+        if (o.matrixWorld.elements.some((v) => !Number.isFinite(v)))
+          throw new Error("Non-finite loaded transform: " + o.name);
+      });
+      const bounds = new T.Box3().setFromObject(object),
+        size = bounds.getSize(new T.Vector3()),
+        center = bounds.getCenter(new T.Vector3());
+      const scene = new T.Scene();
+      scene.background = new T.Color("#050a11");
+      scene.add(object);
+      scene.add(new T.HemisphereLight("#d9efff", "#17232d", 1.5));
+      const light = new T.DirectionalLight("#d0e5ff", 2.5);
+      light.position.set(-7, 14, 8);
+      light.castShadow = true;
+      light.shadow.mapSize.set(2048, 2048);
+      Object.assign(light.shadow.camera, {
+        left: -20,
+        right: 20,
+        top: 20,
+        bottom: -20,
+        far: 60,
+      });
+      light.shadow.normalBias = 0.025;
+      light.shadow.radius = 5;
+      light.shadow.blurSamples = 12;
+      scene.add(light);
+      const fill = new T.DirectionalLight("#68b6df", 1.5);
+      fill.position.set(8, 5, -6);
+      scene.add(fill);
+      const floor = new T.Mesh(
+        new T.PlaneGeometry(160, 160),
+        new T.MeshStandardMaterial({ color: "#050a11", roughness: 1 }),
+      );
+      floor.rotation.x = -Math.PI / 2;
+      floor.position.y = -0.025;
+      floor.receiveShadow = true;
+      scene.add(floor);
+      const camera = new T.OrthographicCamera(-1, 1, 1, -1, 0.1, 200);
+      const dir = mobileOverview
+        ? new T.Vector3(1, 1.15, 1).normalize()
+        : new T.Vector3(1, 0.85, 1.25).normalize();
+      camera.position.copy(center).addScaledVector(dir, 45);
+      camera.lookAt(center);
+      camera.updateMatrixWorld();
+      const inverse = camera.matrixWorldInverse;
+      let maxX = 0,
+        maxY = 0;
+      if (mobileOverview) {
+        object.traverse((o) => {
+          if (!o.geometry) return;
+          o.geometry.computeBoundingBox();
+          const localBounds = o.geometry.boundingBox;
+          for (const x of [localBounds.min.x, localBounds.max.x])
+            for (const y of [localBounds.min.y, localBounds.max.y])
+              for (const z of [localBounds.min.z, localBounds.max.z]) {
+                const p = new T.Vector3(x, y, z)
+                  .applyMatrix4(o.matrixWorld)
+                  .applyMatrix4(inverse);
+                maxX = Math.max(maxX, Math.abs(p.x));
+                maxY = Math.max(maxY, Math.abs(p.y));
+              }
+        });
+      } else
+        for (const x of [bounds.min.x, bounds.max.x])
+          for (const y of [bounds.min.y, bounds.max.y])
+            for (const z of [bounds.min.z, bounds.max.z]) {
+              const p = new T.Vector3(x, y, z).applyMatrix4(inverse);
+              maxX = Math.max(maxX, Math.abs(p.x));
+              maxY = Math.max(maxY, Math.abs(p.y));
+            }
+      const extent = Math.max(maxY, maxX / (width / height)) * 1.13;
+      camera.left = (-extent * width) / height;
+      camera.right = (extent * width) / height;
+      camera.top = extent;
+      camera.bottom = -extent;
+      camera.updateProjectionMatrix();
+      const renderer = new T.WebGLRenderer({
+        antialias: true,
+        preserveDrawingBuffer: true,
+      });
+      renderer.setSize(width, height);
+      renderer.setPixelRatio(1);
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = T.VSMShadowMap;
+      renderer.toneMapping = T.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 0.85;
+      document.body.replaceChildren(renderer.domElement);
+      renderer.render(scene, camera);
+      const poster = renderer.domElement.toDataURL("image/webp", 0.9);
+      const bytes = new Uint8Array(glb);
+      let binary = "";
+      for (let i = 0; i < bytes.length; i += 8192)
+        binary += String.fromCharCode(...bytes.subarray(i, i + 8192));
+      const anchors = {
+        center: center.toArray(),
+        base: [0, 0, 0],
+        label: [center.x, bounds.max.y + 0.4, center.z],
+      };
+      object.traverse((o) => {
+        if (o.userData.componentId || o.userData.simulationId)
+          anchors[o.userData.simulationId || o.userData.componentId] =
+            new T.Box3().setFromObject(o).getCenter(new T.Vector3()).toArray();
+      });
+      const result = {
+        poster,
+        glb: btoa(binary),
+        bounds: { min: bounds.min.toArray(), max: bounds.max.toArray() },
+        anchors,
+        camera: {
+          position: camera.position.toArray(),
+          target: center.toArray(),
+          up: [0, 1, 0],
+          projection: "orthographic",
+          frustum: {
+            left: camera.left,
+            right: camera.right,
+            top: camera.top,
+            bottom: camera.bottom,
+            near: camera.near,
+            far: camera.far,
+          },
+          zoom: camera.zoom,
+        },
+        ...(id === "overview"
+          ? {
+              districtPositions: overviewPositions,
+              districtScale: 0.7,
+              layouts: overviewLayouts,
+            }
+          : {}),
+      };
+      renderer.dispose();
+      return result;
+    };
+  </script>
+</html>
