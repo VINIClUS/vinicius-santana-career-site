@@ -199,3 +199,11 @@ selected work, `src/data/content.js` for shared details, and the relevant page f
 ## Notes
 
 There is no backend, database, authentication or contact form. Contact actions use direct links: email, LinkedIn, GitHub and resume download.
+
+## 2D Systems Observatory
+
+Open `/explore/` or `/explore/{cnesdata,limnopulse,infrastructure}/`. The explorer uses static HTML, fragment navigation and a small TypeScript controller; no canvas or 3D assets are needed. Primary navigation is intentionally unchanged until SO-09.
+
+`npm test` checks the simulation and explorer TypeScript modules and runs the focused Node tests. After `npm run build`, run `npm run smoke` and `npm run test:explorer`. Install the browser once with `npx playwright install --with-deps chromium`. Playwright 1.63.0 runs four compact Chromium paths with one worker; screenshots and traces are retained only on failure. To run the same smoke against a deployment, set `EXPLORER_BASE_URL` to its origin.
+
+See [the explorer contract](docs/explorer.md) for the state and stable component IDs used by later scene work.

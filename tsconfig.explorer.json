@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.simulation.json",
+  "compilerOptions": { "lib": ["ES2022", "DOM", "DOM.Iterable"] },
+  "include": ["src/features/explorer/**/*.ts", "src/content/scenarios/cnesdata.ts"]
+}

@@ -17,12 +17,12 @@ async function readBuiltPage(relativePath) {
   return readFile(fromRoot(relativePath), 'utf8');
 }
 
-function assertEditorialShell(html, pageName) {
+function assertEditorialShell(html, pageName, explorer = false) {
   assert.match(html, /<header\b/i, `${pageName} must include the global header`);
   assert.match(html, /<nav\b[^>]*aria-label="Primary navigation"/i, `${pageName} must include primary navigation`);
   assert.match(html, /<main\b[^>]*id="main"/i, `${pageName} must include the main landmark`);
   assert.match(html, /<footer\b/i, `${pageName} must include the global footer`);
-  assert.doesNotMatch(html, /href="\/explore\/?"/i, `${pageName} must not link to Explore before M2`);
+  if (!explorer) assert.doesNotMatch(html, /href="\/explore\/?"/i, `${pageName} must not link to Explore before M2`);
 }
 
 function escapeRegExp(value) {
@@ -239,9 +239,9 @@ assert.match(robots, /^Allow: \/$/m, 'robots.txt must allow the site');
 assert.match(robots, new RegExp(`^Sitemap: ${escapeRegExp(new URL('/sitemap-index.xml', origin).href)}$`, 'm'), 'robots.txt must reference the generated sitemap index');
 assert.match(sitemapIndex, new RegExp(`<loc>${escapeRegExp(new URL('/sitemap-0.xml', origin).href)}</loc>`), 'sitemap index must reference the generated page sitemap');
 
-const indexableRoutes = ['/', '/about/', '/privacy/', '/resume/', '/work/', '/work/cnesdata/', '/work/infrastructure/', '/work/limnopulse/'];
+const indexableRoutes = ['/explore/', '/explore/cnesdata/', '/explore/limnopulse/', '/explore/infrastructure/', '/', '/about/', '/privacy/', '/resume/', '/work/', '/work/cnesdata/', '/work/infrastructure/', '/work/limnopulse/'];
 const sitemapLocations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]).sort();
-assert.deepEqual(sitemapLocations, indexableRoutes.map((route) => new URL(route, origin).href).sort(), 'sitemap must contain exactly the eight M1 indexable routes');
+assert.deepEqual(sitemapLocations, indexableRoutes.map((route) => new URL(route, origin).href).sort(), 'sitemap must contain exactly the twelve M1 and explorer indexable routes');
 assert.doesNotMatch(sitemap, /\/404(?:\.html|\/)?<\/loc>/i, 'sitemap must exclude the 404 page');
 
 await Promise.all(
@@ -265,3 +265,33 @@ await Promise.all(
 );
 
 console.log('Static build smoke checks passed.');
+
+const overview = await readBuiltPage('dist/explore/index.html');
+assertEditorialShell(overview, 'explorer overview', true);
+assertMetadata(overview, '/explore/', origin);
+assert.match(overview, /Systems Observatory/);
+for (const { slug, title } of caseStudies) {
+  assert.match(overview, new RegExp(`href="/explore/${slug}/"`));
+  const explorer = await readBuiltPage(`dist/explore/${slug}/index.html`);
+  assertEditorialShell(explorer, slug + ' explorer', true);
+  assertMetadata(explorer, `/explore/${slug}/`, origin);
+  assert.match(explorer, new RegExp(`<h1[^>]*>${title}</h1>`));
+  assert.match(explorer, new RegExp(`href="/work/${slug}/"`));
+  assert.match(explorer, /Component details/);
+  assert.match(explorer, /Relationships/);
+  assert.match(explorer, /data-component-link/);
+  assert.match(explorer, /data-component-detail/);
+  assert.doesNotMatch(explorer, /<canvas|<astro-island|\.(glb|gltf|ktx2)["']/i);
+  if (slug === 'cnesdata') {
+    for (const id of ['raw-first-write', 'raw-identical-replay', 'raw-content-conflict']) {
+      assert.match(explorer, new RegExp(`id="transcript-${id}"`));
+    }
+    assert.match(explorer, /Synthetic demonstration/);
+    assert.match(explorer, /Illustrative/);
+    assert.match(explorer, /synthetic-content-A/);
+    assert.match(explorer, /data-step[^>]*disabled/);
+  } else {
+    assert.doesNotMatch(explorer, /data-step|data-scenario|data-reset/);
+  }
+}
+console.log('Explorer static routes and transcripts passed.');

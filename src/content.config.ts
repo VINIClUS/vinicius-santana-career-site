@@ -7,6 +7,7 @@ const capabilityStatus = z.enum(['implemented', 'documented', 'planned', 'histor
 const nonEmptyText = z.string().trim().min(1);
 
 const architectureItem = z.object({
+  id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   title: nonEmptyText,
   status: capabilityStatus,
   description: nonEmptyText

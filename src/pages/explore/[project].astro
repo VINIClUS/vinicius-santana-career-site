@@ -1,0 +1,71 @@
+---
+import { getCollection } from 'astro:content';
+import EditorialLayout from '../../layouts/EditorialLayout.astro';
+import Walkthrough from '../../features/explorer/Walkthrough.astro';
+import { projectDefinitions, type ProjectId } from '../../features/explorer/projects.ts';
+import '../../features/explorer/explorer.css';
+export async function getStaticPaths() {
+  const projects = (await getCollection('caseStudies')).sort((a, b) => a.data.order - b.data.order);
+  return projects.map(({ data: project }) => ({ params: { project: project.id }, props: { project, projects } }));
+}
+const { project, projects } = Astro.props;
+const definition = projectDefinitions[project.id as ProjectId];
+const titleFor = (id: string) => project.architecture.find(component => component.id === id)!.title;
+const statusLabel = (status: string) => status[0].toUpperCase() + status.slice(1);
+---
+<EditorialLayout title={`${project.title} explorer — Vinicius Santana`} description={project.summary} canonicalPath={`/explore/${project.id}/`}>
+  <div class="shell explorer" data-explorer data-project={project.id}>
+    <nav class="explorer-nav" aria-label="Explorer projects">
+      <a href="/explore/">All systems</a>
+      {projects.map(({ data: entry }) => <a href={`/explore/${entry.id}/`} aria-current={entry.id === project.id ? 'page' : undefined}>{entry.title}</a>)}
+    </nav>
+    <header class="explorer-heading">
+      <p class="eyebrow">Systems Observatory / {definition.area}</p>
+      <h1>{project.title}</h1>
+      <p>{project.summary}</p>
+      <a class="text-link" href={`/work/${project.id}/`}>Read the {project.title} case study</a>
+    </header>
+    <p class="explorer-note">Illustrative architecture map. Component statuses describe the public work; connections summarize relationships, not a live deployment.</p>
+    {project.id === 'infrastructure' && <p class="explorer-note">A sanitized, illustrative reference topology, not a production inventory or a map of any real environment.</p>}
+    <div class="explorer-columns">
+      <section class="explorer-map" aria-labelledby="architecture-title">
+        <h2 id="architecture-title">Architecture</h2>
+        <p>Select a component to read its details and relationships.</p>
+        <ol class="component-map">
+          {project.architecture.map((component, index) => <li>
+            <a href={`#component-${component.id}`} data-component-link={component.id}>
+              <span class="component-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+              <span><strong>{component.title}</strong><span class="component-status">{statusLabel(component.status)}</span></span>
+              <span class="selection-marker" aria-hidden="true">Selected</span>
+            </a>
+          </li>)}
+        </ol>
+        <h3>Relationships</h3>
+        <ul class="relationship-list">
+          {definition.relations.map(relation => <li><a href={`#component-${relation.from}`}>{titleFor(relation.from)}</a><span aria-hidden="true"> → </span><span class="visually-hidden"> to </span><a href={`#component-${relation.to}`}>{titleFor(relation.to)}</a><p>{relation.label}</p></li>)}
+        </ul>
+      </section>
+      <section class="component-panel" aria-labelledby="details-title">
+        <h2 id="details-title">Component details</h2>
+        {project.architecture.map(component => <article id={`component-${component.id}`} data-component-detail={component.id} tabindex="-1">
+          <p class="eyebrow">{statusLabel(component.status)}</p>
+          <h3>{component.title}</h3>
+          <p>{component.description}</p>
+          <ul class="component-relations">
+            {definition.relations.filter(relation => relation.from === component.id || relation.to === component.id).map(relation => <li>{relation.label}: <a href={`#component-${relation.from === component.id ? relation.to : relation.from}`}>{titleFor(relation.from === component.id ? relation.to : relation.from)}</a></li>)}
+          </ul>
+          <a class="text-link" href="#architecture-title">Back to architecture</a>
+        </article>)}
+      </section>
+    </div>
+    {project.id === 'cnesdata' && <Walkthrough />}
+    <section class="explorer-limits" aria-labelledby="limits-title">
+      <h2 id="limits-title">Scope and limitations</h2>
+      <ul>{project.limitations.map(limit => <li>{limit}</li>)}</ul>
+    </section>
+  </div>
+</EditorialLayout>
+<script>
+  import { initializeExplorer } from '../../features/explorer/client.ts';
+  initializeExplorer();
+</script>

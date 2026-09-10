@@ -1,0 +1,26 @@
+---
+import { getCollection } from 'astro:content';
+import EditorialLayout from '../../layouts/EditorialLayout.astro';
+import { projectDefinitions, type ProjectId } from '../../features/explorer/projects.ts';
+import '../../features/explorer/explorer.css';
+const projects = (await getCollection('caseStudies')).sort((a, b) => a.data.order - b.data.order);
+---
+<EditorialLayout title="Systems Observatory — Vinicius Santana" description="Explore the components, relationships and limits of three engineering systems in 2D." canonicalPath="/explore/">
+  <div class="shell explorer">
+    <header class="explorer-heading">
+      <p class="eyebrow">Systems Observatory</p>
+      <h1>Explore the systems.</h1>
+      <p>Interactive engineering portfolio. Follow components and their relationships, then walk through a synthetic raw-object contract.</p>
+      <p class="explorer-note">Illustrative views, not live systems or production dashboards.</p>
+    </header>
+    <div class="explorer-areas">
+      {projects.map(({ data: project }) => <article class={`explorer-area area-${project.id}`}>
+        <p class="eyebrow">{projectDefinitions[project.id as ProjectId].area}</p>
+        <h2>{project.title}</h2>
+        <p>{project.summary}</p>
+        <p>{project.architecture.length} components · {project.id === 'cnesdata' ? 'Synthetic walkthrough' : 'Component exploration'}</p>
+        <a class="button button-primary" href={`/explore/${project.id}/`}>Explore {project.title}</a>
+      </article>)}
+    </div>
+  </div>
+</EditorialLayout>

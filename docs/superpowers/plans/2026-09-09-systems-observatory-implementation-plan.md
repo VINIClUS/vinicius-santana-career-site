@@ -189,15 +189,17 @@ function transition(state: SimulationState, command: Command): SimulationState;
 - explorer-local styles/components
 
 **Steps:**
-- [ ] Add overview and three project explorer routes.
-- [ ] Build HTML/SVG component diagrams and panel data.
-- [ ] Wire CnesData controls to the #9 engine.
-- [ ] Render static transcripts/fallbacks when interaction is unavailable.
-- [ ] Keep Limnopulse and Infrastructure as component explorers only.
-- [ ] Add focused browser smoke for project selection, one scenario path, reset, and no-WebGL/3D dependency.
-- [ ] Open PR referencing #10.
+- [x] Add overview and three project explorer routes.
+- [x] Build HTML/SVG component diagrams and panel data.
+- [x] Wire CnesData controls to the #9 engine.
+- [x] Render static transcripts/fallbacks when interaction is unavailable.
+- [x] Keep Limnopulse and Infrastructure as component explorers only.
+- [x] Add focused browser smoke for project selection, one scenario path, reset, and no-WebGL/3D dependency.
+- [x] Prepare the issue-scoped PR referencing #10; require Codex approval on the final commit before squash merge.
 
 ---
+
+Verification and delivery tracking: see the SO-06 PR linked from issue #10 for checks, final review, merge and production smoke evidence.
 
 ### Task 7 / Issue #11: Posters and 3D assets
 

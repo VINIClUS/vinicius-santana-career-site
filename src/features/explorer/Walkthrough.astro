@@ -1,0 +1,35 @@
+---
+import { demonstration, scenarios } from '../../content/scenarios/cnesdata.ts';
+import { getTranscript } from './simulation/cnesdata.ts';
+const transcripts = scenarios.map(scenario => getTranscript(scenario.id)!);
+---
+<section class="walkthrough" aria-labelledby="walkthrough-title">
+  <p class="eyebrow">{demonstration.label} · Illustrative</p>
+  <h2 id="walkthrough-title">Raw-object contract walkthrough</h2>
+  <p>{demonstration.scope}</p>
+  <p>No backend calls, mTLS authentication, DBC conversion, Parquet generation or real health data. Steps do not measure latency. These results are separate from the architecture statuses above.</p>
+  <p data-interaction-help>Interactive controls require JavaScript. All three complete transcripts are available below.</p>
+  <div class="walkthrough-controls">
+    <label for="scenario">Scenario</label>
+    <select id="scenario" data-scenario disabled>{scenarios.map(scenario => <option value={scenario.id}>{scenario.title}</option>)}</select>
+    <button class="button button-primary" data-step disabled>Advance one attempt</button>
+    <button class="button button-secondary" data-reset disabled>Reset scenario</button>
+  </div>
+  <div class="walkthrough-state" aria-live="polite" aria-atomic="true">
+    <p data-progress>0 of 1 attempts · ready</p>
+    <p data-result>No attempts yet.</p>
+    <h3>Stored objects</h3>
+    <ul data-objects><li>No objects stored.</li></ul>
+    <h3>Attempts</h3>
+    <ol data-attempts><li>No attempts yet.</li></ol>
+  </div>
+  <section class="transcripts" aria-labelledby="transcripts-title">
+    <h3 id="transcripts-title">Static transcripts</h3>
+    <p>Every step is rendered with the page and stays available without JavaScript.</p>
+    {transcripts.map(transcript => <article id={`transcript-${transcript.scenarioId}`}>
+      <h4>{transcript.title}</h4>
+      <p>{transcript.label} · Illustrative. Initial state: no stored objects.</p>
+      <ol>{transcript.steps.map(step => <li><p>{step.description}</p><p>Result: {step.result.outcome}. Stored objects: {step.state.objects.length}.</p><ul>{step.state.objects.map(object => <li><code>{object.key}</code> → <code>{object.content}</code></li>)}</ul></li>)}</ol>
+    </article>)}
+  </section>
+</section>
