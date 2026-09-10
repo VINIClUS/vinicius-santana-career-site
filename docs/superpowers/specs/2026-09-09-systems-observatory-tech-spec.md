@@ -392,12 +392,12 @@ Recommended dependency flow:
 
 ```text
 #21 UI alignment ─────────────────────────────┐
-#11 visual assets ────────────────> #12 3D ───┼─> #13 release
-#22 state + HTML/2D ──(assets from #11 only for visual integration)─┘
-completed #10 supplies the 2D/controller baseline
+#11 visual assets ──> #22 visual integration ─┐
+completed #10 ──────> #22 registry + state/HTML/2D ──> #12 3D ──> #13 release
+                         (registry/state work can start before #11)
 ```
 
-#21, #11 and #22 state/HTML work can proceed in parallel. Only #22's final visual integration depends on #11 assets. #12 consumes #11 and the existing explorer. #13 waits for all four lanes and owns the panel-06 About/Resume alignment.
+#21, #11 and #22 registry/state/HTML work can proceed in parallel. Only #22's final visual integration depends on #11 assets. #12 depends on the merged #22 district registry and consumes the #11 asset kit through that integration. #13 waits for all four lanes and owns the panel-06 About/Resume alignment.
 
 ## 18. Definition of done
 

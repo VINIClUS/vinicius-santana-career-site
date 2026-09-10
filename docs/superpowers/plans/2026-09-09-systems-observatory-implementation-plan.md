@@ -43,12 +43,11 @@ These delivered useful functionality but visually drifted from the approved conc
 
 ```text
 completed #10 baseline ─┬─> #21 UI alignment ────────────────────┐
-                        ├─> #22 state + HTML/2D ──────────────────┤
-                        └─> #11 visual assets ──> #12 3D ────────┼─> #13 release
-                                  └─> #22 visual integration only┘
+                        └─> #22 registry + state/HTML/2D ─┐       │
+#11 visual assets ─────────> #22 visual integration ──────┴─> #12 3D ─> #13 release
 ```
 
-Run **#21, #11 and #22 state/HTML work in parallel**. #22 does not depend on #11 for its registry, deterministic state or HTML/2D panel; only its final visual integration consumes #11 assets. #12 should integrate the stable asset kit. #13 is the only final shared-style/release lane.
+Run **#21, #11 and #22 registry/state/HTML work in parallel**. #22 does not depend on #11 for its registry, deterministic state or HTML/2D panel; only its final visual integration consumes #11 assets. #12 depends on the merged #22 registry and its integration with the stable #11 asset kit. #13 is the only final shared-style/release lane.
 
 ---
 
@@ -194,6 +193,8 @@ No real timing or uptime values.
 ## Task D / Issue #12 — Reference-first 3D Observatory
 
 **Branch:** `feat/so-08-reference-3d-observatory`
+
+**Depends on:** #11 asset kit and #22 district registry/integration.
 
 **Primary reference panel:** 02, with detail support for 04/05.
 
