@@ -122,7 +122,7 @@ Dark navy/near-black, slate surfaces, thin grid/borders, compact white labels, t
 - [x] Remove obvious unnecessary weight manually.
 - [x] Add cheap manifest/file existence validation.
 - [x] Build and manually inspect one desktop + mobile fallback.
-- [ ] Open PR referencing #11.
+- [x] Open PR referencing #11 — #24.
 
 **Do not:** build an elaborate Blender/asset-processing pipeline before there is a real need.
 
