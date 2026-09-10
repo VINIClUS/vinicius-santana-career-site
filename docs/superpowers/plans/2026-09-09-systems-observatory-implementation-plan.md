@@ -80,7 +80,7 @@ Convert the already-working editorial UI into the reference's dark technical-das
 - [ ] Reuse current truthful content and SO-05 controls; do not invent scale metrics.
 - [ ] Apply responsive stacked layouts similar to panel 07.
 - [ ] Preserve `#about`, `#experience`, `#projects`, `#stack`, `#contact`, `#case-cnesdata`, `#case-aquafarm`, `#case-esus-pec-bootstrap`, `#case-infra-ansible` and `#case-packer-proxmox-templates` as meaningful destinations.
-- [ ] Update `tests/static-build.smoke.mjs` to remove the obsolete pre-M2 rejection of `href="/explore/"` and require the Home `Explore systems` link to resolve to `/explore/`.
+- [ ] Update `tests/static-build.smoke.mjs` for the new UI contract: replace the exact old hero-copy assertion with the new name/title/systems-oriented positioning, remove the obsolete pre-M2 rejection of `href="/explore/"`, require the Home `Explore systems` link to `/explore/`, and cover the fourth Health Systems card plus its `View experience` destination. Retain the metadata, resume, safety and compatibility-anchor checks.
 - [ ] Run the mandatory repository commands plus one desktop and one mobile Playwright smoke for Home → Work → CnesData, LimnoPulse and Infrastructure.
 - [ ] Open PR referencing #21 and the visual-alignment planning PR.
 
