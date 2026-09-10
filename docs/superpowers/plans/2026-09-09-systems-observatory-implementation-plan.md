@@ -72,7 +72,7 @@ Convert the already-working editorial UI into the reference's dark technical-das
 
 - [ ] Replace the portrait-dominant Home hero with a two-column dark hero: identity/copy left, large globe/data-network visual slot right.
 - [ ] Add the four compact domain pillars: Data Systems, Distributed Infrastructure, Backend Engineering, Public Health.
-- [ ] Make `View selected work` and `Explore systems` the two main hero actions; keep Resume in the compact header.
+- [ ] Make `View selected work` and `Explore systems` the two main hero actions, link `Explore systems` to `/explore/`, and keep Resume in the compact header.
 - [ ] Keep the portrait on About rather than deleting a useful asset.
 - [ ] Rework `/work/` into an image-led dark card grid with CnesData, LimnoPulse, Infrastructure and Health Systems/public-health work; label the fourth action `View experience` and link it to `/#experience`.
 - [ ] Rework CnesData detail into the reference pattern: header/chips, anchor-tab row and large visual architecture/simulation panel near the top.
@@ -80,6 +80,7 @@ Convert the already-working editorial UI into the reference's dark technical-das
 - [ ] Reuse current truthful content and SO-05 controls; do not invent scale metrics.
 - [ ] Apply responsive stacked layouts similar to panel 07.
 - [ ] Preserve `#about`, `#experience`, `#projects`, `#stack`, `#contact`, `#case-cnesdata`, `#case-aquafarm`, `#case-esus-pec-bootstrap`, `#case-infra-ansible` and `#case-packer-proxmox-templates` as meaningful destinations.
+- [ ] Update `tests/static-build.smoke.mjs` to remove the obsolete pre-M2 rejection of `href="/explore/"` and require the Home `Explore systems` link to resolve to `/explore/`.
 - [ ] Run the mandatory repository commands plus one desktop and one mobile Playwright smoke for Home → Work → CnesData, LimnoPulse and Infrastructure.
 - [ ] Open PR referencing #21 and the visual-alignment planning PR.
 
