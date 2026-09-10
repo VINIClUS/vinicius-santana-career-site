@@ -9,7 +9,7 @@
 **Tech Stack:** Astro, TypeScript, npm, React 19, React Three Fiber 9, Three.js, Playwright smoke tests, GitHub Pages.
 
 **Spec:** `docs/superpowers/specs/2026-09-09-systems-observatory-tech-spec.md`  
-**Visual reference:** `docs/design/systems-observatory-visual-reference.jpg`  
+**Visual reference:** `docs/design/systems-observatory-visual-reference.png`  
 **Epic:** #4
 
 ## Global constraints
@@ -20,7 +20,7 @@
 - Keep real municipal/personal data, network topology, credentials and authenticated screenshots out of the public repository/site.
 - No backend, auth, CMS, analytics or live project APIs.
 - No coverage target or heavyweight quality gates.
-- Every PR: focused tests + build + one relevant browser/integration smoke.
+- Every PR: `npm ci`, `npm test`, `npm run build`, `npm run smoke` and `npm run test:explorer`, plus issue-specific focused tests.
 - One worktree/branch per issue when parallelized.
 - Coordinate `package.json`, lockfile, global styles/layout/nav and scene registry ownership.
 
@@ -42,14 +42,13 @@ These delivered useful functionality but visually drifted from the approved conc
 ## Revised delivery graph
 
 ```text
-                        ┌─> #21 UI alignment ───────────────┐
-completed #10 baseline ─┤                                  │
-                        └─> #11 visual asset kit ──┬─> #12 3D ──┐
-                                                  └─> #22 infra ─┼─> #13 release
-#22 can build state/2D while #11 finishes final scene assets ────┘
+completed #10 baseline ─┬─> #21 UI alignment ────────────────────┐
+                        ├─> #22 state + HTML/2D ──────────────────┤
+                        └─> #11 visual assets ──> #12 3D ────────┼─> #13 release
+                                  └─> #22 visual integration only┘
 ```
 
-Run **#21 and #11 in parallel**. #22 may begin its state/HTML panel from current main and consume final assets after #11. #12 should integrate the stable asset kit. #13 is the only final shared-style/release lane.
+Run **#21, #11 and #22 state/HTML work in parallel**. #22 does not depend on #11 for its registry, deterministic state or HTML/2D panel; only its final visual integration consumes #11 assets. #12 should integrate the stable asset kit. #13 is the only final shared-style/release lane.
 
 ---
 
@@ -76,11 +75,13 @@ Convert the already-working editorial UI into the reference's dark technical-das
 - [ ] Add the four compact domain pillars: Data Systems, Distributed Infrastructure, Backend Engineering, Public Health.
 - [ ] Make `View selected work` and `Explore systems` the two main hero actions; keep Resume in the compact header.
 - [ ] Keep the portrait on About rather than deleting a useful asset.
-- [ ] Rework `/work/` into an image-led dark card grid with CnesData, LimnoPulse, Infrastructure and Health Systems/public-health work.
+- [ ] Rework `/work/` into an image-led dark card grid with CnesData, LimnoPulse, Infrastructure and Health Systems/public-health work; label the fourth action `View experience` and link it to `/#experience`.
 - [ ] Rework CnesData detail into the reference pattern: header/chips, anchor-tab row and large visual architecture/simulation panel near the top.
+- [ ] Apply that shared shell to CnesData, LimnoPulse and Infrastructure; use CnesData as the primary visual reference and smoke all three routes.
 - [ ] Reuse current truthful content and SO-05 controls; do not invent scale metrics.
 - [ ] Apply responsive stacked layouts similar to panel 07.
-- [ ] Run existing tests/build plus one desktop and one mobile Playwright smoke for Home → Work → CnesData.
+- [ ] Preserve `#about`, `#experience`, `#projects`, `#stack`, `#contact`, `#case-cnesdata`, `#case-aquafarm`, `#case-esus-pec-bootstrap`, `#case-infra-ansible` and `#case-packer-proxmox-templates` as meaningful destinations.
+- [ ] Run the mandatory repository commands plus one desktop and one mobile Playwright smoke for Home → Work → CnesData, LimnoPulse and Infrastructure.
 - [ ] Open PR referencing #21 and the visual-alignment planning PR.
 
 **Do not:** wait for final 3D assets to implement layout; use stable placeholders/posters from #11 when available.
@@ -104,7 +105,7 @@ Convert the already-working editorial UI into the reference's dark technical-das
 - [ ] Home globe/data-network visual that can render without the full Three.js Observatory bundle.
 - [ ] Four Work-card hero/poster visuals.
 - [ ] Central Observatory hub.
-- [ ] Five district kits: CnesData, Public Health, Infrastructure, Observability, LimnoPulse.
+- [ ] Five district kits keyed by `DistrictId`: CnesData, Public Health, Infrastructure, Observability, LimnoPulse.
 - [ ] CnesData architecture/pipeline props or poster.
 - [ ] Infrastructure 3-node/shared-layer props or poster.
 - [ ] Mobile/no-WebGL fallbacks.
@@ -115,7 +116,7 @@ Dark navy/near-black, slate surfaces, thin grid/borders, compact white labels, t
 
 ### Steps
 
-- [ ] Define stable scene manifest IDs, reusing current explorer component IDs where they map cleanly.
+- [ ] Define stable scene manifests for all five values of `DistrictId = ProjectId | 'public-health' | 'observability'`, while keeping `ProjectId` limited to `cnesdata`, `limnopulse` and `infrastructure`.
 - [ ] Create/provision the smallest visual assets that achieve the reference look.
 - [ ] Keep assets local; record source/license for third-party material.
 - [ ] Remove obvious unnecessary weight manually.
@@ -144,6 +145,10 @@ Dark navy/near-black, slate surfaces, thin grid/borders, compact white labels, t
 - [ ] Expand the overview composition to five visual districts around a central hub: Data Platform, Public Health, Infrastructure, Observability, LimnoPulse.
 - [ ] Represent Public Health and Observability as portfolio domains/layers, not fabricated standalone products.
 - [ ] Keep conceptual connection lines explicitly illustrative.
+- [ ] Introduce a typed district registry in which every entry has `kind: 'project' | 'domain'` and `href`.
+- [ ] Map project districts to `/explore/cnesdata/`, `/explore/limnopulse/` and `/explore/infrastructure/`; map `public-health` to `/#experience` and `observability` to `/#stack`.
+- [ ] Make all five districts selectable/highlightable and expose the selected district's normal link in the HTML panel.
+- [ ] Use **Health Systems** on the Work card and **Public Health Systems** in the Observatory for the same canonical `public-health` domain.
 
 ### Infrastructure simulation model
 
@@ -180,7 +185,7 @@ No real timing or uptime values.
 - [ ] Add focused transition tests for fail + workload move + reset.
 - [ ] Implement the minimal deterministic state function.
 - [ ] Add the panel UI and event timeline to the Infrastructure view.
-- [ ] Connect visual state to #11 assets when available; keep HTML fallback usable beforehand.
+- [ ] Build registry, state and HTML/2D behavior independently; connect visual state to #11 assets when available.
 - [ ] Add one browser smoke for Simulate failure → state change → Reset.
 - [ ] Build and open PR referencing #22.
 
@@ -208,7 +213,7 @@ No real timing or uptime values.
 - [ ] Build the central hub + five-district overview using #11 manifests/assets.
 - [ ] Use an orthographic/isometric camera with constrained orbit and modest zoom.
 - [ ] Keep project labels/description controls in HTML overlays.
-- [ ] Wire district selection to existing explorer/project IDs.
+- [ ] Consume #22's district registry; wire all five `DistrictId` values to selection/highlight and the HTML detail link without widening the three-value `ProjectId` union.
 - [ ] Add subtle camera/highlight transitions; no free-roam controls.
 - [ ] Load overview assets first; do not download every detail scene immediately.
 - [ ] If `Save-Data`, WebGL initialization or asset loading fails, retain/show the current 2D view.
@@ -233,6 +238,7 @@ No real timing or uptime values.
 - [ ] **Panel 03:** Work is an image-led dark card grid with four portfolio categories.
 - [ ] **Panel 04:** CnesData detail has chips, section tabs/anchors and a large architecture/simulation stage.
 - [ ] **Panel 05:** Infrastructure has 3-node synthetic failure simulation + event timeline.
+- [ ] **Panel 06:** About and Resume use the shared visual system; About/Resume integration belongs to #13.
 - [ ] **Panel 07:** key pages stack coherently on mobile.
 - [ ] **Panel 08:** design tokens/lighting/borders/typography are consistent across routes.
 
@@ -242,7 +248,8 @@ No real timing or uptime values.
 - [ ] Enable `Explore` in the primary navigation and Home CTA.
 - [ ] Remove obsolete copy/UI that still frames 3D as a hidden opt-in secondary experience.
 - [ ] Verify no concept-placeholder metrics leaked into public content.
-- [ ] Run current focused tests/build.
+- [ ] Verify the five home anchors and five legacy `#case-*` destinations still resolve.
+- [ ] Run `npm ci`, `npm test`, `npm run build`, `npm run smoke` and `npm run test:explorer`, plus focused tests from each integrated issue.
 - [ ] Run one concise desktop + mobile flow: Home → Work → CnesData simulation → Explore 3D → Infrastructure failure → 2D fallback → Resume/contact.
 - [ ] Deploy through existing GitHub Pages workflow and visually compare the deployed key pages against the committed reference.
 - [ ] Fix functional or obvious visual-direction blockers; file minor polish separately.
@@ -255,7 +262,7 @@ No real timing or uptime values.
 For each remaining PR:
 
 1. Confirm it solves its issue and moves the result toward the committed visual reference.
-2. Run only the focused commands relevant to the changed behavior plus build.
+2. Run the mandatory repository/CI sequence (`npm ci`, `npm test`, `npm run build`, `npm run smoke`, `npm run test:explorer`) plus focused commands relevant to the changed behavior.
 3. Check for private/sensitive content and unsupported metrics.
 4. Resolve functional/integration findings.
 5. Do not expand scope for speculative abstractions or pixel-level polish.

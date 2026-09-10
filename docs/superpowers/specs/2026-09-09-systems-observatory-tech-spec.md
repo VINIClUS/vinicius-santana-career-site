@@ -10,7 +10,7 @@
 
 Build the portfolio as a **dark, visual, systems-oriented engineering showcase**. The approved concept image is now the primary reference for composition, density, visual hierarchy and art direction:
 
-![Approved Systems Observatory visual reference](../../design/systems-observatory-visual-reference.jpg)
+![Approved Systems Observatory visual reference](../../design/systems-observatory-visual-reference.png)
 
 The previous implementation direction over-indexed on a conventional editorial portfolio and treated 3D as an optional secondary feature. This revision corrects that drift.
 
@@ -50,7 +50,7 @@ The Observatory is a didactic representation of engineering systems, not a live 
 | **03 — Work / Projects Overview** | Dark image-led card grid with CnesData, LimnoPulse, Infrastructure and Health Systems/public-health work |
 | **04 — Project Detail / CnesData** | Project header, chips, anchor/tab row, large visual architecture/simulation panel, engineering/results sections |
 | **05 — Infrastructure Simulation** | Three generic nodes, shared layer, failure action, state change and synthetic event timeline |
-| **06 — Other Pages** | About/Resume and future Writing/Lab share the same visual system; do not create empty pages only to match the mockup |
+| **06 — Other Pages** | About/Resume receive the same visual system during final integration in #13; future Writing/Lab pages are not created empty only to match the mockup |
 | **07 — Mobile Views** | Stacked versions of Home, Observatory and project detail preserving the same information hierarchy |
 | **08 — Design System** | Near-black/navy, slate surfaces, thin grid/borders, compact typography, teal/green/blue technical highlights, isometric visuals |
 
@@ -118,7 +118,12 @@ Simulation state remains deterministic and synthetic. Renderers consume state; t
 
 `Writing` may appear in the compact navigation only when a real `/writing/` page has useful content. Do not create an empty route just to copy the mockup.
 
-Preserve current CNAME behavior, `/assets/vinicius-santana-resume.pdf`, useful legacy home anchors and compatibility destinations.
+Preserve current CNAME behavior and `/assets/vinicius-santana-resume.pdf`.
+
+The following legacy fragment contracts must continue to resolve to meaningful content after the visual rewrite:
+
+- Home: `#about`, `#experience`, `#projects`, `#stack`, `#contact`;
+- case destinations: `#case-cnesdata`, `#case-aquafarm`, `#case-esus-pec-bootstrap`, `#case-infra-ansible`, `#case-packer-proxmox-templates`.
 
 ## 7. Home — target composition
 
@@ -151,20 +156,20 @@ The professional portrait can remain on About; it should not be the main visual 
 
 The Work page should be **image-led**, not an article index.
 
-Desktop target: four cards in a compact grid with strong poster imagery, short summaries, small domain tags and `View project` actions.
+Desktop target: four cards in a compact grid with strong poster imagery, short summaries, small domain tags and clear actions.
 
 Cards:
 
 1. **CnesData** — healthcare/data platform;
 2. **LimnoPulse** — environmental/water telemetry;
 3. **Infrastructure** — Proxmox/HA/automation work;
-4. **Health Systems** — public-health software/data work and professional context.
+4. **Health Systems** — public-health software/data work and professional context; its action is `View experience` and links to `/#experience`.
 
-Health Systems is a portfolio category/case grouping, not a fabricated standalone product.
+**Health Systems** is the Work-card label. **Public Health Systems** is the Observatory-district label. Both represent the canonical `public-health` domain; neither creates a fourth project or route.
 
 ## 9. Project-detail pattern
 
-Use the reference CnesData screen as the shared shell for flagship project pages.
+Use the reference CnesData screen as the shared shell for all three flagship project pages: CnesData, LimnoPulse and Infrastructure. CnesData remains the primary visual reference, but the shared header/chips, section navigation, visual-stage placement and responsive behavior apply to all three routes.
 
 ### Header
 
@@ -221,6 +226,31 @@ Conceptual connection lines may show relationships, but must not be presented as
 
 No keyboard/game movement, avatar, vehicle or free camera is required.
 
+### District registry contract
+
+The five districts share one typed registry across assets, HTML/2D and 3D:
+
+```ts
+type ProjectId = 'cnesdata' | 'limnopulse' | 'infrastructure';
+type DistrictId = ProjectId | 'public-health' | 'observability';
+
+type District = {
+  id: DistrictId;
+  kind: 'project' | 'domain';
+  href: string;
+};
+```
+
+| District label | `id` | `kind` | `href` |
+|---|---|---|---|
+| Data Platform / CnesData | `cnesdata` | `project` | `/explore/cnesdata/` |
+| Public Health Systems | `public-health` | `domain` | `/#experience` |
+| Infrastructure / Proxmox & HA | `infrastructure` | `project` | `/explore/infrastructure/` |
+| Observability / Monitoring & Insights | `observability` | `domain` | `/#stack` |
+| LimnoPulse / Environmental Data | `limnopulse` | `project` | `/explore/limnopulse/` |
+
+All five district IDs are selectable and receive the same selected/highlighted state. Selection exposes the district label, description and normal `href` link in the HTML panel. `ProjectId` remains limited to the three existing projects; domain districts must not fabricate project records, routes or case studies.
+
 ## 11. Simulations
 
 ### 11.1 CnesData
@@ -267,7 +297,7 @@ Avoid neon cyberpunk, terminal/hacker motifs, generic SaaS gradients, cartoon lo
 
 ## 13. Asset kit
 
-Issue #11 owns the visual kit:
+Issue #11 owns the visual kit and asset manifests keyed by the five-value `DistrictId` contract:
 
 - home globe/data-network visual;
 - four Work card posters;
@@ -307,14 +337,17 @@ Do not expose:
 
 ## 16. Testing policy — deliberately lean
 
-Every implementation PR should run the smallest useful verification for its scope:
+Every implementation PR must run the repository/CI baseline:
 
 ```text
 npm ci
-npm test / focused test command
+npm test
 npm run build
-relevant browser/smoke path
+npm run smoke
+npm run test:explorer
 ```
+
+Run issue-specific focused tests in addition to, not instead of, this baseline.
 
 Required when relevant:
 
@@ -358,13 +391,13 @@ Reference-alignment work:
 Recommended dependency flow:
 
 ```text
-#21 UI alignment ────────────────┐
-#11 visual assets ──┬─> #12 3D ─┼─> #13 release
-                   └─> #22 infra/domain visuals ─┘
-completed #10 supplies 2D/controller baseline
+#21 UI alignment ─────────────────────────────┐
+#11 visual assets ────────────────> #12 3D ───┼─> #13 release
+#22 state + HTML/2D ──(assets from #11 only for visual integration)─┘
+completed #10 supplies the 2D/controller baseline
 ```
 
-#21 and #11 can start in parallel. #22 can implement state/2D while #11 produces final assets. #12 consumes #11 and the existing explorer. #13 waits for all four lanes.
+#21, #11 and #22 state/HTML work can proceed in parallel. Only #22's final visual integration depends on #11 assets. #12 consumes #11 and the existing explorer. #13 waits for all four lanes and owns the panel-06 About/Resume alignment.
 
 ## 18. Definition of done
 
@@ -372,12 +405,13 @@ The visual-alignment revision is complete when:
 
 - Home corresponds clearly to reference panel 01;
 - Work corresponds clearly to panel 03;
-- CnesData detail corresponds clearly to panel 04;
+- CnesData detail corresponds clearly to panel 04 and the same shell is applied to LimnoPulse and Infrastructure;
 - Observatory corresponds clearly to panel 02 with central hub + five districts;
 - Infrastructure includes the panel-05-style synthetic failure simulation;
 - mobile preserves panel-07 hierarchy;
 - all factual content remains truthful and sanitized;
-- current resume/routes remain intact;
-- focused build/integration tests pass and GitHub Pages publishes successfully.
+- About and Resume receive panel 06's shared visual treatment in #13;
+- current resume, routes and all named legacy anchors remain intact;
+- the full repository/CI command sequence plus issue-specific tests pass and GitHub Pages publishes successfully.
 
 Minor visual polish can continue later. The release should not be delayed for exhaustive process or certification work.
