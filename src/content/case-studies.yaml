@@ -23,25 +23,32 @@
     - Kept tenant context explicit across authentication, persistence, and row-level isolation.
     - Developed the web dashboard around typed API contracts and operational state.
   architecture:
-    - title: Canonical contracts
+    - id: canonical-contracts
+      title: Canonical contracts
       status: implemented
       description: Shared models and exported schemas establish one vocabulary for landing work, clients, and downstream services.
-    - title: Go edge agent
+    - id: edge-agent
+      title: Go edge agent
       status: implemented
       description: Edge extraction writes compressed Parquet artifacts and registers multi-file manifests with the central platform.
-    - title: Central API and manifests
+    - id: central-api
+      title: Central API and manifests
       status: implemented
       description: A FastAPI service coordinates activation, extraction requests, manifest registration, and landing metadata.
-    - title: Tenant isolation
+    - id: tenant-isolation
+      title: Tenant isolation
       status: implemented
       description: Tenant context is carried through authorization and PostgreSQL row-level security boundaries.
-    - title: Web dashboard
+    - id: web-dashboard
+      title: Web dashboard
       status: implemented
       description: The typed dashboard presents activation, agent state, access, and overview workflows.
-    - title: Complete Parquet-to-Gold processing
+    - id: parquet-to-gold
+      title: Complete Parquet-to-Gold processing
       status: planned
       description: Worker foundations exist, but the full landing-to-Gold processing path is not presented as complete.
-    - title: Kubernetes deployment
+    - id: kubernetes
+      title: Kubernetes deployment
       status: planned
       description: Kubernetes is a target deployment shape rather than a published production claim.
   decisions:
@@ -95,25 +102,32 @@
     - Separated email and Telegram notification queues, workers, bindings, and delivery state.
     - Documented cloud resources and operational prerequisites with OpenTofu modules.
   architecture:
-    - title: Tenant-scoped telemetry API
+    - id: telemetry-api
+      title: Tenant-scoped telemetry API
       status: implemented
       description: FastAPI authorizes membership and resource ownership before querying time-series readings.
-    - title: Rules and durable alert events
+    - id: alert-rules
+      title: Rules and durable alert events
       status: implemented
       description: Versioned rules feed durable opening, acknowledgement, resolution, and recovery workflows.
-    - title: One-shot evaluator
+    - id: evaluator
+      title: One-shot evaluator
       status: implemented
       description: A Go runtime evaluates owned work and exits, leaving scheduling as an external responsibility.
-    - title: Notification delivery
+    - id: notifications
+      title: Notification delivery
       status: implemented
       description: Separate email and Telegram paths preserve authoritative delivery, attempt, and idempotency state.
-    - title: Local MQTT ingestion
+    - id: mqtt-ingestion
+      title: Local MQTT ingestion
       status: implemented
       description: MQTT, Telegraf, and sample publishers form a loopback-only local ingestion scaffold.
-    - title: Cloud infrastructure path
+    - id: cloud-infrastructure
+      title: Cloud infrastructure path
       status: documented
       description: OpenTofu describes the intended managed resources and their operational prerequisites.
-    - title: Production device and broker layer
+    - id: production-device-layer
+      title: Production device and broker layer
       status: planned
       description: A hardened broker, device credentials, fleet operations, and production sensor hardware remain outside the verified implementation.
   decisions:
@@ -170,16 +184,20 @@
     - Organized e-SUS PEC automation, validators, and operational runbooks in a dedicated lifecycle boundary.
     - Kept public examples separate from runtime inventory, credentials, endpoints, and environment state.
   architecture:
-    - title: Reusable Ansible contracts
+    - id: ansible-contracts
+      title: Reusable Ansible contracts
       status: implemented
       description: Generic roles, playbooks, example inputs, and validators define the shareable automation boundary.
-    - title: Reproducible image builds
+    - id: image-builds
+      title: Reproducible image builds
       status: implemented
       description: Packer definitions and supporting scripts establish repeatable Linux and Windows template workflows.
-    - title: System-specific operational automation
+    - id: operations-automation
+      title: System-specific operational automation
       status: implemented
       description: Dedicated scripts, validators, and runbooks keep application operations separate from base-image lifecycle work.
-    - title: Reference topology
+    - id: reference-topology
+      title: Reference topology
       status: illustrative
       description: The relationship among automation control, image building, target systems, monitoring, and backup is deliberately generalized.
   decisions:

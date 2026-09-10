@@ -1,0 +1,50 @@
+/* Fragment navigation is immediate, including when JavaScript is disabled. */
+html:has(.explorer) { scroll-behavior: auto; }
+.explorer { padding-block: 32px 80px; }
+.explorer-heading { padding-block: 28px; max-width: 850px; }
+.explorer-heading h1 { font-size: clamp(2.2rem, 5vw, 4rem); }
+.explorer-heading p { color: var(--muted-strong); }
+.explorer h2 { font-size: clamp(1.5rem, 3vw, 2.2rem); }
+.explorer h3 { font-size: 1.2rem; }
+.explorer h4 { font-size: 1.1rem; }
+.explorer p, .explorer li { overflow-wrap: anywhere; }
+.explorer-nav { display: flex; flex-wrap: wrap; gap: 8px; }
+.explorer-nav a { padding: 12px 16px; border: 1px solid var(--line); border-radius: 8px; min-height: 48px; }
+.explorer-nav a[aria-current="page"] { border-color: var(--accent); text-decoration: underline; text-underline-offset: 5px; }
+.explorer-note { border-left: 3px solid var(--accent); padding: 12px 18px; background: rgba(132,244,230,.05); }
+.explorer-areas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.explorer-area { padding: 28px; border: 1px solid var(--line); border-top: 3px solid var(--accent); border-radius: 12px; background: rgba(132,244,230,.04); }
+.area-limnopulse { border-top-color: #8dcaff; background: rgba(141,202,255,.04); }
+.area-infrastructure { border-top-color: #c4b8f7; background: rgba(196,184,247,.04); }
+.explorer-columns { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; margin-block: 32px; align-items: start; }
+.component-map { list-style: none; padding: 0; display: grid; gap: 12px; }
+.component-map a { display: flex; gap: 14px; align-items: center; padding: 16px; min-height: 68px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,.03); }
+.component-number { color: var(--accent); font-variant-numeric: tabular-nums; }
+.component-status { display: block; margin-top: 4px; color: var(--muted-strong); font-size: .85rem; }
+.selection-marker { display: none; margin-left: auto; font-size: .75rem; }
+.component-map a[aria-current="true"] { border: 2px solid var(--accent); }
+.component-map a[aria-current="true"] .selection-marker { display: inline; }
+.component-panel article { padding: 24px; margin-bottom: 16px; border: 1px solid var(--line); border-radius: 8px; }
+.component-panel article:target, .component-panel article[data-selected="true"] { border: 2px solid var(--accent); }
+.explorer [id] { scroll-margin-top: calc(var(--header-height) + 24px); }
+.explorer a:focus-visible, .explorer button:focus-visible, .explorer select:focus-visible, .component-panel article:focus { outline: 3px solid var(--accent); outline-offset: 4px; }
+.component-relations, .relationship-list { padding-left: 20px; }
+.relationship-list li { margin-bottom: 16px; }
+.relationship-list p { margin: 4px 0; color: var(--muted-strong); }
+.component-relations a, .relationship-list a { text-decoration: underline; text-underline-offset: 3px; }
+.component-relations a { display: inline-block; padding-block: 10px; }
+.walkthrough, .explorer-limits { border-top: 1px solid var(--line); padding-top: 32px; margin-top: 40px; }
+.walkthrough-controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-block: 24px; }
+.walkthrough-controls select { color: var(--text); background: #102132; border: 1px solid var(--line); padding: 12px; border-radius: 8px; min-height: 48px; max-width: 100%; font: inherit; }
+.walkthrough-controls button { cursor: pointer; }
+.walkthrough-controls :disabled { opacity: .5; cursor: default; }
+.walkthrough-state { background: rgba(132,244,230,.04); border: 1px solid var(--line); border-radius: 8px; padding: 24px; }
+.walkthrough-state ul, .walkthrough-state ol, .transcripts ul, .transcripts ol, .explorer-limits ul { padding-left: 24px; }
+.transcripts { margin-top: 32px; }
+.transcripts article { padding-block: 24px; border-bottom: 1px solid var(--line); }
+@media (max-width: 800px) {
+  .explorer-areas, .explorer-columns { grid-template-columns: 1fr; }
+  .explorer-nav a { flex-grow: 1; }
+  .walkthrough-controls { align-items: stretch; flex-direction: column; }
+  .selection-marker { max-width: 54px; }
+}

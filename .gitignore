@@ -7,3 +7,6 @@ dist/
 .env.*
 !.env.example
 .serena/
+
+/test-results/
+/playwright-report/

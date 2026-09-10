@@ -7,10 +7,12 @@
   "scripts": {
     "dev": "astro dev --host 0.0.0.0",
     "build": "astro build",
-    "test": "npm run typecheck:simulation && node --experimental-strip-types --test tests/*.test.mjs",
+    "test": "npm run typecheck && node --experimental-strip-types --test tests/*.test.mjs",
     "typecheck:simulation": "tsc --project tsconfig.simulation.json",
     "smoke": "node tests/static-build.smoke.mjs",
-    "preview": "astro preview --host 0.0.0.0"
+    "preview": "astro preview --host 0.0.0.0",
+    "typecheck": "npm run typecheck:simulation && tsc --project tsconfig.explorer.json",
+    "test:explorer": "playwright test"
   },
   "dependencies": {
     "react": "19.2.8",
@@ -19,7 +21,9 @@
   "devDependencies": {
     "@astrojs/react": "6.0.5",
     "@astrojs/sitemap": "3.7.4",
+    "@playwright/test": "1.63.0",
     "astro": "7.3.2",
+    "js-yaml": "4.3.2",
     "typescript": "5.9.3"
   },
   "engines": {
