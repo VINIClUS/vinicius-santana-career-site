@@ -237,6 +237,8 @@ type DistrictId = ProjectId | 'public-health' | 'observability';
 type District = {
   id: DistrictId;
   kind: 'project' | 'domain';
+  label: string;
+  description: string;
   href: string;
 };
 ```
@@ -249,7 +251,7 @@ type District = {
 | Observability / Monitoring & Insights | `observability` | `domain` | `/#stack` |
 | LimnoPulse / Environmental Data | `limnopulse` | `project` | `/explore/limnopulse/` |
 
-All five district IDs are selectable and receive the same selected/highlighted state. Selection exposes the district label, description and normal `href` link in the HTML panel. `ProjectId` remains limited to the three existing projects; domain districts must not fabricate project records, routes or case studies.
+All five district IDs are selectable and receive the same selected/highlighted state. The shared registry is the source of the selected district's `label`, `description` and normal `href` link exposed in the HTML panel. `ProjectId` remains limited to the three existing projects; domain districts must not fabricate project records, routes or case studies.
 
 ## 11. Simulations
 

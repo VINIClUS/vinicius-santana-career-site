@@ -145,7 +145,7 @@ Dark navy/near-black, slate surfaces, thin grid/borders, compact white labels, t
 - [ ] Expand the overview composition to five visual districts around a central hub: Data Platform, Public Health, Infrastructure, Observability, LimnoPulse.
 - [ ] Represent Public Health and Observability as portfolio domains/layers, not fabricated standalone products.
 - [ ] Keep conceptual connection lines explicitly illustrative.
-- [ ] Introduce a typed district registry in which every entry has `kind: 'project' | 'domain'` and `href`.
+- [ ] Introduce a typed district registry in which every entry has `kind: 'project' | 'domain'`, `label`, `description` and `href`; renderers and HTML panels consume these presentation fields rather than duplicating lookups.
 - [ ] Map project districts to `/explore/cnesdata/`, `/explore/limnopulse/` and `/explore/infrastructure/`; map `public-health` to `/#experience` and `observability` to `/#stack`.
 - [ ] Make all five districts selectable/highlightable and expose the selected district's normal link in the HTML panel.
 - [ ] Use **Health Systems** on the Work card and **Public Health Systems** in the Observatory for the same canonical `public-health` domain.
