@@ -1,278 +1,274 @@
 # Systems Observatory Implementation Plan
 
-> **For agentic workers:** implement one GitHub issue per branch/worktree. Keep tests localized and merge as soon as the issue works and integrates.
+> **For agentic workers:** implement one GitHub issue per branch/worktree. The committed reference image is the primary visual target. Keep tests localized and merge when the issue works and integrates.
 
-**Goal:** Ship the recruiter-first Astro portfolio first, then add the optional Systems Observatory without overengineering a personal static site.
+**Goal:** Finish the portfolio as the dark, cinematic technical-dashboard and isometric Systems Observatory shown in the approved reference, while preserving truthful content and the current static Astro architecture.
 
-**Architecture:** Astro provides static pages and content. A small TypeScript controller/engine powers the 2D walkthrough. React + React Three Fiber + Three.js exist only in the optional 3D path and load after explicit activation.
+**Architecture:** Astro remains the static shell. Existing case content, simulation engine and 2D explorer stay useful. Home/Work/project pages receive a visual-alignment pass; a reusable isometric asset kit feeds a progressively loaded React Three Fiber/Three.js Observatory. 3D becomes the primary capable-browser Explore view, with immediate HTML/2D fallback.
 
-**Tech Stack:** Astro, TypeScript, npm, React 19, React Three Fiber 9, Three.js, GitHub Pages.
+**Tech Stack:** Astro, TypeScript, npm, React 19, React Three Fiber 9, Three.js, Playwright smoke tests, GitHub Pages.
 
-**Spec:** `docs/superpowers/specs/2026-09-09-systems-observatory-tech-spec.md`
+**Spec:** `docs/superpowers/specs/2026-09-09-systems-observatory-tech-spec.md`  
+**Visual reference:** `docs/design/systems-observatory-visual-reference.png`  
+**Epic:** #4
 
 ## Global constraints
 
-- Epic/tracker: #4.
-- Preserve the current `public/assets/vinicius-santana-resume.pdf`; PR #3 is already merged into the baseline.
-- Preserve `public/CNAME` and current domain behavior.
-- No backend, auth, analytics, live project APIs, municipal data, or production infrastructure details.
+- **Match the reference composition and art direction.** Do not treat the visual system as optional post-release polish.
+- The reference image is not a source of factual metrics. Do not copy `5.5k+`, `100M+`, `99.9%`, `100% uptime`, `<2s` or similar placeholders as facts.
+- Preserve `/assets/vinicius-santana-resume.pdf`, current CNAME/domain behavior and public routes.
+- Keep real municipal/personal data, network topology, credentials and authenticated screenshots out of the public repository/site.
+- No backend, auth, CMS, analytics or live project APIs.
 - No coverage target or heavyweight quality gates.
-- Every PR: install/build + focused changed-behavior tests + one relevant smoke path.
-- Prefer small PRs; non-blocking polish becomes follow-up work.
-- Use one worktree/branch per issue when work is parallelized.
+- Every PR: `npm ci`, `npm test`, `npm run build`, `npm run smoke` and `npm run test:explorer`, plus issue-specific focused tests.
+- One worktree/branch per issue when parallelized.
+- Coordinate `package.json`, lockfile, global styles/layout/nav and scene registry ownership.
 
 ---
 
-## Delivery graph
+## Current baseline
+
+Already merged and not to be reimplemented:
+
+- [x] #5 — Astro static foundation
+- [x] #6 — typed case-study content
+- [x] #7 — core recruiter routes/navigation
+- [x] #8 — Pages/SEO/static smoke
+- [x] #9 — CnesData synthetic write/replay/conflict engine
+- [x] #10 — HTML/2D explorer and project routes
+
+These delivered useful functionality but visually drifted from the approved concept. The remaining plan corrects the presentation without throwing away the working baseline.
+
+## Revised delivery graph
 
 ```text
-#5 SO-01 Foundation
-  └─> #6 SO-02 Content
-       ├─> #7 SO-03 M1 pages ─> #8 SO-04 M1 release
-       ├─> #9 SO-05 CnesData engine ─> #10 SO-06 2D explorer
-       └─> #11 SO-07 Assets ─────────────┐
-                                         └─> #12 SO-08 3D
-#8 + #12 ─> #13 SO-09 M2 integration/release
+completed #10 baseline ─┬─> #21 UI alignment ────────────────────┐
+                        └─> #22 registry + state/HTML/2D ─┐       │
+#11 visual assets ─────────> #22 visual integration ──────┴─> #12 3D ─> #13 release
 ```
 
-M1 should be published after #8 without waiting for #9–#13.
-
-## Shared-file coordination
-
-Only one active lane should own these at a time:
-
-- `package.json` / `package-lock.json`
-- `astro.config.*`
-- `.github/workflows/*`
-- global layout/navigation
-- global stylesheet/tokens
-- central content schema
-
-If parallel work needs a shared file, the later lane rebases after the owner merges rather than creating duplicated configuration.
+Run **#21, #11 and #22 registry/state/HTML work in parallel**. #22 does not depend on #11 for its registry, deterministic state or HTML/2D panel; only its final visual integration consumes #11 assets. #12 depends on the merged #22 registry and its integration with the stable #11 asset kit. #13 is the only final shared-style/release lane.
 
 ---
 
-### Task 1 / Issue #5: Astro foundation
+## Task A / Issue #21 — Home, Work and project-detail visual alignment
 
-**Branch:** `feat/so-01-astro-foundation`
+**Branch:** `feat/so-10-visual-alignment`
 
-**Likely files:**
-- Replace/update `package.json`, `package-lock.json`
-- Create `astro.config.mjs`
-- Create `src/layouts/*`, `src/pages/index.astro`, `src/styles/*`
-- Preserve `public/CNAME`, `public/assets/vinicius-santana-resume.pdf`
-
-**Steps:**
-- [ ] Snapshot current resume hash/path and CNAME.
-- [ ] Add Astro + TypeScript baseline and remove Vite-only entry wiring.
-- [ ] Build a minimal static home using the existing approved identity/copy as temporary content.
-- [ ] Add a small foundation smoke that checks the built home, CNAME, and resume file.
-- [ ] Run `npm ci`, focused tests, and `npm run build`.
-- [ ] Open PR referencing #5; merge once the static foundation works.
-
-**Do not:** add Three.js/R3F or redesign all content in this issue.
-
----
-
-### Task 2 / Issue #6: Content model + three case studies
-
-**Branch:** `feat/so-02-case-studies`
-
-**Likely files:**
-- `src/content.config.ts` or equivalent Astro content configuration
-- `src/content/projects/*`
-- `src/content/cases/*`
-- project/case components local to this feature
-
-**Steps:**
-- [ ] Define the smallest typed model needed for project metadata, contribution/context, capability status, and case-study content.
-- [ ] Write/revise CnesData case study against the current documented contract/revision.
-- [ ] Write/revise Limnopulse case study without implying unsupported production state.
-- [ ] Write Infrastructure & Operations as sanitized professional/lab/reference material.
-- [ ] Remove or omit unverified quantitative claims.
-- [ ] Add schema/content tests for the three published cases.
-- [ ] Build all three routes and open PR referencing #6.
-
-**Do not:** create a generic evidence platform or validation DSL.
-
----
-
-### Task 3 / Issue #7: Recruiter-first M1 pages
-
-**Branch:** `feat/so-03-editorial-pages`
+**Primary reference panels:** 01, 03, 04, 07, 08.
 
 **Likely files:**
 - `src/pages/index.astro`
-- `src/pages/work/*`
-- `src/pages/about.astro`
-- `src/pages/resume.astro`
-- `src/pages/privacy.astro`
-- shared navigation/footer/components
+- `src/pages/work/**`
+- flagship case-study page/component files
+- global/shared styles and navigation components
+- small domain-card/icon components
 
-**Steps:**
-- [ ] Implement the final recruiter-first home hierarchy.
-- [ ] Build Work index and wire the three case-study routes.
-- [ ] Build About, Resume, Privacy, and 404.
-- [ ] Restore useful legacy anchors and compatibility destinations for old `#case-*` links.
-- [ ] Make mobile navigation and keyboard focus work with simple semantic HTML.
-- [ ] Add one compact route/navigation smoke test.
-- [ ] Build and open PR referencing #7.
+### Deliverable
 
-**Do not:** expose `Explore` as a primary CTA yet.
+Convert the already-working editorial UI into the reference's dark technical-dashboard composition.
 
----
+### Steps
 
-### Task 4 / Issue #8: CI, SEO, and M1 release
+- [ ] Replace the portrait-dominant Home hero with a two-column dark hero: identity/copy left, large globe/data-network visual slot right.
+- [ ] Add the four compact domain pillars: Data Systems, Distributed Infrastructure, Backend Engineering, Public Health.
+- [ ] Make `View selected work` and `Explore systems` the two main hero actions, link `Explore systems` to `/explore/`, and keep Resume in the compact header.
+- [ ] Keep the portrait on About rather than deleting a useful asset.
+- [ ] Rework `/work/` into an image-led dark card grid with CnesData, LimnoPulse, Infrastructure and Health Systems/public-health work; label the fourth action `View experience` and link it to `/#experience`.
+- [ ] Rework CnesData detail into the reference pattern: header/chips, anchor-tab row and large visual architecture/simulation panel near the top.
+- [ ] Apply that shared shell to CnesData, LimnoPulse and Infrastructure; use CnesData as the primary visual reference and smoke all three routes.
+- [ ] Reuse current truthful content and SO-05 controls; do not invent scale metrics.
+- [ ] Apply responsive stacked layouts similar to panel 07.
+- [ ] Preserve `#about`, `#experience`, `#projects`, `#stack`, `#contact`, `#case-cnesdata`, `#case-aquafarm`, `#case-esus-pec-bootstrap`, `#case-infra-ansible` and `#case-packer-proxmox-templates` as meaningful destinations.
+- [ ] Update `tests/static-build.smoke.mjs` for the new UI contract: replace the exact old hero-copy assertion with the new name/title/systems-oriented positioning, remove the obsolete pre-M2 rejection of `href="/explore/"`, require the Home `Explore systems` link to `/explore/`, and cover the fourth Health Systems card plus its `View experience` destination. Retain the metadata, resume, safety and compatibility-anchor checks.
+- [ ] Run the mandatory repository commands plus one desktop and one mobile Playwright smoke for Home → Work → CnesData, LimnoPulse and Infrastructure.
+- [ ] Open PR referencing #21 and the visual-alignment planning PR.
 
-**Branch:** `feat/so-04-m1-release`
-
-**Likely files:**
-- `.github/workflows/deploy-site.yml`
-- package scripts
-- Astro site config / SEO component
-- `README.md`
-- small `scripts/smoke-*` helper if useful
-
-**Steps:**
-- [ ] Switch workflow install to `npm ci` and chosen supported Node version.
-- [ ] Ensure Pages uploads Astro `dist/`.
-- [ ] Generate consistent canonical/social metadata, sitemap, robots, and 404.
-- [ ] Add a post-build smoke for expected M1 files/routes and resume/CNAME presence.
-- [ ] Update README with local development and deploy commands.
-- [ ] Run CI-equivalent commands locally where possible.
-- [ ] Open PR referencing #8 and publish M1 after merge.
-
-**Release smoke:** home → one case → resume/contact; direct reload of case route.
+**Do not:** wait for final 3D assets to implement layout; use stable placeholders/posters from #11 when available.
 
 ---
 
-### Task 5 / Issue #9: CnesData walkthrough engine
+## Task B / Issue #11 — Reference-aligned visual asset kit
 
-**Branch:** `feat/so-05-cnesdata-walkthrough`
+**Branch:** `feat/so-07-reference-assets`
 
-**Likely files:**
-- `src/features/explorer/simulation/*`
-- `src/content/scenarios/cnesdata.*`
-- focused test file beside/under `tests/`
-
-**Interface:**
-
-```ts
-type Command =
-  | { type: 'SELECT_SCENARIO'; scenarioId: string }
-  | { type: 'STEP' }
-  | { type: 'RESET' };
-
-function transition(state: SimulationState, command: Command): SimulationState;
-```
-
-**Steps:**
-- [ ] Define three synthetic scenario fixtures.
-- [ ] Write focused tests for first write, identical replay, conflict, reset, invalid scenario.
-- [ ] Implement the minimal deterministic transition function.
-- [ ] Generate/read static transcript data from the same fixtures.
-- [ ] Run the focused suite and build.
-- [ ] Open PR referencing #9.
-
-**Do not:** implement networking, real hashes, DBC/Parquet processing, or backend calls.
-
----
-
-### Task 6 / Issue #10: 2D Observatory
-
-**Branch:** `feat/so-06-2d-observatory`
+**Primary reference panels:** 01–05 and 08.
 
 **Likely files:**
-- `src/pages/explore/*`
-- `src/features/explorer/controller/*`
-- `src/features/explorer/diagram/*`
-- explorer-local styles/components
+- `public/assets/posters/**`
+- `public/assets/scenes/**`
+- `src/content/scenes/**`
+- `docs/design/**`
 
-**Steps:**
-- [x] Add overview and three project explorer routes.
-- [x] Build HTML/SVG component diagrams and panel data.
-- [x] Wire CnesData controls to the #9 engine.
-- [x] Render static transcripts/fallbacks when interaction is unavailable.
-- [x] Keep Limnopulse and Infrastructure as component explorers only.
-- [x] Add focused browser smoke for project selection, one scenario path, reset, and no-WebGL/3D dependency.
-- [x] Prepare the issue-scoped PR referencing #10; require Codex approval on the final commit before squash merge.
+### Required asset groups
 
----
+- [ ] Home globe/data-network visual that can render without the full Three.js Observatory bundle.
+- [ ] Four Work-card hero/poster visuals.
+- [ ] Central Observatory hub.
+- [ ] Five district kits keyed by `DistrictId`: CnesData, Public Health, Infrastructure, Observability, LimnoPulse.
+- [ ] CnesData architecture/pipeline props or poster.
+- [ ] Infrastructure 3-node/shared-layer props or poster.
+- [ ] Mobile/no-WebGL fallbacks.
 
-Verification and delivery tracking: see the SO-06 PR linked from issue #10 for checks, final review, merge and production smoke evidence.
+### Art direction
 
-### Task 7 / Issue #11: Posters and 3D assets
+Dark navy/near-black, slate surfaces, thin grid/borders, compact white labels, teal/green/blue highlights, isometric maquettes, restrained glow. Prefer architectural-diorama quality over abstract circles/boxes.
 
-**Branch:** `feat/so-07-observatory-assets`
+### Steps
 
-**Likely files:**
-- `public/assets/posters/*`
-- `public/assets/scenes/*`
-- `src/content/scenes/*`
-- asset source/license note under `docs/`
-
-**Steps:**
-- [ ] Create one poster/fallback per project.
-- [ ] Define simple scene manifests with stable node IDs matching 2D component IDs.
-- [ ] Create simple GLB/procedural assets for the three areas.
-- [ ] Remove unnecessary texture/geometry weight manually when obvious.
-- [ ] Record license/source for any external asset.
-- [ ] Add cheap existence/manifest parse checks.
+- [ ] Define stable scene manifests for all five values of `DistrictId = ProjectId | 'public-health' | 'observability'`, while keeping `ProjectId` limited to `cnesdata`, `limnopulse` and `infrastructure`.
+- [ ] Create/provision the smallest visual assets that achieve the reference look.
+- [ ] Keep assets local; record source/license for third-party material.
+- [ ] Remove obvious unnecessary weight manually.
+- [ ] Add cheap manifest/file existence validation.
+- [ ] Build and manually inspect one desktop + mobile fallback.
 - [ ] Open PR referencing #11.
 
-**Do not:** add a complex asset pipeline before a real need appears.
+**Do not:** build an elaborate Blender/asset-processing pipeline before there is a real need.
 
 ---
 
-### Task 8 / Issue #12: Optional 3D renderer
+## Task C / Issue #22 — Five-district 2D map + Infrastructure failure simulation
 
-**Branch:** `feat/so-08-3d-renderer`
+**Branch:** `feat/so-11-infrastructure-simulation`
+
+**Primary reference panels:** 02 and 05.
 
 **Likely files:**
-- `src/features/explorer/scene/*`
-- `src/features/explorer/launcher/*`
-- package dependencies/lockfile if not already introduced
+- existing explorer project/diagram data
+- `src/features/explorer/simulation/**`
+- Infrastructure route/view components
+- focused tests
 
-**Steps:**
-- [ ] Add compatible React/R3F/Three dependencies.
-- [ ] Implement `Enable 3D` as the only entry point that imports renderer code/assets.
-- [ ] Bind renderer selection/highlights to the existing explorer/controller state.
-- [ ] Preserve state when enabling/disabling the canvas.
-- [ ] Handle renderer/model failure by returning to the existing 2D experience.
-- [ ] Add focused tests for lazy activation, state handoff, and fallback.
+### Observatory-domain update
+
+- [ ] Expand the overview composition to five visual districts around a central hub: Data Platform, Public Health, Infrastructure, Observability, LimnoPulse.
+- [ ] Represent Public Health and Observability as portfolio domains/layers, not fabricated standalone products.
+- [ ] Keep conceptual connection lines explicitly illustrative.
+- [ ] Introduce a typed district registry in which every entry has `kind: 'project' | 'domain'`, `label`, `description` and `href`; renderers and HTML panels consume these presentation fields rather than duplicating lookups.
+- [ ] Map project districts to `/explore/cnesdata/`, `/explore/limnopulse/` and `/explore/infrastructure/`; map `public-health` to `/#experience` and `observability` to `/#stack`.
+- [ ] Make all five districts selectable/highlightable and expose the selected district's normal link in the HTML panel.
+- [ ] Use **Health Systems** on the Work card and **Public Health Systems** in the Observatory for the same canonical `public-health` domain.
+
+### Infrastructure simulation model
+
+Use synthetic state only:
+
+```ts
+type InfraCommand = { type: 'FAIL_NODE'; nodeId: 'node-02' } | { type: 'RESET' };
+
+type InfraNodeState = 'online' | 'failed';
+```
+
+Initial state:
+
+```text
+node-01 online
+node-02 online + illustrative workload
+node-03 online
+shared layer available
+```
+
+After `FAIL_NODE(node-02)`:
+
+```text
+node-02 failed
+workload highlighted on one healthy node
+logical event list appended
+shared layer remains illustrative/available
+```
+
+No real timing or uptime values.
+
+### Steps
+
+- [ ] Add focused transition tests for fail + workload move + reset.
+- [ ] Implement the minimal deterministic state function.
+- [ ] Add the panel UI and event timeline to the Infrastructure view.
+- [ ] Build registry, state and HTML/2D behavior independently; connect visual state to #11 assets when available.
+- [ ] Add one browser smoke for Simulate failure → state change → Reset.
+- [ ] Build and open PR referencing #22.
+
+---
+
+## Task D / Issue #12 — Reference-first 3D Observatory
+
+**Branch:** `feat/so-08-reference-3d-observatory`
+
+**Depends on:** #11 asset kit and #22 district registry/integration.
+
+**Primary reference panel:** 02, with detail support for 04/05.
+
+**Likely files:**
+- `src/features/explorer/scene/**`
+- scene launcher/adapter files
+- package/lockfile if Three/R3F are introduced here
+- explorer-local styles
+
+### Behavior change from the old plan
+
+**Do not require `Enable 3D` by default.** The current Astro/2D view renders immediately, then capable browsers progressively import and mount the 3D Observatory.
+
+### Steps
+
+- [ ] Add/verify compatible R3F + Three.js dependencies.
+- [ ] Build the central hub + five-district overview using #11 manifests/assets.
+- [ ] Use an orthographic/isometric camera with constrained orbit and modest zoom.
+- [ ] Keep project labels/description controls in HTML overlays.
+- [ ] Consume #22's district registry; wire all five `DistrictId` values to selection/highlight and the HTML detail link without widening the three-value `ProjectId` union.
+- [ ] Add subtle camera/highlight transitions; no free-roam controls.
+- [ ] Load overview assets first; do not download every detail scene immediately.
+- [ ] When 3D mounts successfully, expose an explicit `View 2D` control that transitions the stage back to the existing 2D representation without losing the selected district, HTML details or navigation.
+- [ ] If `Save-Data`, WebGL initialization or asset loading fails, retain/show the current 2D view automatically.
+- [ ] Respect reduced-motion by reducing camera travel/continuous animation.
+- [ ] Add focused browser smoke: capable mount + district selection + deliberate `View 2D` transition + forced failure fallback + one mobile viewport.
 - [ ] Build and open PR referencing #12.
 
-**Do not:** duplicate simulation logic inside React/Three components.
+**Do not:** duplicate CnesData or Infrastructure transition logic in Three components.
 
 ---
 
-### Task 9 / Issue #13: M2 integration and release
+## Task E / Issue #13 — Final integration/release against reference
 
-**Branch:** `feat/so-09-m2-release`
+**Branch:** `feat/so-09-reference-release`
 
-**Likely files:** shared navigation/styles, small integration fixes only.
+**Depends on:** #21, #11, #22, #12.
 
-**Steps:**
-- [ ] Rebase/integrate M2 lanes and resolve shared-style/navigation conflicts.
-- [ ] Enable Explore navigation/CTA.
-- [ ] Check desktop/mobile presentation and reduced-motion basics.
-- [ ] Run existing focused suites and build.
-- [ ] Run one production-style smoke: home → case → explore → CnesData scenario → enable 3D → disable/fallback → resume/contact.
-- [ ] Fix concrete blockers only; open follow-up issues for optional polish.
-- [ ] Deploy and verify production routes.
-- [ ] Close #13 and then #4 when #5–#13 are all complete.
+### Visual acceptance checklist
+
+- [ ] **Panel 01:** Home has dark recruiter-first split hero, four pillars, two CTAs and globe/network visual.
+- [ ] **Panel 02:** Observatory has central hub + five isometric districts and feels like the reference's technical diorama.
+- [ ] **Panel 03:** Work is an image-led dark card grid with four portfolio categories.
+- [ ] **Panel 04:** CnesData detail has chips, section tabs/anchors and a large architecture/simulation stage.
+- [ ] **Panel 05:** Infrastructure has 3-node synthetic failure simulation + event timeline.
+- [ ] **Panel 06:** About and Resume use the shared visual system; About/Resume integration belongs to #13.
+- [ ] **Panel 07:** key pages stack coherently on mobile.
+- [ ] **Panel 08:** design tokens/lighting/borders/typography are consistent across routes.
+
+### Integration steps
+
+- [ ] Resolve global styles/navigation conflicts from the parallel lanes.
+- [ ] Enable `Explore` in the primary navigation and Home CTA.
+- [ ] Remove obsolete copy/UI that still frames 3D as a hidden opt-in secondary experience.
+- [ ] Verify no concept-placeholder metrics leaked into public content.
+- [ ] Verify the five home anchors and five legacy `#case-*` destinations still resolve.
+- [ ] Run `npm ci`, `npm test`, `npm run build`, `npm run smoke` and `npm run test:explorer`, plus focused tests from each integrated issue.
+- [ ] Run one concise desktop + mobile flow: Home → Work → CnesData simulation → Explore 3D → Infrastructure failure → 2D fallback → Resume/contact.
+- [ ] Deploy through existing GitHub Pages workflow and visually compare the deployed key pages against the committed reference.
+- [ ] Fix functional or obvious visual-direction blockers; file minor polish separately.
+- [ ] Close #13 and then #4 when #11/#12/#21/#22 are complete and production smoke is good.
 
 ---
 
-## PR review policy
+## Review/merge policy
 
-For every implementation PR:
+For each remaining PR:
 
-1. Verify the issue scope is actually implemented.
-2. Run the focused commands named by that issue.
-3. Check the diff for accidental sensitive/private content.
-4. Resolve functional/integration review findings.
-5. Do not expand the PR for unrelated style refactors.
-6. Merge and update the epic checkbox/tracker if GitHub does not reflect it automatically.
+1. Confirm it solves its issue and moves the result toward the committed visual reference.
+2. Run the mandatory repository/CI sequence (`npm ci`, `npm test`, `npm run build`, `npm run smoke`, `npm run test:explorer`) plus focused commands relevant to the changed behavior.
+3. Check for private/sensitive content and unsupported metrics.
+4. Resolve functional/integration findings.
+5. Do not expand scope for speculative abstractions or pixel-level polish.
+6. Merge and update #4 tracker.
 
-This plan intentionally optimizes for shipping a maintainable portfolio rather than maximizing test or process rigor.
+The purpose of this plan is to recover the intended visual ambition **without throwing away the functional work already delivered and without turning a portfolio into a high-rigor platform project**.
