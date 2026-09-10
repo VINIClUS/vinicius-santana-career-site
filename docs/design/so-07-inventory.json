@@ -1,0 +1,241 @@
+{
+  "totalBytes": 1724994,
+  "assets": [
+    {
+      "src": "/assets/posters/detail-cnesdata-desktop.webp",
+      "bytes": 40252,
+      "sha256": "e12199afdde0a0cf277d42bbfabbbcab9f12a939f47c1d91968dba1887674d4d",
+      "width": 1200,
+      "height": 800
+    },
+    {
+      "src": "/assets/posters/detail-cnesdata-mobile.webp",
+      "bytes": 21088,
+      "sha256": "815765c103e181e0bfe79472cbec72dcf26f1f33572426eaf37b76a1808f4a22",
+      "width": 720,
+      "height": 900
+    },
+    {
+      "src": "/assets/posters/detail-infrastructure-desktop.webp",
+      "bytes": 26528,
+      "sha256": "f8141536f1246cff03056f50843437bea5d091c83737550eb6979d527d4a21bf",
+      "width": 1200,
+      "height": 800
+    },
+    {
+      "src": "/assets/posters/detail-infrastructure-mobile.webp",
+      "bytes": 17864,
+      "sha256": "57f6c40f09b172751e7944ed7103608d6236c2c2e5ac8f957b5b0b4c4858556e",
+      "width": 720,
+      "height": 900
+    },
+    {
+      "src": "/assets/posters/district-cnesdata-desktop.webp",
+      "bytes": 43438,
+      "sha256": "9f28d8011a3d63b31e3f81cbd5df45ea5e68d01e879a62ab0c75fae1ccda27b9",
+      "width": 1200,
+      "height": 800
+    },
+    {
+      "src": "/assets/posters/district-cnesdata-mobile.webp",
+      "bytes": 27474,
+      "sha256": "0db0cc3301afc4cf2816030b8856bfa8dafc078e6d2b7eaf3b3678fcf4a66a47",
+      "width": 720,
+      "height": 900
+    },
+    {
+      "src": "/assets/posters/district-infrastructure-desktop.webp",
+      "bytes": 32798,
+      "sha256": "91d2703757cd81f8a77f2a2b564a94b79b0127b74be63e50e430c5e65cfda609",
+      "width": 1200,
+      "height": 800
+    },
+    {
+      "src": "/assets/posters/district-infrastructure-mobile.webp",
+      "bytes": 19062,
+      "sha256": "a1fb0668abf0931ef08ef4b1a91426820f0fbb832b224808d71ff0e818db5319",
+      "width": 720,
+      "height": 900
+    },
+    {
+      "src": "/assets/posters/district-limnopulse-desktop.webp",
+      "bytes": 32348,
+      "sha256": "bd1231a19bca7d92fd78d0c0754d9dc11ca179949d6e6433c8c0fe4d4056e656",
+      "width": 1200,
+      "height": 800
+    },
+    {
+      "src": "/assets/posters/district-limnopulse-mobile.webp",
+      "bytes": 18124,
+      "sha256": "f7b90a88a7b2c1f7aed9b923e4ce457fc9240828fb69e2540f889de8752c0b42",
+      "width": 720,
+      "height": 900
+    },
+    {
+      "src": "/assets/posters/district-observability-desktop.webp",
+      "bytes": 34348,
+      "sha256": "4ec453933ab5745cd288933124be7744a847960c6c7af7aeb61eb431d7ac6a06",
+      "width": 1200,
+      "height": 800
+    },
+    {
+      "src": "/assets/posters/district-observability-mobile.webp",
+      "bytes": 20812,
+      "sha256": "b8c70122b336b47c67625ec4e7bad2db08941031228617c3f7bd8585ecfe90c6",
+      "width": 720,
+      "height": 900
+    },
+    {
+      "src": "/assets/posters/district-public-health-desktop.webp",
+      "bytes": 37020,
+      "sha256": "d405dcb298b4d60a12fad2c8a6e7d8ed7d3f8c76f474026f2060b3404b418ba5",
+      "width": 1200,
+      "height": 800
+    },
+    {
+      "src": "/assets/posters/district-public-health-mobile.webp",
+      "bytes": 24542,
+      "sha256": "9fefcac9110cc903df99e25a0f87dbf09ff543177c6c2ca493f2e6edfda7447f",
+      "width": 720,
+      "height": 900
+    },
+    {
+      "src": "/assets/posters/home-globe-desktop.webp",
+      "bytes": 71584,
+      "sha256": "94596f777982e9516c30336ee94e224847b52494eb5d68a30971043cbe1cc223",
+      "width": 1200,
+      "height": 800
+    },
+    {
+      "src": "/assets/posters/home-globe-mobile.webp",
+      "bytes": 41546,
+      "sha256": "aecfbbc646ab4259faf35f801911e8faff743b56061342d69f212aa88e531e02",
+      "width": 600,
+      "height": 600
+    },
+    {
+      "src": "/assets/posters/hub-desktop.webp",
+      "bytes": 29978,
+      "sha256": "6a426ef7de7fac26491e0f1d96364f6a67a85cb799e6cd36ffcaa1dcab5686e0",
+      "width": 1200,
+      "height": 800
+    },
+    {
+      "src": "/assets/posters/hub-mobile.webp",
+      "bytes": 21804,
+      "sha256": "90298d014d7871e7d2f6e0abd191fd7b18f6b098c24298ae348659b6160a88d1",
+      "width": 720,
+      "height": 900
+    },
+    {
+      "src": "/assets/posters/overview-desktop.webp",
+      "bytes": 45988,
+      "sha256": "d3b8901deeb47ba5fad61456bcff4374bcb1fc857d5c3b04c1ff60964057d25b",
+      "width": 1200,
+      "height": 800
+    },
+    {
+      "src": "/assets/posters/overview-mobile.webp",
+      "bytes": 47428,
+      "sha256": "6543ef74015e5c87dc65e8790b6a4da5ae5f48125209749b780d35b10a78cdca",
+      "width": 720,
+      "height": 900
+    },
+    {
+      "src": "/assets/posters/work-cnesdata-desktop.webp",
+      "bytes": 117090,
+      "sha256": "26d9982d885c9b2a975cc009eb0afe8b82c905393713f15f29330827367d8236",
+      "width": 1200,
+      "height": 800
+    },
+    {
+      "src": "/assets/posters/work-cnesdata-mobile.webp",
+      "bytes": 64564,
+      "sha256": "d57f574e3863a45f784ae2ff13a9fa4ce95a459a0d0b5fee5ea4fba8bdfd895e",
+      "width": 600,
+      "height": 600
+    },
+    {
+      "src": "/assets/posters/work-infrastructure-desktop.webp",
+      "bytes": 83774,
+      "sha256": "8c2de9a3eef11c113036ce5131c67c1aee13fd4bfdf745f4ea37969a1951c345",
+      "width": 1200,
+      "height": 800
+    },
+    {
+      "src": "/assets/posters/work-infrastructure-mobile.webp",
+      "bytes": 47086,
+      "sha256": "64c2e52092c606bd7705660541501858c0cf531a615e5cb61fa899a4831b9b2e",
+      "width": 600,
+      "height": 600
+    },
+    {
+      "src": "/assets/posters/work-limnopulse-desktop.webp",
+      "bytes": 123676,
+      "sha256": "357a20225fd37240b455b82c1937a3404252889704a1815e55cd6b3bbe6dadba",
+      "width": 1200,
+      "height": 800
+    },
+    {
+      "src": "/assets/posters/work-limnopulse-mobile.webp",
+      "bytes": 61614,
+      "sha256": "f9357eb76d606f8d17fa91eed012e9be330a539b547d04e57daa21b691a0ed8f",
+      "width": 600,
+      "height": 600
+    },
+    {
+      "src": "/assets/posters/work-public-health-desktop.webp",
+      "bytes": 113922,
+      "sha256": "34e270b1de0c796bc5cb7ef88d3777016292d8b4c8781d4e03b489811eed8f5d",
+      "width": 1200,
+      "height": 800
+    },
+    {
+      "src": "/assets/posters/work-public-health-mobile.webp",
+      "bytes": 62426,
+      "sha256": "cd022241e2726073f1dd3a28b13cf84f75532f97be8a16794f6827f79d6b89a8",
+      "width": 600,
+      "height": 600
+    },
+    {
+      "src": "/assets/scenes/detail-cnesdata.glb",
+      "bytes": 58936,
+      "sha256": "3500b7a9e4dc14c191b2fdb15fe5870564413afd4d05b65839215ebe1438c5c2"
+    },
+    {
+      "src": "/assets/scenes/detail-infrastructure.glb",
+      "bytes": 22112,
+      "sha256": "7714fcd9a43e82f86843ba9c4f7f148a9ad461f79fdd2846518921fa5c6f5894"
+    },
+    {
+      "src": "/assets/scenes/district-cnesdata.glb",
+      "bytes": 56888,
+      "sha256": "ec6a2ec66b6e08db19f55e62bb8860fc7f187233b80ea26f0302d7eedcf6d67f"
+    },
+    {
+      "src": "/assets/scenes/district-infrastructure.glb",
+      "bytes": 42936,
+      "sha256": "483150e63811e1cb66eb01b31daa0c2e55ea65677366ee34b2d41a29ab2aed66"
+    },
+    {
+      "src": "/assets/scenes/district-limnopulse.glb",
+      "bytes": 58816,
+      "sha256": "254b37f655954f9190ab052c704c64eb7054c6d1a24a0fce836ea65774cda812"
+    },
+    {
+      "src": "/assets/scenes/district-observability.glb",
+      "bytes": 68972,
+      "sha256": "ff72418b8f2908437a01059ba1986fbde0da333e191eaa297abf72d2263da0a1"
+    },
+    {
+      "src": "/assets/scenes/district-public-health.glb",
+      "bytes": 54152,
+      "sha256": "2734f43c889b7b5eebbf5b299232b8a46c6ea62c06a2ca34dfbdacbe76dfe8e1"
+    },
+    {
+      "src": "/assets/scenes/hub.glb",
+      "bytes": 34004,
+      "sha256": "c53ea4e5f87e3a991184fa5af400bff80d858674228ae9c8925208cac3bd0837"
+    }
+  ]
+}

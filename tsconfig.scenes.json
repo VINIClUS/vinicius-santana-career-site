@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.simulation.json",
+  "compilerOptions": { "resolveJsonModule": true },
+  "include": ["src/content/scenes/**/*.ts"]
+}

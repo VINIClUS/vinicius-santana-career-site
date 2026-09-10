@@ -102,13 +102,13 @@ Convert the already-working editorial UI into the reference's dark technical-das
 
 ### Required asset groups
 
-- [ ] Home globe/data-network visual that can render without the full Three.js Observatory bundle.
-- [ ] Four Work-card hero/poster visuals.
-- [ ] Central Observatory hub.
-- [ ] Five district kits keyed by `DistrictId`: CnesData, Public Health, Infrastructure, Observability, LimnoPulse.
-- [ ] CnesData architecture/pipeline props or poster.
-- [ ] Infrastructure 3-node/shared-layer props or poster.
-- [ ] Mobile/no-WebGL fallbacks.
+- [x] Home globe/data-network visual that can render without the full Three.js Observatory bundle.
+- [x] Four Work-card hero/poster visuals.
+- [x] Central Observatory hub.
+- [x] Five district kits keyed by `DistrictId`: CnesData, Public Health, Infrastructure, Observability, LimnoPulse.
+- [x] CnesData architecture/pipeline props or poster.
+- [x] Infrastructure 3-node/shared-layer props or poster.
+- [x] Mobile/no-WebGL fallbacks.
 
 ### Art direction
 
@@ -116,12 +116,12 @@ Dark navy/near-black, slate surfaces, thin grid/borders, compact white labels, t
 
 ### Steps
 
-- [ ] Define stable scene manifests for all five values of `DistrictId = ProjectId | 'public-health' | 'observability'`, while keeping `ProjectId` limited to `cnesdata`, `limnopulse` and `infrastructure`.
-- [ ] Create/provision the smallest visual assets that achieve the reference look.
-- [ ] Keep assets local; record source/license for third-party material.
-- [ ] Remove obvious unnecessary weight manually.
-- [ ] Add cheap manifest/file existence validation.
-- [ ] Build and manually inspect one desktop + mobile fallback.
+- [x] Define stable scene manifests for all five values of `DistrictId = ProjectId | 'public-health' | 'observability'`, while keeping `ProjectId` limited to `cnesdata`, `limnopulse` and `infrastructure`.
+- [x] Create/provision the smallest visual assets that achieve the reference look.
+- [x] Keep assets local; record source/license for third-party material.
+- [x] Remove obvious unnecessary weight manually.
+- [x] Add cheap manifest/file existence validation.
+- [x] Build and manually inspect one desktop + mobile fallback.
 - [ ] Open PR referencing #11.
 
 **Do not:** build an elaborate Blender/asset-processing pipeline before there is a real need.
