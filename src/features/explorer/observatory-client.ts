@@ -29,6 +29,8 @@ if (root) {
     if (districtId) root.querySelector<HTMLElement>(`[data-district-detail="${districtId}"]`)?.focus({ preventScroll: true });
   };
   const use2D = (focus = false) => {
+    const canvas = map.querySelector('[data-observatory-canvas]');
+    const restoreFocus = focus || toolbar.contains(document.activeElement) || (canvas !== null && canvas === document.activeElement);
     stopped = true;
     pending.abort();
     scene?.dispose();
@@ -40,7 +42,7 @@ if (root) {
       if (style == null) label.removeAttribute('style');
       else label.setAttribute('style', style);
     });
-    if (focus) (links.find(link => link.dataset.districtLink === controller.getState().selectedDistrictId) ?? links[0])?.focus({ preventScroll: true });
+    if (restoreFocus) (links.find(link => link.dataset.districtLink === controller.getState().selectedDistrictId) ?? links[0])?.focus({ preventScroll: true });
   };
   let nativeEvents: AbortController;
   let unsubscribe: () => void;
@@ -48,8 +50,8 @@ if (root) {
     nativeEvents = new AbortController();
     unsubscribe = controller.subscribe(render);
     const { signal } = nativeEvents;
+    // Fragment traversal also emits hashchange; listening to popstate would focus twice.
     window.addEventListener('hashchange', syncFragment, { signal });
-    window.addEventListener('popstate', syncFragment, { signal });
     for (const link of links) link.addEventListener('click', () => {
       // Native fragments own scrolling and history; repeated fragments still focus the article.
       if (link.hash === location.hash) root.querySelector<HTMLElement>(`[data-district-detail="${link.dataset.districtLink}"]`)?.focus({ preventScroll: true });
@@ -58,6 +60,7 @@ if (root) {
     syncFragment();
   };
   connectNavigation();
+  root.dataset.controllerReady = 'true';
   toolbar.addEventListener('click', event => {
     const action = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-scene-action]')?.dataset.sceneAction;
     if (action === 'fallback') use2D(true);

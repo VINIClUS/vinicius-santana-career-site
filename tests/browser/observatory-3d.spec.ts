@@ -120,6 +120,68 @@ test('all five maquettes select the same HTML state and history without scrollin
   await expect(selected(page, 'limnopulse')).toHaveAttribute('aria-current', 'true');
 });
 
+test('mixed HTML and mesh selection clears the previous native target highlight', async ({ page }) => {
+  await page.goto('/explore/');
+  await ready(page);
+  await selected(page, 'public-health').click();
+  await expect(selected(page, 'public-health')).toHaveCSS('outline-style', 'solid');
+  await clickMaquette(page, 'observability');
+  await expect(selected(page, 'observability')).toHaveAttribute('aria-current', 'true');
+  await expect(selected(page, 'public-health')).toHaveCSS('outline-style', 'none');
+  await expect(page.locator('#district-public-health')).toHaveCSS('outline-style', 'none');
+  await page.getByRole('button', { name: 'View 2D', exact: true }).click();
+  await expect(selected(page, 'public-health')).toHaveCSS('outline-style', 'none');
+  await expect(selected(page, 'observability')).toHaveAttribute('aria-current', 'true');
+});
+
+test('a native fragment does not steal focus after the reader moves to the next selector', async ({ page }) => {
+  await page.goto('/explore/');
+  await ready(page);
+  await page.evaluate(() => new Promise<void>(resolve => {
+    const article = document.querySelector<HTMLElement>('#district-public-health')!;
+    const next = document.querySelector<HTMLElement>('[data-district-link="observability"]')!;
+    const originalFocus = HTMLElement.prototype.focus;
+    let moved = false;
+    // Advance after application focus, excluding the browser's earlier native target focus.
+    HTMLElement.prototype.focus = function (options) {
+      originalFocus.call(this, options);
+      if (this === article && !moved) {
+        moved = true;
+        queueMicrotask(() => originalFocus.call(next));
+      }
+    };
+    window.addEventListener('hashchange', () => setTimeout(() => {
+      HTMLElement.prototype.focus = originalFocus;
+      resolve();
+    }, 0), { once: true });
+    document.querySelector<HTMLAnchorElement>('[data-district-link="public-health"]')!.click();
+  }));
+  await expect(selected(page, 'observability')).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/#district-observability$/);
+});
+
+test('context failure restores focus when a disappearing 3D control was focused', async ({ page }) => {
+  await page.goto('/explore/');
+  await ready(page);
+  await clickMaquette(page, 'observability');
+  await page.getByRole('button', { name: 'Zoom in', exact: true }).focus();
+  await canvas(page).evaluate(canvas => {
+    (canvas as HTMLCanvasElement).getContext('webgl2')!.getExtension('WEBGL_lose_context')!.loseContext();
+  });
+  await expect(stage(page)).toHaveAttribute('data-scene-state', 'fallback');
+  await expect(selected(page, 'observability')).toBeFocused();
+  await page.reload();
+  await ready(page);
+  await selected(page, 'public-health').click();
+  await expect(page.locator('#district-public-health')).toBeFocused();
+  await canvas(page).evaluate(canvas => {
+    (canvas as HTMLCanvasElement).getContext('webgl2')!.getExtension('WEBGL_lose_context')!.loseContext();
+  });
+  await expect(stage(page)).toHaveAttribute('data-scene-state', 'fallback');
+  await expect(page.locator('#district-public-health')).toBeFocused();
+});
+
 test('details load only on selection, reuse downloads and ignore a late previous selection', async ({ page }) => {
   const models: string[] = [];
   page.on('request', request => { if (request.url().endsWith('.glb')) models.push(request.url()); });

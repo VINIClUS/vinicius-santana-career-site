@@ -61,6 +61,7 @@ for (const width of [390, 1440]) {
       await page.locator(`a[href="#district-${id}"]`).click();
       await expect(page.locator(`#district-${id}`)).toBeVisible();
       await expect(page.locator(`#district-${id}:target`)).toHaveCount(1);
+      await expect(page.locator(`[data-district-link="${id}"]`)).toHaveCSS('outline-style', 'solid');
       await expect(page.locator(`#district-${id} a[href="${href}"]`)).toBeVisible();
     }
     await page.locator('#district-public-health a[href="/#experience"]').click();

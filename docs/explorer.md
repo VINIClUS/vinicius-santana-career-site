@@ -22,11 +22,15 @@ Only `/explore/` loads the scene renderer. The lightweight launcher checks Save-
 
 The renderer consumes `hub`, `districts`, `overview.layouts` and the five-entry `districtRegistry`. React subscribes to `createObservatoryController()`; the controller remains the source of selection. Canvas selection updates the fragment with `pushState` without scrolling. HTML fragment links retain their native navigation and article focus, including initial deep links and back/forward history.
 
+After controller initialization, state/ARIA attributes govern highlighting; `:target` styling serves only the no-JavaScript fallback. Native fragment navigation synchronizes through one `hashchange` listener so duplicate history notifications cannot steal focus from the next selector.
+
 Selecting CnesData or Infrastructure lazily loads its detail model into that district's footprint, retaining the hub and the other districts. Selecting another district restores the previous overview maquette. Loaded models are reused during the visit; a completed download cannot overwrite a newer selection. These models illustrate architecture and do not own or run the project simulations.
 
 The orthographic camera uses the paired desktop/mobile manifest at the 700px breakpoint. Orbit is limited to ±15° horizontally and ±5° vertically, zoom to 0.9–1.2 times the initial view, and pan is disabled. HTML controls provide zoom and reset; HTML label positions follow the current camera and viewport. Rendering is on demand with DPR capped at 1.5. There is no continuous camera movement; reduced motion keeps 3D available with immediate highlighting.
 
 After a successful mount, **View 2D** discards the renderer, restores the poster and original label positions, preserves the selected district and focuses its HTML selector (the first selector when none is selected). The choice lasts until leaving or reloading the page and is not stored. Teardown cancels pending downloads, guards late completion, unmounts React and releases controls, listeners and graphic resources.
+
+Automatic fallback also restores selector focus when a focused 3D control disappears. Focus on surviving HTML links or articles stays where the reader put it.
 
 Home and individual project routes do not download the Observatory renderer or GLBs. JavaScript-disabled navigation and both existing synthetic simulations retain their contracts. See [SO-08 evidence](design/so-08/README.md) for browser scenarios and desktop/mobile captures.
 
