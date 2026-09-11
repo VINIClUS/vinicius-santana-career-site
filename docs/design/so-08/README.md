@@ -35,7 +35,7 @@ Inspection against panel 02: the central luminous hub, five distinct architectur
 | Mixed navigation | Native HTML selection followed by a mesh click clears the old target highlight, including after View 2D |
 | Focus continuity | A single fragment notification preserves the next selector's focus; automatic failure restores disappearing-control focus and retains article focus |
 | Lazy details | No initial detail requests; delayed CnesData finishes after Infrastructure without changing the visible scene; revisit reuses each download |
-| Superseded failures | A late network rejection after selecting Observability and a malformed GLB after loading Infrastructure preserve the current canvas and selection |
+| Superseded failures | A late network rejection after selecting Observability and a malformed GLB after loading Infrastructure preserve the current canvas and selection; reselecting the failed district retries successfully |
 | Explicit 2D | Abort a pending detail; restore original label styles and selected-link focus; retain history; reload permits 3D again |
 | Capability gates | Save-Data and missing WebGL download neither renderer nor models |
 | Automatic fallback | Failed module import, failed renderer initialization, malformed overview GLB, failed detail fetch and real `WEBGL_lose_context` |
@@ -58,7 +58,7 @@ Run from the SO-08 worktree on 2026-09-11, in the required order:
 
 Local review corrections keep controller selection authoritative after HTML/mesh transitions, restore focus when failure hides a 3D control, and synchronize native fragments through a single handler. Each regression was reproduced before correction. The duplicate-handler regression was also checked by reintroducing only that handler into the built launcher: the focused test failed, then passed after restoring the final build.
 
-Remote Codex review identified a superseded detail rejection that could force fallback after selection changed. Both network and parsing regressions first failed with an unexpected 2D fallback. The rejection now checks the same scene lifetime, selection generation and active district as a successful load; active-detail failure still falls back. After this correction, tests, build, smoke and all 38 browser scenarios passed again; the final browser suite took 59.4 seconds.
+Remote Codex review identified a superseded detail rejection that could force fallback after selection changed. Both network and parsing regressions first failed with an unexpected 2D fallback. The rejection now checks the same scene lifetime, selection generation and active district as a successful load; active-detail failure still falls back. A follow-up review identified that the failed promise remained cached, preventing retry on reselection. Both extended regressions reproduced the missing retry before rejected entries were evicted. Successful and pending loads remain cached. After these corrections, tests, build, smoke and all 38 browser scenarios passed again; the final browser suite took about one minute.
 
 Vite reports its size warning for the dynamically imported renderer (about 778 kB raw / 204 kB gzip). That payload is requested only on capable `/explore/` visits; the Home and project pages retain their existing bundles. DPR is capped at 1.5 and frames render on demand. No new hosting, analytics, backend or live system data is introduced.
 

@@ -216,7 +216,7 @@ for (const { failure, next } of [
   { failure: 'network', next: 'observability' },
   { failure: 'parse', next: 'infrastructure' },
 ]) {
-  test(`superseded ${failure} detail failure keeps the current ${next} scene`, async ({ page }) => {
+  test(`superseded ${failure} detail failure keeps the current ${next} scene and permits retry`, async ({ page }) => {
     const cnes = holdRequest(page, '**/detail-cnesdata.glb', route => failure === 'network'
       ? route.abort()
       : route.fulfill({ status: 200, body: 'invalid GLB' }));
@@ -241,6 +241,17 @@ for (const { failure, next } of [
     await expect(page).toHaveURL(new RegExp(`#district-${next}$`));
     expect((await canvas(page).screenshot()).equals(current)).toBe(true);
     await expect(page.getByRole('button', { name: 'View 2D', exact: true })).toBeVisible();
+    await page.unroute('**/detail-cnesdata.glb');
+    const [retry] = await Promise.all([
+      page.waitForResponse('**/detail-cnesdata.glb', { timeout: 5000 }),
+      clickMaquette(page, 'cnesdata'),
+    ]);
+    expect(retry.ok()).toBe(true);
+    await retry.finished();
+    await frames(page, 12);
+    await expect(stage(page)).toHaveAttribute('data-scene-state', 'ready');
+    await expect(selected(page, 'cnesdata')).toHaveAttribute('aria-current', 'true');
+    await expect(page).toHaveURL(/#district-cnesdata$/);
   });
 }
 

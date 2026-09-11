@@ -44,7 +44,11 @@ export function createModelCache(signal: AbortSignal) {
         }
         for (const scene of gltf.scenes) objects.add(scene);
         return gltf.scene;
-      })();
+      })().catch(error => {
+        // Keep successful models and in-flight deduplication, but allow a later selection to retry.
+        pending.delete(src);
+        throw error;
+      });
       pending.set(src, result);
       return result;
     },
