@@ -214,7 +214,7 @@ keep or restore the same 2D HTML/poster experience with working district links.
 Home, Work and individual project routes do not download the Observatory
 renderer or GLB models.
 
-`npm test` checks the simulation and explorer TypeScript modules and runs the focused Node tests. After `npm run build`, run `npm run smoke` and `npm run test:explorer`. Install the browser once with `npx playwright install --with-deps chromium`. Playwright 1.63.0 runs four compact Chromium paths with one worker; screenshots and traces are retained only on failure. To run the same smoke against a deployment, set `EXPLORER_BASE_URL` to its origin.
+`npm test` checks the simulation and explorer TypeScript modules and runs the focused Node tests. After `npm run build`, run `npm run smoke` and `npm run test:explorer`. Install the browser once with `npx playwright install --with-deps chromium`. Playwright 1.63.0 runs the Chromium browser suites with one worker; screenshots and traces are retained only on failure. To run the same smoke against a deployment, set `EXPLORER_BASE_URL` to its origin.
 
 See [the explorer contract](docs/explorer.md) for interaction and fallback
 details, and [the SO-09 visual audit](docs/design/so-09/README.md) for the
