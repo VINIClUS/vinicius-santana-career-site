@@ -112,6 +112,11 @@ assert.equal((editorialPages.work.match(/<article class="project-card visual-wor
 assert.match(editorialPages.work, /Health Systems/);
 assert.match(editorialPages.work, /href="\/#experience"[^>]*>View experience/);
 assert.match(editorialPages.about, /alt="Professional portrait of Vinicius Santana"/);
+assert.match(
+  editorialPages.about,
+  /<img[^>]*src="\/assets\/images\/vinicius-about\.jpg"[^>]*width="900"[^>]*height="1125"/i,
+  'About portrait dimensions must match the approved asset set'
+);
 const workCardOffsets = ['CnesData', 'Limnopulse', 'Infrastructure &amp; Operations'].map((title) => editorialPages.work.indexOf(title));
 assert.ok(workCardOffsets.every((offset) => offset >= 0), 'Work must list all three selected case studies');
 assert.deepEqual(workCardOffsets, [...workCardOffsets].sort((left, right) => left - right), 'Work must follow collection order');
