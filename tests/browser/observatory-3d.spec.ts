@@ -34,7 +34,7 @@ async function frames(page: Page, count = 5) {
   }, count);
 }
 
-function holdRequest(page: Page, pattern: string) {
+function holdRequest(page: Page, pattern: string, respond: (route: Route) => Promise<void> = route => route.continue()) {
   let release!: () => void;
   let requested!: (route: Route) => void;
   const held = new Promise<void>(resolve => { release = resolve; });
@@ -42,7 +42,7 @@ function holdRequest(page: Page, pattern: string) {
   const installed = page.route(pattern, async route => {
     requested(route);
     await held;
-    await route.continue().catch(() => {}); // Teardown deliberately aborts the request.
+    await respond(route).catch(() => {}); // Teardown deliberately aborts the request.
   });
   return { installed, arrived, release };
 }
@@ -211,6 +211,38 @@ test('details load only on selection, reuse downloads and ignore a late previous
   expect(models.filter(url => url.endsWith('/detail-cnesdata.glb'))).toHaveLength(1);
   expect(models.filter(url => url.endsWith('/detail-infrastructure.glb'))).toHaveLength(1);
 });
+
+for (const { failure, next } of [
+  { failure: 'network', next: 'observability' },
+  { failure: 'parse', next: 'infrastructure' },
+]) {
+  test(`superseded ${failure} detail failure keeps the current ${next} scene`, async ({ page }) => {
+    const cnes = holdRequest(page, '**/detail-cnesdata.glb', route => failure === 'network'
+      ? route.abort()
+      : route.fulfill({ status: 200, body: 'invalid GLB' }));
+    await cnes.installed;
+    await page.goto('/explore/');
+    await ready(page);
+    await clickMaquette(page, 'cnesdata');
+    await cnes.arrived;
+    const nextLoaded = next === 'infrastructure' ? page.waitForResponse('**/detail-infrastructure.glb') : undefined;
+    await clickMaquette(page, next);
+    if (nextLoaded) await (await nextLoaded).finished();
+    await frames(page, 12);
+    const current = await canvas(page).screenshot();
+    const failed = page.waitForEvent(failure === 'network' ? 'requestfailed' : 'requestfinished', {
+      predicate: request => request.url().endsWith('/detail-cnesdata.glb'),
+    });
+    cnes.release();
+    await failed;
+    await frames(page, 12);
+    await expect(stage(page)).toHaveAttribute('data-scene-state', 'ready');
+    await expect(selected(page, next)).toHaveAttribute('aria-current', 'true');
+    await expect(page).toHaveURL(new RegExp(`#district-${next}$`));
+    expect((await canvas(page).screenshot()).equals(current)).toBe(true);
+    await expect(page.getByRole('button', { name: 'View 2D', exact: true })).toBeVisible();
+  });
+}
 
 test('View 2D aborts a pending detail, restores labels and preserves selection and focus', async ({ page }) => {
   const cnes = holdRequest(page, '**/detail-cnesdata.glb');

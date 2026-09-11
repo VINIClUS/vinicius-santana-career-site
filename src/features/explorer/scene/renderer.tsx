@@ -169,7 +169,10 @@ export function mountObservatoryScene(options: Options): ObservatoryScene {
       group.clear();
       group.add(object);
       invalidate();
-    }).catch(() => { if (!disposed) options.onFailure(); });
+    }).catch(() => {
+      if (disposed || current !== generation || options.controller.getState().selectedDistrictId !== id) return;
+      options.onFailure();
+    });
   };
   const dispose = () => {
     if (disposed) return;

@@ -24,7 +24,7 @@ The renderer consumes `hub`, `districts`, `overview.layouts` and the five-entry 
 
 After controller initialization, state/ARIA attributes govern highlighting; `:target` styling serves only the no-JavaScript fallback. Native fragment navigation synchronizes through one `hashchange` listener so duplicate history notifications cannot steal focus from the next selector.
 
-Selecting CnesData or Infrastructure lazily loads its detail model into that district's footprint, retaining the hub and the other districts. Selecting another district restores the previous overview maquette. Loaded models are reused during the visit; a completed download cannot overwrite a newer selection. These models illustrate architecture and do not own or run the project simulations.
+Selecting CnesData or Infrastructure lazily loads its detail model into that district's footprint, retaining the hub and the other districts. Selecting another district restores the previous overview maquette. Loaded models are reused during the visit; a superseded download cannot overwrite a newer selection or force fallback if it fails. A failure of the currently selected detail still returns to 2D. These models illustrate architecture and do not own or run the project simulations.
 
 The orthographic camera uses the paired desktop/mobile manifest at the 700px breakpoint. Orbit is limited to ±15° horizontally and ±5° vertically, zoom to 0.9–1.2 times the initial view, and pan is disabled. HTML controls provide zoom and reset; HTML label positions follow the current camera and viewport. Rendering is on demand with DPR capped at 1.5. There is no continuous camera movement; reduced motion keeps 3D available with immediate highlighting.
 

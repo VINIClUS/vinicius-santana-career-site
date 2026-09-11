@@ -246,7 +246,7 @@ No real timing or uptime values.
 
 Implemented from SO-11 baseline `0e1d996` on `feat/so-08-reference-3d-observatory`. React Three Fiber 9.7.0 subscribes to the existing Observatory controller; React 19.2.8, Three.js 0.183.2, the district registry, public routes and simulation engines are preserved.
 
-Mandatory sequence passed: `rtk npm ci`, `rtk npm test` (31 passed; build-only check deferred), `rtk npm run build` (13 pages), `rtk npm run smoke` (static contracts plus 11 asset checks), `rtk npm run test:explorer` (36 passed, including 19 new real-WebGL scenarios). Local review corrections cover mixed HTML/mesh highlights, focus during automatic fallback and duplicate native-fragment notifications. Evidence and desktop/mobile reference comparison: [SO-08](../../design/so-08/README.md).
+Mandatory sequence passed: `rtk npm ci`, `rtk npm test` (31 passed; build-only check deferred), `rtk npm run build` (13 pages), `rtk npm run smoke` (static contracts plus 11 asset checks), `rtk npm run test:explorer` (38 passed, including 21 new real-WebGL scenarios). Local review corrections cover mixed HTML/mesh highlights, focus during automatic fallback and duplicate native-fragment notifications. Remote review also prompted guards and reproduced regressions for superseded detail failures; tests, build, smoke and the full browser suite passed after that correction. Evidence and desktop/mobile reference comparison: [SO-08](../../design/so-08/README.md).
 
 PR review, final reviewed SHA, CI, merge and published verification are tracked in #12 and EPIC #4. #13 remains the final integration/release lane.
 
