@@ -200,10 +200,22 @@ selected work, `src/data/content.js` for shared details, and the relevant page f
 
 There is no backend, database, authentication or contact form. Contact actions use direct links: email, LinkedIn, GitHub and resume download.
 
-## 2D Systems Observatory
+## Systems Observatory
 
-Open `/explore/` or `/explore/{cnesdata,limnopulse,infrastructure}/`. The explorer uses static HTML, fragment navigation and a small TypeScript controller; no canvas or 3D assets are needed. Primary navigation is intentionally unchanged until SO-09.
+**Explore** is available in the primary navigation. Open `/explore/` for the
+Systems Observatory overview, or `/explore/{cnesdata,limnopulse,infrastructure}/`
+for the individual project walkthroughs.
+
+The overview is progressively enhanced: capable browsers load an on-demand
+Three.js view after the immediate HTML and 2D poster are already usable. The
+poster remains visible while the scene loads. Save-Data, unavailable WebGL,
+renderer/model failures, context loss, and an explicit **View 2D** choice all
+keep or restore the same 2D HTML/poster experience with working district links.
+Home, Work and individual project routes do not download the Observatory
+renderer or GLB models.
 
 `npm test` checks the simulation and explorer TypeScript modules and runs the focused Node tests. After `npm run build`, run `npm run smoke` and `npm run test:explorer`. Install the browser once with `npx playwright install --with-deps chromium`. Playwright 1.63.0 runs four compact Chromium paths with one worker; screenshots and traces are retained only on failure. To run the same smoke against a deployment, set `EXPLORER_BASE_URL` to its origin.
 
-See [the explorer contract](docs/explorer.md) for the state and stable component IDs used by later scene work.
+See [the explorer contract](docs/explorer.md) for interaction and fallback
+details, and [the SO-09 visual audit](docs/design/so-09/README.md) for the
+release evidence.

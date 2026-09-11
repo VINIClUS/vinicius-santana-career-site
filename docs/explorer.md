@@ -16,7 +16,7 @@ CnesData uses fictional keys/content only. Results are synthetic and illustrativ
 
 The overview renders the existing desktop/mobile posters with link positions projected from each crop's scene camera and placements. All five articles and their normal links remain in the page throughout loading and interaction.
 
-## Progressive 3D Observatory (SO-08)
+## Progressive 3D Observatory
 
 Only `/explore/` loads the scene renderer. The lightweight launcher checks Save-Data and WebGL before importing React Three Fiber and Three.js. The poster stays visible until the six overview GLBs (hub and five districts) have loaded and the first frame has rendered. Import, initialization, model-loading and context-loss failures return to the existing 2D presentation.
 
@@ -40,4 +40,9 @@ The pure engine in `simulation/infrastructure.ts` starts with three online nodes
 
 The panel presents the state in text and responsive posters, with a polite announcement and a static scenario transcript. Controls start disabled and activate only after initialization. There are no timestamps, uptime or recovery metrics, backend calls or operational data. The failure posters are generated from the transitioned state via `simulationId` anchors; the original GLB stays unchanged.
 
-Home/Work, including the **Health Systems** Work card, were delivered by #21. SO-08 delivers #12's 3D renderer; final integration remains in #13. EPIC #4 stays open for that release work.
+**Explore** is part of the primary navigation. The shared Home, Work, About and
+Resume shell remains ordinary HTML and does not load the Observatory renderer
+or GLBs. The 3D view is a current progressive enhancement of `/explore/`, not
+required for navigation or comprehension: the initial poster/HTML map is
+immediately available and is the retained fallback for capability gates,
+runtime failures and **View 2D**.
