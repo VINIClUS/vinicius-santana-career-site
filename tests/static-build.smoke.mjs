@@ -347,9 +347,15 @@ console.log('Explorer static routes and transcripts passed.');
 // pages share its technical visual system rather than reverting to the former
 // editorial shell. These assertions operate on built HTML, so they protect the
 // published contract without coupling the test to source files.
-assert.match(html, /<nav\b[^>]*aria-label="Primary navigation"[\s\S]*?<a[^>]*href="\/explore\/"[^>]*>Explore<\/a>/i, 'primary navigation must expose Explore from Home');
-assert.match(overview, /<nav\b[^>]*aria-label="Primary navigation"[\s\S]*?<a[^>]*href="\/explore\/"[^>]*aria-current="page"[^>]*>Explore<\/a>/i, 'Explore navigation must expose the active page');
-assert.match(editorialPages.resume, /<nav\b[^>]*aria-label="Primary navigation"[\s\S]*?<a[^>]*href="\/resume\/"[^>]*aria-current="page"[^>]*>Resume<\/a>/i, 'Resume navigation must retain the active page');
+function primaryNavigation(html, pageName) {
+  const navigation = html.match(/<nav\b[^>]*aria-label="Primary navigation"[^>]*>[\s\S]*?<\/nav>/i)?.[0];
+  assert.ok(navigation, `${pageName} must include a bounded primary navigation region`);
+  return navigation;
+}
+
+assert.match(primaryNavigation(html, 'home'), /<a[^>]*href="\/explore\/"[^>]*>Explore<\/a>/i, 'primary navigation must expose Explore from Home');
+assert.match(primaryNavigation(overview, 'Explore'), /<a[^>]*href="\/explore\/"[^>]*aria-current="page"[^>]*>Explore<\/a>/i, 'Explore navigation must expose the active page');
+assert.match(primaryNavigation(editorialPages.resume, 'Resume'), /<a[^>]*href="\/resume\/"[^>]*aria-current="page"[^>]*>Resume<\/a>/i, 'Resume navigation must retain the active page');
 
 for (const [pageName, pageHtml] of Object.entries({ about: editorialPages.about, resume: editorialPages.resume })) {
   assert.match(pageHtml, /<body\b[^>]*class="[^"]*\bobservatory\b[^"]*"/i, `${pageName} must use the shared Systems Observatory theme`);

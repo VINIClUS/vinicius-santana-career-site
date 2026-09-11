@@ -14,6 +14,18 @@ async function expectLoadedImagesAndNoHorizontalOverflow(page: Page) {
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 }
 
+async function activatePrimaryNavigation(page: Page, href: string, mobile: boolean) {
+  if (mobile) {
+    const menu = page.locator('[data-menu-toggle]');
+    await menu.focus();
+    await page.keyboard.press('Enter');
+    await expect(menu).toHaveAttribute('aria-expanded', 'true');
+  }
+  const link = page.locator(`nav[aria-label="Primary navigation"] a[href="${href}"]`);
+  await link.focus({ timeout: 5_000 });
+  await page.keyboard.press('Enter');
+}
+
 for (const viewport of viewports) {
   test(`SO-09 release journey at ${viewport.width}×${viewport.height}`, async ({ page }) => {
     test.setTimeout(60_000);
@@ -48,7 +60,7 @@ for (const viewport of viewports) {
       await expect(page).toHaveURL(/\/work\/$/);
     }
 
-    await page.getByRole('link', { name: 'Explore', exact: true }).click();
+    await activatePrimaryNavigation(page, '/explore/', viewport.width < 820);
     await expect(page).toHaveURL(/\/explore\/$/);
     await expect(page.locator('[data-observatory]')).toHaveAttribute('data-scene-state', 'ready', { timeout: 15000 });
     await expectLoadedImagesAndNoHorizontalOverflow(page);
@@ -76,18 +88,17 @@ for (const viewport of viewports) {
     await expect(page.locator('[data-observatory]')).toHaveAttribute('data-scene-state', 'fallback');
     await expectLoadedImagesAndNoHorizontalOverflow(page);
 
-    await page.getByRole('link', { name: 'About', exact: true }).click();
+    await activatePrimaryNavigation(page, '/about/', viewport.width < 820);
     await expect(page).toHaveURL(/\/about\/$/);
     await expect(page.locator('body')).toHaveClass(/\bobservatory\b/);
     await expectLoadedImagesAndNoHorizontalOverflow(page);
 
-    await page.getByRole('link', { name: 'Resume', exact: true }).click();
+    await activatePrimaryNavigation(page, '/resume/', viewport.width < 820);
     await expect(page).toHaveURL(/\/resume\/$/);
     await expect(page.getByRole('link', { name: 'Resume', exact: true })).toHaveAttribute('aria-current', 'page');
     await expectLoadedImagesAndNoHorizontalOverflow(page);
 
-    await page.getByRole('link', { name: 'Contact', exact: true }).focus();
-    await page.keyboard.press('Enter');
+    await activatePrimaryNavigation(page, '/#contact', viewport.width < 820);
     await expect(page).toHaveURL(/\/#contact$/);
     await expect(page.getByRole('heading', { name: 'A quick path to the practical details.', exact: true })).toBeVisible();
     await expectLoadedImagesAndNoHorizontalOverflow(page);
