@@ -11,6 +11,16 @@ Captured with Chromium at 1440×900 and 390×844. The images are full-page captu
 - [Desktop overview](observatory-1440.png)
 - [Mobile overview](observatory-390.png)
 
+Detail and fallback captures crop the actual map from those same viewport sizes:
+
+| State | Desktop | Mobile |
+| --- | --- | --- |
+| Selected CnesData detail | [1440](cnesdata-1440.png) | [390](cnesdata-390.png) |
+| Selected Infrastructure detail | [1440](infrastructure-1440.png) | [390](infrastructure-390.png) |
+| View 2D, Infrastructure still selected | [1440](view-2d-1440.png) | [390](view-2d-390.png) |
+
+The detail captures confirm that each replacement fits its original district, leaving the other four maquettes and hub visible. The 2D captures show the restored overview poster with the same selection. These capture flows produced no uncaught page errors.
+
 Inspection against panel 02: the central luminous hub, five distinct architectural maquettes, isometric camera, navy/slate materials, thin grid and restrained highlights preserve the reference's visual direction. The portrait composition uses SO-07's mobile placements, keeping all five HTML selectors readable. The runtime uses SO-07's simpler editable geometry, as established in that asset delivery. Broader shared-shell/About/Resume integration remains in #13.
 
 ## Browser acceptance
@@ -45,4 +55,4 @@ Run from the SO-08 worktree on 2026-09-11, in the required order:
 
 Vite reports its size warning for the dynamically imported renderer (about 778 kB raw / 204 kB gzip). That payload is requested only on capable `/explore/` visits; the Home and project pages retain their existing bundles. DPR is capped at 1.5 and frames render on demand. No new hosting, analytics, backend or live system data is introduced.
 
-Review, CI, merge and published verification links are recorded on the SO-08 PR and Issue #12. EPIC #4 remains open for #13.
+Delivery PR: [#27](https://github.com/VINIClUS/vinicius-santana-career-site/pull/27). Review, CI, merge and published verification links are recorded there and on Issue #12. EPIC #4 remains open for #13.

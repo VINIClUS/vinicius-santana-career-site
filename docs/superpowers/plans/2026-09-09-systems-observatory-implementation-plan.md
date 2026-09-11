@@ -238,7 +238,7 @@ No real timing or uptime values.
 - [x] If `Save-Data`, WebGL initialization or asset loading fails, retain/show the current 2D view automatically.
 - [x] Respect reduced-motion by reducing camera travel/continuous animation.
 - [x] Add focused browser smoke: capable mount + district selection + deliberate `View 2D` transition + forced failure fallback + one mobile viewport.
-- [ ] Build and open PR referencing #12.
+- [x] Build and open PR referencing #12 — [#27](https://github.com/VINIClUS/vinicius-santana-career-site/pull/27).
 
 **Do not:** duplicate CnesData or Infrastructure transition logic in Three components.
 
