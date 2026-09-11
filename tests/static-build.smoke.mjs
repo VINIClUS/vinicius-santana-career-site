@@ -342,3 +342,40 @@ for (const { slug, title } of caseStudies) {
   }
 }
 console.log('Explorer static routes and transcripts passed.');
+
+// SO-09 release: the Observatory is a first-class route, and the supporting
+// pages share its technical visual system rather than reverting to the former
+// editorial shell. These assertions operate on built HTML, so they protect the
+// published contract without coupling the test to source files.
+assert.match(html, /<nav\b[^>]*aria-label="Primary navigation"[\s\S]*?<a[^>]*href="\/explore\/"[^>]*>Explore<\/a>/i, 'primary navigation must expose Explore from Home');
+assert.match(overview, /<nav\b[^>]*aria-label="Primary navigation"[\s\S]*?<a[^>]*href="\/explore\/"[^>]*aria-current="page"[^>]*>Explore<\/a>/i, 'Explore navigation must expose the active page');
+assert.match(editorialPages.resume, /<nav\b[^>]*aria-label="Primary navigation"[\s\S]*?<a[^>]*href="\/resume\/"[^>]*aria-current="page"[^>]*>Resume<\/a>/i, 'Resume navigation must retain the active page');
+
+for (const [pageName, pageHtml] of Object.entries({ about: editorialPages.about, resume: editorialPages.resume })) {
+  assert.match(pageHtml, /<body\b[^>]*class="[^"]*\bobservatory\b[^"]*"/i, `${pageName} must use the shared Systems Observatory theme`);
+  assert.match(pageHtml, /<header\b[^>]*class="[^"]*page-hero[^"]*"/i, `${pageName} must retain the shared technical page structure`);
+}
+
+const fictionalReferenceMetrics = [
+  /5(?:[.,]5)?\s*k\+?\s*municipalit(?:y|ies)/i,
+  /100\s*m\+?\s*records/i,
+  /99(?:[.,]9)?\s*%\s*data reliability/i,
+  /100\s*%\s*uptime/i,
+  /(?:<|&lt;)\s*2\s*s\s*failover/i
+];
+const publishedPages = [
+  ['/', html],
+  ...Object.entries(editorialPages).map(([pageName, pageHtml]) => [`/${pageName === 'notFound' ? '404.html' : `${pageName}/`}`, pageHtml]),
+  ...(await Promise.all(
+    ['cnesdata', 'limnopulse', 'infrastructure'].flatMap(async slug => [
+      [`/work/${slug}/`, await readBuiltPage(`dist/work/${slug}/index.html`)],
+      [`/explore/${slug}/`, await readBuiltPage(`dist/explore/${slug}/index.html`)]
+    ])
+  )).flat(),
+  ['/explore/', overview]
+];
+for (const [route, pageHtml] of publishedPages) {
+  for (const metric of fictionalReferenceMetrics) {
+    assert.doesNotMatch(pageHtml, metric, `${route} must not publish unsupported reference metrics`);
+  }
+}
