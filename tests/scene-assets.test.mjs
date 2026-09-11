@@ -58,7 +58,7 @@ test('scene contract covers five districts without expanding routable projects',
 
 test('every responsive fallback exists with its declared dimensions and alternative text', async () => {
   const images = allPosters.flatMap(poster => [poster.desktop, poster.mobile]);
-  assert.equal(images.length, 28);
+  assert.equal(images.length, 30);
   assert.equal(new Set(images.map(image => image.src)).size, images.length);
   for (const image of images) {
     assert.ok(image.alt.trim().length > 20, image.src);

@@ -13,7 +13,7 @@
     "preview": "astro preview --host 0.0.0.0",
     "typecheck": "npm run typecheck:simulation && tsc --project tsconfig.explorer.json && npm run typecheck:scenes",
     "test:explorer": "playwright test",
-    "assets:generate": "node scripts/assets/generate.mjs",
+    "assets:generate": "node --experimental-strip-types scripts/assets/generate.mjs",
     "gallery": "node --experimental-strip-types scripts/gallery/server.mjs",
     "typecheck:scenes": "tsc --project tsconfig.scenes.json",
     "gallery:verify": "node --experimental-strip-types scripts/gallery/verify.mjs"

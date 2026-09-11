@@ -2,7 +2,7 @@ import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { resolve, extname, sep } from 'node:path';
-import { allPosters, sceneAssets, homeVisual, workPosters, overview } from '../../src/content/scenes/index.ts';
+import { allPosters, sceneAssets, homeVisual, workPosters, overview, infrastructureFailurePoster } from '../../src/content/scenes/index.ts';
 
 const root = resolve(fileURLToPath(new URL('../../', import.meta.url)));
 const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
@@ -11,6 +11,7 @@ const cards = [
   ...Object.entries(workPosters).map(([id, poster]) => ({ id: `work-${id}`, poster })),
   ...sceneAssets,
   overview,
+  { id: 'detail-infrastructure-failed', poster: infrastructureFailurePoster },
 ];
 const picture = poster => `<picture><source media="(max-width: 640px)" srcset="${escape(poster.mobile.src)}" width="${poster.mobile.width}" height="${poster.mobile.height}"><img src="${escape(poster.desktop.src)}" alt="${escape(poster.desktop.alt)}" width="${poster.desktop.width}" height="${poster.desktop.height}" loading="lazy"></picture>`;
 const html = `<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SO-07 asset inspection</title>

@@ -289,6 +289,21 @@ const overview = await readBuiltPage('dist/explore/index.html');
 assertEditorialShell(overview, 'explorer overview', true);
 assertMetadata(overview, '/explore/', origin);
 assert.match(overview, /Systems Observatory/);
+const districtDestinations = {
+  cnesdata: '/explore/cnesdata/',
+  'public-health': '/#experience',
+  infrastructure: '/explore/infrastructure/',
+  observability: '/#stack',
+  limnopulse: '/explore/limnopulse/',
+};
+assert.equal([...overview.matchAll(/<article\b[^>]*data-district-detail=/g)].length, 5, 'overview renders all five district articles');
+for (const [id, href] of Object.entries(districtDestinations)) {
+  assert.match(overview, new RegExp(`href="#district-${id}"`));
+  const article = overview.match(new RegExp(`<article[^>]*id="district-${id}"[^>]*>[\\s\\S]*?</article>`))?.[0];
+  assert.ok(article, `${id} article is present without JavaScript`);
+  assert.match(article, new RegExp(`href="${escapeRegExp(href)}"`));
+}
+assert.doesNotMatch(overview, /<canvas|<astro-island|\.(glb|gltf|ktx2)["']/i);
 for (const { slug, title } of caseStudies) {
   assert.match(overview, new RegExp(`href="/explore/${slug}/"`));
   const explorer = await readBuiltPage(`dist/explore/${slug}/index.html`);
@@ -309,6 +324,19 @@ for (const { slug, title } of caseStudies) {
     assert.match(explorer, /Illustrative/);
     assert.match(explorer, /synthetic-content-A/);
     assert.match(explorer, /data-step[^>]*disabled/);
+  } else if (slug === 'infrastructure') {
+    assert.match(explorer, /data-infrastructure-simulation/);
+    for (const node of ['node-01', 'node-02', 'node-03']) {
+      assert.match(explorer, new RegExp(`data-infra-node="${node}"[^>]*>[^<]*online`));
+    }
+    assert.match(explorer, /data-infra-workload[^>]*>[^<]*node-02/);
+    assert.match(explorer, /data-infra-shared[^>]*>[^<]*available/);
+    assert.match(explorer, /data-fail-node[^>]*disabled/);
+    assert.match(explorer, /data-infra-reset[^>]*disabled/);
+    assert.match(explorer, /Scenario transcript/);
+    assert.match(explorer, /detail-infrastructure-desktop.webp/);
+    assert.match(explorer, /data-infra-announcement[^>]*aria-live="polite"|aria-live="polite"[^>]*data-infra-announcement/);
+    assert.doesNotMatch(explorer, /data-step|data-scenario|data-reset/);
   } else {
     assert.doesNotMatch(explorer, /data-step|data-scenario|data-reset/);
   }

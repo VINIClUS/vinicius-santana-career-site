@@ -1,5 +1,5 @@
 {
-  "totalBytes": 1724994,
+  "totalBytes": 1768262,
   "assets": [
     {
       "src": "/assets/posters/detail-cnesdata-desktop.webp",
@@ -21,6 +21,20 @@
       "sha256": "f8141536f1246cff03056f50843437bea5d091c83737550eb6979d527d4a21bf",
       "width": 1200,
       "height": 800
+    },
+    {
+      "src": "/assets/posters/detail-infrastructure-failed-desktop.webp",
+      "width": 1200,
+      "height": 800,
+      "bytes": 25812,
+      "sha256": "9d27a734e97cb84b0687533915e8319122a79946c4312630a91c8d7b45bb9841"
+    },
+    {
+      "src": "/assets/posters/detail-infrastructure-failed-mobile.webp",
+      "width": 720,
+      "height": 900,
+      "bytes": 17456,
+      "sha256": "47c5ca5436a977ae0510755d847ccf044ee8aa0da45678ba2386dc43ba89b2ec"
     },
     {
       "src": "/assets/posters/detail-infrastructure-mobile.webp",

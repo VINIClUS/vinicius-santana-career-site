@@ -15,7 +15,7 @@ try {
     const page = await context.newPage();
     await page.goto('http://127.0.0.1:4323/');
     const images = page.locator('img');
-    assert.equal(await images.count(), 14);
+    assert.equal(await images.count(), 15);
     for (const img of await images.all()) {
       await img.scrollIntoViewIfNeeded();
       await img.evaluate(element => element.decode());

@@ -27,8 +27,9 @@
       overviewPositions,
       overviewLayouts,
     } from "./scenes.mjs";
+    import { applyInfrastructureState } from "./infrastructure-state.mjs";
     window.assetReady = true;
-    window.generateAsset = async (id, width, height) => {
+    window.generateAsset = async (id, width, height, infrastructureState) => {
       const mobileOverview = id === "overview" && height > width;
       const source = makeScene(id, mobileOverview ? "mobile" : "desktop");
       source.updateMatrixWorld(true);
@@ -37,6 +38,7 @@
         trs: true,
       });
       const object = (await new GLTFLoader().parseAsync(glb, "")).scene;
+      if (infrastructureState) applyInfrastructureState(object, infrastructureState);
       object.updateMatrixWorld(true);
       object.traverse((o) => {
         if (o.isMesh) {
