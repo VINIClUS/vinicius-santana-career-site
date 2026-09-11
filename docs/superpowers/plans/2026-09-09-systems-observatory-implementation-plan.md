@@ -227,20 +227,28 @@ No real timing or uptime values.
 
 ### Steps
 
-- [ ] Add/verify compatible R3F + Three.js dependencies.
-- [ ] Build the central hub + five-district overview using #11 manifests/assets.
-- [ ] Use an orthographic/isometric camera with constrained orbit and modest zoom.
-- [ ] Keep project labels/description controls in HTML overlays.
-- [ ] Consume #22's district registry; wire all five `DistrictId` values to selection/highlight and the HTML detail link without widening the three-value `ProjectId` union.
-- [ ] Add subtle camera/highlight transitions; no free-roam controls.
-- [ ] Load overview assets first; do not download every detail scene immediately.
-- [ ] When 3D mounts successfully, expose an explicit `View 2D` control that transitions the stage back to the existing 2D representation without losing the selected district, HTML details or navigation.
-- [ ] If `Save-Data`, WebGL initialization or asset loading fails, retain/show the current 2D view automatically.
-- [ ] Respect reduced-motion by reducing camera travel/continuous animation.
-- [ ] Add focused browser smoke: capable mount + district selection + deliberate `View 2D` transition + forced failure fallback + one mobile viewport.
+- [x] Add/verify compatible R3F + Three.js dependencies.
+- [x] Build the central hub + five-district overview using #11 manifests/assets.
+- [x] Use an orthographic/isometric camera with constrained orbit and modest zoom.
+- [x] Keep project labels/description controls in HTML overlays.
+- [x] Consume #22's district registry; wire all five `DistrictId` values to selection/highlight and the HTML detail link without widening the three-value `ProjectId` union.
+- [x] Add restrained selection highlighting and bounded camera controls; no free-roam controls or continuous motion. The approved SO-08 continuation uses immediate reduced-motion highlighting.
+- [x] Load overview assets first; load and fit only the selected CnesData or Infrastructure detail, restoring previous maquettes and guarding late downloads.
+- [x] When 3D mounts successfully, expose an explicit `View 2D` control that transitions the stage back to the existing 2D representation without losing the selected district, HTML details or navigation.
+- [x] If `Save-Data`, WebGL initialization or asset loading fails, retain/show the current 2D view automatically.
+- [x] Respect reduced-motion by reducing camera travel/continuous animation.
+- [x] Add focused browser smoke: capable mount + district selection + deliberate `View 2D` transition + forced failure fallback + one mobile viewport.
 - [ ] Build and open PR referencing #12.
 
 **Do not:** duplicate CnesData or Infrastructure transition logic in Three components.
+
+### SO-08 verification record
+
+Implemented from SO-11 baseline `0e1d996` on `feat/so-08-reference-3d-observatory`. React Three Fiber 9.7.0 subscribes to the existing Observatory controller; React 19.2.8, Three.js 0.183.2, the district registry, public routes and simulation engines are preserved.
+
+Mandatory sequence passed: `rtk npm ci`, `rtk npm test` (31 passed; build-only check deferred), `rtk npm run build` (13 pages), `rtk npm run smoke` (static contracts plus 11 asset checks), `rtk npm run test:explorer` (33 passed, including 16 new real-WebGL scenarios). Evidence and desktop/mobile reference comparison: [SO-08](../../design/so-08/README.md).
+
+PR review, final reviewed SHA, CI, merge and published verification are tracked in #12 and EPIC #4. #13 remains the final integration/release lane.
 
 ---
 

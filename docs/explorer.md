@@ -1,4 +1,4 @@
-# 2D explorer contract
+# Explorer and Observatory contracts
 
 Astro renders an Observatory overview and three project routes using the case-study collection. Architecture IDs live in `src/content/case-studies.yaml`; titles, descriptions and evidence statuses are reused from that collection. `src/features/explorer/projects.ts` supplies only project IDs, areas, component IDs and illustrative relationships. Scene nodes reuse those IDs, scoped to their project.
 
@@ -14,7 +14,21 @@ CnesData uses fictional keys/content only. Results are synthetic and illustrativ
 
 `createObservatoryController()` starts with no selection and accepts `SELECT_DISTRICT`. Invalid IDs are inert; `null` clears selection. Native `#district-<id>` navigation supports deep links and browser history, while the client synchronizes selection and article focus. Unrecognized fragments clear selection. Every district article and destination is rendered in the initial HTML; CSS `:target` preserves highlighting without JavaScript.
 
-The overview uses the existing desktop/mobile posters with link positions projected from each crop's scene camera and placements. No GLB is requested by the 2D Explorer. These registry and controller contracts are ready for #12's future renderer.
+The overview renders the existing desktop/mobile posters with link positions projected from each crop's scene camera and placements. All five articles and their normal links remain in the page throughout loading and interaction.
+
+## Progressive 3D Observatory (SO-08)
+
+Only `/explore/` loads the scene renderer. The lightweight launcher checks Save-Data and WebGL before importing React Three Fiber and Three.js. The poster stays visible until the six overview GLBs (hub and five districts) have loaded and the first frame has rendered. Import, initialization, model-loading and context-loss failures return to the existing 2D presentation.
+
+The renderer consumes `hub`, `districts`, `overview.layouts` and the five-entry `districtRegistry`. React subscribes to `createObservatoryController()`; the controller remains the source of selection. Canvas selection updates the fragment with `pushState` without scrolling. HTML fragment links retain their native navigation and article focus, including initial deep links and back/forward history.
+
+Selecting CnesData or Infrastructure lazily loads its detail model into that district's footprint, retaining the hub and the other districts. Selecting another district restores the previous overview maquette. Loaded models are reused during the visit; a completed download cannot overwrite a newer selection. These models illustrate architecture and do not own or run the project simulations.
+
+The orthographic camera uses the paired desktop/mobile manifest at the 700px breakpoint. Orbit is limited to ±15° horizontally and ±5° vertically, zoom to 0.9–1.2 times the initial view, and pan is disabled. HTML controls provide zoom and reset; HTML label positions follow the current camera and viewport. Rendering is on demand with DPR capped at 1.5. There is no continuous camera movement; reduced motion keeps 3D available with immediate highlighting.
+
+After a successful mount, **View 2D** discards the renderer, restores the poster and original label positions, preserves the selected district and focuses its HTML selector (the first selector when none is selected). The choice lasts until leaving or reloading the page and is not stored. Teardown cancels pending downloads, guards late completion, unmounts React and releases controls, listeners and graphic resources.
+
+Home and individual project routes do not download the Observatory renderer or GLBs. JavaScript-disabled navigation and both existing synthetic simulations retain their contracts. See [SO-08 evidence](design/so-08/README.md) for browser scenarios and desktop/mobile captures.
 
 ## Infrastructure scenario
 
@@ -22,4 +36,4 @@ The pure engine in `simulation/infrastructure.ts` starts with three online nodes
 
 The panel presents the state in text and responsive posters, with a polite announcement and a static scenario transcript. Controls start disabled and activate only after initialization. There are no timestamps, uptime or recovery metrics, backend calls or operational data. The failure posters are generated from the transitioned state via `simulationId` anchors; the original GLB stays unchanged.
 
-Scope remains split: Home/Work, including the **Health Systems** Work card, belong to #21; the 3D renderer belongs to #12; final integration belongs to #13. Delivering this Explorer does not complete those tasks or close EPIC #4.
+Home/Work, including the **Health Systems** Work card, were delivered by #21. SO-08 delivers #12's 3D renderer; final integration remains in #13. EPIC #4 stays open for that release work.

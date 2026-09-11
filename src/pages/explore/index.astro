@@ -10,7 +10,7 @@ const linkLabels = { cnesdata: 'Explore CnesData', 'public-health': 'View public
 const positionStyle = (desktop: { x: number; y: number }, mobile: { x: number; y: number }) => `--desktop-x:${desktop.x}%;--desktop-y:${desktop.y}%;--mobile-x:${mobile.x}%;--mobile-y:${mobile.y}%;`;
 ---
 <EditorialLayout title="Systems Observatory — Vinicius Santana" description="Explore five engineering districts around a central hub, with component views and synthetic walkthroughs in 2D." canonicalPath="/explore/">
-  <div class="shell explorer" data-observatory>
+  <div class="shell explorer" data-observatory data-scene-state="fallback">
     <header class="explorer-heading">
       <p class="eyebrow">Systems Observatory</p>
       <h1>Explore the systems.</h1>
@@ -30,6 +30,12 @@ const positionStyle = (desktop: { x: number; y: number }, mobile: { x: number; y
         style={positionStyle(projectToPoster(layouts.desktop.placements[id], layouts.desktop.camera), projectToPoster(layouts.mobile.placements[id], layouts.mobile.camera))}
       ><span class="district-number" aria-hidden="true">0{index + 1}</span><span>{districtRegistry[id].label}</span></a>)}
     </nav>
+    <div class="observatory-controls" data-scene-controls hidden aria-label="3D view controls" role="group">
+      <button type="button" data-scene-action="zoom-in">Zoom in</button>
+      <button type="button" data-scene-action="zoom-out">Zoom out</button>
+      <button type="button" data-scene-action="reset">Reset view</button>
+      <button type="button" data-scene-action="fallback">View 2D</button>
+    </div>
     <p class="observatory-instruction">Choose a district above, or browse all five below. Each district links to its project or related experience.</p>
     <div class="district-details">
       {districtIds.map(id => <article id={`district-${id}`} class={`explorer-area area-${id}`} data-district-detail={id} data-selected="false" tabindex="-1" aria-labelledby={`district-title-${id}`}>
