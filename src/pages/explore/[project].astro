@@ -14,7 +14,7 @@ const definition = projectDefinitions[project.id as ProjectId];
 const titleFor = (id: string) => project.architecture.find(component => component.id === id)!.title;
 const statusLabel = (status: string) => status[0].toUpperCase() + status.slice(1);
 ---
-<EditorialLayout title={`${project.title} explorer — Vinicius Santana`} description={project.summary} canonicalPath={`/explore/${project.id}/`}>
+<EditorialLayout title={`${project.title} explorer — Vinicius Santana`} description={project.summary} canonicalPath={`/explore/${project.id}/`} currentPath={`/explore/${project.id}/`} observatory>
   <div class="shell explorer" data-explorer data-project={project.id}>
     <nav class="explorer-nav" aria-label="Explorer projects">
       <a href="/explore/">All systems</a>

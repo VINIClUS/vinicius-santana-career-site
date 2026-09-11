@@ -112,6 +112,11 @@ assert.equal((editorialPages.work.match(/<article class="project-card visual-wor
 assert.match(editorialPages.work, /Health Systems/);
 assert.match(editorialPages.work, /href="\/#experience"[^>]*>View experience/);
 assert.match(editorialPages.about, /alt="Professional portrait of Vinicius Santana"/);
+assert.match(
+  editorialPages.about,
+  /<img[^>]*src="\/assets\/images\/vinicius-about\.jpg"[^>]*width="900"[^>]*height="1125"/i,
+  'About portrait dimensions must match the approved asset set'
+);
 const workCardOffsets = ['CnesData', 'Limnopulse', 'Infrastructure &amp; Operations'].map((title) => editorialPages.work.indexOf(title));
 assert.ok(workCardOffsets.every((offset) => offset >= 0), 'Work must list all three selected case studies');
 assert.deepEqual(workCardOffsets, [...workCardOffsets].sort((left, right) => left - right), 'Work must follow collection order');
@@ -342,3 +347,46 @@ for (const { slug, title } of caseStudies) {
   }
 }
 console.log('Explorer static routes and transcripts passed.');
+
+// SO-09 release: the Observatory is a first-class route, and the supporting
+// pages share its technical visual system rather than reverting to the former
+// editorial shell. These assertions operate on built HTML, so they protect the
+// published contract without coupling the test to source files.
+function primaryNavigation(html, pageName) {
+  const navigation = html.match(/<nav\b[^>]*aria-label="Primary navigation"[^>]*>[\s\S]*?<\/nav>/i)?.[0];
+  assert.ok(navigation, `${pageName} must include a bounded primary navigation region`);
+  return navigation;
+}
+
+assert.match(primaryNavigation(html, 'home'), /<a[^>]*href="\/explore\/"[^>]*>Explore<\/a>/i, 'primary navigation must expose Explore from Home');
+assert.match(primaryNavigation(overview, 'Explore'), /<a[^>]*href="\/explore\/"[^>]*aria-current="page"[^>]*>Explore<\/a>/i, 'Explore navigation must expose the active page');
+assert.match(primaryNavigation(editorialPages.resume, 'Resume'), /<a[^>]*href="\/resume\/"[^>]*aria-current="page"[^>]*>Resume<\/a>/i, 'Resume navigation must retain the active page');
+
+for (const [pageName, pageHtml] of Object.entries({ about: editorialPages.about, resume: editorialPages.resume })) {
+  assert.match(pageHtml, /<body\b[^>]*class="[^"]*\bobservatory\b[^"]*"/i, `${pageName} must use the shared Systems Observatory theme`);
+  assert.match(pageHtml, /<header\b[^>]*class="[^"]*page-hero[^"]*"/i, `${pageName} must retain the shared technical page structure`);
+}
+
+const fictionalReferenceMetrics = [
+  /5(?:[.,]5)?\s*k\+?\s*municipalit(?:y|ies)/i,
+  /100\s*m\+?\s*records/i,
+  /99(?:[.,]9)?\s*%\s*data reliability/i,
+  /100\s*%\s*uptime/i,
+  /(?:<|&lt;)\s*2\s*s\s*failover/i
+];
+const publishedPages = [
+  ['/', html],
+  ...Object.entries(editorialPages).map(([pageName, pageHtml]) => [`/${pageName === 'notFound' ? '404.html' : `${pageName}/`}`, pageHtml]),
+  ...(await Promise.all(
+    ['cnesdata', 'limnopulse', 'infrastructure'].flatMap(async slug => [
+      [`/work/${slug}/`, await readBuiltPage(`dist/work/${slug}/index.html`)],
+      [`/explore/${slug}/`, await readBuiltPage(`dist/explore/${slug}/index.html`)]
+    ])
+  )).flat(),
+  ['/explore/', overview]
+];
+for (const [route, pageHtml] of publishedPages) {
+  for (const metric of fictionalReferenceMetrics) {
+    assert.doesNotMatch(pageHtml, metric, `${route} must not publish unsupported reference metrics`);
+  }
+}

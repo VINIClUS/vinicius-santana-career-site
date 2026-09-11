@@ -10,20 +10,25 @@ import EditorialLayout from '../layouts/EditorialLayout.astro';
   title="About — Vinicius Santana"
   description="About Vinicius Santana, a software and data engineer working across backend systems, data quality and operations."
   canonicalPath="/about/"
+  currentPath="/about/"
+  observatory
 >
-  <header class="page-hero shell">
-    <p class="eyebrow">About</p>
-    <h1>Engineering grounded in operational reality.</h1>
-    <p class="summary">
-      I’m Vinicius Santana, a software and data engineer based in Brazil. I build systems that make data movement,
-      operational state and failure boundaries easier to understand and maintain.
-    </p>
+  <header class="page-hero shell about-hero">
+    <div class="about-hero-copy">
+      <p class="eyebrow">About</p>
+      <h1>Engineering grounded in operational reality.</h1>
+      <p class="summary">
+        I’m Vinicius Santana, a software and data engineer based in Brazil. I build systems that make data movement,
+        operational state and failure boundaries easier to understand and maintain.
+      </p>
+    </div>
     <figure class="about-portrait">
       <picture>
-        <source srcset="/assets/images/vinicius-portrait-mobile.avif" type="image/avif" />
-        <source srcset="/assets/images/vinicius-portrait-mobile.webp" type="image/webp" />
-        <img src="/assets/images/vinicius-portrait-mobile.jpg" alt="Professional portrait of Vinicius Santana" width="900" height="1200" decoding="async" />
+        <source srcset="/assets/images/vinicius-about.avif" type="image/avif" />
+        <source srcset="/assets/images/vinicius-about.webp" type="image/webp" />
+        <img src="/assets/images/vinicius-about.jpg" alt="Professional portrait of Vinicius Santana" width="900" height="1125" decoding="async" />
       </picture>
+      <figcaption>{profile.title} · {profile.location}</figcaption>
     </figure>
   </header>
 
@@ -74,8 +79,3 @@ import EditorialLayout from '../layouts/EditorialLayout.astro';
     </div>
   </section>
 </EditorialLayout>
-
-<style>
-.about-portrait { margin: 32px 0 0; max-width: 340px; }
-.about-portrait img { border-radius: 12px; }
-</style>

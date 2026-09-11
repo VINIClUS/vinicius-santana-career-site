@@ -7,22 +7,32 @@ import EditorialLayout from '../layouts/EditorialLayout.astro';
   title="Resume — Vinicius Santana"
   description="Open or download Vinicius Santana's software and data engineering resume."
   canonicalPath="/resume/"
+  currentPath="/resume/"
+  observatory
 >
-  <header class="page-hero shell">
-    <p class="eyebrow">Resume</p>
-    <h1>Software and data engineering, in one concise document.</h1>
-    <p class="summary">
-      The PDF is the maintained source for detailed employment history, education and credentials. This page keeps the
-      quickest actions visible without duplicating that content.
-    </p>
-    <div class="hero-actions" aria-label="Resume actions">
-      <a class="button" href={profile.resume} target="_blank" rel="noreferrer noopener">Open resume PDF</a>
-      <a class="button button-secondary" href={profile.resume} download>Download resume PDF</a>
-      <a class="button button-ghost" href={profile.mailto}>Contact me</a>
+  <header class="page-hero shell resume-hero">
+    <div class="resume-copy">
+      <p class="eyebrow">Resume</p>
+      <h1>Software and data engineering, in one concise document.</h1>
+      <p class="summary">
+        The PDF is the maintained source for detailed employment history, education and credentials. This page keeps the
+        quickest actions visible without duplicating that content.
+      </p>
+      <div class="hero-actions" aria-label="Resume actions">
+        <a class="button" href={profile.resume} target="_blank" rel="noreferrer noopener">Open resume PDF</a>
+        <a class="button button-secondary" href={profile.resume} download>Download resume PDF</a>
+        <a class="button button-ghost" href={profile.mailto}>Contact me</a>
+      </div>
     </div>
+    <aside class="resume-document" aria-label="Resume document summary">
+      <span class="resume-document-icon" aria-hidden="true">▧</span>
+      <p>Vinicius Santana</p>
+      <strong>Software &amp; Data Engineer</strong>
+      <span>Maintained PDF</span>
+    </aside>
   </header>
   <section class="section section-muted" aria-labelledby="resume-summary-title">
-    <div class="shell editorial-copy">
+    <div class="shell editorial-copy resume-glance">
       <p class="eyebrow">At a glance</p>
       <h2 id="resume-summary-title">Backend services, data systems and operational automation.</h2>
       <p>
