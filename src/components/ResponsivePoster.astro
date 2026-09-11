@@ -1,0 +1,10 @@
+---
+import type { ResponsivePoster } from '../content/scenes';
+interface Props { poster: ResponsivePoster; priority?: boolean; }
+const { poster, priority = false } = Astro.props;
+---
+<picture>
+  <source media="(min-width: 780px)" srcset={poster.desktop.src} width={poster.desktop.width} height={poster.desktop.height} />
+  <img src={poster.mobile.src} alt={poster.mobile.alt} width={poster.mobile.width} height={poster.mobile.height} loading={priority ? 'eager' : 'lazy'} fetchpriority={priority ? 'high' : 'auto'} decoding="async" />
+</picture>
+<style>picture, img { width: 100%; } img { object-fit: cover; }</style>

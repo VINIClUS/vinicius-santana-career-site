@@ -33,18 +33,10 @@ html:has(.explorer) { scroll-behavior: auto; }
 .relationship-list p { margin: 4px 0; color: var(--muted-strong); }
 .component-relations a, .relationship-list a { text-decoration: underline; text-underline-offset: 3px; }
 .component-relations a { display: inline-block; padding-block: 10px; }
-.walkthrough, .explorer-limits { border-top: 1px solid var(--line); padding-top: 32px; margin-top: 40px; }
-.walkthrough-controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-block: 24px; }
-.walkthrough-controls select { color: var(--text); background: #102132; border: 1px solid var(--line); padding: 12px; border-radius: 8px; min-height: 48px; max-width: 100%; font: inherit; }
-.walkthrough-controls button { cursor: pointer; }
-.walkthrough-controls :disabled { opacity: .5; cursor: default; }
-.walkthrough-state { background: rgba(132,244,230,.04); border: 1px solid var(--line); border-radius: 8px; padding: 24px; }
-.walkthrough-state ul, .walkthrough-state ol, .transcripts ul, .transcripts ol, .explorer-limits ul { padding-left: 24px; }
-.transcripts { margin-top: 32px; }
-.transcripts article { padding-block: 24px; border-bottom: 1px solid var(--line); }
+.explorer-limits { border-top: 1px solid var(--line); padding-top: 32px; margin-top: 40px; }
+.explorer-limits ul { padding-left: 24px; }
 @media (max-width: 800px) {
   .explorer-areas, .explorer-columns { grid-template-columns: 1fr; }
   .explorer-nav a { flex-grow: 1; }
-  .walkthrough-controls { align-items: stretch; flex-direction: column; }
   .selection-marker { max-width: 54px; }
 }

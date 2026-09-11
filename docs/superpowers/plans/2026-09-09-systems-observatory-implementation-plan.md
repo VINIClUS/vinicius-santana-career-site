@@ -70,19 +70,32 @@ Convert the already-working editorial UI into the reference's dark technical-das
 
 ### Steps
 
-- [ ] Replace the portrait-dominant Home hero with a two-column dark hero: identity/copy left, large globe/data-network visual slot right.
-- [ ] Add the four compact domain pillars: Data Systems, Distributed Infrastructure, Backend Engineering, Public Health.
-- [ ] Make `View selected work` and `Explore systems` the two main hero actions, link `Explore systems` to `/explore/`, and keep Resume in the compact header.
-- [ ] Keep the portrait on About rather than deleting a useful asset.
-- [ ] Rework `/work/` into an image-led dark card grid with CnesData, LimnoPulse, Infrastructure and Health Systems/public-health work; label the fourth action `View experience` and link it to `/#experience`.
-- [ ] Rework CnesData detail into the reference pattern: header/chips, anchor-tab row and large visual architecture/simulation panel near the top.
-- [ ] Apply that shared shell to CnesData, LimnoPulse and Infrastructure; use CnesData as the primary visual reference and smoke all three routes.
-- [ ] Reuse current truthful content and SO-05 controls; do not invent scale metrics.
-- [ ] Apply responsive stacked layouts similar to panel 07.
-- [ ] Preserve `#about`, `#experience`, `#projects`, `#stack`, `#contact`, `#case-cnesdata`, `#case-aquafarm`, `#case-esus-pec-bootstrap`, `#case-infra-ansible` and `#case-packer-proxmox-templates` as meaningful destinations.
-- [ ] Update `tests/static-build.smoke.mjs` for the new UI contract: replace the exact old hero-copy assertion with the new name/title/systems-oriented positioning, remove the obsolete pre-M2 rejection of `href="/explore/"`, require the Home `Explore systems` link to `/explore/`, and cover the fourth Health Systems card plus its `View experience` destination. Retain the metadata, resume, safety and compatibility-anchor checks.
-- [ ] Run the mandatory repository commands plus one desktop and one mobile Playwright smoke for Home → Work → CnesData, LimnoPulse and Infrastructure.
-- [ ] Open PR referencing #21 and the visual-alignment planning PR.
+- [x] Replace the portrait-dominant Home hero with a two-column dark hero: identity/copy left, large globe/data-network visual slot right.
+- [x] Add the four compact domain pillars: Data Systems, Distributed Infrastructure, Backend Engineering, Public Health.
+- [x] Make `View selected work` and `Explore systems` the two main hero actions, link `Explore systems` to `/explore/`, and keep Resume in the compact header.
+- [x] Keep the portrait on About rather than deleting a useful asset.
+- [x] Rework `/work/` into an image-led dark card grid with CnesData, LimnoPulse, Infrastructure and Health Systems/public-health work; label the fourth action `View experience` and link it to `/#experience`.
+- [x] Rework CnesData detail into the reference pattern: header/chips, anchor-tab row and large visual architecture/simulation panel near the top.
+- [x] Apply that shared shell to CnesData, LimnoPulse and Infrastructure; use CnesData as the primary visual reference and smoke all three routes.
+- [x] Reuse current truthful content and SO-05 controls; do not invent scale metrics.
+- [x] Apply responsive stacked layouts similar to panel 07.
+- [x] Preserve `#about`, `#experience`, `#projects`, `#stack`, `#contact`, `#case-cnesdata`, `#case-aquafarm`, `#case-esus-pec-bootstrap`, `#case-infra-ansible` and `#case-packer-proxmox-templates` as meaningful destinations.
+- [x] Update `tests/static-build.smoke.mjs` for the new UI contract: replace the exact old hero-copy assertion with the new name/title/systems-oriented positioning, remove the obsolete pre-M2 rejection of `href="/explore/"`, require the Home `Explore systems` link to `/explore/`, and cover the fourth Health Systems card plus its `View experience` destination. Retain the metadata, resume, safety and compatibility-anchor checks.
+- [x] Run the mandatory repository commands plus one desktop and one mobile Playwright smoke for Home → Work → CnesData, LimnoPulse and Infrastructure.
+- [x] Open PR referencing #21 and the visual-alignment planning PR.
+
+### SO-10 verification record
+
+Implemented on `feat/so-10-visual-alignment`. Uses the existing scene manifest and static posters; no public ID or collection changes. Home and Work share the image cards, and the new theme is opt-in for Home/Work/details. The existing CnesData controller powers the detail simulation; native fragment navigation is immediate to avoid keyboard-focus scroll races.
+
+- `rtk npm ci`: installed successfully, audit clean.
+- `rtk npm test`: 25 passed; one built-output check intentionally deferred to smoke.
+- `rtk npm run build`: all 13 pages generated.
+- `rtk npm run smoke`: static contracts and all 11 asset checks passed.
+- `rtk npm run test:explorer`: all 8 browser tests passed, including the original 4 explorer tests.
+- `rtk git diff --check`: clean.
+- Screenshots inspected against reference panels 01/03/04/07/08: [desktop](../../design/so-10/overview-1440.png), [mobile](../../design/so-10/overview-390.png). Full-page captures for all five routes are in `docs/design/so-10/`.
+- PR review, merge and published-route verification are tracked on the SO-10 PR and EPIC #4; the EPIC remains open for #22/#12/#13.
 
 **Do not:** wait for final 3D assets to implement layout; use stable placeholders/posters from #11 when available.
 

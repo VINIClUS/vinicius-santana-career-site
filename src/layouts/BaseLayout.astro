@@ -8,6 +8,7 @@ interface Props {
   canonicalPath?: string;
   noIndex?: boolean;
   preloadPortrait?: boolean;
+  observatory?: boolean;
 }
 
 const {
@@ -67,7 +68,7 @@ const personStructuredData = createPersonStructuredData(Astro.site);
     <script type="application/ld+json" set:html={JSON.stringify(personStructuredData)}></script>
     <title>{title}</title>
   </head>
-  <body>
+  <body class:list={{ observatory: Astro.props.observatory }}>
     <slot />
   </body>
 </html>

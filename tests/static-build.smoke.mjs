@@ -22,7 +22,6 @@ function assertEditorialShell(html, pageName, explorer = false) {
   assert.match(html, /<nav\b[^>]*aria-label="Primary navigation"/i, `${pageName} must include primary navigation`);
   assert.match(html, /<main\b[^>]*id="main"/i, `${pageName} must include the main landmark`);
   assert.match(html, /<footer\b/i, `${pageName} must include the global footer`);
-  if (!explorer) assert.doesNotMatch(html, /href="\/explore\/?"/i, `${pageName} must not link to Explore before M2`);
 }
 
 function escapeRegExp(value) {
@@ -49,7 +48,18 @@ function assertMetadata(html, route, origin) {
 const html = await readFile(fromRoot('dist/index.html'), 'utf8');
 
 assert.match(html, /<main\b[^>]*id="main"/i, 'home must render its main content as static HTML');
-assert.match(html, /I build data pipelines, APIs and automation/i, 'home must include the hero content in static HTML');
+assert.match(html, /<h1[^>]*>Vinicius\s*<br[^>]*>Santana<\/h1>/i, 'home must lead with identity');
+assert.match(html, /Software &amp; Data Engineer/, 'home must show the professional title');
+assert.match(html, /reliable systems where software, data and infrastructure meet/, 'home must explain systems positioning');
+for (const pillar of ['Data Systems', 'Distributed Infrastructure', 'Backend Engineering', 'Public Health']) assert.ok(html.includes(pillar));
+const hero = html.match(/<section[^>]*id="top"[\s\S]*?<\/section>/)[0];
+assert.equal((hero.match(/<a /g) || []).length, 2, 'hero must have exactly two primary actions');
+assert.match(hero, /href="\/work\/"[^>]*>View selected work/);
+assert.match(hero, /href="\/explore\/"[^>]*>Explore systems/);
+assert.match(hero, /home-globe-desktop\.webp/);
+assert.match(hero, /fetchpriority="high"/);
+assert.doesNotMatch(html, /<link[^>]*rel="preload"[^>]*vinicius-(?:hero|portrait)/);
+assert.doesNotMatch(html, /<canvas|\.(?:glb|gltf|ktx2)["']/i);
 
 for (const id of ['about', 'experience', 'projects', 'stack', 'contact']) {
   assert.match(html, new RegExp(`id=["']${id}["']`), `home must preserve #${id}`);
@@ -98,6 +108,10 @@ for (const [pageName, pageHtml] of Object.entries(editorialPages)) {
 }
 
 assert.match(editorialPages.work, /<a[^>]*aria-current="page"[^>]*>Work<\/a>/i, 'Work navigation must expose the active page');
+assert.equal((editorialPages.work.match(/<article class="project-card visual-work-card"/g) || []).length, 4);
+assert.match(editorialPages.work, /Health Systems/);
+assert.match(editorialPages.work, /href="\/#experience"[^>]*>View experience/);
+assert.match(editorialPages.about, /alt="Professional portrait of Vinicius Santana"/);
 const workCardOffsets = ['CnesData', 'Limnopulse', 'Infrastructure &amp; Operations'].map((title) => editorialPages.work.indexOf(title));
 assert.ok(workCardOffsets.every((offset) => offset >= 0), 'Work must list all three selected case studies');
 assert.deepEqual(workCardOffsets, [...workCardOffsets].sort((left, right) => left - right), 'Work must follow collection order');
@@ -153,6 +167,11 @@ const caseStudies = [
 for (const caseStudy of caseStudies) {
   const caseHtml = await readFile(fromRoot(`dist/work/${caseStudy.slug}/index.html`), 'utf8');
 
+  for (const anchor of ['overview', 'architecture', 'engineering', 'results']) {
+    assert.match(caseHtml, new RegExp(`href="#${anchor}"`));
+    assert.match(caseHtml, new RegExp(`id="${anchor}"`));
+  }
+  assert.match(caseHtml, /<picture/);
   assertMetadata(caseHtml, `/work/${caseStudy.slug}/`, origin);
 
   assert.match(caseHtml, new RegExp(`<title>${caseStudy.title} — Vinicius Santana<\\/title>`, 'i'));
@@ -168,9 +187,9 @@ for (const caseStudy of caseStudies) {
     'Reliability',
     'Outcomes',
     'Limitations',
-    'Evidence'
+    'Public evidence'
   ]) {
-    assert.match(caseHtml, new RegExp(`<h2[^>]*>${heading}<\\/h2>`, 'i'), `${caseStudy.slug} must include ${heading}`);
+    assert.match(caseHtml, new RegExp(`<h[23][^>]*>${heading}<\\/h[23]>`, 'i'), `${caseStudy.slug} must include ${heading}`);
   }
 
   for (const status of caseStudy.statuses) {

@@ -7,21 +7,27 @@ const caseStudies = (await getCollection('caseStudies')).sort((left, right) => l
 ---
 
 <EditorialLayout
+  observatory
   title="Selected Work — Vinicius Santana"
   description="Selected software, data and infrastructure case studies by Vinicius Santana."
   canonicalPath="/work/"
 >
   <header class="page-hero shell">
     <p class="eyebrow">Selected work</p>
-    <h1>Systems explained through decisions, evidence and limitations.</h1>
-    <p class="summary">Three case studies covering a data platform, telemetry and alerting, and infrastructure operations.</p>
+    <h1>From data to real-world impact.</h1>
+    <p class="summary">Selected projects and public-health experience, explained through decisions, evidence and current boundaries.</p>
   </header>
   <section class="section page-section" aria-labelledby="work-list-title">
     <div class="shell">
       <h2 id="work-list-title" class="visually-hidden">Case studies</h2>
-      <div class="project-grid">
+      <div class="project-grid work-grid">
         {caseStudies.map(({ data: caseStudy }) => <SelectedWorkCard caseStudy={caseStudy} />)}
+        <SelectedWorkCard domain />
       </div>
     </div>
   </section>
 </EditorialLayout>
+
+<style>
+.page-hero h1 { max-width: none; font-size: clamp(2rem, 3.2vw, 2.8rem); }
+</style>

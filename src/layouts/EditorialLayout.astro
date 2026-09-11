@@ -1,4 +1,5 @@
 ---
+import '../styles/observatory.css';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import BaseLayout from './BaseLayout.astro';
@@ -10,14 +11,15 @@ interface Props {
   currentPath?: string;
   noIndex?: boolean;
   preloadPortrait?: boolean;
+  observatory?: boolean;
 }
 
-const { title, description, canonicalPath = '/', currentPath = canonicalPath, noIndex = false, preloadPortrait = false } = Astro.props;
+const { title, description, canonicalPath = '/', currentPath = canonicalPath, noIndex = false, preloadPortrait = false, observatory = false } = Astro.props;
 ---
 
-<BaseLayout title={title} description={description} canonicalPath={canonicalPath} noIndex={noIndex} preloadPortrait={preloadPortrait}>
+<BaseLayout observatory={observatory} title={title} description={description} canonicalPath={canonicalPath} noIndex={noIndex} preloadPortrait={preloadPortrait}>
   <a class="skip-link" href="#main">Skip to content</a>
-  <Header currentPath={currentPath} />
+  <Header currentPath={currentPath} compact={observatory} />
   <main id="main">
     <slot />
   </main>
