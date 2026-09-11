@@ -1,5 +1,17 @@
 .observatory-map { position: relative; isolation: isolate; border: 1px solid var(--line); border-radius: 16px; background: #050a11; }
 .observatory-map picture, .observatory-map img { display: block; width: 100%; height: auto; border-radius: inherit; }
+.observatory-map canvas { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: inherit; visibility: hidden; touch-action: pan-y; }
+[data-scene-state="ready"] .observatory-map canvas { visibility: visible; }
+[data-scene-state="ready"] .observatory-map picture { visibility: hidden; }
+.district-link, .observatory-hub { z-index: 1; }
+.observatory-controls { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.observatory-controls[hidden] { display: none; }
+.observatory-controls button { min-height: 44px; padding: 9px 14px; color: var(--text); background: #0a1927; border: 1px solid #627f91; border-radius: 8px; cursor: pointer; font: inherit; }
+.observatory-controls button:hover { border-color: var(--accent); }
+.observatory-controls button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  .observatory-map *, .observatory-controls * { transition: none !important; animation: none !important; }
+}
 .district-link, .observatory-hub { position: absolute; left: var(--desktop-x); top: var(--desktop-y); transform: translate(-50%, 0); }
 .district-link { display: flex; align-items: center; gap: 8px; width: clamp(120px, 16vw, 188px); min-height: 48px; padding: 9px 11px; border: 1px solid #627f91; border-radius: 8px; color: var(--text); background: #0a1927f5; font-size: clamp(.7rem, 1.1vw, .9rem); line-height: 1.3; box-shadow: 0 5px 20px #0009; text-decoration: none; }
 .district-link:hover, .district-link[aria-current="true"] { border-color: var(--accent); background: #12333e; }
@@ -9,7 +21,7 @@
 .observatory-instruction { color: var(--muted-strong); margin-block: 18px 28px; }
 .district-details { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
 .district-details article { scroll-margin-top: calc(var(--header-height) + 24px); }
-.district-details article:target, .district-details article[data-selected="true"] { border-color: var(--accent); outline: 2px solid var(--accent); outline-offset: 2px; }
+[data-observatory]:not([data-controller-ready]) .district-details article:target, .district-details article[data-selected="true"] { border-color: var(--accent); outline: 2px solid var(--accent); outline-offset: 2px; }
 .district-details article:focus { outline: 3px solid var(--accent); outline-offset: 4px; }
 .area-public-health { border-top-color: #a4d3bc; }
 .area-observability { border-top-color: #e7c988; }
@@ -20,8 +32,8 @@
   .district-details { grid-template-columns: 1fr; }
   .district-details article { padding: 22px; }
 }
-[data-observatory]:has(#district-cnesdata:target) .district-link-cnesdata { border-color: var(--accent); outline: 2px solid var(--accent); outline-offset: 2px; background: #12333e; }
-[data-observatory]:has(#district-public-health:target) .district-link-public-health { border-color: var(--accent); outline: 2px solid var(--accent); outline-offset: 2px; background: #12333e; }
-[data-observatory]:has(#district-infrastructure:target) .district-link-infrastructure { border-color: var(--accent); outline: 2px solid var(--accent); outline-offset: 2px; background: #12333e; }
-[data-observatory]:has(#district-observability:target) .district-link-observability { border-color: var(--accent); outline: 2px solid var(--accent); outline-offset: 2px; background: #12333e; }
-[data-observatory]:has(#district-limnopulse:target) .district-link-limnopulse { border-color: var(--accent); outline: 2px solid var(--accent); outline-offset: 2px; background: #12333e; }
+[data-observatory]:not([data-controller-ready]):has(#district-cnesdata:target) .district-link-cnesdata { border-color: var(--accent); outline: 2px solid var(--accent); outline-offset: 2px; background: #12333e; }
+[data-observatory]:not([data-controller-ready]):has(#district-public-health:target) .district-link-public-health { border-color: var(--accent); outline: 2px solid var(--accent); outline-offset: 2px; background: #12333e; }
+[data-observatory]:not([data-controller-ready]):has(#district-infrastructure:target) .district-link-infrastructure { border-color: var(--accent); outline: 2px solid var(--accent); outline-offset: 2px; background: #12333e; }
+[data-observatory]:not([data-controller-ready]):has(#district-observability:target) .district-link-observability { border-color: var(--accent); outline: 2px solid var(--accent); outline-offset: 2px; background: #12333e; }
+[data-observatory]:not([data-controller-ready]):has(#district-limnopulse:target) .district-link-limnopulse { border-color: var(--accent); outline: 2px solid var(--accent); outline-offset: 2px; background: #12333e; }
