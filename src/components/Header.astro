@@ -4,16 +4,17 @@ import ExternalLink from './ExternalLink.astro';
 
 interface Props {
   currentPath?: string;
+  compact?: boolean;
 }
 
-const { currentPath = '/' } = Astro.props;
+const { currentPath = '/', compact = false } = Astro.props;
 ---
 
-<header class="site-header">
+<header class:list={["site-header", { "compact-header": compact }]}>
   <nav class="nav shell" aria-label="Primary navigation">
     <a class="brand" href="/" aria-label="Vinicius Santana home" data-nav-link>
       <span class="brand-mark" aria-hidden="true">VS</span>
-      <span>{profile.name}</span>
+      {!compact && <span>{profile.name}</span>}
     </a>
 
     <button
@@ -31,17 +32,18 @@ const { currentPath = '/' } = Astro.props;
 
     <div class="nav-panel" id="primary-navigation-menu" data-open="false" data-nav-panel>
       <ul class="nav-links">
-        {navLinks.map((link) => (
+        {navLinks.filter(link => !compact || link.href !== '/resume/').map((link) => (
           <li><a href={link.href} aria-current={currentPath === link.href ? 'page' : undefined} data-nav-link>{link.label}</a></li>
         ))}
       </ul>
-      <div class="nav-actions">
+      {!compact && <div class="nav-actions">
         <ExternalLink class="button button-ghost" href={profile.github} ariaLabel="View Vinicius Santana on GitHub">
           View GitHub
         </ExternalLink>
         <a class="button button-small" href="/#contact">Contact me</a>
-      </div>
+      </div>}
     </div>
+    {compact && <a class="header-resume" href="/resume/">Resume</a>}
   </nav>
 </header>
 

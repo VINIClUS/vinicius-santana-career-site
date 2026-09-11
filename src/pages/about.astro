@@ -18,6 +18,13 @@ import EditorialLayout from '../layouts/EditorialLayout.astro';
       I’m Vinicius Santana, a software and data engineer based in Brazil. I build systems that make data movement,
       operational state and failure boundaries easier to understand and maintain.
     </p>
+    <figure class="about-portrait">
+      <picture>
+        <source srcset="/assets/images/vinicius-portrait-mobile.avif" type="image/avif" />
+        <source srcset="/assets/images/vinicius-portrait-mobile.webp" type="image/webp" />
+        <img src="/assets/images/vinicius-portrait-mobile.jpg" alt="Professional portrait of Vinicius Santana" width="900" height="1200" decoding="async" />
+      </picture>
+    </figure>
   </header>
 
   <section class="section section-muted" aria-labelledby="experience-heading">
@@ -67,3 +74,8 @@ import EditorialLayout from '../layouts/EditorialLayout.astro';
     </div>
   </section>
 </EditorialLayout>
+
+<style>
+.about-portrait { margin: 32px 0 0; max-width: 340px; }
+.about-portrait img { border-radius: 12px; }
+</style>

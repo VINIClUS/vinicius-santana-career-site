@@ -1,4 +1,5 @@
 ---
+import './walkthrough.css';
 import { demonstration, scenarios } from '../../content/scenarios/cnesdata.ts';
 import { getTranscript } from './simulation/cnesdata.ts';
 const transcripts = scenarios.map(scenario => getTranscript(scenario.id)!);

@@ -3,6 +3,8 @@ import { getCollection } from 'astro:content';
 import ExternalLink from '../components/ExternalLink.astro';
 import PracticeCards from '../components/PracticeCards.astro';
 import SelectedWorkCard from '../components/SelectedWorkCard.astro';
+import ResponsivePoster from '../components/ResponsivePoster.astro';
+import { homeVisual } from '../content/scenes';
 import StackGrid from '../components/StackGrid.astro';
 import { experience, profile } from '../data/content.js';
 import EditorialLayout from '../layouts/EditorialLayout.astro';
@@ -18,44 +20,30 @@ const legacyAnchors: Record<string, { primary: string; aliases: string[] }> = {
 };
 ---
 
-<EditorialLayout currentPath="/" preloadPortrait>
-  <section class="hero section" id="top" aria-labelledby="hero-title">
-    <div class="shell hero-grid">
+<EditorialLayout currentPath="/" observatory>
+  <section class="observatory-hero section" id="top" aria-labelledby="hero-title">
+    <div class="shell observatory-hero-grid">
       <div class="hero-content">
-        <p class="eyebrow">Software &amp; Data Engineer · Brazil, UTC-3</p>
-        <h1 id="hero-title">I build data pipelines, APIs and automation that make operations more reliable.</h1>
-        <p class="hero-lede">
-          I turn data-heavy and operational problems into explicit contracts, maintainable services and repeatable workflows.
-        </p>
+        <p class="eyebrow">Building better systems</p>
+        <h1 id="hero-title">Vinicius<br />Santana</h1>
+        <p class="hero-role">Software &amp; Data Engineer</p>
+        <p class="hero-positioning">I build reliable systems where software, data and infrastructure meet.</p>
+        <ul class="domain-pillars" aria-label="Engineering domains">
+          <li><span aria-hidden="true">◫</span>Data Systems</li>
+          <li><span aria-hidden="true">⌘</span>Distributed Infrastructure</li>
+          <li><span aria-hidden="true">▤</span>Backend Engineering</li>
+          <li><span aria-hidden="true">♧</span>Public Health</li>
+        </ul>
         <div class="hero-actions" aria-label="Primary actions">
-          <a class="button" href="#projects">View selected work</a>
-          <a class="button button-secondary" href="/resume/">View resume</a>
-          <a class="button button-ghost" href="#contact">Contact me</a>
+          <a class="button" href="/work/">View selected work <span aria-hidden="true">→</span></a>
+          <a class="button button-secondary" href="/explore/">Explore systems <span aria-hidden="true">→</span></a>
         </div>
+        <p class="hero-location">{profile.location} · Software, data &amp; operations</p>
       </div>
-
-      <aside class="hero-visual" aria-label="Professional portrait and availability">
-        <figure class="portrait-card">
-          <picture>
-            <source media="(min-width: 780px)" srcset="/assets/images/vinicius-hero-desktop.avif" type="image/avif" />
-            <source media="(min-width: 780px)" srcset="/assets/images/vinicius-hero-desktop.webp" type="image/webp" />
-            <source srcset="/assets/images/vinicius-portrait-mobile.avif" type="image/avif" />
-            <source srcset="/assets/images/vinicius-portrait-mobile.webp" type="image/webp" />
-            <img
-              src="/assets/images/vinicius-portrait-mobile.jpg"
-              alt="Professional portrait of Vinicius Santana"
-              width="1600"
-              height="900"
-              decoding="async"
-              fetchpriority="high"
-            />
-          </picture>
-          <figcaption class="availability-card">
-            <span class="status-dot" aria-hidden="true"></span>
-            {profile.location} · {profile.availability}
-          </figcaption>
-        </figure>
-      </aside>
+      <figure class="globe-visual">
+        <ResponsivePoster poster={homeVisual} priority />
+        <figcaption>Connected systems. Grounded engineering.</figcaption>
+      </figure>
     </div>
   </section>
 
@@ -63,7 +51,7 @@ const legacyAnchors: Record<string, { primary: string; aliases: string[] }> = {
     <div class="shell">
       <div class="section-heading">
         <p class="eyebrow">Selected work</p>
-        <h2 id="projects-title">Three systems, with evidence and current boundaries made explicit.</h2>
+        <h2 id="projects-title">From data to real-world impact.</h2>
         <p>Each case study separates implemented work, documented direction and limitations.</p>
       </div>
       <div class="project-grid">

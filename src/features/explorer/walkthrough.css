@@ -1,0 +1,16 @@
+.walkthrough { border-top: 1px solid var(--line); padding-top: 32px; margin-top: 40px; }
+.walkthrough h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); }
+.walkthrough h3 { font-size: 1.1rem; }
+.walkthrough h4 { font-size: 1rem; }
+.walkthrough p, .walkthrough li { color: var(--muted-strong); overflow-wrap: anywhere; }
+.walkthrough > p { max-width: 850px; font-size: .9rem; }
+.walkthrough-controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-block: 24px; }
+.walkthrough-controls select { color: var(--text); background: #102132; border: 1px solid var(--line); padding: 12px; border-radius: 8px; min-height: 48px; max-width: 100%; font: inherit; }
+.walkthrough-controls button { cursor: pointer; }
+.walkthrough-controls :disabled { opacity: .5; cursor: default; }
+.walkthrough a:focus-visible, .walkthrough button:focus-visible, .walkthrough select:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
+.walkthrough-state { background: rgba(132,244,230,.04); border: 1px solid var(--line); border-radius: 8px; padding: 24px; }
+.walkthrough-state ul, .walkthrough-state ol, .transcripts ul, .transcripts ol { padding-left: 24px; }
+.transcripts { margin-top: 32px; }
+.transcripts article { padding-block: 24px; border-bottom: 1px solid var(--line); }
+@media (max-width: 800px) { .walkthrough-controls { align-items: stretch; flex-direction: column; } }
