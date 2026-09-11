@@ -95,7 +95,7 @@ for (const viewport of viewports) {
 
     await activatePrimaryNavigation(page, '/resume/', viewport.width < 820);
     await expect(page).toHaveURL(/\/resume\/$/);
-    await expect(page.getByRole('link', { name: 'Resume', exact: true })).toHaveAttribute('aria-current', 'page');
+    await expect(page.getByRole('navigation', { name: 'Primary navigation' }).getByRole('link', { name: 'Resume', exact: true })).toHaveAttribute('aria-current', 'page');
     await expectLoadedImagesAndNoHorizontalOverflow(page);
 
     await activatePrimaryNavigation(page, '/#contact', viewport.width < 820);
