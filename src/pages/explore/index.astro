@@ -1,26 +1,46 @@
 ---
-import { getCollection } from 'astro:content';
 import EditorialLayout from '../../layouts/EditorialLayout.astro';
-import { projectDefinitions, type ProjectId } from '../../features/explorer/projects.ts';
+import { districtIds, districtRegistry } from '../../features/explorer/districts.ts';
+import { overview } from '../../content/scenes/index.ts';
+import { projectToPoster } from '../../features/explorer/observatory-projection.ts';
 import '../../features/explorer/explorer.css';
-const projects = (await getCollection('caseStudies')).sort((a, b) => a.data.order - b.data.order);
+import '../../features/explorer/observatory.css';
+const { poster, layouts } = overview;
+const linkLabels = { cnesdata: 'Explore CnesData', 'public-health': 'View public-health experience', infrastructure: 'Explore Infrastructure', observability: 'View monitoring tools', limnopulse: 'Explore LimnoPulse' };
+const positionStyle = (desktop: { x: number; y: number }, mobile: { x: number; y: number }) => `--desktop-x:${desktop.x}%;--desktop-y:${desktop.y}%;--mobile-x:${mobile.x}%;--mobile-y:${mobile.y}%;`;
 ---
-<EditorialLayout title="Systems Observatory — Vinicius Santana" description="Explore the components, relationships and limits of three engineering systems in 2D." canonicalPath="/explore/">
-  <div class="shell explorer">
+<EditorialLayout title="Systems Observatory — Vinicius Santana" description="Explore five engineering districts around a central hub, with component views and synthetic walkthroughs in 2D." canonicalPath="/explore/">
+  <div class="shell explorer" data-observatory>
     <header class="explorer-heading">
       <p class="eyebrow">Systems Observatory</p>
       <h1>Explore the systems.</h1>
-      <p>Interactive engineering portfolio. Follow components and their relationships, then walk through a synthetic raw-object contract.</p>
+      <p>Five districts. Connected engineering perspectives. Select a district to explore its work, components and relationships.</p>
       <p class="explorer-note">Illustrative views, not live systems or production dashboards.</p>
     </header>
-    <div class="explorer-areas">
-      {projects.map(({ data: project }) => <article class={`explorer-area area-${project.id}`}>
-        <p class="eyebrow">{projectDefinitions[project.id as ProjectId].area}</p>
-        <h2>{project.title}</h2>
-        <p>{project.summary}</p>
-        <p>{project.architecture.length} components · {project.id === 'cnesdata' ? 'Synthetic walkthrough' : 'Component exploration'}</p>
-        <a class="button button-primary" href={`/explore/${project.id}/`}>Explore {project.title}</a>
+    <nav class="observatory-map" aria-label="Select a district">
+      <picture>
+        <source media="(max-width: 700px)" srcset={poster.mobile.src} width={poster.mobile.width} height={poster.mobile.height} />
+        <img src={poster.desktop.src} alt={poster.desktop.alt} width={poster.desktop.width} height={poster.desktop.height} fetchpriority="high" />
+      </picture>
+      <span class="observatory-hub" style={positionStyle(projectToPoster(layouts.desktop.hubPosition, layouts.desktop.camera), projectToPoster(layouts.mobile.hubPosition, layouts.mobile.camera))}>Systems hub</span>
+      {districtIds.map((id, index) => <a
+        class={`district-link district-link-${id}`}
+        href={`#district-${id}`}
+        data-district-link={id}
+        style={positionStyle(projectToPoster(layouts.desktop.placements[id], layouts.desktop.camera), projectToPoster(layouts.mobile.placements[id], layouts.mobile.camera))}
+      ><span class="district-number" aria-hidden="true">0{index + 1}</span><span>{districtRegistry[id].label}</span></a>)}
+    </nav>
+    <p class="observatory-instruction">Choose a district above, or browse all five below. Each district links to its project or related experience.</p>
+    <div class="district-details">
+      {districtIds.map(id => <article id={`district-${id}`} class={`explorer-area area-${id}`} data-district-detail={id} data-selected="false" tabindex="-1" aria-labelledby={`district-title-${id}`}>
+        <p class="eyebrow">{districtRegistry[id].kind === 'project' ? 'Project district' : 'Engineering domain'}</p>
+        <h2 id={`district-title-${id}`}>{districtRegistry[id].label}</h2>
+        <p>{districtRegistry[id].description}</p>
+        <a class="button button-primary" href={districtRegistry[id].href}>{linkLabels[id]}</a>
       </article>)}
     </div>
   </div>
 </EditorialLayout>
+<script>
+  import '../../features/explorer/observatory-client.ts';
+</script>

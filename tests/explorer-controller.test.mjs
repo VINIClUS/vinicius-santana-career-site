@@ -66,3 +66,30 @@ test('non-simulation projects ignore simulation commands', () => {
   assert.equal(notifications, 0);
   assert.equal('simulation' in initial, false);
 });
+
+test('Infrastructure dispatch is isolated, notifies changes, and selection preserves progress', () => {
+  const infra = createExplorerController('infrastructure');
+  const cnes = createExplorerController('cnesdata');
+  const initial = infra.getState();
+  const cnesInitial = cnes.getState();
+  let notifications = 0;
+  const unsubscribe = infra.subscribe(() => notifications++);
+  cnes.dispatch({ type: 'FAIL_NODE', nodeId: 'node-02' });
+  assert.strictEqual(cnes.getState(), cnesInitial);
+  infra.dispatch({ type: 'STEP' });
+  infra.dispatch({ type: 'SELECT_SCENARIO', scenarioId: 'raw-content-conflict' });
+  assert.strictEqual(infra.getState(), initial);
+  infra.dispatch({ type: 'FAIL_NODE', nodeId: 'node-02' });
+  assert.equal(infra.getState().infrastructureSimulation.workloadNodeId, 'node-01');
+  infra.dispatch({ type: 'FAIL_NODE', nodeId: 'node-02' });
+  assert.equal(notifications, 1);
+  const failed = infra.getState().infrastructureSimulation;
+  infra.dispatch({ type: 'SELECT_COMPONENT', componentId: projectDefinitions.infrastructure.componentIds[0] });
+  assert.strictEqual(infra.getState().infrastructureSimulation, failed);
+  infra.dispatch({ type: 'RESET' });
+  assert.deepEqual(infra.getState().infrastructureSimulation, initial.infrastructureSimulation);
+  assert.equal(notifications, 3);
+  unsubscribe();
+  infra.dispatch({ type: 'FAIL_NODE', nodeId: 'node-02' });
+  assert.equal(notifications, 3);
+});

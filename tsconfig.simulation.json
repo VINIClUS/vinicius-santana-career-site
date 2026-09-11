@@ -12,6 +12,6 @@
   },
   "include": [
     "src/content/scenarios/cnesdata.ts",
-    "src/features/explorer/simulation/cnesdata.ts"
+    "src/features/explorer/simulation/*.ts"
   ]
 }

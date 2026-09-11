@@ -2,7 +2,7 @@ import generated from './generated.json' with { type: 'json' };
 import type { DistrictId, OverviewLayout, ResponsivePoster, SceneAsset, SceneCamera, Vector3 } from './types.ts';
 export type { DistrictId, OverviewLayout, ResponsivePoster, SceneAsset, SceneCamera, SceneModel, Vector3, VisualImage } from './types.ts';
 
-export const districtIds = ['cnesdata', 'public-health', 'infrastructure', 'observability', 'limnopulse'] as const satisfies readonly DistrictId[];
+export { districtIds } from '../../features/explorer/districts.ts';
 
 function vector(value: readonly number[]): Vector3 {
   if (value.length !== 3 || !value.every(Number.isFinite)) throw new Error('Invalid generated scene vector');
@@ -94,4 +94,6 @@ export const overview = {
 } as const;
 
 export const sceneAssets: readonly SceneAsset[] = [...Object.values(districts), hub, ...Object.values(details)];
-export const allPosters: readonly ResponsivePoster[] = [homeVisual, ...Object.values(workPosters), ...sceneAssets.map(asset => asset.poster), overview.poster];
+export const infrastructureFailurePoster = poster('detail-infrastructure-failed', 'Synthetic Infrastructure failure: node-02 highlighted red, workload transferred to node-01, node-03 and shared layer available.');
+
+export const allPosters: readonly ResponsivePoster[] = [homeVisual, ...Object.values(workPosters), ...sceneAssets.map(asset => asset.poster), overview.poster, infrastructureFailurePoster];

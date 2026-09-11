@@ -1328,5 +1328,104 @@
       ]
     },
     "districtScale": 0.7
+  },
+  "detail-infrastructure-failed": {
+    "posters": {
+      "desktop": {
+        "src": "/assets/posters/detail-infrastructure-failed-desktop.webp",
+        "width": 1200,
+        "height": 800,
+        "bytes": 25812
+      },
+      "mobile": {
+        "src": "/assets/posters/detail-infrastructure-failed-mobile.webp",
+        "width": 720,
+        "height": 900,
+        "bytes": 17456
+      }
+    },
+    "cameras": {
+      "desktop": {
+        "position": [
+          24.82817665807104,
+          23.103950159360384,
+          31.035220822588798
+        ],
+        "target": [
+          0,
+          2,
+          0
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ],
+        "projection": "orthographic",
+        "frustum": {
+          "left": -7.463301515562351,
+          "right": 7.463301515562351,
+          "top": 4.975534343708234,
+          "bottom": -4.975534343708234,
+          "near": 0.1,
+          "far": 200
+        },
+        "zoom": 1
+      },
+      "mobile": {
+        "position": [
+          24.82817665807104,
+          23.103950159360384,
+          31.035220822588798
+        ],
+        "target": [
+          0,
+          2,
+          0
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ],
+        "projection": "orthographic",
+        "frustum": {
+          "left": -6.353148633628494,
+          "right": 6.353148633628494,
+          "top": 7.941435792035618,
+          "bottom": -7.941435792035618,
+          "near": 0.1,
+          "far": 200
+        },
+        "zoom": 1
+      }
+    },
+    "camera": {
+      "position": [
+        24.82817665807104,
+        23.103950159360384,
+        31.035220822588798
+      ],
+      "target": [
+        0,
+        2,
+        0
+      ],
+      "up": [
+        0,
+        1,
+        0
+      ],
+      "projection": "orthographic",
+      "frustum": {
+        "left": -7.463301515562351,
+        "right": 7.463301515562351,
+        "top": 4.975534343708234,
+        "bottom": -4.975534343708234,
+        "near": 0.1,
+        "far": 200
+      },
+      "zoom": 1
+    }
   }
 }

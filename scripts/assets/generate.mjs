@@ -4,6 +4,7 @@ import { resolve, extname, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "@playwright/test";
 import { sceneIds } from "./scenes.mjs";
+import { createInitialInfraState, transitionInfrastructure } from "../../src/features/explorer/simulation/infrastructure.ts";
 
 const root = fileURLToPath(new URL("../../", import.meta.url));
 const mime = {
@@ -54,17 +55,18 @@ try {
   } catch {}
   for (const id of process.argv.slice(2).length
     ? process.argv.slice(2)
-    : sceneIds) {
-    if (!sceneIds.includes(id)) throw Error(`Unknown scene ${id}`);
+    : [...sceneIds, "detail-infrastructure-failed"]) {
+    const failure = id === "detail-infrastructure-failed";
+    if (!sceneIds.includes(id) && !failure) throw Error(`Unknown scene ${id}`);
     const entry = { posters: {}, cameras: {} };
     for (const [variant, width, height] of [
       ["desktop", 1200, 800],
       ["mobile", 720, 900],
     ]) {
       const result = await page.evaluate(
-        async ({ id, width, height }) =>
-          window.generateAsset(id, width, height),
-        { id, width, height },
+        async ({ id, width, height, state }) =>
+          window.generateAsset(id, width, height, state),
+        { id: failure ? "detail-infrastructure" : id, width, height, state: failure ? transitionInfrastructure(createInitialInfraState(), { type: "FAIL_NODE", nodeId: "node-02" }) : undefined },
       );
       const src = `/assets/posters/${id}-${variant}.webp`;
       const buffer = Buffer.from(result.poster.split(",")[1], "base64");
@@ -78,7 +80,7 @@ try {
           entry.districtPositions = result.districtPositions;
           entry.districtScale = result.districtScale;
         }
-        if (id !== "overview") {
+        if (id !== "overview" && !failure) {
           const src = `/assets/scenes/${id}.glb`;
           const buffer = Buffer.from(result.glb, "base64");
           await writeFile(resolve(root, `public${src}`), buffer);

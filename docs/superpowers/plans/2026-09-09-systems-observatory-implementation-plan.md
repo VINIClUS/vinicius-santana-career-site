@@ -142,13 +142,13 @@ Dark navy/near-black, slate surfaces, thin grid/borders, compact white labels, t
 
 ### Observatory-domain update
 
-- [ ] Expand the overview composition to five visual districts around a central hub: Data Platform, Public Health, Infrastructure, Observability, LimnoPulse.
-- [ ] Represent Public Health and Observability as portfolio domains/layers, not fabricated standalone products.
-- [ ] Keep conceptual connection lines explicitly illustrative.
-- [ ] Introduce a typed district registry in which every entry has `kind: 'project' | 'domain'`, `label`, `description` and `href`; renderers and HTML panels consume these presentation fields rather than duplicating lookups.
-- [ ] Map project districts to `/explore/cnesdata/`, `/explore/limnopulse/` and `/explore/infrastructure/`; map `public-health` to `/#experience` and `observability` to `/#stack`.
-- [ ] Make all five districts selectable/highlightable and expose the selected district's normal link in the HTML panel.
-- [ ] Use **Health Systems** on the Work card and **Public Health Systems** in the Observatory for the same canonical `public-health` domain.
+- [x] Expand the overview composition to five visual districts around a central hub: Data Platform, Public Health, Infrastructure, Observability, LimnoPulse.
+- [x] Represent Public Health and Observability as portfolio domains/layers, not fabricated standalone products.
+- [x] Keep conceptual connection lines explicitly illustrative.
+- [x] Introduce a typed district registry in which every entry has `kind: 'project' | 'domain'`, `label`, `description` and `href`; renderers and HTML panels consume these presentation fields rather than duplicating lookups.
+- [x] Map project districts to `/explore/cnesdata/`, `/explore/limnopulse/` and `/explore/infrastructure/`; map `public-health` to `/#experience` and `observability` to `/#stack`.
+- [x] Make all five districts selectable/highlightable and expose the selected district's normal link in the HTML panel.
+- [x] Use **Public Health Systems** in the Observatory for the canonical `public-health` domain. The **Health Systems** Work card remains owned by #21 and is not delivered by this task.
 
 ### Infrastructure simulation model
 
@@ -182,12 +182,15 @@ No real timing or uptime values.
 
 ### Steps
 
-- [ ] Add focused transition tests for fail + workload move + reset.
-- [ ] Implement the minimal deterministic state function.
-- [ ] Add the panel UI and event timeline to the Infrastructure view.
-- [ ] Build registry, state and HTML/2D behavior independently; connect visual state to #11 assets when available.
-- [ ] Add one browser smoke for Simulate failure → state change → Reset.
-- [ ] Build and open PR referencing #22.
+- [x] Add focused transition tests for fail + workload move + reset.
+- [x] Implement the minimal deterministic state function.
+- [x] Add the panel UI and event timeline to the Infrastructure view.
+- [x] Build registry, state and HTML/2D behavior independently; connect visual state to #11 assets when available.
+- [x] Add one browser smoke for Simulate failure → state change → Reset.
+- [x] Build and open PR referencing #22.
+
+
+**Delivery boundary:** SO-11 delivers registry, HTML/2D selection and the synthetic Infrastructure scenario. Home/Work and its Health Systems card remain #21; renderer 3D remains #12; final integration remains #13. Merge and production verification are recorded in #22; #12 is unblocked once this change is merged. EPIC #4 stays open.
 
 ---
 

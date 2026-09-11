@@ -1,0 +1,49 @@
+---
+import { details, infrastructureFailurePoster } from '../../content/scenes/index.ts';
+import { createInitialInfraState, transitionInfrastructure, infraNodeIds } from './simulation/infrastructure.ts';
+const initial = createInitialInfraState();
+const transcript = transitionInfrastructure(initial, { type: 'FAIL_NODE', nodeId: 'node-02' });
+const poster = details.infrastructure.poster;
+---
+<section class="walkthrough infrastructure-simulation" data-infrastructure-simulation aria-labelledby="infra-title">
+  <p class="eyebrow">Synthetic simulation · Illustrative</p>
+  <h2 id="infra-title">Infrastructure failover</h2>
+  <p>Explore a synthetic three-node cluster. Fail node-02 to transfer its workload to node-01 while the shared layer stays available.</p>
+  <div class="infra-layout">
+    <picture>
+      <source media="(max-width: 640px)" srcset={poster.mobile.src} width={poster.mobile.width} height={poster.mobile.height} data-infra-poster-mobile data-initial-src={poster.mobile.src} data-failed-src={infrastructureFailurePoster.mobile.src} />
+      <img src={poster.desktop.src} width={poster.desktop.width} height={poster.desktop.height} alt={poster.desktop.alt} data-infra-poster data-initial-src={poster.desktop.src} data-failed-src={infrastructureFailurePoster.desktop.src} data-initial-alt={poster.desktop.alt} data-failed-alt={infrastructureFailurePoster.desktop.alt} />
+    </picture>
+    <div class="walkthrough-state">
+      <h3>Cluster state</h3>
+      <ul class="infra-nodes">{infraNodeIds.map(id => <li data-infra-node={id}>{id}: {initial.nodes[id]}</li>)}</ul>
+      <p data-infra-workload>Workload: {initial.workloadNodeId}</p>
+      <p data-infra-shared>Shared layer: {initial.sharedLayer}</p>
+      <div class="walkthrough-controls">
+        <button class="button button-primary" type="button" data-fail-node disabled>Fail node-02</button>
+        <button class="button button-secondary" type="button" data-infra-reset disabled>Reset simulation</button>
+      </div>
+      <p data-infra-help>Interactive controls require JavaScript. The scenario transcript is available below.</p>
+      <p role="status" aria-live="polite" aria-atomic="true" data-infra-announcement>Ready. Three nodes online; workload on node-02.</p>
+      <h3>Timeline</h3>
+      <ol data-infra-timeline></ol>
+    </div>
+  </div>
+  <details class="transcripts" open>
+    <summary>Scenario transcript</summary>
+    <p>Initial state: node-01, node-02 and node-03 online; workload on node-02; shared layer available.</p>
+    <ol>{transcript.timeline.map(event => <li>{event.description}</li>)}</ol>
+    <p>Reset restores all three nodes online, returns the workload to node-02 and clears the timeline.</p>
+  </details>
+</section>
+<style>
+  .infra-layout { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+  picture { display: block; background: #050a11; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  img { display: block; width: 100%; height: auto; }
+  .infra-nodes { display: grid; gap: 12px; }
+  [data-infra-node] { padding: 8px 12px; border-left: 3px solid var(--accent); }
+  [data-infra-node][data-status="failed"] { border-color: #ff8585; color: #ffaaaa; }
+  summary { cursor: pointer; padding-block: 12px; font-weight: 600; }
+  summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
+  @media (max-width: 800px) { .infra-layout { grid-template-columns: 1fr; } }
+</style>

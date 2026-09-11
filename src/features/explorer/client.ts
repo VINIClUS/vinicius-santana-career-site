@@ -13,6 +13,10 @@ export function initializeExplorer() {
   const step = root.querySelector<HTMLButtonElement>('[data-step]');
   const reset = root.querySelector<HTMLButtonElement>('[data-reset]');
 
+  const failNode = root.querySelector<HTMLButtonElement>('[data-fail-node]');
+  const infraReset = root.querySelector<HTMLButtonElement>('[data-infra-reset]');
+  let renderedInfrastructure = controller.getState().infrastructureSimulation;
+
   function render() {
     const state = controller.getState();
     for (const link of links) {
@@ -20,6 +24,33 @@ export function initializeExplorer() {
       else link.removeAttribute('aria-current');
     }
     for (const detail of details) detail.dataset.selected = String(detail.dataset.componentDetail === state.selectedComponentId);
+    const infra = state.infrastructureSimulation;
+    if (infra && failNode && infraReset) {
+      for (const node of root!.querySelectorAll<HTMLElement>('[data-infra-node]')) {
+        const id = node.dataset.infraNode as keyof typeof infra.nodes;
+        node.textContent = `${id}: ${infra.nodes[id]}`;
+        node.dataset.status = infra.nodes[id];
+      }
+      root!.querySelector('[data-infra-workload]')!.textContent = `Workload: ${infra.workloadNodeId}`;
+      const failed = infra.nodes['node-02'] === 'failed';
+      const poster = root!.querySelector<HTMLImageElement>('[data-infra-poster]')!;
+      const source = root!.querySelector<HTMLSourceElement>('[data-infra-poster-mobile]')!;
+      poster.src = (failed ? poster.dataset.failedSrc : poster.dataset.initialSrc)!;
+      poster.alt = (failed ? poster.dataset.failedAlt : poster.dataset.initialAlt)!;
+      source.srcset = (failed ? source.dataset.failedSrc : source.dataset.initialSrc)!;
+      failNode.disabled = failed;
+      if (infra !== renderedInfrastructure) {
+        root!.querySelector('[data-infra-timeline]')!.replaceChildren(...infra.timeline.map(event => {
+          const item = document.createElement('li');
+          item.textContent = event.description;
+          return item;
+        }));
+        root!.querySelector('[data-infra-announcement]')!.textContent = failed
+          ? infra.timeline.map(event => event.description).join(' ')
+          : 'Reset complete. Three nodes online; workload on node-02; shared layer available. Timeline cleared.';
+        renderedInfrastructure = infra;
+      }
+    }
     const simulation = state.simulation;
     if (!simulation || !scenario || !step || !reset) return;
     scenario.value = simulation.scenarioId;
@@ -58,6 +89,13 @@ export function initializeExplorer() {
   scenario?.addEventListener('change', () => controller.dispatch({ type: 'SELECT_SCENARIO', scenarioId: scenario.value }));
   step?.addEventListener('click', () => controller.dispatch({ type: 'STEP' }));
   reset?.addEventListener('click', () => controller.dispatch({ type: 'RESET' }));
+  failNode?.addEventListener('click', () => controller.dispatch({ type: 'FAIL_NODE', nodeId: 'node-02' }));
+  infraReset?.addEventListener('click', () => controller.dispatch({ type: 'RESET' }));
+  if (failNode && infraReset) {
+    failNode.disabled = false;
+    infraReset.disabled = false;
+    root.querySelector('[data-infra-help]')!.textContent = 'Run the synthetic failure, then reset to repeat. The scenario transcript remains below.';
+  }
   selectFragment();
   render();
   if (scenario && reset) {

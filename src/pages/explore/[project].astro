@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import EditorialLayout from '../../layouts/EditorialLayout.astro';
+import Infrastructure from '../../features/explorer/Infrastructure.astro';
 import Walkthrough from '../../features/explorer/Walkthrough.astro';
 import { projectDefinitions, type ProjectId } from '../../features/explorer/projects.ts';
 import '../../features/explorer/explorer.css';
@@ -27,6 +28,7 @@ const statusLabel = (status: string) => status[0].toUpperCase() + status.slice(1
     </header>
     <p class="explorer-note">Illustrative architecture map. Component statuses describe the public work; connections summarize relationships, not a live deployment.</p>
     {project.id === 'infrastructure' && <p class="explorer-note">A sanitized, illustrative reference topology, not a production inventory or a map of any real environment.</p>}
+    {project.id === 'infrastructure' && <Infrastructure />}
     <div class="explorer-columns">
       <section class="explorer-map" aria-labelledby="architecture-title">
         <h2 id="architecture-title">Architecture</h2>
