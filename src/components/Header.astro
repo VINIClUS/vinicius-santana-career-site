@@ -8,6 +8,9 @@ interface Props {
 }
 
 const { currentPath = '/', compact = false } = Astro.props;
+const isCurrent = (href: string) => href === '/explore/'
+  ? currentPath === href || currentPath.startsWith('/explore/')
+  : currentPath === href;
 ---
 
 <header class:list={["site-header", { "compact-header": compact }]}>
@@ -33,7 +36,7 @@ const { currentPath = '/', compact = false } = Astro.props;
     <div class="nav-panel" id="primary-navigation-menu" data-open="false" data-nav-panel>
       <ul class="nav-links">
         {navLinks.filter(link => !compact || link.href !== '/resume/').map((link) => (
-          <li><a href={link.href} aria-current={currentPath === link.href ? 'page' : undefined} data-nav-link>{link.label}</a></li>
+          <li><a href={link.href} aria-current={isCurrent(link.href) ? 'page' : undefined} data-nav-link>{link.label}</a></li>
         ))}
       </ul>
       {!compact && <div class="nav-actions">
@@ -43,7 +46,7 @@ const { currentPath = '/', compact = false } = Astro.props;
         <a class="button button-small" href="/#contact">Contact me</a>
       </div>}
     </div>
-    {compact && <a class="header-resume" href="/resume/">Resume</a>}
+    {compact && <a class="header-resume" href="/resume/" aria-current={isCurrent('/resume/') ? 'page' : undefined}>Resume</a>}
   </nav>
 </header>
 
@@ -76,7 +79,6 @@ const { currentPath = '/', compact = false } = Astro.props;
         : null;
 
       if (target) requestAnimationFrame(() => target.focus());
-      else toggle?.focus();
     });
   });
 
