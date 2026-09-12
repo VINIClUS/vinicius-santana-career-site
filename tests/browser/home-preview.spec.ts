@@ -58,7 +58,7 @@ test('starts as a meaningful poster and exposes one keyboard-operable Explore li
   renderer.release();
 });
 
-test('loads exactly the four overview models, draws once, then stays idle', async ({ page }) => {
+test('loads exactly the four overview models, animates, and stays idle when paused', async ({ page }) => {
   await installDrawCounter(page);
   const models: string[] = [];
   page.on('request', request => {
@@ -80,7 +80,12 @@ test('loads exactly the four overview models, draws once, then stays idle', asyn
   await frames(page);
   const settled = await page.evaluate(() => (window as typeof window & { homePreviewDraws: number }).homePreviewDraws);
   await frames(page, 12);
-  expect(await page.evaluate(() => (window as typeof window & { homePreviewDraws: number }).homePreviewDraws)).toBe(settled);
+  expect(await page.evaluate(() => (window as typeof window & { homePreviewDraws: number }).homePreviewDraws)).toBeGreaterThan(settled);
+  await page.getByRole('button', { name: 'Pause motion', exact: true }).click();
+  await frames(page);
+  const paused = await page.evaluate(() => (window as typeof window & { homePreviewDraws: number }).homePreviewDraws);
+  await page.waitForTimeout(2_000);
+  expect(await page.evaluate(() => (window as typeof window & { homePreviewDraws: number }).homePreviewDraws)).toBe(paused);
 });
 
 test('keeps the poster in layout until the first completed draw', async ({ page }) => {
@@ -351,18 +356,19 @@ test('does not draw while hidden or offscreen and redraws after becoming active'
   await page.goto('/');
   await ready(page);
   await frames(page);
-  const initial = await page.evaluate(() => (window as typeof window & { homePreviewDraws: number }).homePreviewDraws);
   await page.evaluate(() => (window as typeof window & { setHomeVisibility: (value: DocumentVisibilityState) => void }).setHomeVisibility('hidden'));
+  const initial = await page.evaluate(() => (window as typeof window & { homePreviewDraws: number }).homePreviewDraws);
   await page.setViewportSize({ width: 1210, height: 800 });
-  await frames(page, 10);
+  await page.waitForTimeout(2_000);
   expect(await page.evaluate(() => (window as typeof window & { homePreviewDraws: number }).homePreviewDraws)).toBe(initial);
   await page.evaluate(() => (window as typeof window & { setHomeVisibility: (value: DocumentVisibilityState) => void }).setHomeVisibility('visible'));
   await expect.poll(() => page.evaluate(() => (window as typeof window & { homePreviewDraws: number }).homePreviewDraws)).toBeGreaterThan(initial);
-  const visible = await page.evaluate(() => (window as typeof window & { homePreviewDraws: number }).homePreviewDraws);
   await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
   await expect(preview(page)).not.toBeInViewport();
+  await frames(page);
+  const visible = await page.evaluate(() => (window as typeof window & { homePreviewDraws: number }).homePreviewDraws);
   await page.setViewportSize({ width: 1200, height: 800 });
-  await frames(page, 10);
+  await page.waitForTimeout(2_000);
   expect(await page.evaluate(() => (window as typeof window & { homePreviewDraws: number }).homePreviewDraws)).toBe(visible);
   await preview(page).scrollIntoViewIfNeeded();
   await page.setViewportSize({ width: 1190, height: 800 });
@@ -370,7 +376,7 @@ test('does not draw while hidden or offscreen and redraws after becoming active'
   await frames(page, 10);
   const resized = await page.evaluate(() => (window as typeof window & { homePreviewDraws: number }).homePreviewDraws);
   await frames(page, 10);
-  expect(await page.evaluate(() => (window as typeof window & { homePreviewDraws: number }).homePreviewDraws)).toBe(resized);
+  expect(await page.evaluate(() => (window as typeof window & { homePreviewDraws: number }).homePreviewDraws)).toBeGreaterThan(resized);
 });
 
 test('mobile touch scrolling works over the decorative preview with reduced motion', async ({ page }) => {

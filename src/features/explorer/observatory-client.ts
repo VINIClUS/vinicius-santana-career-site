@@ -11,6 +11,9 @@ if (root) {
   const toolbar = root.querySelector<HTMLElement>('[data-scene-controls]')!;
   const labels = [...links, root.querySelector<HTMLElement>('.observatory-hub')!];
   const originalStyles = labels.map(label => label.getAttribute('style'));
+  const regions = [...map.querySelectorAll<SVGGElement>('[data-region]')];
+  const polygons = [...map.querySelectorAll<SVGPolygonElement>('[data-region-points]')];
+  const originalPoints = polygons.map(polygon => polygon.getAttribute('points')!);
   let scene: ObservatoryScene | undefined;
   let stopped = false;
   let loadingDeadline: ReturnType<typeof setTimeout> | undefined;
@@ -23,6 +26,7 @@ if (root) {
       else link.removeAttribute('aria-current');
     }
     for (const article of articles) article.dataset.selected = String(article.dataset.districtDetail === selectedDistrictId);
+    for (const region of regions) region.dataset.selected = String(region.dataset.region === selectedDistrictId);
   };
   const redirectLegacyFragment = () => {
     const destination = location.hash === '#district-public-health' ? '/#experience'
@@ -31,11 +35,14 @@ if (root) {
     location.replace(destination);
     return true;
   };
-  const syncFragment = () => {
+  const syncFragment = (focus: 'always' | 'preserve' | 'none' = 'preserve') => {
     if (redirectLegacyFragment()) return;
     const districtId = districtIds.find(id => location.hash === `#district-${id}`) ?? null;
     controller.dispatch({ type: 'SELECT_DISTRICT', districtId });
-    if (districtId) root.querySelector<HTMLElement>(`[data-district-detail="${districtId}"]`)?.focus({ preventScroll: true });
+    const detail = districtId ? root.querySelector<HTMLElement>(`[data-district-detail="${districtId}"]`) : null;
+    // Link navigation already focuses its target before hashchange; traversal may
+    // retain an old article. Preserve any focus chosen after navigation completes.
+    if (detail && (focus === 'always' || (focus === 'preserve' && (document.activeElement === document.body || document.activeElement === detail)))) detail.focus({ preventScroll: true });
   };
   const use2D = () => {
     const canvas = map.querySelector('[data-observatory-canvas]');
@@ -52,6 +59,7 @@ if (root) {
       if (style == null) label.removeAttribute('style');
       else label.setAttribute('style', style);
     });
+    polygons.forEach((polygon, index) => polygon.setAttribute('points', originalPoints[index]!));
     if (restoreFocus) (links.find(link => link.dataset.districtLink === controller.getState().selectedDistrictId) ?? links[0])?.focus({ preventScroll: true });
   };
   let nativeEvents: AbortController | undefined;
@@ -62,9 +70,23 @@ if (root) {
     nativeEvents = new AbortController();
     unsubscribe = controller.subscribe(render);
     const { signal } = nativeEvents;
-    // Fragment traversal also emits hashchange; listening to popstate would focus twice.
-    window.addEventListener('hashchange', syncFragment, { signal });
-    for (const link of links) link.addEventListener('click', () => {
+    let pendingLinkHash: string | undefined;
+    let focusedTraversalHash: string | undefined;
+    window.addEventListener('popstate', () => {
+      if (pendingLinkHash === location.hash) return;
+      // Traversal owns a new focus destination even when the browser retains the
+      // previous article. Its later hashchange must not focus a second time.
+      syncFragment('always');
+      focusedTraversalHash = location.hash;
+    }, { signal });
+    window.addEventListener('hashchange', () => {
+      syncFragment(focusedTraversalHash === location.hash ? 'none' : 'preserve');
+      pendingLinkHash = undefined;
+      focusedTraversalHash = undefined;
+    }, { signal });
+    for (const link of links) link.addEventListener('click', event => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      pendingLinkHash = link.hash === location.hash ? undefined : link.hash;
       // Native fragments own scrolling and history; repeated fragments still focus the article.
       if (link.hash === location.hash) root.querySelector<HTMLElement>(`[data-district-detail="${link.dataset.districtLink}"]`)?.focus({ preventScroll: true });
     }, { signal });
@@ -98,19 +120,22 @@ if (root) {
     } catch { return false; }
   };
   if (!redirectLegacyFragment() && capable()) {
+    const startedAt = performance.now();
+    const expired = () => performance.now() - startedAt >= 15_000;
     root.dataset.sceneState = 'loading';
     toolbar.hidden = false;
     loadingDeadline = setTimeout(() => use2D(), 15_000);
     void import('./scene/renderer.tsx').then(({ mountObservatoryScene }) => {
       if (stopped) return;
+      if (expired()) { use2D(); return; }
       scene = mountObservatoryScene({
         host: map, controller,
         onSelect(districtId: DistrictId) {
-          if (location.hash !== `#district-${districtId}`) history.pushState(null, '', `#district-${districtId}`);
-          controller.dispatch({ type: 'SELECT_DISTRICT', districtId });
+          links.find(link => link.dataset.districtLink === districtId)?.click();
         },
         onReady() {
           if (stopped) return;
+          if (expired()) { use2D(); return; }
           clearTimeout(loadingDeadline);
           root.dataset.sceneState = 'ready';
           for (const button of toolbar.querySelectorAll<HTMLButtonElement>('button')) button.disabled = false;

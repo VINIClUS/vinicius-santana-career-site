@@ -79,6 +79,7 @@ for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 900 
       await page.locator(`a[href="#district-${id}"]`).click();
       await expect(page.locator(`#district-${id}:target`)).toHaveCount(1);
       await expect(page.locator(`[data-district-link="${id}"]`)).toHaveCSS('outline-style', 'solid');
+      await expect(page.locator(`.observatory-regions:visible [data-region="${id}"] .region-selection`)).toHaveCSS('opacity', '1');
       await expect(page.locator(`#district-${id} a[href="${href}"]`)).toBeVisible();
     }
     for (const [id, href] of Object.entries(domains)) {
