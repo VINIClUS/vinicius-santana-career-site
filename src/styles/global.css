@@ -702,6 +702,7 @@ h3 {
 
 .timeline-role::before {
   position: absolute;
+  box-sizing: border-box;
   top: 31px;
   left: -27px;
   z-index: 1;

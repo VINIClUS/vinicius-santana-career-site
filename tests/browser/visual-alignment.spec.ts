@@ -69,9 +69,13 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       const markerCenter = (role: HTMLElement) => {
         const box = role.getBoundingClientRect();
         const marker = getComputedStyle(role, '::before');
+        const renderedWidth = Number.parseFloat(marker.width)
+          + (marker.boxSizing === 'border-box' ? 0 : Number.parseFloat(marker.borderLeftWidth) + Number.parseFloat(marker.borderRightWidth));
+        const renderedHeight = Number.parseFloat(marker.height)
+          + (marker.boxSizing === 'border-box' ? 0 : Number.parseFloat(marker.borderTopWidth) + Number.parseFloat(marker.borderBottomWidth));
         return {
-          x: box.left + Number.parseFloat(marker.left) + Number.parseFloat(marker.width) / 2,
-          y: box.top + Number.parseFloat(marker.top) + Number.parseFloat(marker.height) / 2
+          x: box.left + Number.parseFloat(marker.left) + renderedWidth / 2,
+          y: box.top + Number.parseFloat(marker.top) + renderedHeight / 2
         };
       };
       const connector = getComputedStyle(roles[0], '::after');
