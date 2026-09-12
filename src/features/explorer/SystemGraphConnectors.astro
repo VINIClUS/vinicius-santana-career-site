@@ -5,14 +5,16 @@ import { graphLabel } from './system-view.ts';
 
 type Component = CollectionEntry<'caseStudies'>['data']['architecture'][number];
 export interface GraphNodePosition { readonly id: string; readonly x: number; readonly y: number; readonly halfWidth?: number; readonly halfHeight?: number; }
+export interface GraphRoute { readonly via: readonly { readonly x: number; readonly y: number }[]; readonly label: { readonly x: number; readonly y: number }; readonly labelWidth?: number; }
 interface Props {
   components: readonly Component[];
   nodes: readonly GraphNodePosition[];
   relations: readonly ProjectRelation[];
   nodeHalfWidth: number;
   nodeHalfHeight: number;
+  routes?: Readonly<Record<string, GraphRoute>>;
 }
-const { components, nodes, relations, nodeHalfWidth, nodeHalfHeight } = Astro.props;
+const { components, nodes, relations, nodeHalfWidth, nodeHalfHeight, routes } = Astro.props;
 const nodeFor = (id: string) => nodes.find(node => node.id === id)!;
 const componentFor = (id: string) => components.find(component => component.id === id)!;
 const hasReciprocal = (relation: ProjectRelation) => relations.some(candidate => candidate.from === relation.to && candidate.to === relation.from);
@@ -25,8 +27,17 @@ const boundaryPoint = (origin: GraphNodePosition, destination: GraphNodePosition
 const routeFor = (relation: ProjectRelation) => {
   const from = nodeFor(relation.from);
   const to = nodeFor(relation.to);
-  const start = boundaryPoint(from, to);
-  const end = boundaryPoint(to, from);
+  const override = routes?.[`${relation.from}→${relation.to}`];
+  const firstWaypoint = override?.via[0];
+  const lastWaypoint = override?.via.at(-1);
+  const start = boundaryPoint(from, firstWaypoint ?? to);
+  const end = boundaryPoint(to, lastWaypoint ?? from);
+  if (override) {
+    return {
+      d: `M ${start.x} ${start.y} ${override.via.map(point => `L ${point.x} ${point.y}`).join(' ')} L ${end.x} ${end.y}`,
+      label: override.label,
+    };
+  }
   const dx = to.x - from.x;
   const dy = to.y - from.y;
   const length = Math.hypot(dx, dy) || 1;
@@ -47,12 +58,12 @@ const routeFor = (relation: ProjectRelation) => {
   const markerId = `arrow-${relation.from}-${relation.to}`;
   return <div class="graph-connector" data-graph-connector data-relation-from={relation.from} data-relation-to={relation.to} data-connector-from={relation.from} data-connector-to={relation.to} aria-label={`Connection from ${componentFor(relation.from).title} to ${componentFor(relation.to).title}: ${label}`}>
     <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><defs><marker id={markerId} markerWidth="7" markerHeight="7" refX="7" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="currentColor" /></marker></defs><path d={route.d} marker-end={`url(#${markerId})`} /></svg>
-    <span class="graph-connector-label" data-graph-edge-label style={`--label-x: ${route.label.x}%; --label-y: ${route.label.y}%`}>{label}</span>
+    <span class="graph-connector-label" data-graph-edge-label style={`--label-x: ${route.label.x}%; --label-y: ${route.label.y}%; --label-width: ${routes?.[`${relation.from}→${relation.to}`]?.labelWidth ?? 28}%`}>{label}</span>
   </div>;
 })}
 <style>
   .graph-connector { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
   .graph-connector svg { display: block; width: 100%; height: 100%; overflow: visible; color: var(--graph-connector, var(--accent)); }
   .graph-connector path { fill: none; stroke: currentColor; stroke-width: 1.1; vector-effect: non-scaling-stroke; opacity: .72; }
-  .graph-connector-label { position: absolute; left: var(--label-x); top: var(--label-y); max-width: 28%; transform: translate(-50%, -50%); border: 1px solid color-mix(in srgb, var(--graph-connector, var(--accent)) 48%, transparent); border-radius: 4px; background: var(--bg-strong); color: var(--muted-strong); padding: 3px 5px; font-size: .56rem; line-height: 1.25; text-align: center; }
+  .graph-connector-label { position: absolute; left: var(--label-x); top: var(--label-y); max-width: var(--label-width); transform: translate(-50%, -50%); border: 1px solid color-mix(in srgb, var(--graph-connector, var(--accent)) 48%, transparent); border-radius: 4px; background: var(--bg-strong); color: var(--muted-strong); padding: 3px 5px; font-size: .56rem; line-height: 1.25; text-align: center; }
 </style>

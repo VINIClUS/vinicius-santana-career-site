@@ -568,6 +568,7 @@ for (const component of cnes.architecture) {
   assert.doesNotMatch(article, new RegExp(component.status, 'i'), `${component.id} status is not repeated in its card`);
 }
 assertIntegratedSystemView(canonicalCnes, cnes, 'cnesdata');
+assert.doesNotMatch(canonicalCnes, /architecture statuses above/i, 'walkthrough does not refer to removed System View statuses');
 for (const evidence of cnes.evidence) {
   assert.ok(canonicalCnes.includes(`href="${evidence.url}"`));
   assert.ok(canonicalCnes.includes(escapeHtml(evidence.description)));

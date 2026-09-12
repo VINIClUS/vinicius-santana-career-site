@@ -82,6 +82,30 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
           await expect(reverse).toHaveCount(1);
           expect(separation.pathDistance).toBeGreaterThan(12);
           expect(separation.overlap).toBe(false);
+
+          for (const selector of [
+            '[data-connector-from="cloud-infrastructure"][data-connector-to="evaluator"]',
+            '[data-connector-from="production-device-layer"][data-connector-to="mqtt-ingestion"]',
+          ]) {
+            const obstruction = await view.locator(selector).evaluate(element => {
+              const path = element.querySelector('svg > path')!;
+              const matrix = path.ownerSVGElement!.getScreenCTM()!;
+              const label = element.querySelector('[data-graph-edge-label]')!.getBoundingClientRect();
+              const from = element.getAttribute('data-connector-from');
+              const to = element.getAttribute('data-connector-to');
+              const blockers = [...document.querySelectorAll('[data-graph-node]')]
+                .filter(node => ![from, to].includes((node as HTMLElement).dataset.graphNode ?? null))
+                .map(node => node.getBoundingClientRect());
+              const inside = (x: number, y: number) => blockers.some(blocker => x > blocker.left && x < blocker.right && y > blocker.top && y < blocker.bottom);
+              const length = path.getTotalLength();
+              const pathCrosses = Array.from({ length: 99 }, (_, index) => path.getPointAtLength(length * (index + 1) / 100))
+                .map(point => new DOMPoint(point.x, point.y).matrixTransform(matrix))
+                .some(point => inside(point.x, point.y));
+              const labelOverlaps = blockers.some(blocker => !(label.right <= blocker.left || blocker.right <= label.left || label.bottom <= blocker.top || blocker.bottom <= label.top));
+              return { pathCrosses, labelOverlaps };
+            });
+            expect(obstruction).toEqual({ pathCrosses: false, labelOverlaps: false });
+          }
         }
         await expect(view.getByText('Relationships', { exact: true })).toHaveCount(0);
         await expect(view.locator('[data-component-detail] a')).toHaveCount(0);
