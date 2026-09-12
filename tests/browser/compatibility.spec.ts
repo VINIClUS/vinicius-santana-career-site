@@ -77,7 +77,14 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       const work = navigation.getByRole('link', { name: 'Work', exact: true });
       await expect(navigation.getByRole('link', { name: 'About', exact: true })).toHaveAttribute('href', '/about/');
       await expect(navigation.getByRole('link', { name: 'Contact', exact: true })).toHaveAttribute('href', '/#contact');
-      await expect(navigation.getByRole('link', { name: 'Resume', exact: true })).toHaveAttribute('href', '/resume/');
+      await expect(navigation.getByRole('link', { name: 'LinkedIn', exact: true })).toHaveAttribute('href', 'https://linkedin.com/in/vinsantana');
+      await expect(navigation.getByRole('link', { name: 'GitHub', exact: true })).toHaveAttribute('href', 'https://github.com/VINIClUS');
+      for (const social of ['LinkedIn', 'GitHub']) {
+        const link = navigation.getByRole('link', { name: social, exact: true });
+        await expect(link).toHaveAttribute('target', '_blank');
+        await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+      }
+      await expect(navigation.getByRole('link', { name: 'Resume', exact: true })).toHaveCount(0);
       await expect(navigation.getByRole('link', { name: 'Explore', exact: true })).toHaveCount(0);
       await expect(work).toHaveAttribute('href', '/explore/');
       await expect(work).toHaveAttribute('aria-current', 'page');

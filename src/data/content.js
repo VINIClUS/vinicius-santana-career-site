@@ -18,7 +18,7 @@ export const profile = {
 export const navLinks = [
   { href: '/explore/', label: 'Work' },
   { href: '/about/', label: 'About' },
-  { href: '/resume/', label: 'Resume' },
+  { href: profile.linkedin, label: 'LinkedIn', external: true },
   { href: '/#contact', label: 'Contact' }
 ];
 

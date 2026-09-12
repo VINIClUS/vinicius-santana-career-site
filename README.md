@@ -239,6 +239,6 @@ canonical destination, `noindex`, a normal HTML link and `location.replace`.
 The explicit route map preserves query strings and fragments, including
 `#architecture`; query parameters never select a redirect destination. Without
 JavaScript, the HTML link opens the canonical page. These are not HTTP 301/308
-responses. The sitemap contains only the eight canonical pages.
+responses. The sitemap contains only the seven canonical pages.
 
 HTML owns content and navigation; deterministic controllers own selection and simulation. Optional renderers project that state without replacing evidence, focus or static fallbacks. See [SA-07 validation](docs/design/sa-07/validation.md) for migration cleanup and release evidence.

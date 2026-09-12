@@ -95,10 +95,21 @@ for (const viewport of viewports) {
     await expect(page.locator('body')).toHaveClass(/\bobservatory\b/);
     await expectLoadedImagesAndNoHorizontalOverflow(page);
 
-    await activatePrimaryNavigation(page, '/resume/', viewport.width < 820);
-    await expect(page).toHaveURL(/\/resume\/$/);
-    await expect(page.getByRole('navigation', { name: 'Primary navigation' }).getByRole('link', { name: 'Resume', exact: true })).toHaveAttribute('aria-current', 'page');
-    await expectLoadedImagesAndNoHorizontalOverflow(page);
+    const navigation = page.getByRole('navigation', { name: 'Primary navigation' });
+    if (viewport.width < 820) {
+      const menu = page.locator('[data-menu-toggle]');
+      await menu.focus();
+      await page.keyboard.press('Enter');
+      await expect(menu).toHaveAttribute('aria-expanded', 'true');
+    }
+    for (const [name, href] of [['LinkedIn', 'https://linkedin.com/in/vinsantana'], ['GitHub', 'https://github.com/VINIClUS']] as const) {
+      const social = navigation.getByRole('link', { name, exact: true });
+      await expect(social).toHaveAttribute('href', href);
+      await expect(social).toHaveAttribute('target', '_blank');
+      await expect(social).toHaveAttribute('rel', 'noopener noreferrer');
+    }
+    await expect(navigation.getByRole('link', { name: 'Resume', exact: true })).toHaveCount(0);
+    if (viewport.width < 820) await page.keyboard.press('Escape');
 
     await activatePrimaryNavigation(page, '/#contact', viewport.width < 820);
     await expect(page).toHaveURL(/\/#contact$/);

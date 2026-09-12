@@ -54,11 +54,13 @@ const legacyAnchors = ['case-cnesdata', 'case-aquafarm', 'case-esus-pec-bootstra
         <p>I’m open to remote Software Engineering, Data Engineering and platform-focused conversations.</p>
       </div>
       <div class="contact-actions" aria-label="Resume and contact links">
-        <a class="button" href={profile.mailto}>Email {profile.email}</a>
-        <a class="button button-secondary" href="/resume/">View resume</a>
-        <a class="button button-ghost" href={profile.resume} download>Download resume PDF</a>
+        <a class="button" href={profile.mailto}>{profile.email}</a>
+        <a class="button button-secondary" href={profile.resume} download>Resume</a>
         <ExternalLink class="button button-ghost" href={profile.linkedin} ariaLabel="Open Vinicius Santana on LinkedIn">
           LinkedIn
+        </ExternalLink>
+        <ExternalLink class="button button-ghost" href={profile.github} ariaLabel="Open Vinicius Santana on GitHub">
+          GitHub
         </ExternalLink>
       </div>
     </div>

@@ -117,7 +117,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     page.on('request', request => requests.push(request.url()));
     await page.goto('/');
     await expect(page.locator('h1')).toHaveText('ViniciusSantana');
-    await expect(page.locator('.header-resume')).toBeVisible();
+    await expect(page.locator('.header-social')).toBeVisible();
     for (const id of ['about', 'experience', 'projects', 'stack', 'contact', 'case-cnesdata', 'case-aquafarm', 'case-esus-pec-bootstrap', 'case-infra-ansible', 'case-packer-proxmox-templates']) {
       await expect(page.locator(`#${id}`)).toHaveCount(1);
     }
@@ -152,7 +152,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     for (const slug of ['cnesdata', 'limnopulse', 'infrastructure']) {
       await page.goto(`/explore/${slug}/`);
       await expect(page).toHaveURL(new RegExp(`/explore/${slug}/$`));
-      await expect(page.locator('.header-resume')).toBeVisible();
+      await expect(page.locator('.header-social')).toBeVisible();
       for (const anchor of ['overview', 'system', 'engineering', 'results']) {
         const link = page.locator(`.section-nav a[href="#${anchor}"]`);
         await link.focus();
@@ -164,9 +164,11 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       await page.getByRole('navigation', { name: 'Case study navigation' }).getByRole('link', { name: /Back to Atlas/ }).click();
       await expect(page).toHaveURL(/\/explore\/$/);
     }
-    await page.locator('.header-resume').click();
-    await expect(page).toHaveURL(/\/resume\/$/);
-    await expect(page.locator('a[download]')).toHaveAttribute('href', '/assets/vinicius-santana-resume.pdf');
+    await page.goto('/');
+    const homeActions = page.locator('.contact-actions a');
+    await expect(homeActions).toHaveText(['me@vinisantana.com', 'Resume', 'LinkedIn', 'GitHub']);
+    await expect(homeActions.nth(1)).toHaveAttribute('href', '/assets/vinicius-santana-resume.pdf');
+    await expect(homeActions.nth(1)).toHaveAttribute('download', '');
   });
 }
 
@@ -189,11 +191,26 @@ test('CnesData detail write, replay, conflict and reset', async ({ page }) => {
   }
 });
 
-test('detail transcripts and destinations survive without JavaScript', async ({ browser, baseURL }) => {
+test('header socials, Home actions, and detail transcripts remain usable without JavaScript', async ({ browser, baseURL }) => {
   const context = await browser.newContext({ baseURL, javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
   const page = await context.newPage();
   await page.goto('/');
-  await expect(page.locator('.header-resume')).toBeVisible();
+  const linkedIn = page.locator('.header-social');
+  const gitHub = page.locator('nav[aria-label="Primary navigation"] a[href="https://github.com/VINIClUS"]');
+  await expect(linkedIn).toBeVisible();
+  await expect(gitHub).toBeVisible();
+  for (const social of [linkedIn, gitHub]) {
+    await expect(social).toHaveAttribute('target', '_blank');
+    await expect(social).toHaveAttribute('rel', 'noopener noreferrer');
+  }
+  const homeActions = page.locator('.contact-actions a');
+  await expect(homeActions).toHaveText(['me@vinisantana.com', 'Resume', 'LinkedIn', 'GitHub']);
+  await expect(homeActions.nth(1)).toHaveAttribute('href', '/assets/vinicius-santana-resume.pdf');
+  await expect(homeActions.nth(1)).toHaveAttribute('download', '');
+  for (const social of [homeActions.nth(2), homeActions.nth(3)]) {
+    await expect(social).toHaveAttribute('target', '_blank');
+    await expect(social).toHaveAttribute('rel', 'noopener noreferrer');
+  }
   await page.goto('/explore/cnesdata/');
   await page.locator('.section-nav a[href="#simulation"]').click();
   for (const id of ['raw-first-write', 'raw-identical-replay', 'raw-content-conflict']) {
