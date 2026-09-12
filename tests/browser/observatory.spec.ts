@@ -50,12 +50,12 @@ test('mobile supports touch, project changes, closing, repeated activation and h
   const page = await context.newPage();
   await page.goto('/explore/#district-limnopulse');
   await expect(panel(page, 'limnopulse')).toBeVisible();
-  await panel(page, 'limnopulse').getByRole('link', { name: 'Close Limnopulse panel' }).tap();
+  await link(page, 'limnopulse').tap();
+  await expect(panel(page, 'limnopulse')).toBeHidden();
 
   await link(page, 'infrastructure').tap();
   await expect(panel(page, 'infrastructure')).toBeVisible();
-  await link(page, 'cnesdata').focus();
-  await page.keyboard.press('Enter');
+  await link(page, 'cnesdata').tap();
   await expect(panel(page, 'cnesdata')).toBeVisible();
   await page.goBack();
   await expect(panel(page, 'infrastructure')).toBeVisible();

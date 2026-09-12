@@ -49,6 +49,19 @@
   }
   .district-details article[data-selected="true"],
   [data-observatory]:not([data-controller-ready]) .district-details article:target { transform: translateY(0); }
+  [data-observatory]:has(.district-details article[data-selected="true"]) .district-link,
+  [data-observatory]:not([data-controller-ready]):has(.district-details article:target) .district-link {
+    top: calc(40% + 8px) !important; z-index: 4; width: calc(33.333% - 6px); height: 52px;
+    min-height: 52px; padding: 6px; transform: none !important; font-size: clamp(.6rem, 2.4vw, .75rem);
+  }
+  [data-observatory]:has(.district-details article[data-selected="true"]) .district-link-cnesdata,
+  [data-observatory]:not([data-controller-ready]):has(.district-details article:target) .district-link-cnesdata { left: 2px !important; }
+  [data-observatory]:has(.district-details article[data-selected="true"]) .district-link-limnopulse,
+  [data-observatory]:not([data-controller-ready]):has(.district-details article:target) .district-link-limnopulse { left: calc(33.333% + 1px) !important; }
+  [data-observatory]:has(.district-details article[data-selected="true"]) .district-link-infrastructure,
+  [data-observatory]:not([data-controller-ready]):has(.district-details article:target) .district-link-infrastructure { left: calc(66.666% + 1px) !important; }
+  [data-observatory]:has(.district-details article[data-selected="true"]) .district-details article[data-selected="true"],
+  [data-observatory]:not([data-controller-ready]):has(.district-details article:target) .district-details article:target { padding-top: 86px; }
 }
 [data-observatory]:not([data-controller-ready]):has(#district-cnesdata:target) .district-link-cnesdata { border-color: var(--accent); outline: 2px solid var(--accent); outline-offset: 2px; background: #12333e; }
 [data-observatory]:not([data-controller-ready]):has(#district-infrastructure:target) .district-link-infrastructure { border-color: var(--accent); outline: 2px solid var(--accent); outline-offset: 2px; background: #12333e; }
