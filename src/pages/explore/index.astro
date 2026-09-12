@@ -9,6 +9,7 @@ import '../../features/explorer/observatory.css';
 const { poster, layouts } = overview;
 const entries = await getCollection('caseStudies');
 const projects = districtIds.map(id => entries.find(entry => entry.id === id)!.data);
+const selectorProjects = ['cnesdata', 'infrastructure', 'limnopulse'].map(id => projects.find(project => project.id === id)!);
 const positionStyle = (desktop: { x: number; y: number }, mobile: { x: number; y: number }) => `--desktop-x:${desktop.x}%;--desktop-y:${desktop.y}%;--mobile-x:${mobile.x}%;--mobile-y:${mobile.y}%;`;
 ---
 <EditorialLayout title="Systems Atlas — Vinicius Santana" description="Explore CnesData, LimnoPulse and Infrastructure: three projects spanning data platforms, environmental telemetry and systems operations." canonicalPath="/explore/" currentPath="/explore/" observatory>
@@ -27,7 +28,7 @@ const positionStyle = (desktop: { x: number; y: number }, mobile: { x: number; y
         </picture>
         <span class="observatory-hub" style={positionStyle(projectToPoster(layouts.desktop.hubPosition, layouts.desktop.camera), projectToPoster(layouts.mobile.hubPosition, layouts.mobile.camera))}>Portfolio hub</span>
         <div class="district-selectors">
-          {projects.map((project, index) => <a
+          {selectorProjects.map((project, index) => <a
             class={`district-link district-link-${project.id}`}
             href={`#district-${project.id}`}
             data-district-link={project.id}

@@ -7,6 +7,9 @@ const panel = (page: Page, id: string) => page.locator(`[data-district-detail="$
 test('project panel selection, replacement, closing and history stay coherent', async ({ page }) => {
   await page.goto('/explore/');
   await expect(page.locator('[data-district-link][aria-current]')).toHaveCount(0);
+  expect(await page.locator('[data-district-link]').evaluateAll(links => links.map(item => (item as HTMLElement).dataset.districtLink))).toEqual([
+    'cnesdata', 'infrastructure', 'limnopulse',
+  ]);
 
   await link(page, 'cnesdata').focus();
   await page.keyboard.press('Enter');
