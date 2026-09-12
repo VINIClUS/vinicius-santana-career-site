@@ -15,12 +15,12 @@ async function expectCompatibilityMetadata(page: Page, destination: string) {
   await expect(page.locator('a[data-compatibility-link]')).toHaveAttribute('href', destination);
 }
 
-test('JavaScript compatibility redirects preserve raw query and fragment data', async ({ page, baseURL }) => {
+test('JavaScript compatibility redirects map only the retired architecture fragment', async ({ page, baseURL }) => {
   const cases = [
     ['/work/?tag=one&tag=two&encoded=a%2Fb%20c', '/explore/?tag=one&tag=two&encoded=a%2Fb%20c'],
-    ['/work/cnesdata/?next=https%3A%2F%2Fevil.example%2Fpwn#architecture', '/explore/cnesdata/?next=https%3A%2F%2Fevil.example%2Fpwn#architecture'],
-    ['/work/limnopulse/?url=https%3A%2F%2Fevil.example%2Foutside#architecture', '/explore/limnopulse/?url=https%3A%2F%2Fevil.example%2Foutside#architecture'],
-    ['/work/infrastructure/?redirect=%2Fwork%2Fcnesdata%2F#architecture', '/explore/infrastructure/?redirect=%2Fwork%2Fcnesdata%2F#architecture'],
+    ['/work/cnesdata/?next=https%3A%2F%2Fevil.example%2Fpwn#architecture', '/explore/cnesdata/?next=https%3A%2F%2Fevil.example%2Fpwn#system'],
+    ['/work/limnopulse/?url=https%3A%2F%2Fevil.example%2Foutside#architecture', '/explore/limnopulse/?url=https%3A%2F%2Fevil.example%2Foutside#system'],
+    ['/work/infrastructure/?redirect=%2Fwork%2Fcnesdata%2F#architecture', '/explore/infrastructure/?redirect=%2Fwork%2Fcnesdata%2F#system'],
   ] as const;
 
   for (const [source, destination] of cases) {
@@ -45,17 +45,18 @@ test('no-JavaScript compatibility pages expose metadata and working fallback lin
   await context.close();
 });
 
-test('Back and Forward do not revisit any compatibility page', async ({ page }) => {
+test('Back and Forward do not revisit compatibility pages after fragment normalization', async ({ page }) => {
   for (const [source, destination] of compatibilityRoutes) {
     const suffix = source === '/work/' ? '?from=history' : '?from=history#architecture';
+    const expectedSuffix = source === '/work/' ? suffix : '?from=history#system';
     await page.goto('/about/');
     await page.evaluate(url => { window.location.href = url; }, `${source}${suffix}`);
-    await expect(page).toHaveURL(`${destination}${suffix}`);
+    await expect(page).toHaveURL(`${destination}${expectedSuffix}`);
 
     await page.goBack();
     await expect(page).toHaveURL('/about/');
     await page.goForward();
-    await expect(page).toHaveURL(`${destination}${suffix}`);
+    await expect(page).toHaveURL(`${destination}${expectedSuffix}`);
   }
 });
 

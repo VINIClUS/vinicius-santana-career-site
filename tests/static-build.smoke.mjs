@@ -213,11 +213,11 @@ const caseStudies = [
 for (const caseStudy of caseStudies) {
   const caseHtml = await readFile(fromRoot(`dist/explore/${caseStudy.slug}/index.html`), 'utf8');
 
-  for (const anchor of ['overview', 'architecture', 'engineering', 'results']) {
+  for (const anchor of ['overview', 'system', 'engineering', 'results']) {
     assert.match(caseHtml, new RegExp(`href="#${anchor}"`));
     assert.match(caseHtml, new RegExp(`id="${anchor}"`));
   }
-  assert.match(caseHtml, /id="architecture-title"/);
+  assert.match(caseHtml, /id="system-title"/);
   assert.match(caseHtml, /id="limitations"/);
   assertMetadata(caseHtml, `/explore/${caseStudy.slug}/`, origin);
 
@@ -410,7 +410,7 @@ for (const { slug, title } of caseStudies) {
     assert.match(explorer, /data-fail-node[^>]*disabled/);
     assert.match(explorer, /data-infra-reset[^>]*disabled/);
     assert.match(explorer, /Scenario transcript/);
-    assert.match(explorer, /detail-infrastructure-desktop.webp/);
+    assert.doesNotMatch(explorer, /<picture|<img/, 'Infrastructure System View remains a semantic, non-visual document');
     assert.match(explorer, /data-infra-announcement[^>]*aria-live="polite"|aria-live="polite"[^>]*data-infra-announcement/);
     assert.doesNotMatch(explorer, /data-step|data-scenario|data-reset/);
   } else {
@@ -466,13 +466,13 @@ for (const [route, pageHtml] of publishedPages) {
 const canonicalCnes = await readBuiltPage('dist/explore/cnesdata/index.html');
 const cnes = yaml.load(await readFile(fromRoot('src/content/case-studies.yaml'), 'utf8')).find(entry => entry.id === 'cnesdata');
 const escapeHtml = value => value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
-for (const id of ['overview', 'architecture', 'engineering', 'simulation', 'results', 'evidence', 'limitations']) {
+for (const id of ['overview', 'system', 'engineering', 'simulation', 'results', 'evidence', 'limitations']) {
   assert.match(canonicalCnes, new RegExp(`id="${id}"`), `canonical CnesData preserves #${id}`);
   assert.match(canonicalCnes, new RegExp(`href="#${id}"`), `canonical navigation exposes #${id}`);
 }
 assert.match(canonicalCnes, /<title>CnesData — Vinicius Santana<\/title>/);
 assert.match(canonicalCnes, /System View/);
-assert.match(canonicalCnes, /id="architecture-title"/, 'legacy explorer System View fragment remains a target');
+assert.match(canonicalCnes, /id="system-title"/, 'canonical System View fragment remains a target');
 for (const text of [cnes.eyebrow, cnes.summary, cnes.problem, cnes.context, ...cnes.contribution, ...cnes.decisions, ...cnes.reliability, ...cnes.outcomes, ...cnes.limitations]) {
   assert.ok(canonicalCnes.includes(escapeHtml(text)), `canonical HTML retains: ${text}`);
 }
@@ -487,14 +487,13 @@ for (const evidence of cnes.evidence) {
   assert.ok(canonicalCnes.includes(escapeHtml(evidence.description)));
   assert.ok(canonicalCnes.includes(`aria-label="Open ${evidence.label} in a new tab"`));
 }
-assert.match(canonicalCnes, /detail-cnesdata-desktop\.webp/);
-assert.match(canonicalCnes, /detail-cnesdata-mobile\.webp/);
+assert.doesNotMatch(canonicalCnes, /<picture|<img/, 'CnesData System View remains a semantic, non-visual document');
 assert.equal([...canonicalCnes.matchAll(/id="([^" ]+)"/g)].length, new Set([...canonicalCnes.matchAll(/id="([^" ]+)"/g)].map(match => match[1])).size, 'canonical IDs must be unique');
 console.log('Canonical CnesData content equivalence passed.');
 
 const canonicalInfra = await readBuiltPage('dist/explore/infrastructure/index.html');
 const infra = yaml.load(await readFile(fromRoot('src/content/case-studies.yaml'), 'utf8')).find(entry => entry.id === 'infrastructure');
-for (const id of ['overview', 'architecture', 'architecture-title', 'engineering', 'simulation', 'results', 'evidence', 'limitations', 'infra-title', 'details-title']) {
+for (const id of ['overview', 'system', 'system-title', 'engineering', 'simulation', 'results', 'evidence', 'limitations', 'infra-title', 'details-title']) {
   assert.equal([...canonicalInfra.matchAll(new RegExp(`id="${id}"`, 'g'))].length, 1, `unique Infrastructure #${id}`);
 }
 for (const text of [infra.eyebrow, infra.summary, infra.problem, infra.context, ...infra.contribution, ...infra.decisions, ...infra.reliability, ...infra.outcomes, ...infra.limitations]) {
@@ -519,12 +518,12 @@ const canonicalLimno = await readBuiltPage('dist/explore/limnopulse/index.html')
 const limno = yaml.load(await readFile(fromRoot('src/content/case-studies.yaml'), 'utf8')).find(entry => entry.id === 'limnopulse');
 assert.match(canonicalLimno, /data-visual-mode="telemetry"/);
 assert.match(canonicalLimno, /<title>Limnopulse — Vinicius Santana<\/title>/);
-for (const id of ['overview', 'architecture', 'engineering', 'results', 'evidence', 'limitations']) {
+for (const id of ['overview', 'system', 'engineering', 'results', 'evidence', 'limitations']) {
   assert.ok(canonicalLimno.includes(`id="${id}"`));
   assert.ok(canonicalLimno.includes(`href="#${id}"`));
 }
-assert.match(canonicalLimno, /id="architecture-title"/);
-for (const heading of ['Observations', 'Telemetry', 'Events', 'Problem', 'Context', 'Contribution', 'Decisions', 'Reliability', 'Outcomes', 'Public evidence']) {
+assert.match(canonicalLimno, /id="system-title"/);
+for (const heading of ['System diagram', 'Relationships', 'Component details', 'Problem', 'Context', 'Contribution', 'Decisions', 'Reliability', 'Outcomes', 'Public evidence']) {
   assert.match(canonicalLimno, new RegExp(`<h[234][^>]*>${heading}</h[234]>`));
 }
 for (const value of [limno.eyebrow, limno.summary, limno.problem, limno.context, ...limno.technologies, ...limno.contribution, ...limno.decisions, ...limno.reliability, ...limno.outcomes, ...limno.limitations]) {
@@ -556,8 +555,8 @@ for (const [relation, from, to] of limnoRelations) {
   assert.ok(limno.architecture.some(component => component.id === from));
   assert.ok(limno.architecture.some(component => component.id === to));
   assert.notEqual(from, to);
-  assert.match(relation, /<svg[^>]*aria-hidden="true"/);
-  assert.match(relation, /visually-hidden[^>]*>to</);
+  assert.match(relation, /class="relationship-direction"/);
+  assert.match(relation, /class="relationship-arrow"[^>]*aria-hidden="true"/);
 }
 console.log('Canonical Limnopulse content and relationship checks passed.');
 

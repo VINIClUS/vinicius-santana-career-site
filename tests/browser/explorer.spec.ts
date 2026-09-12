@@ -41,6 +41,30 @@ test('conflict preserves A, reset and scenario change', async ({ page }) => {
   await expect(page.locator('[data-objects] li')).toHaveCount(1);
 });
 
+test('canonical routes keep the primary detail selected at #system while simulations run', async ({ page }) => {
+  for (const [project, primaryComponent] of [
+    ['cnesdata', 'central-api'],
+    ['limnopulse', 'evaluator'],
+    ['infrastructure', 'reference-topology'],
+  ]) {
+    await page.goto(`/explore/${project}/`);
+    await expect(page.locator(`[data-component-detail="${primaryComponent}"]`)).toBeVisible();
+    await page.locator('a[href="#system"]').click();
+    await expect(page).toHaveURL(new RegExp(`/explore/${project}/#system$`));
+    await expect(page.locator(`[data-component-detail="${primaryComponent}"]`)).toBeVisible();
+
+    if (project === 'cnesdata') {
+      await page.getByRole('button', { name: 'Advance one attempt' }).click();
+      await expect(page.locator('[data-result]')).toContainText('stored');
+    }
+    if (project === 'infrastructure') {
+      await page.getByRole('button', { name: 'Fail node-02' }).click();
+      await expect(page.locator('[data-infra-workload]')).toContainText('node-01');
+    }
+    await expect(page).toHaveURL(new RegExp(`/explore/${project}/#system$`));
+  }
+});
+
 test('static navigation, details and every transcript without JavaScript', async ({ browser, baseURL }) => {
   const context = await browser.newContext({ baseURL, javaScriptEnabled: false });
   const page = await context.newPage();
@@ -54,12 +78,12 @@ test('static navigation, details and every transcript without JavaScript', async
     await expect(page.locator(`#transcript-${id}`)).toBeVisible();
     await expect(page.locator(`#transcript-${id}`)).toContainText('synthetic-content-A');
   }
-  for (const id of ['overview', 'architecture', 'engineering', 'results', 'evidence', 'limitations']) {
+  for (const id of ['overview', 'system', 'simulation', 'engineering', 'results', 'evidence', 'limitations']) {
     await expect(page.locator(`#${id}`)).toBeVisible();
   }
   await expect(page.getByLabel('Scenario')).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Reset scenario' })).toBeDisabled();
-  await expect(page.locator('img[src*="detail-cnesdata"]')).toBeVisible();
+  await expect(page.locator('[data-system-view]')).toHaveCount(1);
   await page.locator('nav[aria-label="Explorer projects"] a[href="/explore/limnopulse/"]').click();
   await expect(page.getByRole('heading', { name: 'Limnopulse', exact: true })).toBeVisible();
   await context.close();
@@ -84,6 +108,82 @@ test('touch walkthrough remains usable without WebGL or 3D assets', async ({ bro
   await context.close();
 });
 
+test('component selection keeps the detail panel usable at 360px', async ({ browser, baseURL }) => {
+  const context = await browser.newContext({ baseURL, viewport: { width: 360, height: 844 }, hasTouch: true, isMobile: true });
+  const page = await context.newPage();
+
+  for (const [project, component] of [
+    ['cnesdata', 'edge-agent'],
+    ['limnopulse', 'mqtt-ingestion'],
+    ['infrastructure', 'image-builds'],
+  ]) {
+    await page.goto(`/explore/${project}/`);
+    const link = page.locator(`[data-component-link="${component}"]`).first();
+    await link.click();
+    await expect(page).toHaveURL(new RegExp(`/explore/${project}/#component-${component}$`));
+    await expect(page.locator(`[data-component-detail="${component}"]`)).toHaveAttribute('data-selected', 'true');
+    await expect(page.locator(`[data-component-detail="${component}"]`)).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+
+  await context.close();
+});
+
+for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }, { width: 360, height: 844 }]) {
+  test(`direct component fragments initialize and reload their selected details at ${viewport.width}px`, async ({ page }) => {
+    await page.setViewportSize(viewport);
+
+    for (const [project, component] of [
+      ['cnesdata', 'edge-agent'],
+      ['limnopulse', 'mqtt-ingestion'],
+      ['infrastructure', 'image-builds'],
+    ]) {
+      const destination = `/explore/${project}/#component-${component}`;
+      const detail = page.locator(`[data-component-detail="${component}"]`);
+      const link = page.locator(`[data-component-link="${component}"]`).first();
+
+      await page.goto(destination);
+      await expect(page.locator('[data-system-view]')).toHaveAttribute('data-enhanced', 'true');
+      await expect(page).toHaveURL(destination);
+      await expect(link).toHaveAttribute('aria-current', 'true');
+      await expect(detail).toHaveAttribute('data-selected', 'true');
+      await expect(detail).toBeVisible();
+
+      await page.reload();
+      await expect(page.locator('[data-system-view]')).toHaveAttribute('data-enhanced', 'true');
+      await expect(page).toHaveURL(destination);
+      await expect(link).toHaveAttribute('aria-current', 'true');
+      await expect(detail).toHaveAttribute('data-selected', 'true');
+      await expect(detail).toBeVisible();
+    }
+  });
+}
+
+test('system views retain components, relationships, qualifiers and transcripts without JavaScript at 360px', async ({ browser, baseURL }) => {
+  const context = await browser.newContext({ baseURL, viewport: { width: 360, height: 844 }, javaScriptEnabled: false });
+  const page = await context.newPage();
+
+  for (const [project, qualifier] of [
+    ['cnesdata', 'Planned'],
+    ['limnopulse', 'Planned'],
+    ['infrastructure', 'Illustrative'],
+  ]) {
+    await page.goto(`/explore/${project}/`);
+    await expect(page.locator('[data-component-detail]')).not.toHaveCount(0);
+    await expect(page.locator('[data-component-detail]').last()).toBeVisible();
+    await expect(page.locator('.system-relationships li').first()).toBeVisible();
+    await expect(page.locator('[data-component-detail] .component-status').filter({ hasText: qualifier }).first()).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+
+  await page.goto('/explore/cnesdata/');
+  for (const id of ['raw-first-write', 'raw-identical-replay', 'raw-content-conflict']) {
+    await expect(page.locator(`#transcript-${id}`)).toBeVisible();
+  }
+
+  await context.close();
+});
+
 for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
   test(`canonical CnesData narrative, history and all scenarios at ${viewport.width}`, async ({ page }, testInfo) => {
     await page.setViewportSize(viewport);
@@ -92,7 +192,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     await page.goto('/explore/cnesdata/');
     await expect(page).toHaveTitle('CnesData — Vinicius Santana');
     await expect(page.locator('a[href="/work/cnesdata/"]')).toHaveCount(0);
-    for (const id of ['overview', 'architecture', 'engineering', 'simulation', 'results', 'evidence', 'limitations']) {
+    for (const id of ['overview', 'system', 'simulation', 'engineering', 'results', 'evidence', 'limitations']) {
       await page.locator(`a[href="#${id}"]`).first().click();
       await expect(page).toHaveURL(new RegExp(`#${id}$`));
       await expect(page.locator(`#${id}`)).toBeVisible();
@@ -146,10 +246,8 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       await expect(page.locator('[data-progress]')).toHaveText(`0 of ${outcomes.length} attempts · ready`);
       await expect(advance).toBeEnabled();
     }
-    const poster = page.locator('img[src*="detail-cnesdata"]');
-    await poster.scrollIntoViewIfNeeded();
-    await expect(poster).toBeVisible();
-    await expect.poll(() => poster.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
+    await expect(page.locator('[data-system-view]')).toHaveCount(1);
+    await expect(page.locator('img[src*="detail-cnesdata"], canvas')).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     expect(models).toEqual([]);
     await page.goto('/explore/cnesdata/');

@@ -1,13 +1,11 @@
 ---
 import { getCollection } from 'astro:content';
 import ProjectDetail from '../../components/ProjectDetail.astro';
-import CnesDataSystemView from '../../features/explorer/CnesDataSystemView.astro';
-import InfrastructureSystemView from '../../features/explorer/InfrastructureSystemView.astro';
-import LimnopulseSystemView from '../../features/explorer/LimnopulseSystemView.astro';
+import SystemView from '../../features/explorer/SystemView.astro';
 import { cnesdataPresentation, limnopulsePresentation, infrastructurePresentation } from '../../features/explorer/presentation.ts';
 import Infrastructure from '../../features/explorer/Infrastructure.astro';
 import Walkthrough from '../../features/explorer/Walkthrough.astro';
-import { projectIds } from '../../features/explorer/projects.ts';
+import { projectDefinitions, projectIds } from '../../features/explorer/projects.ts';
 import '../../features/explorer/explorer.css';
 export async function getStaticPaths() {
   const projects = (await getCollection('caseStudies')).sort((a, b) => a.data.order - b.data.order);
@@ -20,13 +18,13 @@ export async function getStaticPaths() {
 const { project, projects } = Astro.props;
 ---
 {project.id === 'cnesdata' ? <ProjectDetail caseStudy={project} presentation={cnesdataPresentation} projects={projects}>
-  <CnesDataSystemView slot="system-view" caseStudy={project} />
+  <SystemView slot="system-view" caseStudy={project} definition={projectDefinitions.cnesdata} />
   <Walkthrough slot="simulation" />
 </ProjectDetail> : project.id === 'infrastructure' ? <ProjectDetail caseStudy={project} presentation={infrastructurePresentation} projects={projects}>
-  <InfrastructureSystemView slot="system-view" caseStudy={project} />
+  <SystemView slot="system-view" caseStudy={project} definition={projectDefinitions.infrastructure} />
   <Infrastructure slot="simulation" />
 </ProjectDetail> : project.id === 'limnopulse' ? <ProjectDetail caseStudy={project} presentation={limnopulsePresentation} projects={projects}>
-  <LimnopulseSystemView slot="system-view" caseStudy={project} />
+  <SystemView slot="system-view" caseStudy={project} definition={projectDefinitions.limnopulse} />
 </ProjectDetail> : null}
 <script>
   import { initializeExplorer } from '../../features/explorer/client.ts';

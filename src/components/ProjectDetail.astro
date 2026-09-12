@@ -15,7 +15,10 @@ const statusLabels = {
   implemented: 'Implemented', documented: 'Documented', planned: 'Planned',
   historical: 'Historical', illustrative: 'Illustrative'
 } as const;
-const sections = [{ id: 'overview', label: 'Overview' }, { id: 'architecture', label: 'System View' }, { id: 'engineering', label: 'Engineering' }, ...(presentation.simulation ? [{ id: 'simulation', label: 'Simulation' }] : []), { id: 'results', label: 'Results' }, { id: 'evidence', label: 'Evidence' }, { id: 'limitations', label: 'Limitations' }];
+const sections = [{ id: 'overview', label: 'Context & contribution' }, { id: 'system', label: 'System View' }, ...(presentation.simulation ? [{ id: 'simulation', label: 'Simulation' }] : []), { id: 'engineering', label: 'Engineering' }, { id: 'results', label: 'Results' }, { id: 'evidence', label: 'Evidence' }, { id: 'limitations', label: 'Limitations' }];
+const engineeringChapter = presentation.simulation ? 4 : 3;
+const resultsChapter = engineeringChapter + 1;
+const evidenceChapter = resultsChapter + 1;
 ---
 
 <EditorialLayout title={`${caseStudy.title} — Vinicius Santana`} description={caseStudy.summary} canonicalPath={canonicalPath} currentPath={canonicalPath} observatory>
@@ -45,36 +48,39 @@ const sections = [{ id: 'overview', label: 'Overview' }, { id: 'architecture', l
 
     <div class="case-body">
       <section id="overview" tabindex="-1" class="chapter" aria-labelledby="overview-heading">
-        <div class="chapter-heading"><p class="eyebrow">01 / Context</p><h2 id="overview-heading">Overview</h2></div>
+        <div class="chapter-heading"><p class="eyebrow">01 / Context</p><h2 id="overview-heading">Context & contribution</h2></div>
         <div class="chapter-content overview-grid">
           <div><h3 id="problem-heading">Problem</h3><p>{caseStudy.problem}</p><h3 id="context-heading">Context</h3><p>{caseStudy.context}</p></div>
           <div><h3 id="contribution-heading">Contribution</h3><ul class="detail-list">{caseStudy.contribution.map(item => <li>{item}</li>)}</ul></div>
         </div>
       </section>
 
-      <section id="architecture" tabindex="-1" class="chapter" aria-labelledby="architecture-title">
-        <div class="chapter-heading"><p class="eyebrow">02 / System boundaries</p><h2 id="architecture-title">{presentation.systemHeading}</h2></div>
-        <div class="chapter-content"><slot name="system-view" />{presentation.simulation && presentation.simulationPlacement === 'system-view' && <div id="simulation" tabindex="-1" class="simulation-section"><slot name="simulation" /></div>}</div>
+      <section id="system" tabindex="-1" class="chapter" aria-labelledby="system-title">
+        <div class="chapter-heading"><p class="eyebrow">02 / System boundaries</p><h2 id="system-title">{presentation.systemHeading}</h2></div>
+        <div class="chapter-content"><slot name="system-view" /></div>
       </section>
 
+      {presentation.simulation && <section id="simulation" tabindex="-1" class="chapter simulation-chapter" aria-labelledby="simulation-heading">
+        <div class="chapter-heading"><p class="eyebrow">03 / Interactive scenario</p><h2 id="simulation-heading">Simulation</h2></div>
+        <div class="chapter-content"><slot name="simulation" /></div>
+      </section>}
+
       <section id="engineering" tabindex="-1" class="chapter" aria-labelledby="engineering-heading">
-        <div class="chapter-heading"><p class="eyebrow">03 / Technical choices</p><h2 id="engineering-heading">Engineering</h2></div>
+        <div class="chapter-heading"><p class="eyebrow">{String(engineeringChapter).padStart(2, '0')} / Technical choices</p><h2 id="engineering-heading">Engineering</h2></div>
         <div class="chapter-content overview-grid">
           <div><h3 id="decisions-heading">Decisions</h3><ul class="detail-list">{caseStudy.decisions.map(item => <li>{item}</li>)}</ul></div>
           <div><h3 id="reliability-heading">Reliability</h3><ul class="detail-list">{caseStudy.reliability.map(item => <li>{item}</li>)}</ul></div>
         </div>
       </section>
 
-      {presentation.simulation && presentation.simulationPlacement !== 'system-view' && <div id="simulation" tabindex="-1" class="simulation-section"><slot name="simulation" /></div>}
-
       <section id="results" tabindex="-1" class="chapter" aria-labelledby="results-heading">
-        <div class="chapter-heading"><p class="eyebrow">04 / Outcomes</p><h2 id="results-heading">Results</h2></div>
+        <div class="chapter-heading"><p class="eyebrow">{String(resultsChapter).padStart(2, '0')} / Outcomes</p><h2 id="results-heading">Results</h2></div>
         <div class="chapter-content">
           <h3 id="outcomes-heading">Outcomes</h3><ul class="detail-list">{caseStudy.outcomes.map(item => <li>{item}</li>)}</ul>
         </div>
       </section>
       <section id="evidence" tabindex="-1" class="chapter" aria-labelledby="evidence-section-heading">
-        <div class="chapter-heading"><p class="eyebrow">05 / Public record</p><h2 id="evidence-section-heading">Evidence & limitations</h2></div>
+        <div class="chapter-heading"><p class="eyebrow">{String(evidenceChapter).padStart(2, '0')} / Public record</p><h2 id="evidence-section-heading">Evidence & limitations</h2></div>
         <div class="chapter-content">
           <div id="limitations" class="limitations" tabindex="-1"><h3 id="limitations-heading">{presentation.id === 'infrastructure' ? <span id="limits-title">Limitations</span> : 'Limitations'}</h3><ul class="detail-list">{caseStudy.limitations.map(item => <li>{item}</li>)}</ul></div>
           <h3 id="evidence-heading">Public evidence</h3>
@@ -94,7 +100,6 @@ const sections = [{ id: 'overview', label: 'Overview' }, { id: 'architecture', l
 
 <style>
   :global(html:has(.project-detail)) { scroll-behavior: auto; }
-  .simulation-section { padding-block: 32px; border-bottom: 1px solid var(--line); }
   .case-study :global(a:focus-visible), .case-study :global(button:focus-visible), .case-study :global(select:focus-visible) { outline: 3px solid var(--accent); outline-offset: 4px; }
   .chapter-content { min-width: 0; }
   .limitations { margin-bottom: 32px; }
