@@ -99,6 +99,26 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
         }));
         expect(labelCollisions, `${project}: connector labels`).toEqual([]);
         if (project === 'limnopulse') {
+          const bandHeadingCollisions = await view.locator('[data-graph-edge-label]').evaluateAll(labels => {
+            const headings = [...document.querySelectorAll<HTMLElement>('.operational-bands h4')];
+            const minimumGap = 4;
+            const textBoxFor = (heading: HTMLElement) => {
+              const range = document.createRange();
+              range.selectNodeContents(heading);
+              return range.getBoundingClientRect();
+            };
+            return labels.flatMap(label => {
+              const box = label.getBoundingClientRect();
+              return headings
+                .filter(heading => {
+                  const headingBox = textBoxFor(heading);
+                  return !(box.right + minimumGap <= headingBox.left || headingBox.right + minimumGap <= box.left || box.bottom + minimumGap <= headingBox.top || headingBox.bottom + minimumGap <= box.top);
+                })
+                .map(heading => `${label.textContent?.trim()} / ${heading.textContent?.trim()}`);
+            });
+          });
+          expect(bandHeadingCollisions, 'limnopulse: connector labels / band headings').toEqual([]);
+
           const forward = view.locator('[data-connector-from="alert-rules"][data-connector-to="evaluator"]');
           const reverse = view.locator('[data-connector-from="evaluator"][data-connector-to="alert-rules"]');
           const separation = await forward.evaluate(element => {

@@ -20,13 +20,13 @@ const graphNodes = [
   { id: 'alert-rules', x: 82, y: 55 }, { id: 'notifications', x: 82, y: 82 },
 ];
 const routes = {
-  'mqtt-ingestion→telemetry-api': { via: [{ x: 18, y: 34 }], label: { x: 18, y: 34 } },
+  'mqtt-ingestion→telemetry-api': { via: [{ x: 18, y: 40 }], label: { x: 18, y: 40 } },
   'alert-rules→evaluator': { via: [{ x: 66, y: 68.5 }, { x: 50, y: 68.5 }], label: { x: 50, y: 68.5 } },
   'evaluator→mqtt-ingestion': { via: [{ x: 18, y: 82 }], label: { x: 18, y: 82 } },
   'evaluator→alert-rules': { via: [{ x: 66, y: 97 }, { x: 98, y: 97 }, { x: 98, y: 68 }], label: { x: 82, y: 97 } },
   'alert-rules→notifications': { via: [{ x: 82, y: 68.5 }], label: { x: 82, y: 68.5 } },
   'cloud-infrastructure→evaluator': { via: [{ x: 50, y: 12 }, { x: 34, y: 32 }, { x: 34, y: 82 }], label: { x: 50, y: 12 } },
-  'production-device-layer→mqtt-ingestion': { via: [{ x: 76, y: 32 }, { x: 18, y: 32 }], label: { x: 60, y: 32 } },
+  'production-device-layer→mqtt-ingestion': { via: [{ x: 76, y: 40 }, { x: 18, y: 40 }], label: { x: 60, y: 40 } },
 };
 ---
 <div class="integrated-system-view limnopulse-system-view" data-integrated-system-view>
