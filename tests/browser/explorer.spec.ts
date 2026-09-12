@@ -129,6 +129,36 @@ test('component selection keeps the detail panel usable at 360px', async ({ brow
   await context.close();
 });
 
+for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }, { width: 360, height: 844 }]) {
+  test(`direct component fragments initialize and reload their selected details at ${viewport.width}px`, async ({ page }) => {
+    await page.setViewportSize(viewport);
+
+    for (const [project, component] of [
+      ['cnesdata', 'edge-agent'],
+      ['limnopulse', 'mqtt-ingestion'],
+      ['infrastructure', 'image-builds'],
+    ]) {
+      const destination = `/explore/${project}/#component-${component}`;
+      const detail = page.locator(`[data-component-detail="${component}"]`);
+      const link = page.locator(`[data-component-link="${component}"]`).first();
+
+      await page.goto(destination);
+      await expect(page.locator('[data-system-view]')).toHaveAttribute('data-enhanced', 'true');
+      await expect(page).toHaveURL(destination);
+      await expect(link).toHaveAttribute('aria-current', 'true');
+      await expect(detail).toHaveAttribute('data-selected', 'true');
+      await expect(detail).toBeVisible();
+
+      await page.reload();
+      await expect(page.locator('[data-system-view]')).toHaveAttribute('data-enhanced', 'true');
+      await expect(page).toHaveURL(destination);
+      await expect(link).toHaveAttribute('aria-current', 'true');
+      await expect(detail).toHaveAttribute('data-selected', 'true');
+      await expect(detail).toBeVisible();
+    }
+  });
+}
+
 test('system views retain components, relationships, qualifiers and transcripts without JavaScript at 360px', async ({ browser, baseURL }) => {
   const context = await browser.newContext({ baseURL, viewport: { width: 360, height: 844 }, javaScriptEnabled: false });
   const page = await context.newPage();

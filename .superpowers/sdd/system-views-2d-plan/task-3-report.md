@@ -47,3 +47,31 @@ Reviewed generated CnesData, Limnopulse, and Infrastructure screenshots at 1440p
 - Rechecked the resolver mutation boundary: routes are still allowlisted with `Object.hasOwn`; only an exact `#architecture` is mapped, with search text and every other fragment preserved.
 - Rechecked generated internal navigation with a source search for `/work` hrefs; none remain.
 - No concerns found in the scoped change. The existing Astro chunk-size warning is unchanged and unrelated to this task.
+
+## Fix round 1 — direct component-fragment initialization
+
+### Coverage added
+
+`tests/browser/explorer.spec.ts` now directly opens and reloads a non-primary component fragment for every project:
+
+- CnesData: `#component-edge-agent`
+- Limnopulse: `#component-mqtt-ingestion`
+- Infrastructure: `#component-image-builds`
+
+Each route is exercised at 1440×900, 390×844, and 360×844. Both the initial navigation and reload assert the preserved URL, enhanced System View, target link `aria-current="true"`, selected detail state, and visible target detail.
+
+### Mutation check (RED)
+
+The first focused run passed because hash initialization already existed. To prove the new assertions are behavior-sensitive, `componentIdFromHash` was temporarily mutated to always return the project primary component, the site was rebuilt, and the tests were run against an isolated static server that served the fresh `dist` output.
+
+`rtk proxy env EXPLORER_BASE_URL=http://127.0.0.1:4327 npm run test:explorer -- explorer.spec.ts -g "direct component fragments"` then failed at all three viewport sizes. In each case, the direct `#component-edge-agent` page had no `aria-current` on the matching link, rather than the required `true` value. This confirms the test catches removal of direct-fragment selection behavior.
+
+### Restored GREEN evidence
+
+Restored the original production hash resolver exactly; no production change is included in this round. After rebuilding the fresh output, the isolated-server focused command passed all 3 viewport cases. `rtk npm test` then passed with 50 tests, 0 failures, and 1 intentional skip.
+
+### Fix-round self-review
+
+- `rtk git diff --check` returned no whitespace errors.
+- The only implementation diff is browser coverage; `SystemView.astro` matches its pre-mutation source.
+- Concern: the existing Astro chunk-size warning remained during the temporary/rebuilt runs; it is unrelated to this coverage-only fix.
