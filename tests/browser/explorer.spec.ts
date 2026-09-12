@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { mkdir } from 'node:fs/promises';
 
 test('project navigation and keyboard component selection', async ({ page }) => {
   await page.goto('/explore/');
@@ -54,6 +55,12 @@ test('static navigation, details and every transcript without JavaScript', async
     await expect(page.locator(`#transcript-${id}`)).toBeVisible();
     await expect(page.locator(`#transcript-${id}`)).toContainText('synthetic-content-A');
   }
+  for (const id of ['overview', 'architecture', 'engineering', 'results', 'evidence', 'limitations']) {
+    await expect(page.locator(`#${id}`)).toBeVisible();
+  }
+  await expect(page.getByLabel('Scenario')).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Reset scenario' })).toBeDisabled();
+  await expect(page.locator('img[src*="detail-cnesdata"]')).toBeVisible();
   await page.locator('nav[aria-label="Explorer projects"] a[href="/explore/limnopulse/"]').click();
   await expect(page.getByRole('heading', { name: 'Limnopulse', exact: true })).toBeVisible();
   await context.close();
@@ -77,3 +84,71 @@ test('touch walkthrough remains usable without WebGL or 3D assets', async ({ bro
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await context.close();
 });
+
+for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+  test(`canonical CnesData narrative, history and all scenarios at ${viewport.width}`, async ({ page }) => {
+    await page.setViewportSize(viewport);
+    const models: string[] = [];
+    page.on('request', request => { if (/\.(glb|gltf|ktx2)(?:\?|$)/.test(request.url())) models.push(request.url()); });
+    await page.goto('/explore/cnesdata/');
+    await expect(page).toHaveTitle('CnesData — Vinicius Santana');
+    await expect(page.locator('a[href="/work/cnesdata/"]')).toHaveCount(0);
+    for (const id of ['overview', 'architecture', 'engineering', 'simulation', 'results', 'evidence', 'limitations']) {
+      await page.locator(`a[href="#${id}"]`).first().click();
+      await expect(page).toHaveURL(new RegExp(`#${id}$`));
+      await expect(page.locator(`#${id}`)).toBeVisible();
+    }
+    const first = page.locator('[data-component-link]').first();
+    const second = page.locator('[data-component-link]').nth(1);
+    await first.focus();
+    await page.keyboard.press('Enter');
+    const firstHash = new URL(page.url()).hash;
+    await expect(page.locator(firstHash)).toBeFocused();
+    await second.focus();
+    await page.keyboard.press('Enter');
+    const secondHash = new URL(page.url()).hash;
+    await expect(page.locator(secondHash)).toBeFocused();
+    await page.goBack();
+    await expect(page.locator(firstHash)).toBeFocused();
+    await expect(first).toHaveAttribute('aria-current', 'true');
+    await page.goForward();
+    await expect(page.locator(secondHash)).toBeFocused();
+
+    const scenario = page.getByLabel('Scenario');
+    const advance = page.getByRole('button', { name: 'Advance one attempt' });
+    const expected = [
+      ['raw-first-write', ['stored']],
+      ['raw-identical-replay', ['stored', 'replayed']],
+      ['raw-content-conflict', ['stored', 'conflict']],
+    ] as const;
+    for (const [id, outcomes] of expected) {
+      await scenario.selectOption(id);
+      await expect(page.locator('[data-objects]')).toHaveText('No objects stored.');
+      for (const [index, outcome] of outcomes.entries()) {
+        await advance.click();
+        await expect(page.locator('[data-progress]')).toHaveText(`${index + 1} of ${outcomes.length} attempts · ${index + 1 === outcomes.length ? 'complete' : 'running'}`);
+        await expect(page.locator('[data-result]')).toContainText(`Result: ${outcome}.`);
+        await expect(page.locator('[data-objects] li')).toHaveCount(1);
+        await expect(page.locator('[data-objects]')).toContainText('synthetic-content-A');
+        await expect(page.locator('[data-objects]')).not.toContainText('synthetic-content-B');
+        const transcriptStep = page.locator(`#transcript-${id} > ol > li`).nth(index);
+        await expect(transcriptStep).toContainText(`Result: ${outcome}. Stored objects: 1.`);
+        await expect(transcriptStep).toContainText('synthetic-content-A');
+      }
+      await expect(advance).toBeDisabled();
+      await page.getByRole('button', { name: 'Reset scenario' }).click();
+      await expect(scenario).toHaveValue(id);
+      await expect(page.locator('[data-progress]')).toHaveText(`0 of ${outcomes.length} attempts · ready`);
+      await expect(advance).toBeEnabled();
+    }
+    const poster = page.locator('img[src*="detail-cnesdata"]');
+    await poster.scrollIntoViewIfNeeded();
+    await expect(poster).toBeVisible();
+    await expect.poll(() => poster.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    expect(models).toEqual([]);
+    await mkdir('docs/design/sa-02', { recursive: true });
+    await page.goto('/explore/cnesdata/');
+    await page.screenshot({ path: `docs/design/sa-02/cnesdata-${viewport.width}.png`, fullPage: true });
+  });
+}
