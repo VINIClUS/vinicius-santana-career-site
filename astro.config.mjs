@@ -9,7 +9,10 @@ export default defineConfig({
   integrations: [
     react(),
     sitemap({
-      filter: (page) => !['/404.html', '/404/'].includes(new URL(page).pathname)
+      filter: (page) => {
+        const { pathname } = new URL(page);
+        return !['/404.html', '/404/'].includes(pathname) && !pathname.startsWith('/work/');
+      }
     })
   ]
 });

@@ -1,5 +1,5 @@
 {
   "extends": "./tsconfig.simulation.json",
   "compilerOptions": { "lib": ["ES2022", "DOM", "DOM.Iterable"], "jsx": "react-jsx", "skipLibCheck": true },
-  "include": ["src/features/explorer/**/*.ts", "src/features/explorer/**/*.tsx", "src/content/scenarios/cnesdata.ts"]
+  "include": ["src/features/navigation/**/*.ts", "src/features/explorer/**/*.ts", "src/features/explorer/**/*.tsx", "src/content/scenarios/cnesdata.ts"]
 }

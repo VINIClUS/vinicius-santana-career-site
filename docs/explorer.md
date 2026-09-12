@@ -95,6 +95,11 @@ The canonical route retains `#overview`, `#architecture`, `#engineering`,
 simulation controls start disabled until the controller is initialized.
 Full Parquet-to-Gold processing and Kubernetes deployment remain planned.
 
-The legacy `/work/cnesdata/` page remains until SA-06; the canonical CnesData
-page no longer points readers to that duplicate. Other projects, Home and
-Atlas routing/rendering changes belong to their separate migration issues.
+The legacy `/work/cnesdata/` route is a small compatibility page; the canonical CnesData
+page contains the full narrative and evidence. Limnopulse and Infrastructure
+also use their canonical `/explore/` project pages.
+
+SA-06 makes **Work → `/explore/`** the single primary work destination. All four
+`/work/*` compatibility pages use destination metadata, `noindex`, a static
+fallback link and restricted `location.replace`, preserving query and fragment
+data. They are excluded from the sitemap.

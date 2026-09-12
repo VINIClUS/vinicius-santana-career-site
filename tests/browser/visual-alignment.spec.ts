@@ -30,7 +30,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       await toggle.focus();
       await page.keyboard.press('Enter');
       await expect(toggle).toHaveAttribute('aria-expanded', 'true');
-      await expect(page.locator('nav[aria-label="Primary navigation"] a[href="/work/"]')).toBeVisible();
+      await expect(page.locator('nav[aria-label="Primary navigation"] a[href="/explore/"]')).toHaveText('Work');
       await page.keyboard.press('Escape');
       await expect(toggle).toBeFocused();
       await expect(toggle).toHaveAttribute('aria-expanded', 'false');
@@ -38,16 +38,11 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     await page.getByRole('link', { name: 'Explore my work', exact: true }).focus();
     await page.keyboard.press('Enter');
     await expect(page).toHaveURL(/\/explore\/$/);
-    await page.goto('/work/');
-    await expect(page).toHaveURL(/\/work\/$/);
-    await expect(page.locator('.visual-work-card')).toHaveCount(4);
-    const columns = await page.locator('.work-grid').evaluate(el => getComputedStyle(el).gridTemplateColumns.split(' ').length);
-    expect(columns).toBe(viewport.width > 1100 ? 4 : 1);
-    await expect(page.getByRole('link', { name: 'View experience' })).toHaveAttribute('href', '/#experience');
-    await capture('work');
+    await expect(page.locator('[data-district-link]')).toHaveCount(3);
+    await capture('atlas');
     for (const slug of ['cnesdata', 'limnopulse', 'infrastructure']) {
-      await page.locator(`.project-actions a[href="/work/${slug}/"]`).click();
-      await expect(page).toHaveURL(new RegExp(`/work/${slug}/$`));
+      await page.goto(`/explore/${slug}/`);
+      await expect(page).toHaveURL(new RegExp(`/explore/${slug}/$`));
       await expect(page.locator('.header-resume')).toBeVisible();
       for (const anchor of ['overview', 'architecture', 'engineering', 'results']) {
         const link = page.locator(`.section-nav a[href="#${anchor}"]`);
@@ -57,7 +52,8 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
         await expect(page.locator(`#${anchor}`)).toBeInViewport();
       }
       await capture(slug);
-      await page.locator('.case-footer a[href="/work/"]').click();
+      await page.getByRole('navigation', { name: 'Case study navigation' }).getByRole('link', { name: /Back to Atlas/ }).click();
+      await expect(page).toHaveURL(/\/explore\/$/);
     }
     await page.locator('.header-resume').click();
     await expect(page).toHaveURL(/\/resume\/$/);
@@ -66,7 +62,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
 }
 
 test('CnesData detail write, replay, conflict and reset', async ({ page }) => {
-  await page.goto('/work/cnesdata/#simulation');
+  await page.goto('/explore/cnesdata/#simulation');
   const scenario = page.getByLabel('Scenario');
   const step = page.getByRole('button', { name: 'Advance one attempt' });
   for (const [id, result] of [['raw-first-write', 'stored'], ['raw-identical-replay', 'replayed'], ['raw-content-conflict', 'conflict']]) {
@@ -89,8 +85,7 @@ test('detail transcripts and destinations survive without JavaScript', async ({ 
   const page = await context.newPage();
   await page.goto('/');
   await expect(page.locator('.header-resume')).toBeVisible();
-  await page.goto('/work/');
-  await page.locator('.project-actions a[href="/work/cnesdata/"]').click();
+  await page.goto('/explore/cnesdata/');
   await page.locator('.section-nav a[href="#simulation"]').click();
   for (const id of ['raw-first-write', 'raw-identical-replay', 'raw-content-conflict']) {
     await expect(page.locator(`#transcript-${id}`)).toContainText('synthetic-content-A');
