@@ -60,3 +60,19 @@ assertion failed before the fix and passed after rebuilding. No controller or
 simulation behavior changed. Remote review, CI and deployment are tracked in
 the pull request and issue #31.
 
+
+### CI and remote review corrections
+
+The first CI run passed 41 browser tests and failed the desktop history test.
+Its trace showed that the second component check reused the first component's
+URL before fragment navigation settled. The test now derives each destination
+from its link and waits for both the expected URL and controller selection
+before proceeding, preserving all focus/history assertions.
+
+Codex review also identified that routine browser runs overwrote committed
+screenshots. Captures now use Playwright's per-test output path. The committed
+screenshots above remain deliberate, separately reviewed release evidence.
+
+After these test-only corrections, all six CnesData browser tests passed five
+consecutive repetitions (30 passed, 1.1 minutes) against the rebuilt local site
+on port 4338. The scoped follow-up review found no remaining material issues.
