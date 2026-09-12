@@ -56,7 +56,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     await page.setViewportSize(viewport);
     await page.goto('/#experience');
 
-    const card = page.locator('.timeline-card');
+    const card = page.locator('.timeline-card[aria-labelledby="home-municipal-experience"]');
     await expect(card.locator('h3')).toHaveText('Prefeitura de Presidente Epitácio');
     await expect(card.locator('.timeline-role')).toHaveCount(2);
 
