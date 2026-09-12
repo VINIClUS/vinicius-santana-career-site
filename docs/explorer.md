@@ -12,11 +12,11 @@ CnesData uses fictional keys/content only. Results are synthetic and illustrativ
 
 ## Three project districts
 
-`projectIds` in `src/features/explorer/projects.ts` is the identity source: `['cnesdata', 'limnopulse', 'infrastructure']`. `AtlasDistrictId = ProjectId`; `DistrictId` is a compatibility alias. `districtIds` derives from `projectIds`. The registry owns each project's label, summary and matching `/explore/{id}/` destination. The initial HTML always includes all three selectors, summaries and canonical links.
+`projectIds` in `src/features/explorer/projects.ts` is the identity source: `['cnesdata', 'limnopulse', 'infrastructure']`. `AtlasDistrictId = ProjectId`; `DistrictId` is a compatibility alias. `districtIds` derives from `projectIds`. The case-study collection supplies each panel's title, summary, first four technologies and matching `/explore/{id}/` destination. The initial HTML always includes all three selectors, panels and canonical links.
 
-Public Health appears as secondary domain context with `/#experience`; Observability is a capability with `/#stack`. Their legacy `#district-public-health` and `#district-observability` fragments redirect using fixed `location.replace` destinations outside the controller. Without JavaScript, those fragments target visible secondary content with equivalent links. Neither theme, nor the visual hub, can be selected.
+Public Health and Observability are not Atlas districts. Their former district fragments have no compatibility redirects and behave like any other unknown fragment. The visual hub cannot be selected.
 
-`createObservatoryController()` starts with no selection and accepts `SELECT_DISTRICT`. Invalid IDs are inert; `null` clears selection. Native project fragments support deep links, keyboard navigation and browser history while synchronizing article focus. Unknown fragments clear selection. After initialization ARIA/state attributes own highlighting; CSS `:target` covers the no-JavaScript fallback.
+`createObservatoryController()` starts with no selection and accepts `SELECT_DISTRICT` plus `ACTIVATE_DISTRICT`; activating the selected project again clears it. Invalid IDs are inert and `null` clears selection. Project fragments support deep links, keyboard navigation and browser history without modal focus behavior. Selection opens a non-modal panel over the right side of the desktop map or a scrollable bottom sheet capped at 60% of the map on mobile. The X control, Escape and repeated activation close it by removing the fragment with `replaceState`; choosing a different project uses `pushState`. Unknown fragments clear selection. After initialization ARIA/state attributes own highlighting and expansion state; CSS `:target` covers the no-JavaScript fallback.
 
 ## Progressive 3D Atlas
 
@@ -26,7 +26,7 @@ Only `/explore/` loads the interactive Atlas renderer. Home has a separate decor
 
 **View 2D** is available throughout loading. Zoom and reset enable only after readiness. Fallback restores original label positions and preserves selection; it restores selector focus only when the focused canvas/control disappears. Surviving HTML focus remains unchanged. The 2D choice lasts for the visit and is not persisted.
 
-Selecting a project changes its highlight and shared controller state only. The Atlas never requests detailed CnesData or Infrastructure maquettes; their shared assets remain available for generation and inspection, but canonical project pages do not load them. Canvas selection uses `pushState` without scrolling or moving focus. Native fragment selection and history focus the corresponding article through one `hashchange` listener. Page exit cancels work; a back/forward-cache return reconnects navigation once and stays in 2D.
+Selecting a project changes its highlight and shared controller state without changing the scene geometry. The Atlas never requests detailed CnesData or Infrastructure maquettes; their shared assets remain available for generation and inspection, but canonical project pages do not load them. Canvas, label and fragment selection synchronize through one controller without moving focus into the panel. Page exit cancels work; a back/forward-cache return reconnects navigation once and stays in 2D.
 
 The orthographic camera switches authored layouts at 700px. Orbit is limited to ±15° horizontally and ±5° vertically, zoom to 0.9–1.2 times the authored view, and pan is disabled. OrbitControls' inline touch action is reset to `pan-y` after connection so vertical touch scrolling remains native; taps still select. Rendering is on demand, DPR is capped at 1.5, and reduced motion uses immediate highlighting without continuous movement.
 
