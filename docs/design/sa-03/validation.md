@@ -72,3 +72,18 @@ and evidence in normal flow. Routine test captures use Playwright output paths.
   JavaScript disabled, Atlas → project → evidence, keyboard/touch selection,
   native focus, back/forward history, legacy heading anchor and no overflow.
   Project loads requested no GLB/GLTF/KTX2 models and created no canvas.
+
+## CI follow-up
+
+The first remote run ([34692852060](https://github.com/VINIClUS/vinicius-santana-career-site/actions/runs/34692852060))
+passed 47/48 browser cases, including all Limnopulse cases. The existing Atlas
+pagehide/pageshow test read its focus-call counter before the queued hashchange
+handler ran: native anchor focus and URL were already correct, but the counter
+was still zero. The downloaded trace confirmed that ordering.
+
+The test now waits for the controller-owned `aria-current` selection before
+asserting exactly one focus call. Duplicate listener protection remains intact;
+no product code changed. Ten baseline repetitions passed locally, consistent
+with the timing-sensitive CI failure; ten corrected repetitions also passed.
+The first remote Codex review found no major issues at `728071883a7546a744425333ba012fb3267637d4`.
+The updated HEAD will receive its own review and CI before merge.

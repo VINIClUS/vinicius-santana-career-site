@@ -250,6 +250,8 @@ test('pagehide aborts essential downloads and a persisted pageshow reconnects na
   await selected(page, 'infrastructure').click();
   await expect(page).toHaveURL(/#district-infrastructure$/);
   await expect(page.locator('#district-infrastructure')).toBeFocused();
+  // Native fragments focus before hashchange; wait for the controller to handle selection.
+  await expect(selected(page, 'infrastructure')).toHaveAttribute('aria-current', 'true');
   expect(await page.evaluate(() => (window as typeof window & { atlasFocusCalls: () => number }).atlasFocusCalls())).toBe(1);
   await expect(canvas(page)).toHaveCount(0);
 });
