@@ -100,6 +100,19 @@ test('mobile supports touch, project changes, closing, repeated activation and h
   const page = await context.newPage();
   await page.goto('/explore/#district-limnopulse');
   await expect(panel(page, 'limnopulse')).toBeVisible();
+  for (const width of [390, 320]) {
+    await page.setViewportSize({ width, height: 844 });
+    const openPanelLabels = await page.locator('[data-district-link]').evaluateAll(links => links.map(link => ({
+      fontSize: parseFloat(getComputedStyle(link).fontSize),
+      ...link.getBoundingClientRect().toJSON()
+    })));
+    for (const label of openPanelLabels) {
+      expect(label.fontSize).toBeGreaterThanOrEqual(14);
+      expect(label.left).toBeGreaterThanOrEqual(0);
+      expect(label.right).toBeLessThanOrEqual(width);
+    }
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
   await link(page, 'limnopulse').tap();
   await expect(panel(page, 'limnopulse')).toBeHidden();
 
