@@ -1,6 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import type { ProjectDefinition, ProjectDiagramStage } from './projects.ts';
+import type { ProjectDefinition } from './projects.ts';
 
 interface Props {
   caseStudy: CollectionEntry<'caseStudies'>['data'];
@@ -14,15 +14,12 @@ const componentFor = (id: string) => {
   return component;
 };
 const statusLabel = (status: string) => status[0].toUpperCase() + status.slice(1);
-const flowStages = definition.diagram.stages.filter(stage => stage.kind === 'flow');
-const stageArrowLabel = (stage: ProjectDiagramStage) => {
-  const stageIndex = flowStages.indexOf(stage);
-  const laterComponentIds = new Set(flowStages.slice(stageIndex + 1).flatMap(candidate => candidate.componentIds));
-  const labels = definition.relations
-    .filter(relation => stage.componentIds.includes(relation.from) && laterComponentIds.has(relation.to))
-    .map(relation => relation.shortLabel);
-  return labels.length > 0 ? labels.join(' · ') : `To ${flowStages[stageIndex + 1].label}`;
-};
+const stages = definition.diagram.stages;
+const stageFor = (id: string) => stages.find(stage => stage.componentIds.includes(id))!;
+const connections = definition.relations.filter(relation => stageFor(relation.from) !== stageFor(relation.to));
+const destinations = new Set(connections.map(relation => stageFor(relation.to)));
+const convergenceTarget = destinations.size === 1 && connections.length > 1 ? [...destinations][0] : undefined;
+const inputStages = stages.filter(stage => stage !== convergenceTarget);
 ---
 
 <div class="system-view" data-system-view data-primary-component-id={definition.primaryComponentId}>
@@ -30,8 +27,9 @@ const stageArrowLabel = (stage: ProjectDiagramStage) => {
     <section class="system-diagram" aria-labelledby="system-diagram-title">
       <h3 id="system-diagram-title">System diagram</h3>
       <p class="system-view-intro">Select a component to inspect its public status, relationships, and details.</p>
-      <div class="system-stages">
-        {definition.diagram.stages.map(stage => <section class:list={['system-stage', `system-stage-${stage.kind}`]} aria-labelledby={`stage-${stage.id}`}>
+      <div class:list={['system-stages', { 'system-stages-converging': convergenceTarget }]}>
+        {stages.map(stage => <>
+        <section class:list={['system-stage', `system-stage-${stage.kind}`, { 'system-stage-destination': stage === convergenceTarget }]} style={convergenceTarget ? `--stage-row: ${inputStages.indexOf(stage) + 1}; --input-count: ${inputStages.length}` : undefined} aria-labelledby={`stage-${stage.id}`}>
           <h4 id={`stage-${stage.id}`}>{stage.label}</h4>
           <ol class="system-blocks" aria-label={`${stage.label} components`}>
             {stage.componentIds.map(id => {
@@ -48,11 +46,14 @@ const stageArrowLabel = (stage: ProjectDiagramStage) => {
               </li>;
             })}
           </ol>
-          {stage.kind === 'flow' && flowStages.indexOf(stage) < flowStages.length - 1 && <span class="stage-arrow" aria-label={`Flow from ${stage.label}: ${stageArrowLabel(stage)}`}>
-            <span aria-hidden="true">→</span>
-            <span class="stage-arrow-label" data-stage-arrow-label>{stageArrowLabel(stage)}</span>
-          </span>}
-        </section>)}
+        </section>
+        {connections.some(relation => stageFor(relation.from) === stage) && <div class="stage-connectors" style={convergenceTarget ? `--stage-row: ${inputStages.indexOf(stage) + 1}` : undefined}>
+          {connections.filter(relation => stageFor(relation.from) === stage).map(relation => <span class="stage-arrow" data-connector-from={relation.from} data-connector-to={relation.to}>
+            <span class="stage-arrow-symbol" aria-hidden="true">{convergenceTarget ? '→' : stages.indexOf(stageFor(relation.to)) > stages.indexOf(stage) ? '↓' : '↑'}</span>
+            <span class="stage-arrow-label" data-stage-arrow-label>{relation.shortLabel}<span class="connector-destination"> to {stageFor(relation.to).label}</span></span>
+          </span>)}
+        </div>}
+        </>)}
       </div>
 
       <section class="system-relationships" aria-labelledby="relationships-title">
@@ -65,6 +66,7 @@ const stageArrowLabel = (stage: ProjectDiagramStage) => {
               <div class="relationship-direction">
                 <a href={`#component-${relation.from}`} data-component-link={relation.from}>{from.title}</a>
                 <span class="relationship-arrow" aria-hidden="true">→</span>
+                <span class="visually-hidden">to</span>
                 <a href={`#component-${relation.to}`} data-component-link={relation.to}>{to.title}</a>
               </div>
               <p><strong>{relation.shortLabel}</strong><span class="visually-hidden">: </span><span> — {relation.label}</span></p>
@@ -96,6 +98,7 @@ const stageArrowLabel = (stage: ProjectDiagramStage) => {
   for (const view of document.querySelectorAll('[data-system-view]')) {
     const primaryComponentId = view.dataset.primaryComponentId;
     const links = [...view.querySelectorAll('[data-component-link]')];
+    const controls = [...view.querySelectorAll('.system-blocks [data-component-link]')];
     const details = [...view.querySelectorAll('[data-component-detail]')];
     const componentIds = new Set(details.map(detail => detail.dataset.componentDetail));
 
@@ -122,14 +125,20 @@ const stageArrowLabel = (stage: ProjectDiagramStage) => {
 
     for (const link of links) {
       link.addEventListener('click', () => select(link.dataset.componentLink));
+    }
+    for (const link of controls) {
       link.addEventListener('keydown', (event) => {
         if (!['ArrowDown', 'ArrowRight', 'ArrowUp', 'ArrowLeft', 'Home', 'End'].includes(event.key)) return;
         event.preventDefault();
-        const currentIndex = links.indexOf(link);
-        const nextIndex = event.key === 'Home' ? 0 : event.key === 'End' ? links.length - 1 : (currentIndex + (event.key === 'ArrowDown' || event.key === 'ArrowRight' ? 1 : -1) + links.length) % links.length;
-        const next = links[nextIndex];
+        const currentIndex = controls.indexOf(link);
+        const nextIndex = event.key === 'Home' ? 0 : event.key === 'End' ? controls.length - 1 : (currentIndex + (event.key === 'ArrowDown' || event.key === 'ArrowRight' ? 1 : -1) + controls.length) % controls.length;
+        const next = controls[nextIndex];
+        const componentId = next.dataset.componentLink;
+        if (window.location.hash !== `#component-${componentId}`) window.history.pushState(null, '', `#component-${componentId}`);
+        select(componentId);
+        // The controller synchronizes selection without taking keyboard focus.
+        view.dispatchEvent(new CustomEvent('system-view-select', { bubbles: true, detail: { componentId } }));
         next.focus();
-        window.location.hash = `component-${next.dataset.componentLink}`;
       });
     }
 
@@ -144,11 +153,11 @@ const stageArrowLabel = (stage: ProjectDiagramStage) => {
   .system-diagram, .system-detail-panel { border: 1px solid var(--line); border-radius: 12px; padding: 20px; background: var(--surface-soft); }
   .system-diagram > h3, .system-detail-panel > h3 { margin-top: 0; }
   .system-view-intro { color: var(--muted-strong); font-size: .9rem; line-height: 1.6; }
-  .system-stages { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; align-items: stretch; margin-block: 20px 28px; }
-  .system-stage { position: relative; padding: 14px; border: 1px solid var(--line); border-top: 3px solid var(--accent); border-radius: 8px; background: rgba(255, 255, 255, .02); }
+  .system-stages { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; align-items: stretch; margin-block: 20px 28px; }
+  .system-stage { min-width: 0; padding: 14px; border: 1px solid var(--line); border-top: 3px solid var(--accent); border-radius: 8px; background: rgba(255, 255, 255, .02); overflow-wrap: anywhere; }
   .system-stage h4 { margin: 0 0 12px; font-size: .85rem; }
   .system-stage-support { border-style: dashed; border-top-style: solid; }
-  .system-blocks { display: grid; gap: 8px; padding: 0; margin: 0; list-style: none; }
+  .system-blocks { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr)); gap: 8px; padding: 0; margin: 0; list-style: none; }
   .system-blocks a { display: grid; gap: 6px; align-content: center; min-block-size: 44px; padding: 10px; border: 1px solid var(--line); border-radius: 6px; color: inherit; background: var(--surface); text-decoration: none; }
   .system-blocks a[aria-current="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
   .system-blocks strong { font-size: .82rem; line-height: 1.3; }
@@ -157,8 +166,14 @@ const stageArrowLabel = (stage: ProjectDiagramStage) => {
   .status-documented { color: #b7c4f3; }
   .status-planned { color: #e8c990; }
   .status-illustrative { color: #c7b4ff; }
-  .stage-arrow { position: absolute; z-index: 1; right: -18px; top: 50%; display: inline-flex; align-items: center; gap: 4px; color: var(--accent); font-size: .68rem; font-weight: 700; line-height: 1.2; transform: translateY(-50%); }
-  .stage-arrow > span:first-child { font-size: 1.3rem; }
+  .stage-connectors { display: grid; gap: 8px; align-content: center; min-width: 0; padding-inline: 12px; }
+  .stage-arrow { display: flex; align-items: center; gap: 6px; min-width: 0; color: var(--accent); font-size: .75rem; font-weight: 700; line-height: 1.4; overflow-wrap: anywhere; }
+  .stage-arrow-symbol { font-size: 1.3rem; }
+  .connector-destination { color: var(--muted-strong); font-weight: 400; }
+  .system-stages-converging { grid-template-columns: minmax(0, 1fr) minmax(6rem, .7fr) minmax(0, 1fr); column-gap: 0; }
+  .system-stages-converging > .system-stage { grid-column: 1; grid-row: var(--stage-row); }
+  .system-stages-converging > .stage-connectors { grid-column: 2; grid-row: var(--stage-row); }
+  .system-stages-converging > .system-stage-destination { grid-column: 3; grid-row: 1 / span var(--input-count); display: grid; align-content: center; }
   .system-relationships { border-top: 1px solid var(--line); padding-top: 20px; }
   .system-relationships h4 { margin-top: 0; }
   .system-relationships ol { display: grid; gap: 10px; padding: 0; margin: 0; list-style: none; }
@@ -175,6 +190,5 @@ const stageArrowLabel = (stage: ProjectDiagramStage) => {
   .component-relations a { text-underline-offset: 3px; }
   .system-view[data-enhanced="true"] .system-detail-panel article:not([data-selected="true"]) { display: none; }
   a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
-  @media (max-width: 900px) { .system-stages { grid-template-columns: repeat(2, minmax(0, 1fr)); } .stage-arrow { position: static; margin-top: 12px; transform: none; } }
-  @media (max-width: 680px) { .system-view-layout, .system-stages { grid-template-columns: 1fr; } .system-detail-panel { grid-row: 2; } }
+  @media (max-width: 680px) { .system-view-layout, .system-stages { grid-template-columns: minmax(0, 1fr); } .system-detail-panel { grid-row: 2; } .system-stages-converging > .system-stage, .system-stages-converging > .stage-connectors { grid-column: auto; grid-row: auto; } }
 </style>

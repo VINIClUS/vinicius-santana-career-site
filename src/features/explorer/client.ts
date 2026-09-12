@@ -87,6 +87,11 @@ export function initializeExplorer() {
   };
   controller.subscribe(render);
   window.addEventListener('hashchange', selectFragment);
+  window.addEventListener('popstate', selectFragment);
+  root.addEventListener('system-view-select', event => {
+    const { componentId } = (event as CustomEvent<{ componentId: string }>).detail;
+    controller.dispatch({ type: 'SELECT_COMPONENT', componentId });
+  });
   // Native fragment navigation handles history, scrolling and the no-JS path.
   root.addEventListener('click', event => {
     const target = event.target;

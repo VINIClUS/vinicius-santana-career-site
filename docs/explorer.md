@@ -1,10 +1,12 @@
 # Systems Atlas and project explorer contracts
 
-Astro renders a Systems Atlas overview and three project routes using the case-study collection. Architecture IDs live in `src/content/case-studies.yaml`; titles, descriptions and evidence statuses are reused from that collection. `src/features/explorer/projects.ts` supplies only project IDs, areas, component IDs and illustrative relationships. Scene nodes reuse those IDs, scoped to their project.
+Astro renders a Systems Atlas overview and three canonical project routes using the case-study collection. Architecture IDs live in `src/content/case-studies.yaml`; titles, descriptions and evidence statuses are reused from that collection. `src/features/explorer/projects.ts` supplies project IDs, areas, ordered diagram stages, primary component IDs and directed relationships with short labels.
 
 `createExplorerController(projectId)` exposes `getState()`, `dispatch(command)` and `subscribe(listener)`, which returns an unsubscribe function. State holds `projectId`, `selectedComponentId` and the corresponding optional `simulation` (CnesData) or `infrastructureSimulation`. `SELECT_COMPONENT` changes selection independently of simulation. `SELECT_SCENARIO` and `STEP` affect only CnesData; `FAIL_NODE` affects only Infrastructure. `RESET` resets the current project's simulation. LimnoPulse ignores simulation commands. Project switching uses ordinary route navigation and creates a fresh controller with default state, without persistence.
 
-The DOM is a projection of controller state. Component fragments support initial deep links, keyboard navigation and browser history. All detail articles remain in HTML; selection adds a visible label, border and focus. If JavaScript cannot initialize, component links and all three build-time transcripts remain usable, while simulation controls stay disabled. The controller and HTML do not depend on a renderer. Infrastructure can progressively project the same state in its optional 3D System View; the simulation and transcript remain usable without it.
+The DOM is a projection of controller state. Each project renders one semantic HTML `SystemView.astro`, with a diagram on the left and details on the right at desktop widths, stacked on mobile. Stages and component cards retain textual statuses; connectors occupy separate wrapping space and use declared relation endpoints. Infrastructure's three parallel inputs converge on Reference topology. CnesData and LimnoPulse retain ordered flow stages and separate support stages. Textual relationship lists include direction and full descriptions.
+
+The primary component is selected without changing the URL; a valid `#component-{id}` fragment takes precedence. Clicks, direct fragments and Back/Forward synchronize selection and focus the detail article. Arrow keys and Home/End traverse only the ordered diagram controls, keeping focus on the destination control while updating history, `aria-current` and details. Selection preserves simulation progress. All detail articles remain in HTML; JavaScript hides unselected details. Without JavaScript every description, status, relationship and build-time transcript remains readable, and simulation controls stay disabled. Canonical project pages load no posters, canvases, GLBs or Three.js; Atlas and Home retain their independent graphics.
 
 CnesData uses fictional keys/content only. Results are synthetic and illustrative; they do not demonstrate backend calls, authentication, conversion, Parquet generation, latency or the production status of architecture components. Infrastructure relationships are sanitized illustrative references.
 
@@ -24,7 +26,7 @@ Only `/explore/` loads the interactive Atlas renderer. Home has a separate decor
 
 **View 2D** is available throughout loading. Zoom and reset enable only after readiness. Fallback restores original label positions and preserves selection; it restores selector focus only when the focused canvas/control disappears. Surviving HTML focus remains unchanged. The 2D choice lasts for the visit and is not persisted.
 
-Selecting a project changes its highlight and shared controller state only. The Atlas never requests detailed CnesData or Infrastructure maquettes; their assets remain available for canonical project pages. Canvas selection uses `pushState` without scrolling or moving focus. Native fragment selection and history focus the corresponding article through one `hashchange` listener. Page exit cancels work; a back/forward-cache return reconnects navigation once and stays in 2D.
+Selecting a project changes its highlight and shared controller state only. The Atlas never requests detailed CnesData or Infrastructure maquettes; their shared assets remain available for generation and inspection, but canonical project pages do not load them. Canvas selection uses `pushState` without scrolling or moving focus. Native fragment selection and history focus the corresponding article through one `hashchange` listener. Page exit cancels work; a back/forward-cache return reconnects navigation once and stays in 2D.
 
 The orthographic camera switches authored layouts at 700px. Orbit is limited to ±15° horizontally and ±5° vertically, zoom to 0.9–1.2 times the authored view, and pan is disabled. OrbitControls' inline touch action is reset to `pan-y` after connection so vertical touch scrolling remains native; taps still select. Rendering is on demand, DPR is capped at 1.5, and reduced motion uses immediate highlighting without continuous movement.
 
@@ -34,7 +36,7 @@ The orthographic camera switches authored layouts at 700px. Orbit is limited to 
 
 The pure engine in `simulation/infrastructure.ts` starts with three online nodes, a workload on `node-02`, an available shared layer and an empty timeline. `FAIL_NODE(node-02)` fails only that node, moves the workload to `node-01`, and records failure, transfer and shared-layer availability in that order. Repeating the failure is inert. `RESET` restores the complete initial state; component selection preserves progress.
 
-The panel presents the state in text and responsive posters, with a polite announcement and a static scenario transcript. Controls start disabled and activate only after initialization. There are no timestamps, uptime or recovery metrics, backend calls or operational data. The failure posters are generated from the transitioned state via `simulationId` anchors; the original GLB stays unchanged.
+The separate Simulation section presents a semantic 2D scheme showing the three nodes, workload assignment and shared layer, with a polite announcement and static scenario transcript. Controls start disabled and activate only after initialization. Failover and reset update the scheme and text from the unchanged state machine. There are no timestamps, uptime or recovery metrics, backend calls or operational data.
 
 **Work** opens the canonical Systems Atlas at `/explore/`. The shared shell is
 ordinary HTML; graphics are route-specific progressive enhancements.
@@ -73,26 +75,23 @@ Without JavaScript those anchors land in the same visible work introduction;
 `#about`, `#experience`, `#stack` and `#contact` retain their content.
 See [SA-05 validation](design/sa-05/validation.md) for measurements and checks.
 
-## Canonical CnesData project (SA-02)
+## Canonical project pages
 
-`/explore/cnesdata/` now combines the complete case-study narrative and the
-existing explorer behavior. `ProjectDetail.astro` renders collection-backed
-context, contribution, engineering, results, public evidence and limitations
-at build time, with `system-view` and `simulation` slots. Presentation metadata
-contains only the project ID, visual mode, System View heading and optional
-simulation choice; the case-study collection remains the authority for facts.
+`/explore/cnesdata/`, `/explore/limnopulse/` and `/explore/infrastructure/`
+combine the complete case-study narrative with their shared System View.
+`ProjectDetail.astro` renders Hero → Context and contribution → System View →
+Simulation (where applicable) → Engineering → Results and evidence, using
+collection-backed content at build time. The case-study collection remains
+the authority for facts.
 
-CnesData uses an accessible HTML data flow and the existing detailed maquette
-as a responsive static poster inside its System View. Component statuses and
-directed relationships remain readable without graphics or JavaScript. The
-page does not request GLBs or initialize a renderer. Its route initializes the
-existing explorer controller once, retaining native component fragments,
-keyboard focus, history, and the unchanged synthetic write/replay/conflict API.
+CnesData uses the shared accessible HTML flow and initializes the explorer
+controller once, preserving the synthetic write/replay/conflict API in its
+own Simulation section. Infrastructure similarly preserves failover/reset.
 
-The canonical route retains `#overview`, `#architecture`, `#engineering`,
-`#simulation`, `#results`, and every `#component-*` fragment, and adds direct
-`#evidence` and `#limitations` sections. All three transcripts are built HTML;
-simulation controls start disabled until the controller is initialized.
+The canonical routes expose `#overview`, `#system`, `#engineering`, `#results`,
+every `#component-*` fragment, and direct `#evidence` and `#limitations` sections.
+CnesData and Infrastructure also expose `#simulation`. CnesData's three
+transcripts are built HTML; simulation controls start disabled until the controller is initialized.
 Full Parquet-to-Gold processing and Kubernetes deployment remain planned.
 
 The legacy `/work/cnesdata/` route is a small compatibility page; the canonical CnesData
@@ -102,4 +101,5 @@ also use their canonical `/explore/` project pages.
 SA-06 established **Work → `/explore/`** the single primary work destination. All four
 `/work/*` compatibility pages use destination metadata, `noindex`, a static
 fallback link and restricted `location.replace`, preserving query and fragment
-data. They are excluded from the sitemap.
+data, except that the retired `#architecture` fragment migrates to `#system`.
+Other fragments pass through unchanged. They are excluded from the sitemap.
