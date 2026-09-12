@@ -44,8 +44,11 @@ for (const viewport of viewports) {
       await expect(menu).toHaveAttribute('aria-expanded', 'false');
     }
 
-    await page.locator('.hero-actions a[href="/work/"]').focus();
+    await page.getByRole('link', { name: 'Explore my work', exact: true }).focus();
     await page.keyboard.press('Enter');
+    await expect(page).toHaveURL(/\/explore\/$/);
+    // SA-06 owns retiring Work; retain its legacy route coverage during SA-05.
+    await page.goto('/work/');
     await expect(page).toHaveURL(/\/work\/$/);
     await expectLoadedImagesAndNoHorizontalOverflow(page);
 

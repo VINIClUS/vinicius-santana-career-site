@@ -211,8 +211,13 @@ Three.js view after the immediate HTML and 2D poster are already usable. The
 poster remains visible while the scene loads. Save-Data, unavailable WebGL,
 renderer/model failures, a 15-second loading deadline, context loss, and **View 2D** (available during loading) all
 keep or restore the same 2D HTML/poster experience with working district links.
-Home, Work and individual project routes do not download the Atlas
-renderer or GLB models.
+Home uses the same four overview models through a separate fixed, decorative
+preview. Its small launcher waits for page load, actual viewport intersection,
+document visibility and an idle opportunity before downloading Three.js or models.
+One 15-second deadline covers activation through the first complete draw; failure
+retains the responsive poster. The only Home work CTA is **Explore my work** →
+`/explore/`. Work and the current static project views do not load this preview.
+See [SA-05 validation](docs/design/sa-05/validation.md) for loading and performance evidence.
 
 `npm test` checks the simulation and explorer TypeScript modules and runs the focused Node tests. After `npm run build`, run `npm run smoke` and `npm run test:explorer`. Install the browser once with `npx playwright install --with-deps chromium`. Playwright 1.63.0 runs the Chromium browser suites with one worker; screenshots and traces are retained only on failure. To run the same smoke against a deployment, set `EXPLORER_BASE_URL` to its origin.
 

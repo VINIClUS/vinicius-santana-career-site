@@ -1,15 +1,15 @@
 import { Component, useLayoutEffect, useSyncExternalStore, type ReactNode } from 'react';
 import { createRoot, events, useFrame, type RootState, type ThreeEvent } from '@react-three/fiber';
 import {
-  ACESFilmicToneMapping, BufferGeometry, Color, DirectionalLight, Group, HemisphereLight,
-  GridHelper, LineBasicMaterial, LineSegments, Mesh, MeshBasicMaterial, MeshStandardMaterial, Object3D,
-  OrthographicCamera, PlaneGeometry, RingGeometry, Scene, Vector3, WebGLRenderer,
+  ACESFilmicToneMapping, Color, Group, Mesh, MeshBasicMaterial, Object3D,
+  OrthographicCamera, RingGeometry, Scene, Vector3, WebGLRenderer,
 } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { districts, hub, overview, type OverviewLayout } from '../../../content/scenes/index.ts';
+import { overview, type OverviewLayout } from '../../../content/scenes/index.ts';
 import { districtIds, type DistrictId } from '../districts.ts';
 import type { ObservatoryController } from '../observatory-controller.ts';
 import { createModelCache } from './resources.ts';
+import { applyOverviewCamera, createOverviewComposition } from './composition.ts';
 
 export interface ObservatoryScene { dispose(): void; zoom(direction: 1 | -1): void; reset(): void; }
 interface Options {
@@ -73,14 +73,11 @@ export function mountObservatoryScene(options: Options): ObservatoryScene {
   let gl: WebGLRenderer | undefined;
   let controls: OrbitControls | undefined;
   let observer: ResizeObserver | undefined;
-  const groups = new Map<DistrictId, Group>();
   const selectedRing = new Mesh(new RingGeometry(3.02, 3.1, 64), new MeshBasicMaterial({ color: '#74d7f0', transparent: true, opacity: 0.6, depthWrite: false }));
   selectedRing.rotation.x = -Math.PI / 2;
   selectedRing.visible = false;
   world.add(selectedRing);
-  const connectors = new LineSegments(new BufferGeometry(), new LineBasicMaterial({ color: '#335466', transparent: true, opacity: 0.55 }));
-  world.add(connectors);
-  let hubModel: Object3D | undefined;
+  const composition = createOverviewComposition(world);
   const labels = districtIds.map(id => ({ element: host.querySelector<HTMLElement>(`[data-district-link="${id}"]`)!, id }));
   const hubLabel = host.querySelector<HTMLElement>('.observatory-hub')!;
   const projection = new Vector3();
@@ -101,12 +98,7 @@ export function mountObservatoryScene(options: Options): ObservatoryScene {
   };
   const resetCamera = () => {
     const preset = layout.camera;
-    Object.assign(camera, preset.frustum);
-    camera.position.set(...preset.position);
-    camera.up.set(...preset.up);
-    camera.zoom = preset.zoom;
-    camera.lookAt(new Vector3(...preset.target));
-    camera.updateProjectionMatrix();
+    applyOverviewCamera(camera, layout);
     if (controls) {
       controls.target.set(...preset.target);
       // Remove old limits before evaluating the new responsive camera's initial angles.
@@ -128,15 +120,7 @@ export function mountObservatoryScene(options: Options): ObservatoryScene {
   };
   const applyLayout = (next: OverviewLayout) => {
     layout = next;
-    for (const [id, group] of groups) {
-      group.position.set(...layout.placements[id]);
-      group.scale.setScalar(layout.districtScale);
-    }
-    hubModel?.position.set(...layout.hubPosition);
-    const points: Vector3[] = [];
-    for (const id of districtIds) points.push(new Vector3(layout.hubPosition[0], 0.2, layout.hubPosition[2]), new Vector3(layout.placements[id][0], 0.2, layout.placements[id][2]));
-    connectors.geometry.dispose();
-    connectors.geometry = new BufferGeometry().setFromPoints(points);
+    composition.applyLayout(layout);
     const selected = options.controller.getState().selectedDistrictId;
     if (selected) selectedRing.position.set(layout.placements[selected][0], 0.04, layout.placements[selected][2]);
     resetCamera();
@@ -167,32 +151,8 @@ export function mountObservatoryScene(options: Options): ObservatoryScene {
     if (!disposed) options.onFailure();
   }, { signal: lifetime.signal });
   const initialize = async () => {
-    const models = await Promise.all([cache.load(hub.model.src), ...districtIds.map(id => cache.load(districts[id].model.src))]);
+    await composition.load(cache, lifetime.signal);
     if (disposed) return;
-    hubModel = models[0]!;
-    world.add(hubModel);
-    districtIds.forEach((id, index) => {
-      const group = new Group();
-      group.name = `placement-${id}`;
-      group.userData.districtId = id;
-      const object = models[index + 1]!;
-      group.add(object);
-      groups.set(id, group);
-      world.add(group);
-    });
-    world.add(new HemisphereLight('#d9efff', '#17232d', 1.5));
-    const key = new DirectionalLight('#d0e5ff', 2.5);
-    key.position.set(-7, 14, 8);
-    const fill = new DirectionalLight('#68b6df', 1.5);
-    fill.position.set(8, 5, -6);
-    world.add(key, fill);
-    const floor = new Mesh(new PlaneGeometry(160, 160), new MeshStandardMaterial({ color: '#050a11', roughness: 1 }));
-    floor.rotation.x = -Math.PI / 2;
-    floor.position.y = -0.025;
-    world.add(floor);
-    const grid = new GridHelper(60, 30, '#162835', '#12212d');
-    grid.position.y = -0.02;
-    world.add(grid);
     gl = new WebGLRenderer({ canvas, antialias: true, powerPreference: 'low-power' });
     gl.toneMapping = ACESFilmicToneMapping;
     gl.toneMappingExposure = 0.85;

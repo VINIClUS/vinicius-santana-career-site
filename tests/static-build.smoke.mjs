@@ -54,13 +54,17 @@ assert.match(html, /Software &amp; Data Engineer/, 'home must show the professio
 assert.match(html, /reliable systems where software, data and infrastructure meet/, 'home must explain systems positioning');
 for (const pillar of ['Data Systems', 'Distributed Infrastructure', 'Backend Engineering', 'Public Health']) assert.ok(html.includes(pillar));
 const hero = html.match(/<section[^>]*id="top"[\s\S]*?<\/section>/)[0];
-assert.equal((hero.match(/<a /g) || []).length, 2, 'hero must have exactly two primary actions');
-assert.match(hero, /href="\/work\/"[^>]*>View selected work/);
-assert.match(hero, /href="\/explore\/"[^>]*>Explore systems/);
-assert.match(hero, /home-globe-desktop\.webp/);
+assert.equal((hero.match(/<a /g) || []).length, 1, 'hero must have exactly one work discovery action');
+
+assert.match(hero, /href="\/explore\/"[^>]*>Explore my work/);
+assert.match(hero, /overview-desktop\.webp/);
+assert.match(hero, /overview-mobile\.webp/);
+assert.match(hero, /data-home-preview/);
+assert.doesNotMatch(html, /home-globe|project-grid|Selected work|Browse all selected work/);
+for (const name of ['CnesData', 'LimnoPulse', 'Infrastructure']) assert.ok(hero.includes(name));
 assert.match(hero, /fetchpriority="high"/);
 assert.doesNotMatch(html, /<link[^>]*rel="preload"[^>]*vinicius-(?:hero|portrait)/);
-assert.doesNotMatch(html, /<canvas|\.(?:glb|gltf|ktx2)["']/i);
+assert.doesNotMatch(html, /<link[^>]+(?:preload|modulepreload)[^>]+(?:preview\.|renderer\.|\.glb)/i, 'graphics must not preload');
 
 for (const id of ['about', 'experience', 'projects', 'stack', 'contact']) {
   assert.match(html, new RegExp(`id=["']${id}["']`), `home must preserve #${id}`);
@@ -136,7 +140,7 @@ assert.match(editorialPages.privacy, /does not provide[^<]*account/i, 'Privacy m
 assert.match(editorialPages.notFound, /<meta name="robots" content="noindex,nofollow">/i, '404 must be noindex');
 assert.doesNotMatch(html, /id=["']root["']/i, 'home must not include the former React mount point');
 assert.doesNotMatch(html, /src\/main\.jsx/i, 'home must not load the former Vite entry point');
-assert.doesNotMatch(html, /<astro-island\b/i, 'home must not ship hydrated React islands');
+assert.doesNotMatch(html, /<astro-island\b/i, 'Home preview launcher must not eagerly hydrate the Atlas application');
 
 const caseStudies = [
   {
