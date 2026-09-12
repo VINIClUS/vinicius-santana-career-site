@@ -61,8 +61,8 @@ const routeFor = (relation: ProjectRelation) => {
   </div>;
 })}
 <style>
-  .graph-connector { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+  .graph-connector { position: absolute; inset: 0; pointer-events: none; }
   .graph-connector svg { display: block; width: 100%; height: 100%; overflow: visible; color: var(--graph-connector, var(--accent)); }
   .graph-connector path { fill: none; stroke: currentColor; stroke-width: 1.1; vector-effect: non-scaling-stroke; opacity: .72; }
-  .graph-connector-label { position: absolute; left: var(--label-x); top: var(--label-y); width: max-content; transform: translate(-50%, -50%); border: 1px solid color-mix(in srgb, var(--graph-connector, var(--accent)) 48%, transparent); border-radius: 4px; background: var(--bg-strong); color: var(--muted-strong); padding: 3px 5px; font-size: .56rem; line-height: 1.25; text-align: center; white-space: nowrap; }
+  .graph-connector-label { position: absolute; z-index: 1; left: var(--label-x); top: var(--label-y); width: max-content; transform: translate(-50%, -50%); border: 1px solid color-mix(in srgb, var(--graph-connector, var(--accent)) 48%, transparent); border-radius: 4px; background: var(--bg-strong); color: var(--muted-strong); padding: 3px 5px; font-size: .56rem; line-height: 1.25; text-align: center; white-space: nowrap; }
 </style>

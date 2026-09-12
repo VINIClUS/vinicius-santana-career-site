@@ -73,6 +73,16 @@ test('Infrastructure renders three parallel inputs directed only to reference to
   expect(target!.x).toBeGreaterThan(positions[0]);
 });
 
+test('connector labels paint above every connector path', async ({ page }) => {
+  await page.goto('/explore/cnesdata/#system');
+  const layers = await page.locator('[data-graph-connector]').evaluateAll(connectors => connectors.map(connector => ({
+    connector: getComputedStyle(connector).zIndex,
+    path: getComputedStyle(connector.querySelector('svg')!).zIndex,
+    label: getComputedStyle(connector.querySelector('[data-graph-edge-label]')!).zIndex,
+  })));
+  expect(layers.every(layer => layer.connector === 'auto' && layer.path === 'auto' && Number(layer.label) > 0)).toBe(true);
+});
+
 test('connectors announce both endpoints without relying on their decorative arrows', async ({ page }) => {
   await page.goto('/explore/infrastructure/');
   const connectors = page.locator('[data-graph-connector]');
