@@ -64,6 +64,25 @@ test('maquette selection keeps geometry stable and synchronizes panels and histo
   expect(models.some(url => url.includes('/detail-'))).toBe(false);
 });
 
+for (const failure of ['import', 'initialization'] as const) {
+  test(`${failure} failure returns to the 2D poster with working panels`, async ({ page }) => {
+    if (failure === 'import') await page.route('**/_astro/renderer.*.js', route => route.abort());
+    if (failure === 'initialization') await page.addInitScript(() => {
+      const getContext = HTMLCanvasElement.prototype.getContext;
+      let webglCalls = 0;
+      HTMLCanvasElement.prototype.getContext = function (type: string, ...args: unknown[]) {
+        if (type === 'webgl2' && ++webglCalls > 1) return null;
+        return Reflect.apply(getContext, this, [type, ...args]);
+      } as typeof getContext;
+    });
+    await page.goto('/explore/');
+    await expect(stage(page)).toHaveAttribute('data-scene-state', 'fallback');
+    await expect(canvas(page)).toHaveCount(0);
+    await link(page, 'cnesdata').click();
+    await expect(panel(page, 'cnesdata')).toBeVisible();
+  });
+}
+
 for (const failure of ['overview', 'context'] as const) {
   test(`${failure} failure returns to the 2D poster with working panels`, async ({ page }) => {
     if (failure === 'overview') await page.route('**/district-limnopulse.glb', route => route.fulfill({ status: 200, body: 'invalid GLB' }));
@@ -104,6 +123,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     }
     await clickMaquette(page, 'infrastructure', viewport.width <= 700);
     await expect(panel(page, 'infrastructure')).toBeVisible();
+    await expect(panel(page, 'infrastructure')).toHaveCSS('opacity', '1');
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await page.screenshot({ path: testInfo.outputPath(`observatory-panel-${viewport.width}.png`), fullPage: true });
   });

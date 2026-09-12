@@ -15,7 +15,7 @@ test('the three project districts resolve to their canonical explorers', () => {
   }
 });
 
-test('district selection starts empty and notifies only valid changes', () => {
+test('district selection starts empty, rejects invalid IDs and toggles repeated activation', () => {
   const controller = createObservatoryController();
   assert.equal(controller.getState().selectedDistrictId, null);
   let changes = 0;
@@ -26,15 +26,19 @@ test('district selection starts empty and notifies only valid changes', () => {
   }
   assert.equal(changes, 3);
   const selected = controller.getState();
-  for (const districtId of ['infrastructure', 'unknown', 'toString', '__proto__']) controller.dispatch({ type: 'SELECT_DISTRICT', districtId });
+  for (const districtId of ['unknown', 'toString', '__proto__']) controller.dispatch({ type: 'SELECT_DISTRICT', districtId });
   assert.equal(controller.getState(), selected);
   assert.equal(changes, 3);
-  controller.dispatch({ type: 'SELECT_DISTRICT', districtId: null });
+  controller.dispatch({ type: 'ACTIVATE_DISTRICT', districtId: 'infrastructure' });
   assert.equal(controller.getState().selectedDistrictId, null);
   assert.equal(changes, 4);
+  controller.dispatch({ type: 'ACTIVATE_DISTRICT', districtId: 'cnesdata' });
+  controller.dispatch({ type: 'ACTIVATE_DISTRICT', districtId: 'cnesdata' });
+  assert.equal(controller.getState().selectedDistrictId, null);
+  assert.equal(changes, 6);
   unsubscribe();
   controller.dispatch({ type: 'SELECT_DISTRICT', districtId: 'cnesdata' });
-  assert.equal(changes, 4);
+  assert.equal(changes, 6);
   assert.equal(createObservatoryController().getState().selectedDistrictId, null);
 });
 

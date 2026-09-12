@@ -45,6 +45,35 @@ test('project panel selection, replacement, closing and history stay coherent', 
   await expect(page).toHaveURL(/\/explore\/$/);
 });
 
+test('mobile supports touch, project changes, closing, repeated activation and history', async ({ browser, baseURL }) => {
+  const context = await browser.newContext({ baseURL, viewport: { width: 390, height: 844 }, hasTouch: true });
+  const page = await context.newPage();
+  await page.goto('/explore/');
+
+  await link(page, 'infrastructure').tap();
+  await expect(panel(page, 'infrastructure')).toBeVisible();
+  await link(page, 'cnesdata').focus();
+  await page.keyboard.press('Enter');
+  await expect(panel(page, 'cnesdata')).toBeVisible();
+  await page.goBack();
+  await expect(panel(page, 'infrastructure')).toBeVisible();
+  await page.goForward();
+  await expect(panel(page, 'cnesdata')).toBeVisible();
+
+  await panel(page, 'cnesdata').getByRole('link', { name: 'Close CnesData panel' }).tap();
+  await expect(panel(page, 'cnesdata')).toBeHidden();
+  await link(page, 'infrastructure').tap();
+  await page.keyboard.press('Escape');
+  await expect(panel(page, 'infrastructure')).toBeHidden();
+
+  await link(page, 'cnesdata').focus();
+  await page.keyboard.press('Enter');
+  await page.keyboard.press('Enter');
+  await expect(panel(page, 'cnesdata')).toBeHidden();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await context.close();
+});
+
 test('direct and invalid fragments synchronize only the three project panels', async ({ page }) => {
   for (const id of projects) {
     await page.goto(`/explore/#district-${id}`);

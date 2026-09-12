@@ -31,7 +31,6 @@ const positionStyle = (desktop: { x: number; y: number }, mobile: { x: number; y
           href={`#district-${project.id}`}
           data-district-link={project.id}
           aria-controls={`district-${project.id}`}
-          aria-expanded="false"
           style={positionStyle(projectToPoster(layouts.desktop.placements[project.id], layouts.desktop.camera), projectToPoster(layouts.mobile.placements[project.id], layouts.mobile.camera))}
         ><span class="district-number" aria-hidden="true">0{index + 1}</span><span>{project.title}</span></a>)}
       </nav>

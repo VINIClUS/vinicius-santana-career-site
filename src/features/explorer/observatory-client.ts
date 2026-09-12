@@ -38,12 +38,11 @@ if (root) {
     if (restoreFocus) links.find(link => link.dataset.districtLink === selectedDistrictId)?.focus({ preventScroll: true });
   };
   const selectDistrict = (districtId: DistrictId) => {
-    if (controller.getState().selectedDistrictId === districtId) {
-      closePanel();
-      return;
-    }
-    history.pushState(history.state, '', `#district-${districtId}`);
-    controller.dispatch({ type: 'SELECT_DISTRICT', districtId });
+    const repeated = controller.getState().selectedDistrictId === districtId;
+    if (repeated) history.replaceState(history.state, '', `${location.pathname}${location.search}`);
+    else history.pushState(history.state, '', `#district-${districtId}`);
+    controller.dispatch({ type: 'ACTIVATE_DISTRICT', districtId });
+    if (repeated) links.find(link => link.dataset.districtLink === districtId)?.focus({ preventScroll: true });
   };
   const use2D = (focus = false) => {
     const canvas = map.querySelector('[data-observatory-canvas]');
