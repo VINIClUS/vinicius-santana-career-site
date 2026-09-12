@@ -1,0 +1,622 @@
+{
+  "capturedAt": "2026-09-12T10:24:38.020Z",
+  "label": "after",
+  "dist": "/home/vinicius/code/vinicius-santana-career-site/.worktrees/sa-01/dist",
+  "browser": "Chromium 153.0.8010.12",
+  "conditions": {
+    "cache": "disabled through CDP; fresh context per viewport",
+    "host": "127.0.0.1:4331",
+    "rendering": "headless Chromium; container GPU availability may cause SwiftShader/software WebGL",
+    "timingMeaning": "wall-clock until network idle; useful only for same-host/profile comparisons, not user-facing latency"
+  },
+  "results": [
+    {
+      "profile": {
+        "name": "desktop-1440x900",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "isMobile": false,
+        "hasTouch": false
+      },
+      "webgl": {
+        "vendor": "Google Inc. (Google)",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "initialSettledMs": 770,
+      "selectionSettledMs": 297,
+      "labelLayout": {
+        "initial": {
+          "rectangles": [
+            {
+              "label": "hub",
+              "left": 695,
+              "top": 860,
+              "right": 780,
+              "bottom": 884
+            },
+            {
+              "label": "cnesdata",
+              "left": 541,
+              "top": 710,
+              "right": 729,
+              "bottom": 758
+            },
+            {
+              "label": "limnopulse",
+              "left": 979,
+              "top": 874,
+              "right": 1167,
+              "bottom": 922
+            },
+            {
+              "label": "infrastructure",
+              "left": 492,
+              "top": 949,
+              "right": 680,
+              "bottom": 997
+            }
+          ],
+          "pairs": [
+            {
+              "labels": [
+                "hub",
+                "cnesdata"
+              ],
+              "overlaps": false,
+              "separationPx": 102
+            },
+            {
+              "labels": [
+                "hub",
+                "limnopulse"
+              ],
+              "overlaps": false,
+              "separationPx": 199
+            },
+            {
+              "labels": [
+                "hub",
+                "infrastructure"
+              ],
+              "overlaps": false,
+              "separationPx": 65
+            },
+            {
+              "labels": [
+                "cnesdata",
+                "limnopulse"
+              ],
+              "overlaps": false,
+              "separationPx": 250
+            },
+            {
+              "labels": [
+                "cnesdata",
+                "infrastructure"
+              ],
+              "overlaps": false,
+              "separationPx": 191
+            },
+            {
+              "labels": [
+                "limnopulse",
+                "infrastructure"
+              ],
+              "overlaps": false,
+              "separationPx": 299
+            }
+          ]
+        },
+        "zoomIn": {
+          "rectangles": [
+            {
+              "label": "hub",
+              "left": 699,
+              "top": 118,
+              "right": 784,
+              "bottom": 142
+            },
+            {
+              "label": "cnesdata",
+              "left": 524,
+              "top": -63,
+              "right": 712,
+              "bottom": -15
+            },
+            {
+              "label": "limnopulse",
+              "left": 1050,
+              "top": 134,
+              "right": 1238,
+              "bottom": 182
+            },
+            {
+              "label": "infrastructure",
+              "left": 465,
+              "top": 224,
+              "right": 653,
+              "bottom": 272
+            }
+          ],
+          "pairs": [
+            {
+              "labels": [
+                "hub",
+                "cnesdata"
+              ],
+              "overlaps": false,
+              "separationPx": 133
+            },
+            {
+              "labels": [
+                "hub",
+                "limnopulse"
+              ],
+              "overlaps": false,
+              "separationPx": 266
+            },
+            {
+              "labels": [
+                "hub",
+                "infrastructure"
+              ],
+              "overlaps": false,
+              "separationPx": 82
+            },
+            {
+              "labels": [
+                "cnesdata",
+                "limnopulse"
+              ],
+              "overlaps": false,
+              "separationPx": 338
+            },
+            {
+              "labels": [
+                "cnesdata",
+                "infrastructure"
+              ],
+              "overlaps": false,
+              "separationPx": 239
+            },
+            {
+              "labels": [
+                "limnopulse",
+                "infrastructure"
+              ],
+              "overlaps": false,
+              "separationPx": 397
+            }
+          ]
+        },
+        "zoomOut": {
+          "rectangles": [
+            {
+              "label": "hub",
+              "left": 693,
+              "top": 104,
+              "right": 778,
+              "bottom": 128
+            },
+            {
+              "label": "cnesdata",
+              "left": 550,
+              "top": -32,
+              "right": 738,
+              "bottom": 16
+            },
+            {
+              "label": "limnopulse",
+              "left": 944,
+              "top": 116,
+              "right": 1132,
+              "bottom": 164
+            },
+            {
+              "label": "infrastructure",
+              "left": 505,
+              "top": 184,
+              "right": 693,
+              "bottom": 232
+            }
+          ],
+          "pairs": [
+            {
+              "labels": [
+                "hub",
+                "cnesdata"
+              ],
+              "overlaps": false,
+              "separationPx": 88
+            },
+            {
+              "labels": [
+                "hub",
+                "limnopulse"
+              ],
+              "overlaps": false,
+              "separationPx": 166
+            },
+            {
+              "labels": [
+                "hub",
+                "infrastructure"
+              ],
+              "overlaps": false,
+              "separationPx": 56
+            },
+            {
+              "labels": [
+                "cnesdata",
+                "limnopulse"
+              ],
+              "overlaps": false,
+              "separationPx": 206
+            },
+            {
+              "labels": [
+                "cnesdata",
+                "infrastructure"
+              ],
+              "overlaps": false,
+              "separationPx": 168
+            },
+            {
+              "labels": [
+                "limnopulse",
+                "infrastructure"
+              ],
+              "overlaps": false,
+              "separationPx": 251
+            }
+          ]
+        }
+      },
+      "initialModels": {
+        "requestCount": 4,
+        "encodedBytes": 193280,
+        "requests": [
+          {
+            "url": "http://127.0.0.1:4331/assets/scenes/hub.glb",
+            "type": "Fetch",
+            "phase": "initial",
+            "encodedBytes": 34163,
+            "durationMs": 4
+          },
+          {
+            "url": "http://127.0.0.1:4331/assets/scenes/district-cnesdata.glb",
+            "type": "Fetch",
+            "phase": "initial",
+            "encodedBytes": 57047,
+            "durationMs": 13
+          },
+          {
+            "url": "http://127.0.0.1:4331/assets/scenes/district-limnopulse.glb",
+            "type": "Fetch",
+            "phase": "initial",
+            "encodedBytes": 58975,
+            "durationMs": 10
+          },
+          {
+            "url": "http://127.0.0.1:4331/assets/scenes/district-infrastructure.glb",
+            "type": "Fetch",
+            "phase": "initial",
+            "encodedBytes": 43095,
+            "durationMs": 9
+          }
+        ]
+      },
+      "selectionModels": {
+        "requestCount": 0,
+        "encodedBytes": 0,
+        "requests": []
+      }
+    },
+    {
+      "profile": {
+        "name": "mobile-390x900",
+        "viewport": {
+          "width": 390,
+          "height": 900
+        },
+        "isMobile": true,
+        "hasTouch": true
+      },
+      "webgl": {
+        "vendor": "Google Inc. (Google)",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "initialSettledMs": 675,
+      "selectionSettledMs": 286,
+      "labelLayout": {
+        "initial": {
+          "rectangles": [
+            {
+              "label": "hub",
+              "left": 153,
+              "top": 713,
+              "right": 237,
+              "bottom": 737
+            },
+            {
+              "label": "cnesdata",
+              "left": 137,
+              "top": 633,
+              "right": 253,
+              "bottom": 677
+            },
+            {
+              "label": "limnopulse",
+              "left": 221,
+              "top": 752,
+              "right": 336,
+              "bottom": 796
+            },
+            {
+              "label": "infrastructure",
+              "left": 54,
+              "top": 752,
+              "right": 169,
+              "bottom": 796
+            }
+          ],
+          "pairs": [
+            {
+              "labels": [
+                "hub",
+                "cnesdata"
+              ],
+              "overlaps": false,
+              "separationPx": 36
+            },
+            {
+              "labels": [
+                "hub",
+                "limnopulse"
+              ],
+              "overlaps": false,
+              "separationPx": 15
+            },
+            {
+              "labels": [
+                "hub",
+                "infrastructure"
+              ],
+              "overlaps": false,
+              "separationPx": 15
+            },
+            {
+              "labels": [
+                "cnesdata",
+                "limnopulse"
+              ],
+              "overlaps": false,
+              "separationPx": 75
+            },
+            {
+              "labels": [
+                "cnesdata",
+                "infrastructure"
+              ],
+              "overlaps": false,
+              "separationPx": 75
+            },
+            {
+              "labels": [
+                "limnopulse",
+                "infrastructure"
+              ],
+              "overlaps": false,
+              "separationPx": 52
+            }
+          ]
+        },
+        "zoomIn": {
+          "rectangles": [
+            {
+              "label": "hub",
+              "left": 153,
+              "top": 252,
+              "right": 237,
+              "bottom": 276
+            },
+            {
+              "label": "cnesdata",
+              "left": 137,
+              "top": 156,
+              "right": 253,
+              "bottom": 200
+            },
+            {
+              "label": "limnopulse",
+              "left": 238,
+              "top": 299,
+              "right": 353,
+              "bottom": 343
+            },
+            {
+              "label": "infrastructure",
+              "left": 37,
+              "top": 299,
+              "right": 152,
+              "bottom": 343
+            }
+          ],
+          "pairs": [
+            {
+              "labels": [
+                "hub",
+                "cnesdata"
+              ],
+              "overlaps": false,
+              "separationPx": 52
+            },
+            {
+              "labels": [
+                "hub",
+                "limnopulse"
+              ],
+              "overlaps": false,
+              "separationPx": 23
+            },
+            {
+              "labels": [
+                "hub",
+                "infrastructure"
+              ],
+              "overlaps": false,
+              "separationPx": 23
+            },
+            {
+              "labels": [
+                "cnesdata",
+                "limnopulse"
+              ],
+              "overlaps": false,
+              "separationPx": 99
+            },
+            {
+              "labels": [
+                "cnesdata",
+                "infrastructure"
+              ],
+              "overlaps": false,
+              "separationPx": 99
+            },
+            {
+              "labels": [
+                "limnopulse",
+                "infrastructure"
+              ],
+              "overlaps": false,
+              "separationPx": 86
+            }
+          ]
+        },
+        "zoomOut": {
+          "rectangles": [
+            {
+              "label": "hub",
+              "left": 153,
+              "top": 247,
+              "right": 237,
+              "bottom": 271
+            },
+            {
+              "label": "cnesdata",
+              "left": 137,
+              "top": 176,
+              "right": 253,
+              "bottom": 220
+            },
+            {
+              "label": "limnopulse",
+              "left": 213,
+              "top": 283,
+              "right": 328,
+              "bottom": 327
+            },
+            {
+              "label": "infrastructure",
+              "left": 62,
+              "top": 283,
+              "right": 177,
+              "bottom": 327
+            }
+          ],
+          "pairs": [
+            {
+              "labels": [
+                "hub",
+                "cnesdata"
+              ],
+              "overlaps": false,
+              "separationPx": 27
+            },
+            {
+              "labels": [
+                "hub",
+                "limnopulse"
+              ],
+              "overlaps": false,
+              "separationPx": 12
+            },
+            {
+              "labels": [
+                "hub",
+                "infrastructure"
+              ],
+              "overlaps": false,
+              "separationPx": 12
+            },
+            {
+              "labels": [
+                "cnesdata",
+                "limnopulse"
+              ],
+              "overlaps": false,
+              "separationPx": 63
+            },
+            {
+              "labels": [
+                "cnesdata",
+                "infrastructure"
+              ],
+              "overlaps": false,
+              "separationPx": 63
+            },
+            {
+              "labels": [
+                "limnopulse",
+                "infrastructure"
+              ],
+              "overlaps": false,
+              "separationPx": 36
+            }
+          ]
+        }
+      },
+      "initialModels": {
+        "requestCount": 4,
+        "encodedBytes": 193280,
+        "requests": [
+          {
+            "url": "http://127.0.0.1:4331/assets/scenes/hub.glb",
+            "type": "Fetch",
+            "phase": "initial",
+            "encodedBytes": 34163,
+            "durationMs": 6
+          },
+          {
+            "url": "http://127.0.0.1:4331/assets/scenes/district-cnesdata.glb",
+            "type": "Fetch",
+            "phase": "initial",
+            "encodedBytes": 57047,
+            "durationMs": 6
+          },
+          {
+            "url": "http://127.0.0.1:4331/assets/scenes/district-limnopulse.glb",
+            "type": "Fetch",
+            "phase": "initial",
+            "encodedBytes": 58975,
+            "durationMs": 6
+          },
+          {
+            "url": "http://127.0.0.1:4331/assets/scenes/district-infrastructure.glb",
+            "type": "Fetch",
+            "phase": "initial",
+            "encodedBytes": 43095,
+            "durationMs": 6
+          }
+        ]
+      },
+      "selectionModels": {
+        "requestCount": 0,
+        "encodedBytes": 0,
+        "requests": []
+      }
+    }
+  ]
+}

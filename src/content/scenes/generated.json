@@ -131,138 +131,6 @@
       }
     }
   },
-  "district-public-health": {
-    "posters": {
-      "desktop": {
-        "src": "/assets/posters/district-public-health-desktop.webp",
-        "width": 1200,
-        "height": 800,
-        "bytes": 37020
-      },
-      "mobile": {
-        "src": "/assets/posters/district-public-health-mobile.webp",
-        "width": 720,
-        "height": 900,
-        "bytes": 24542
-      }
-    },
-    "cameras": {
-      "desktop": {
-        "position": [
-          24.82817665807104,
-          23.216450159360384,
-          31.035220822588798
-        ],
-        "target": [
-          0,
-          2.1125,
-          0
-        ],
-        "up": [
-          0,
-          1,
-          0
-        ],
-        "projection": "orthographic",
-        "frustum": {
-          "left": -7.6317187280894085,
-          "right": 7.6317187280894085,
-          "top": 5.087812485392939,
-          "bottom": -5.087812485392939,
-          "near": 0.1,
-          "far": 200
-        },
-        "zoom": 1
-      },
-      "mobile": {
-        "position": [
-          24.82817665807104,
-          23.216450159360384,
-          31.035220822588798
-        ],
-        "target": [
-          0,
-          2.1125,
-          0
-        ],
-        "up": [
-          0,
-          1,
-          0
-        ],
-        "projection": "orthographic",
-        "frustum": {
-          "left": -6.353148633628494,
-          "right": 6.353148633628494,
-          "top": 7.941435792035618,
-          "bottom": -7.941435792035618,
-          "near": 0.1,
-          "far": 200
-        },
-        "zoom": 1
-      }
-    },
-    "camera": {
-      "position": [
-        24.82817665807104,
-        23.216450159360384,
-        31.035220822588798
-      ],
-      "target": [
-        0,
-        2.1125,
-        0
-      ],
-      "up": [
-        0,
-        1,
-        0
-      ],
-      "projection": "orthographic",
-      "frustum": {
-        "left": -7.6317187280894085,
-        "right": 7.6317187280894085,
-        "top": 5.087812485392939,
-        "bottom": -5.087812485392939,
-        "near": 0.1,
-        "far": 200
-      },
-      "zoom": 1
-    },
-    "model": {
-      "src": "/assets/scenes/district-public-health.glb",
-      "bytes": 54152,
-      "bounds": {
-        "min": [
-          -4,
-          0,
-          -4
-        ],
-        "max": [
-          4,
-          4.225,
-          4
-        ]
-      },
-      "anchors": {
-        "center": [
-          0,
-          2.1125,
-          0
-        ],
-        "base": [
-          0,
-          0,
-          0
-        ],
-        "label": [
-          0,
-          4.625,
-          0
-        ]
-      }
-    }
-  },
   "district-infrastructure": {
     "posters": {
       "desktop": {
@@ -406,138 +274,6 @@
           1.85,
           1.7550000000000003,
           0.006000000000000005
-        ]
-      }
-    }
-  },
-  "district-observability": {
-    "posters": {
-      "desktop": {
-        "src": "/assets/posters/district-observability-desktop.webp",
-        "width": 1200,
-        "height": 800,
-        "bytes": 34348
-      },
-      "mobile": {
-        "src": "/assets/posters/district-observability-mobile.webp",
-        "width": 720,
-        "height": 900,
-        "bytes": 20812
-      }
-    },
-    "cameras": {
-      "desktop": {
-        "position": [
-          24.82817665807104,
-          22.76265291870279,
-          31.035220822588798
-        ],
-        "target": [
-          0,
-          1.6587027593424075,
-          0
-        ],
-        "up": [
-          0,
-          1,
-          0
-        ],
-        "projection": "orthographic",
-        "frustum": {
-          "left": -6.9523652496536466,
-          "right": 6.9523652496536466,
-          "top": 4.634910166435764,
-          "bottom": -4.634910166435764,
-          "near": 0.1,
-          "far": 200
-        },
-        "zoom": 1
-      },
-      "mobile": {
-        "position": [
-          24.82817665807104,
-          22.76265291870279,
-          31.035220822588798
-        ],
-        "target": [
-          0,
-          1.6587027593424075,
-          0
-        ],
-        "up": [
-          0,
-          1,
-          0
-        ],
-        "projection": "orthographic",
-        "frustum": {
-          "left": -6.353148633628495,
-          "right": 6.353148633628495,
-          "top": 7.941435792035619,
-          "bottom": -7.941435792035619,
-          "near": 0.1,
-          "far": 200
-        },
-        "zoom": 1
-      }
-    },
-    "camera": {
-      "position": [
-        24.82817665807104,
-        22.76265291870279,
-        31.035220822588798
-      ],
-      "target": [
-        0,
-        1.6587027593424075,
-        0
-      ],
-      "up": [
-        0,
-        1,
-        0
-      ],
-      "projection": "orthographic",
-      "frustum": {
-        "left": -6.9523652496536466,
-        "right": 6.9523652496536466,
-        "top": 4.634910166435764,
-        "bottom": -4.634910166435764,
-        "near": 0.1,
-        "far": 200
-      },
-      "zoom": 1
-    },
-    "model": {
-      "src": "/assets/scenes/district-observability.glb",
-      "bytes": 68972,
-      "bounds": {
-        "min": [
-          -4,
-          0,
-          -4
-        ],
-        "max": [
-          4,
-          3.317405518684815,
-          4
-        ]
-      },
-      "anchors": {
-        "center": [
-          0,
-          1.6587027593424075,
-          0
-        ],
-        "base": [
-          0,
-          0,
-          0
-        ],
-        "label": [
-          0,
-          3.717405518684815,
-          0
         ]
       }
     }
@@ -1136,25 +872,52 @@
         "src": "/assets/posters/overview-desktop.webp",
         "width": 1200,
         "height": 800,
-        "bytes": 45988
+        "bytes": 34656
       },
       "mobile": {
         "src": "/assets/posters/overview-mobile.webp",
         "width": 720,
         "height": 900,
-        "bytes": 47428
+        "bytes": 29298
       }
     },
     "cameras": {
       "desktop": {
         "position": [
           24.82817665807104,
-          22.582700159360385,
-          31.535220822588798
+          22.799910159360383,
+          31.785220822588798
         ],
         "target": [
           0,
-          1.47875,
+          1.6959599999999997,
+          0.75
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ],
+        "projection": "orthographic",
+        "frustum": {
+          "left": -16.01346408376249,
+          "right": 16.01346408376249,
+          "top": 10.675642722508327,
+          "bottom": -10.675642722508327,
+          "near": 0.1,
+          "far": 200
+        },
+        "zoom": 1
+      },
+      "mobile": {
+        "position": [
+          25.18766519217813,
+          30.207914971004843,
+          25.18766519217813
+        ],
+        "target": [
+          0.5,
+          1.8171,
           0.5
         ],
         "up": [
@@ -1164,37 +927,10 @@
         ],
         "projection": "orthographic",
         "frustum": {
-          "left": -15.212261450521561,
-          "right": 15.212261450521561,
-          "top": 10.14150763368104,
-          "bottom": -10.14150763368104,
-          "near": 0.1,
-          "far": 200
-        },
-        "zoom": 1
-      },
-      "mobile": {
-        "position": [
-          23.43766519217813,
-          29.869564971004845,
-          23.43766519217813
-        ],
-        "target": [
-          -1.25,
-          1.47875,
-          -1.25
-        ],
-        "up": [
-          0,
-          1,
-          0
-        ],
-        "projection": "orthographic",
-        "frustum": {
-          "left": -9.546604796268271,
-          "right": 9.546604796268271,
-          "top": 11.933255995335339,
-          "bottom": -11.933255995335339,
+          "left": -12.145266073660148,
+          "right": 12.145266073660148,
+          "top": 15.181582592075184,
+          "bottom": -15.181582592075184,
           "near": 0.1,
           "far": 200
         },
@@ -1204,13 +940,13 @@
     "camera": {
       "position": [
         24.82817665807104,
-        22.582700159360385,
-        31.535220822588798
+        22.799910159360383,
+        31.785220822588798
       ],
       "target": [
         0,
-        1.47875,
-        0.5
+        1.6959599999999997,
+        0.75
       ],
       "up": [
         0,
@@ -1219,10 +955,10 @@
       ],
       "projection": "orthographic",
       "frustum": {
-        "left": -15.212261450521561,
-        "right": 15.212261450521561,
-        "top": 10.14150763368104,
-        "bottom": -10.14150763368104,
+        "left": -16.01346408376249,
+        "right": 16.01346408376249,
+        "top": 10.675642722508327,
+        "bottom": -10.675642722508327,
         "near": 0.1,
         "far": 200
       },
@@ -1232,29 +968,19 @@
       "desktop": {
         "districtPositions": {
           "cnesdata": [
-            -5,
+            -7.5,
             0,
-            -6
-          ],
-          "public-health": [
-            5,
-            0,
-            -6
-          ],
-          "infrastructure": [
-            -7,
-            0,
-            4
-          ],
-          "observability": [
-            0,
-            0,
-            7
+            -5
           ],
           "limnopulse": [
-            7,
+            7.5,
             0,
-            4
+            -5
+          ],
+          "infrastructure": [
+            0,
+            0,
+            6.5
           ]
         },
         "hubPosition": [
@@ -1262,69 +988,49 @@
           0,
           0
         ],
-        "districtScale": 0.7
+        "districtScale": 0.84
       },
       "mobile": {
         "districtPositions": {
           "cnesdata": [
-            -9,
+            -6,
             0,
-            -4
-          ],
-          "public-health": [
-            -4,
-            0,
-            -9
-          ],
-          "infrastructure": [
-            -2.5,
-            0,
-            2.5
+            -6
           ],
           "limnopulse": [
-            2.5,
+            7,
             0,
-            -2.5
+            -1
           ],
-          "observability": [
-            6.5,
+          "infrastructure": [
+            -1,
             0,
-            6.5
+            7
           ]
         },
         "hubPosition": [
-          -3.25,
           0,
-          -3.25
+          0,
+          0
         ],
-        "districtScale": 0.7
+        "districtScale": 0.9
       }
     },
     "districtPositions": {
       "cnesdata": [
-        -5,
+        -7.5,
         0,
-        -6
-      ],
-      "public-health": [
-        5,
-        0,
-        -6
-      ],
-      "infrastructure": [
-        -7,
-        0,
-        4
-      ],
-      "observability": [
-        0,
-        0,
-        7
+        -5
       ],
       "limnopulse": [
-        7,
+        7.5,
         0,
-        4
+        -5
+      ],
+      "infrastructure": [
+        0,
+        0,
+        6.5
       ]
     },
     "districtScale": 0.7

@@ -6,16 +6,16 @@ import { projectIds } from '../src/features/explorer/projects.ts';
 import { createObservatoryController } from '../src/features/explorer/observatory-controller.ts';
 import { projectToPoster } from '../src/features/explorer/observatory-projection.ts';
 
-test('all five districts resolve to approved destinations while only three are projects', () => {
-  assert.deepEqual(districtIds, ['cnesdata', 'public-health', 'infrastructure', 'observability', 'limnopulse']);
+test('Atlas exposes exactly three project identities and canonical destinations', () => {
+  assert.deepEqual(districtIds, ['cnesdata', 'limnopulse', 'infrastructure']);
   assert.deepEqual(districtIds, manifestIds);
-  assert.deepEqual(districtIds.map(id => districtRegistry[id].href), ['/explore/cnesdata/', '/#experience', '/explore/infrastructure/', '/#stack', '/explore/limnopulse/']);
+  assert.deepEqual(districtIds.map(id => districtRegistry[id].href), ['/explore/cnesdata/', '/explore/limnopulse/', '/explore/infrastructure/']);
   assert.deepEqual(projectIds, ['cnesdata', 'limnopulse', 'infrastructure']);
   for (const id of districtIds) {
     assert.equal(districtRegistry[id].id, id);
     assert.ok(districtRegistry[id].description.length > 0);
     assert.ok(districts[id]);
-    assert.equal(districtRegistry[id].kind, projectIds.includes(id) ? 'project' : 'domain');
+    assert.equal(districtRegistry[id].kind, 'project');
   }
 });
 
@@ -28,17 +28,17 @@ test('district selection starts empty and notifies only valid changes', () => {
     controller.dispatch({ type: 'SELECT_DISTRICT', districtId });
     assert.equal(controller.getState().selectedDistrictId, districtId);
   }
-  assert.equal(changes, 5);
+  assert.equal(changes, 3);
   const selected = controller.getState();
-  for (const districtId of ['limnopulse', 'unknown', 'toString', '__proto__']) controller.dispatch({ type: 'SELECT_DISTRICT', districtId });
+  for (const districtId of ['infrastructure', 'public-health', 'observability', 'hub', 'unknown', 'toString', '__proto__']) controller.dispatch({ type: 'SELECT_DISTRICT', districtId });
   assert.equal(controller.getState(), selected);
-  assert.equal(changes, 5);
+  assert.equal(changes, 3);
   controller.dispatch({ type: 'SELECT_DISTRICT', districtId: null });
   assert.equal(controller.getState().selectedDistrictId, null);
-  assert.equal(changes, 6);
+  assert.equal(changes, 4);
   unsubscribe();
   controller.dispatch({ type: 'SELECT_DISTRICT', districtId: 'cnesdata' });
-  assert.equal(changes, 6);
+  assert.equal(changes, 4);
   assert.equal(createObservatoryController().getState().selectedDistrictId, null);
 });
 

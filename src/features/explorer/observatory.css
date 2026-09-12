@@ -19,21 +19,24 @@
 .district-number { color: var(--accent); font-size: .75rem; font-variant-numeric: tabular-nums; }
 .observatory-hub { color: var(--accent); white-space: nowrap; font-size: .7rem; padding: 3px 8px; border-radius: 6px; background: #071421e8; }
 .observatory-instruction { color: var(--muted-strong); margin-block: 18px 28px; }
-.district-details { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.district-details { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
 .district-details article { scroll-margin-top: calc(var(--header-height) + 24px); }
 [data-observatory]:not([data-controller-ready]) .district-details article:target, .district-details article[data-selected="true"] { border-color: var(--accent); outline: 2px solid var(--accent); outline-offset: 2px; }
 .district-details article:focus { outline: 3px solid var(--accent); outline-offset: 4px; }
-.area-public-health { border-top-color: #a4d3bc; }
-.area-observability { border-top-color: #e7c988; }
 @media (max-width: 700px) {
   .district-link, .observatory-hub { left: var(--mobile-x); top: var(--mobile-y); }
-  .district-link { width: 32%; min-height: 52px; padding: 7px; gap: 5px; font-size: clamp(.64rem, 2.4vw, .9rem); }
+  .district-link { width: 32%; min-height: 44px; padding: 7px; gap: 5px; font-size: clamp(.64rem, 2.4vw, .9rem); }
   .district-number { font-size: .65rem; }
   .district-details { grid-template-columns: 1fr; }
   .district-details article { padding: 22px; }
 }
 [data-observatory]:not([data-controller-ready]):has(#district-cnesdata:target) .district-link-cnesdata { border-color: var(--accent); outline: 2px solid var(--accent); outline-offset: 2px; background: #12333e; }
-[data-observatory]:not([data-controller-ready]):has(#district-public-health:target) .district-link-public-health { border-color: var(--accent); outline: 2px solid var(--accent); outline-offset: 2px; background: #12333e; }
 [data-observatory]:not([data-controller-ready]):has(#district-infrastructure:target) .district-link-infrastructure { border-color: var(--accent); outline: 2px solid var(--accent); outline-offset: 2px; background: #12333e; }
-[data-observatory]:not([data-controller-ready]):has(#district-observability:target) .district-link-observability { border-color: var(--accent); outline: 2px solid var(--accent); outline-offset: 2px; background: #12333e; }
 [data-observatory]:not([data-controller-ready]):has(#district-limnopulse:target) .district-link-limnopulse { border-color: var(--accent); outline: 2px solid var(--accent); outline-offset: 2px; background: #12333e; }
+
+.observatory-controls button:disabled { opacity: .45; cursor: default; }
+.district-details article { padding: 22px; }
+.district-details h2 { font-size: 1.5rem; }
+.district-details .button { min-height: 44px; }
+.atlas-context { margin-top: 28px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted-strong); font-size: .9rem; }
+.atlas-context a { text-decoration: underline; text-underline-offset: 3px; }

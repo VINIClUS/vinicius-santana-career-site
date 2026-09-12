@@ -249,18 +249,6 @@ function district(id) {
     link(g, [-1.8, 0.46, -1.3], [-1.8, 0.46, 2]);
     link(g, [-1.8, 0.46, 2], [1.8, 0.46, 2]);
   }
-  if (id === "public-health") {
-    building(g, 0, -0.4, 2.2, 3.2, 1.8);
-    building(g, -1.9, 0.6, 1.5, 1.7, 2.5);
-    building(g, 1.9, 0.6, 1.5, 2.1, 2.5);
-    box(g, 0, 0.63, 1.6, 1.5, 0.45, 1.8, "roof");
-    box(g, 0, 3.9, 0.55, 0.65, 0.65, 0.08, "wall");
-    box(g, 0, 3.9, 0.602, 0.48, 0.14, 0.025, "amber");
-    box(g, 0, 3.9, 0.62, 0.14, 0.48, 0.025, "amber");
-    box(g, 0, 1.45, 1.9, 1.7, 0.12, 1.3, "glass");
-    for (const x of [-0.75, 0.75]) cylinder(g, x, 0.95, 2.4, 0.035, 1, "rim");
-    box(g, 0, 0.45, 2.6, 1.25, 0.08, 1.1, "rim");
-  }
   if (id === "infrastructure") {
     for (let i = 0; i < 3; i++) {
       const r = rack(g, (i - 1) * 1.85, 0);
@@ -275,41 +263,6 @@ function district(id) {
       link(g, [(i - 1) * 1.85, 0.5, 0.7], [(i - 1) * 1.85, 0.5, 2.2]);
     for (let i = 0; i < 3; i++)
       cylinder(g, -2.5 + i * 2.5, 0.65, -2.6, 0.42, 0.4, "roof");
-  }
-  if (id === "observability") {
-    for (const [x, z, h] of [
-      [-1.7, -0.8, 2],
-      [1.1, -1.1, 2.7],
-      [0.5, 1.6, 1.5],
-    ]) {
-      cylinder(g, x, 0.4 + h / 2, z, 0.8, h, "dark");
-      for (let i = 0; i < 4; i++) ring(g, x, 0.6 + (i * h) / 4, z, 0.81);
-      cylinder(g, x, 0.45 + h, z, 0.83, 0.1, "rim");
-    }
-    for (let i = 0; i < 3; i++) {
-      box(g, -2.2 + i * 0.5, 0.8, -2.5, 0.3, 0.6, 0.3, "roof");
-      box(g, -2.2 + i * 0.5, 1.5, -2.5, 0.025, 0.8, 0.025, "rim");
-      box(g, -2.2 + i * 0.5, 1.85, -2.5, 0.4, 0.025, 0.025, "cyan");
-    }
-    const dial = cylinder(g, 2.3, 1.3, 1.8, 0.45, 0.12, "wall");
-    dial.rotation.x = Math.PI / 2;
-    const face = cylinder(g, 2.3, 1.3, 1.88, 0.35, 0.025, "dark");
-    face.rotation.x = Math.PI / 2;
-    link(g, [2.3, 1.3, 1.91], [2.12, 1.52, 1.91]);
-    cylinder(g, 2.3, 0.8, 1.8, 0.055, 0.8, "rim");
-    cylinder(g, -2, 1.4, 1.6, 0.08, 2, "rim");
-    const dish = mesh(
-      g,
-      shape(
-        "dish",
-        () =>
-          new T.SphereGeometry(0.6, 24, 12, 0, Math.PI * 2, 0, Math.PI * 0.4),
-      ),
-      "wall",
-      [-2, 2.5, 1.6],
-    );
-    dish.rotation.z = -0.6;
-    link(g, [-1.7, 0.5, -0.8], [0.5, 0.5, 1.6]);
   }
   if (id === "limnopulse") {
     const pond = cylinder(g, 0.3, 0.44, 0, 2.7, 0.12, "water");
@@ -417,34 +370,28 @@ function hub() {
 }
 export const districtIds = [
   "cnesdata",
-  "public-health",
-  "infrastructure",
-  "observability",
   "limnopulse",
+  "infrastructure",
 ];
 export const overviewPositions = {
-  cnesdata: [-5, 0, -6],
-  "public-health": [5, 0, -6],
-  infrastructure: [-7, 0, 4],
-  observability: [0, 0, 7],
-  limnopulse: [7, 0, 4],
+  cnesdata: [-7.5, 0, -5],
+  limnopulse: [7.5, 0, -5],
+  infrastructure: [0, 0, 6.5],
 };
 export const overviewLayouts = {
   desktop: {
     districtPositions: overviewPositions,
     hubPosition: [0, 0, 0],
-    districtScale: 0.7,
+    districtScale: 0.84,
   },
   mobile: {
     districtPositions: {
-      cnesdata: [-9, 0, -4],
-      "public-health": [-4, 0, -9],
-      infrastructure: [-2.5, 0, 2.5],
-      limnopulse: [2.5, 0, -2.5],
-      observability: [6.5, 0, 6.5],
+      cnesdata: [-6, 0, -6],
+      limnopulse: [7, 0, -1],
+      infrastructure: [-1, 0, 7],
     },
-    hubPosition: [-3.25, 0, -3.25],
-    districtScale: 0.7,
+    hubPosition: [0, 0, 0],
+    districtScale: 0.9,
   },
 };
 export const sceneIds = [
@@ -454,7 +401,24 @@ export const sceneIds = [
   "detail-infrastructure",
   "overview",
 ];
+export function normalizeGeneratedMetadata(metadata) {
+  const generatedSceneIds = [...sceneIds, "detail-infrastructure-failed"];
+  const normalized = Object.fromEntries(
+    Object.entries(metadata).filter(([id]) => generatedSceneIds.includes(id)),
+  );
+  if (!normalized.overview) return normalized;
+  const keepPlacements = (positions = {}) =>
+    Object.fromEntries(districtIds.map((id) => [id, positions[id]]));
+  normalized.overview.districtPositions = keepPlacements(
+    normalized.overview.districtPositions,
+  );
+  for (const layout of Object.values(normalized.overview.layouts ?? {})) {
+    layout.districtPositions = keepPlacements(layout.districtPositions);
+  }
+  return normalized;
+}
 export function makeScene(id, variant = "desktop") {
+  if (!sceneIds.includes(id)) throw new Error(`Unknown scene ${id}`);
   if (id.startsWith("district-")) return district(id.slice(9));
   if (id === "hub") return hub();
   if (id === "detail-cnesdata") return cnesDetail();

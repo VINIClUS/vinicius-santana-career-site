@@ -6,7 +6,7 @@ import {
   OrthographicCamera, PlaneGeometry, RingGeometry, Scene, Vector3, WebGLRenderer,
 } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { details, districts, hub, overview, type OverviewLayout } from '../../../content/scenes/index.ts';
+import { districts, hub, overview, type OverviewLayout } from '../../../content/scenes/index.ts';
 import { districtIds, type DistrictId } from '../districts.ts';
 import type { ObservatoryController } from '../observatory-controller.ts';
 import { createModelCache } from './resources.ts';
@@ -73,9 +73,7 @@ export function mountObservatoryScene(options: Options): ObservatoryScene {
   let gl: WebGLRenderer | undefined;
   let controls: OrbitControls | undefined;
   let observer: ResizeObserver | undefined;
-  let generation = 0;
   const groups = new Map<DistrictId, Group>();
-  const overviewModels = new Map<DistrictId, Object3D>();
   const selectedRing = new Mesh(new RingGeometry(3.02, 3.1, 64), new MeshBasicMaterial({ color: '#74d7f0', transparent: true, opacity: 0.6, depthWrite: false }));
   selectedRing.rotation.x = -Math.PI / 2;
   selectedRing.visible = false;
@@ -144,40 +142,13 @@ export function mountObservatoryScene(options: Options): ObservatoryScene {
     resetCamera();
   };
   const select = (id: DistrictId | null) => {
-    const current = ++generation;
-    // Restore every overview immediately; a late detail never replaces another selection.
-    for (const [districtId, group] of groups) {
-      group.clear();
-      group.add(overviewModels.get(districtId)!);
-    }
     selectedRing.visible = id !== null;
     if (id) selectedRing.position.set(layout.placements[id][0], 0.04, layout.placements[id][2]);
     invalidate();
-    if (id !== 'cnesdata' && id !== 'infrastructure') return;
-    const detail = details[id];
-    void cache.load(detail.model.src).then(object => {
-      if (disposed || current !== generation || options.controller.getState().selectedDistrictId !== id) return;
-      const source = detail.model.bounds, target = districts[id].model.bounds;
-      const scale = Math.min((target.max[0] - target.min[0]) / (source.max[0] - source.min[0]), (target.max[2] - target.min[2]) / (source.max[2] - source.min[2]));
-      object.scale.setScalar(scale);
-      object.position.set(
-        (target.min[0] + target.max[0] - (source.min[0] + source.max[0]) * scale) / 2,
-        target.min[1] - source.min[1] * scale,
-        (target.min[2] + target.max[2] - (source.min[2] + source.max[2]) * scale) / 2,
-      );
-      const group = groups.get(id)!;
-      group.clear();
-      group.add(object);
-      invalidate();
-    }).catch(() => {
-      if (disposed || current !== generation || options.controller.getState().selectedDistrictId !== id) return;
-      options.onFailure();
-    });
   };
   const dispose = () => {
     if (disposed) return;
     disposed = true;
-    generation++;
     lifetime.abort();
     observer?.disconnect();
     controls?.removeEventListener('change', invalidate);
@@ -207,7 +178,6 @@ export function mountObservatoryScene(options: Options): ObservatoryScene {
       const object = models[index + 1]!;
       group.add(object);
       groups.set(id, group);
-      overviewModels.set(id, object);
       world.add(group);
     });
     world.add(new HemisphereLight('#d9efff', '#17232d', 1.5));
@@ -227,6 +197,9 @@ export function mountObservatoryScene(options: Options): ObservatoryScene {
     gl.toneMapping = ACESFilmicToneMapping;
     gl.toneMappingExposure = 0.85;
     controls = new OrbitControls(camera, canvas);
+    // OrbitControls connects with touch-action:none. Restore native vertical scrolling
+    // after connection; horizontal gestures still orbit and taps still reach picking.
+    canvas.style.touchAction = 'pan-y';
     controls.enablePan = false;
     controls.enableDamping = false;
     controls.autoRotate = false;
