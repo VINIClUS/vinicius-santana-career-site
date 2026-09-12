@@ -1,5 +1,5 @@
 {
-  "startedAt": "2026-09-12T14:08:07.347Z",
+  "startedAt": "2026-09-12T14:15:31.557Z",
   "baseUrl": "http://127.0.0.1:4326/",
   "baseline": "c686a47",
   "allowFallback": false,
@@ -164,8 +164,494 @@
     "/resume/#main",
     "/privacy/#main"
   ],
-  "hashes": [],
-  "captures": [],
+  "hashes": [
+    {
+      "file": "CNAME",
+      "baselineSha256": "50ea872cd8828a877db512188d9ef5789bfef1ebe863d58e345eeb23f983fb7d",
+      "verifiedSha256": "50ea872cd8828a877db512188d9ef5789bfef1ebe863d58e345eeb23f983fb7d",
+      "source": "local dist/CNAME (Astro preview does not serve extensionless CNAME)",
+      "httpStatus": 404
+    },
+    {
+      "file": "assets/vinicius-santana-resume.pdf",
+      "baselineSha256": "b2cca4eac1313462b8ff44eb0c42a3143e5bd1a3ac02a2d756b1b38bc16b769e",
+      "verifiedSha256": "b2cca4eac1313462b8ff44eb0c42a3143e5bd1a3ac02a2d756b1b38bc16b769e",
+      "source": "HTTP response body",
+      "httpStatus": 200
+    }
+  ],
+  "captures": [
+    {
+      "route": "/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "home-1440x900.png",
+      "rendererReady": true,
+      "rendererState": "ready",
+      "images": [
+        {
+          "src": "http://127.0.0.1:4326/assets/posters/overview-desktop.webp",
+          "complete": true,
+          "width": 1200,
+          "height": 800
+        }
+      ],
+      "overflow": {
+        "scrollWidth": 1440,
+        "innerWidth": 1440
+      },
+      "errors": []
+    },
+    {
+      "route": "/explore/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "explore-1440x900.png",
+      "rendererReady": true,
+      "rendererState": "ready",
+      "images": [
+        {
+          "src": "http://127.0.0.1:4326/assets/posters/overview-desktop.webp",
+          "complete": true,
+          "width": 1200,
+          "height": 800
+        }
+      ],
+      "overflow": {
+        "scrollWidth": 1440,
+        "innerWidth": 1440
+      },
+      "errors": []
+    },
+    {
+      "route": "/explore/cnesdata/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "explore-cnesdata-1440x900.png",
+      "rendererReady": null,
+      "rendererState": null,
+      "images": [
+        {
+          "src": "http://127.0.0.1:4326/assets/posters/detail-cnesdata-desktop.webp",
+          "complete": true,
+          "width": 1200,
+          "height": 800
+        }
+      ],
+      "overflow": {
+        "scrollWidth": 1440,
+        "innerWidth": 1440
+      },
+      "errors": []
+    },
+    {
+      "route": "/explore/cnesdata/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "cnesdata-raw-first-write-1440x900.png",
+      "scenario": "raw-first-write",
+      "result": "Result: stored. One object stored."
+    },
+    {
+      "route": "/explore/cnesdata/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "cnesdata-raw-identical-replay-1440x900.png",
+      "scenario": "raw-identical-replay",
+      "result": "Result: replayed. Accepted without duplication."
+    },
+    {
+      "route": "/explore/cnesdata/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "cnesdata-raw-content-conflict-1440x900.png",
+      "scenario": "raw-content-conflict",
+      "result": "Result: conflict. Content A remains intact; content B was rejected."
+    },
+    {
+      "route": "/explore/limnopulse/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "explore-limnopulse-1440x900.png",
+      "rendererReady": null,
+      "rendererState": null,
+      "images": [],
+      "overflow": {
+        "scrollWidth": 1440,
+        "innerWidth": 1440
+      },
+      "errors": []
+    },
+    {
+      "route": "/explore/infrastructure/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "explore-infrastructure-1440x900.png",
+      "rendererReady": true,
+      "rendererState": "ready",
+      "images": [
+        {
+          "src": "http://127.0.0.1:4326/assets/posters/detail-infrastructure-desktop.webp",
+          "complete": true,
+          "width": 1200,
+          "height": 800
+        }
+      ],
+      "overflow": {
+        "scrollWidth": 1440,
+        "innerWidth": 1440
+      },
+      "errors": []
+    },
+    {
+      "route": "/explore/infrastructure/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "infrastructure-failure-1440x900.png",
+      "failed": true,
+      "workload": "Workload: node-01",
+      "rendererState": "fallback"
+    },
+    {
+      "route": "/explore/infrastructure/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "infrastructure-reset-1440x900.png",
+      "failed": false,
+      "workload": "Workload: node-02",
+      "rendererState": "fallback"
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "home-no-js-1440x900.png",
+      "javaScriptEnabled": false,
+      "reducedMotion": "reduce",
+      "images": [
+        {
+          "src": "http://127.0.0.1:4326/assets/posters/overview-desktop.webp",
+          "width": 1200
+        }
+      ]
+    },
+    {
+      "route": "/explore/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "explore-no-js-1440x900.png",
+      "javaScriptEnabled": false,
+      "reducedMotion": "reduce",
+      "images": [
+        {
+          "src": "http://127.0.0.1:4326/assets/posters/overview-desktop.webp",
+          "width": 1200
+        }
+      ]
+    },
+    {
+      "route": "/explore/cnesdata/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "explore-cnesdata-no-js-1440x900.png",
+      "javaScriptEnabled": false,
+      "reducedMotion": "reduce",
+      "images": [
+        {
+          "src": "http://127.0.0.1:4326/assets/posters/detail-cnesdata-desktop.webp",
+          "width": 1200
+        }
+      ]
+    },
+    {
+      "route": "/explore/limnopulse/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "explore-limnopulse-no-js-1440x900.png",
+      "javaScriptEnabled": false,
+      "reducedMotion": "reduce",
+      "images": []
+    },
+    {
+      "route": "/explore/infrastructure/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "explore-infrastructure-no-js-1440x900.png",
+      "javaScriptEnabled": false,
+      "reducedMotion": "reduce",
+      "images": [
+        {
+          "src": "http://127.0.0.1:4326/assets/posters/detail-infrastructure-desktop.webp",
+          "width": 1200
+        }
+      ]
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "home-390x844.png",
+      "rendererReady": true,
+      "rendererState": "ready",
+      "images": [
+        {
+          "src": "http://127.0.0.1:4326/assets/posters/overview-mobile.webp",
+          "complete": true,
+          "width": 720,
+          "height": 900
+        }
+      ],
+      "overflow": {
+        "scrollWidth": 390,
+        "innerWidth": 390
+      },
+      "errors": []
+    },
+    {
+      "route": "/explore/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "explore-390x844.png",
+      "rendererReady": true,
+      "rendererState": "ready",
+      "images": [
+        {
+          "src": "http://127.0.0.1:4326/assets/posters/overview-mobile.webp",
+          "complete": true,
+          "width": 720,
+          "height": 900
+        }
+      ],
+      "overflow": {
+        "scrollWidth": 390,
+        "innerWidth": 390
+      },
+      "errors": []
+    },
+    {
+      "route": "/explore/cnesdata/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "explore-cnesdata-390x844.png",
+      "rendererReady": null,
+      "rendererState": null,
+      "images": [
+        {
+          "src": "http://127.0.0.1:4326/assets/posters/detail-cnesdata-mobile.webp",
+          "complete": true,
+          "width": 720,
+          "height": 900
+        }
+      ],
+      "overflow": {
+        "scrollWidth": 390,
+        "innerWidth": 390
+      },
+      "errors": []
+    },
+    {
+      "route": "/explore/cnesdata/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "cnesdata-raw-first-write-390x844.png",
+      "scenario": "raw-first-write",
+      "result": "Result: stored. One object stored."
+    },
+    {
+      "route": "/explore/cnesdata/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "cnesdata-raw-identical-replay-390x844.png",
+      "scenario": "raw-identical-replay",
+      "result": "Result: replayed. Accepted without duplication."
+    },
+    {
+      "route": "/explore/cnesdata/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "cnesdata-raw-content-conflict-390x844.png",
+      "scenario": "raw-content-conflict",
+      "result": "Result: conflict. Content A remains intact; content B was rejected."
+    },
+    {
+      "route": "/explore/limnopulse/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "explore-limnopulse-390x844.png",
+      "rendererReady": null,
+      "rendererState": null,
+      "images": [],
+      "overflow": {
+        "scrollWidth": 390,
+        "innerWidth": 390
+      },
+      "errors": []
+    },
+    {
+      "route": "/explore/infrastructure/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "explore-infrastructure-390x844.png",
+      "rendererReady": true,
+      "rendererState": "ready",
+      "images": [
+        {
+          "src": "http://127.0.0.1:4326/assets/posters/detail-infrastructure-mobile.webp",
+          "complete": true,
+          "width": 720,
+          "height": 900
+        }
+      ],
+      "overflow": {
+        "scrollWidth": 390,
+        "innerWidth": 390
+      },
+      "errors": []
+    },
+    {
+      "route": "/explore/infrastructure/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "infrastructure-failure-390x844.png",
+      "failed": true,
+      "workload": "Workload: node-01",
+      "rendererState": "fallback"
+    },
+    {
+      "route": "/explore/infrastructure/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "infrastructure-reset-390x844.png",
+      "failed": false,
+      "workload": "Workload: node-02",
+      "rendererState": "fallback"
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "home-no-js-390x844.png",
+      "javaScriptEnabled": false,
+      "reducedMotion": "reduce",
+      "images": [
+        {
+          "src": "http://127.0.0.1:4326/assets/posters/overview-mobile.webp",
+          "width": 720
+        }
+      ]
+    },
+    {
+      "route": "/explore/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "explore-no-js-390x844.png",
+      "javaScriptEnabled": false,
+      "reducedMotion": "reduce",
+      "images": [
+        {
+          "src": "http://127.0.0.1:4326/assets/posters/overview-mobile.webp",
+          "width": 720
+        }
+      ]
+    },
+    {
+      "route": "/explore/cnesdata/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "explore-cnesdata-no-js-390x844.png",
+      "javaScriptEnabled": false,
+      "reducedMotion": "reduce",
+      "images": [
+        {
+          "src": "http://127.0.0.1:4326/assets/posters/detail-cnesdata-mobile.webp",
+          "width": 720
+        }
+      ]
+    },
+    {
+      "route": "/explore/limnopulse/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "explore-limnopulse-no-js-390x844.png",
+      "javaScriptEnabled": false,
+      "reducedMotion": "reduce",
+      "images": []
+    },
+    {
+      "route": "/explore/infrastructure/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "explore-infrastructure-no-js-390x844.png",
+      "javaScriptEnabled": false,
+      "reducedMotion": "reduce",
+      "images": [
+        {
+          "src": "http://127.0.0.1:4326/assets/posters/detail-infrastructure-mobile.webp",
+          "width": 720
+        }
+      ]
+    }
+  ],
   "chromium": "153.0.8010.12",
   "sitemap": [
     "https://dev.vinisantana.com/",
@@ -177,7 +663,6 @@
     "https://dev.vinisantana.com/privacy/",
     "https://dev.vinisantana.com/resume/"
   ],
-  "passed": false,
-  "failure": "AssertionError [ERR_ASSERTION]: /CNAME: HTTP 404\n\n404 !== 200\n\n    at fetchBody (file:///home/vinicius/code/vinicius-santana-career-site/.worktrees/sa-07-atlas-release/docs/design/sa-07/capture-release.mjs:30:10)\n    at async file:///home/vinicius/code/vinicius-santana-career-site/.worktrees/sa-07-atlas-release/docs/design/sa-07/capture-release.mjs:98:27",
-  "finishedAt": "2026-09-12T14:08:07.629Z"
+  "passed": true,
+  "finishedAt": "2026-09-12T14:16:05.777Z"
 }

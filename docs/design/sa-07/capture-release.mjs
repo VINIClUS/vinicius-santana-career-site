@@ -6,7 +6,7 @@ import { execFileSync } from 'node:child_process';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { chromium } from '@playwright/test';
+import { chromium, expect } from '@playwright/test';
 
 const root = fileURLToPath(new URL('../../../', import.meta.url));
 const base = new URL(process.argv[2] ?? 'http://127.0.0.1:4321/');
@@ -131,9 +131,57 @@ try {
       const file = `${route === '/' ? 'home' : route.split('/').filter(Boolean).join('-')}-${viewport.width}x${viewport.height}.png`;
       await page.screenshot({ path: path.join(output, file), fullPage: true });
       report.captures.push({ route, viewport, file, rendererReady, rendererState: await renderer.count() ? await renderer.evaluate(element => element.dataset.previewState ?? element.dataset.sceneState) : null, images, overflow, errors });
+      if (route === '/explore/cnesdata/') {
+        for (const [scenario, outcomes] of [['raw-first-write', ['stored']], ['raw-identical-replay', ['stored', 'replayed']], ['raw-content-conflict', ['stored', 'conflict']]]) {
+          await page.getByLabel('Scenario').selectOption(scenario);
+          for (const outcome of outcomes) {
+            await page.getByRole('button', { name: 'Advance one attempt' }).click();
+            await expect(page.locator('[data-result]')).toContainText(`Result: ${outcome}.`);
+          }
+          await expect(page.locator('[data-objects]')).toContainText('synthetic-content-A');
+          await expect(page.locator('[data-objects]')).not.toContainText('synthetic-content-B');
+          const file = `cnesdata-${scenario}-${viewport.width}x${viewport.height}.png`;
+          await page.evaluate(() => scrollTo(0, 0));
+          await page.screenshot({ path: path.join(output, file), fullPage: true });
+          report.captures.push({ route, viewport, file, scenario, result: await page.locator('[data-result]').textContent() });
+          await page.getByRole('button', { name: 'Reset scenario' }).click();
+          await expect(page.locator('[data-progress]')).toContainText('ready');
+        }
+      }
+      if (route === '/explore/infrastructure/') {
+        const simulation = page.locator('[data-infrastructure-simulation]');
+        const view = page.locator('[data-infra-view]');
+        if (await view.textContent() === 'View 2D') await view.click();
+        for (const failed of [true, false]) {
+          await simulation.getByRole('button', { name: failed ? 'Fail node-02' : 'Reset simulation', exact: true }).click();
+          await expect(simulation.locator('[data-infra-node="node-02"]')).toContainText(failed ? 'failed' : 'online');
+          await expect(simulation.locator('[data-infra-workload]')).toContainText(failed ? 'node-01' : 'node-02');
+          await page.waitForFunction(() => [...document.images].every(image => image.complete && image.naturalWidth > 0));
+          const file = `infrastructure-${failed ? 'failure' : 'reset'}-${viewport.width}x${viewport.height}.png`;
+          await page.evaluate(() => scrollTo(0, 0));
+          await page.screenshot({ path: path.join(output, file), fullPage: true });
+          report.captures.push({ route, viewport, file, failed, workload: await simulation.locator('[data-infra-workload]').textContent(), rendererState: await renderer.getAttribute('data-scene-state') });
+        }
+      }
       await context.close();
       assert.equal(errors.length, 0, `${route}: no uncaught browser errors`);
       assert.ok(rendererReady !== false || allowFallback, `${route}: renderer did not become ready; see recorded state, or explicitly allow 2D evidence`);
+    }
+    for (const route of canonicalRoutes.slice(0, 5)) {
+      const context = await browser.newContext({ viewport, javaScriptEnabled: false, reducedMotion: 'reduce' });
+      const page = await context.newPage();
+      await page.goto(new URL(route, base).href, { waitUntil: 'load' });
+      await page.locator('img').evaluateAll(images => images.forEach(image => { image.loading = 'eager'; }));
+      await page.waitForFunction(() => [...document.images].every(image => image.complete && image.naturalWidth > 0));
+      assert.ok(await page.locator('main#main h1').count());
+      assert.equal(await page.locator('canvas').count(), 0);
+      assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+      if (route.endsWith('/cnesdata/')) for (const id of ['raw-first-write', 'raw-identical-replay', 'raw-content-conflict']) await expect(page.locator(`#transcript-${id}`)).toBeVisible();
+      if (route.endsWith('/infrastructure/')) await expect(page.locator('[data-infra-node="node-02"]')).toContainText('online');
+      const file = `${route === '/' ? 'home' : route.split('/').filter(Boolean).join('-')}-no-js-${viewport.width}x${viewport.height}.png`;
+      await page.screenshot({ path: path.join(output, file), fullPage: true });
+      report.captures.push({ route, viewport, file, javaScriptEnabled: false, reducedMotion: 'reduce', images: await page.locator('img').evaluateAll(images => images.map(image => ({ src: image.currentSrc, width: image.naturalWidth }))) });
+      await context.close();
     }
   }
   report.passed = true;
