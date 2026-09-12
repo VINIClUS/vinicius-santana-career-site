@@ -23,7 +23,7 @@ const graphNodes = [
       <section class="system-graph cnesdata-graph" data-system-graph aria-labelledby="system-map-title">
         <div class="graph-heading"><h3 id="system-map-title">System map</h3><p>Central API is the branching hub between contracts, clients, and downstream boundaries.</p></div>
         <div class="graph-stage">
-          <SystemGraphConnectors components={caseStudy.architecture} nodes={graphNodes} relations={relations} />
+          <SystemGraphConnectors components={caseStudy.architecture} nodes={graphNodes} relations={relations} nodeHalfWidth={14.5} nodeHalfHeight={10.91} />
           <ol class="graph-nodes" aria-label="CnesData system components">
           {graphNodes.map(node => { const component = componentFor(node.id); return <li id={`graph-node-${node.id}`} data-graph-node={node.id} class={node.id === 'central-api' ? 'graph-node graph-node-hub' : 'graph-node'} style={`--node-x: ${node.x}%; --node-y: ${node.y}%`}>
             <a href={`#component-${node.id}`} data-component-link={node.id}>
@@ -44,27 +44,13 @@ const graphNodes = [
   </div>
 </div>
 <style>
-  .cnesdata-system-view { min-width: 0; }
-  .system-view-layout { display: grid; grid-template-columns: minmax(0, 3fr) minmax(280px, 2fr); gap: 24px; align-items: start; margin-top: 24px; }
+  .cnesdata-system-view { --graph-accent: var(--accent); --graph-connector: var(--accent); --graph-node-height: 96px; }
   .system-graph-column { display: grid; gap: 20px; min-width: 0; }
-  .system-graph { min-width: 0; border: 1px solid var(--line); border-radius: 12px; background: linear-gradient(140deg, rgba(132,244,230,.08), rgba(7,18,31,.35)); padding: 20px; overflow: hidden; }
-  .graph-heading h3 { margin: 0; }
-  .graph-heading p { margin: 8px 0 0; color: var(--muted-strong); font-size: .8rem; line-height: 1.5; }
-  .graph-stage { --graph-connector: var(--accent); position: relative; height: 440px; margin-top: 20px; }
-  .graph-nodes { position: absolute; inset: 0; z-index: 2; margin: 0; padding: 0; list-style: none; }
-  .graph-node { position: absolute; left: var(--node-x); top: var(--node-y); width: 29%; min-width: 0; transform: translate(-50%, -50%); }
-  .graph-node a { display: flex; flex-direction: column; gap: 6px; min-height: 74px; padding: 12px; border: 1px solid var(--line-strong); border-radius: 8px; background: rgba(4,14,25,.92); color: var(--text); }
+  .system-graph { background: linear-gradient(140deg, rgba(132,244,230,.08), rgba(7,18,31,.35)); }
+  .graph-stage { position: relative; height: 440px; margin-top: 20px; }
   .graph-node-hub a { border-color: var(--accent); box-shadow: inset 0 0 0 1px rgba(132,244,230,.25); }
-  .graph-node-kicker { color: var(--accent); font-size: .62rem; letter-spacing: .08em; text-transform: uppercase; }
-  .graph-node strong { font-size: .8rem; line-height: 1.25; }
-  .selection-marker { display: none; margin-top: auto; color: var(--accent); font-size: .65rem; }
-  .graph-node a[aria-current="true"] { border: 2px solid var(--accent); }
-  .graph-node a[aria-current="true"] .selection-marker { display: block; }
   .system-poster { overflow: hidden; margin: 0; border: 1px solid var(--line); border-radius: 12px; background: #080f19; }
   .system-poster :global(picture), .system-poster :global(img) { display: block; }
   .system-poster :global(img) { height: auto; object-fit: contain; }
   .system-poster figcaption { padding: 14px; border-top: 1px solid var(--line); color: var(--muted-strong); font-size: .72rem; }
-  a:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
-  @media (max-width: 760px) { .system-view-layout { grid-template-columns: 1fr; } }
-  @media (max-width: 520px) { .graph-stage { height: 470px; } .graph-node { width: 30%; } }
 </style>

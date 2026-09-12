@@ -9,7 +9,7 @@
     "build": "astro build",
     "test": "npm run typecheck && node --experimental-strip-types --test tests/*.test.mjs",
     "typecheck:simulation": "tsc --project tsconfig.simulation.json",
-    "smoke": "node tests/static-build.smoke.mjs && VERIFY_BUILT_ASSETS=1 node --experimental-strip-types --test tests/scene-assets.test.mjs",
+    "smoke": "node --experimental-strip-types tests/static-build.smoke.mjs && VERIFY_BUILT_ASSETS=1 node --experimental-strip-types --test tests/scene-assets.test.mjs",
     "preview": "astro preview --host 0.0.0.0",
     "typecheck": "npm run typecheck:simulation && tsc --project tsconfig.explorer.json && npm run typecheck:scenes",
     "test:explorer": "playwright test",

@@ -12,7 +12,7 @@ const sources = ['image-builds', 'ansible-contracts', 'operations-automation'];
 const topology = 'reference-topology';
 const graphNodes = [
   { id: 'image-builds', x: 20, y: 20 }, { id: 'ansible-contracts', x: 20, y: 50 }, { id: 'operations-automation', x: 20, y: 80 },
-  { id: topology, x: 78, y: 50 },
+  { id: topology, x: 78, y: 50, halfHeight: 16.12 },
 ];
 ---
 <div class="integrated-system-view infrastructure-system-view" data-integrated-system-view>
@@ -21,7 +21,7 @@ const graphNodes = [
     <section class="system-graph infrastructure-graph" data-system-graph aria-labelledby="system-map-title">
       <div class="graph-heading"><h3 id="system-map-title">Reference topology map</h3><p>Three source capabilities converge on one reference topology.</p></div>
       <div class="graph-stage">
-        <SystemGraphConnectors components={caseStudy.architecture} nodes={graphNodes} relations={relations} />
+        <SystemGraphConnectors components={caseStudy.architecture} nodes={graphNodes} relations={relations} nodeHalfWidth={15.5} nodeHalfHeight={13.34} />
         <ol class="graph-nodes" aria-label="Infrastructure system components">
           {graphNodes.map(node => { const component = componentFor(node.id); return <li id={`graph-node-${node.id}`} data-graph-node={node.id} class={node.id === topology ? 'graph-node graph-node-hub' : 'graph-node'} style={`--node-x: ${node.x}%; --node-y: ${node.y}%`}><a href={`#component-${node.id}`} data-component-link={node.id}><span class="graph-node-kicker" aria-hidden="true">{sources.includes(node.id) ? 'Source' : 'Convergence'}</span><strong>{component.title}</strong><span class="selection-marker" aria-hidden="true">Selected</span></a></li>; })}
         </ol>
@@ -31,11 +31,8 @@ const graphNodes = [
   </div>
 </div>
 <style>
-  .infrastructure-system-view { min-width: 0; }.system-view-layout { display: grid; grid-template-columns: minmax(0, 3fr) minmax(280px, 2fr); gap: 24px; align-items: start; margin-top: 24px; }
-  .system-graph { min-width: 0; border: 1px solid var(--line); border-radius: 12px; background: linear-gradient(140deg, rgba(196,184,247,.1), rgba(7,18,31,.35)); padding: 20px; overflow: hidden; }.graph-heading h3 { margin: 0; }.graph-heading p { margin: 8px 0 0; color: var(--muted-strong); font-size: .8rem; line-height: 1.5; }
-  .graph-stage { --graph-connector: #c4b8f7; position: relative; height: 360px; margin-top: 20px; }.graph-nodes { position: absolute; inset: 0; z-index: 2; margin: 0; padding: 0; list-style: none; }
-  .graph-node { position: absolute; left: var(--node-x); top: var(--node-y); width: 31%; min-width: 0; transform: translate(-50%, -50%); }.graph-node a { display: flex; flex-direction: column; gap: 6px; min-height: 70px; padding: 12px; border: 1px solid var(--line-strong); border-radius: 8px; background: rgba(4,14,25,.92); color: var(--text); }.graph-node-hub a { min-height: 116px; justify-content: center; border-color: #c4b8f7; }.graph-node-kicker { color: #c4b8f7; font-size: .61rem; letter-spacing: .08em; text-transform: uppercase; }.graph-node strong { font-size: .8rem; line-height: 1.25; }.selection-marker { display: none; margin-top: auto; color: #c4b8f7; font-size: .65rem; }.graph-node a[aria-current="true"] { border: 2px solid #c4b8f7; }.graph-node a[aria-current="true"] .selection-marker { display: block; }
-  a:focus-visible { outline: 3px solid #c4b8f7; outline-offset: 4px; }
-  @media (max-width: 760px) { .system-view-layout { grid-template-columns: 1fr; } }
-  @media (max-width: 520px) { .graph-stage { height: 390px; }.graph-node { width: 32%; } }
+  .infrastructure-system-view { --graph-accent: #c4b8f7; --graph-connector: #c4b8f7; --graph-node-width: 31%; --graph-node-height: 96px; }
+  .system-graph { background: linear-gradient(140deg, rgba(196,184,247,.1), rgba(7,18,31,.35)); }
+  .graph-stage { position: relative; height: 360px; margin-top: 20px; }
+  .graph-node-hub a { height: 116px; justify-content: center; }
 </style>

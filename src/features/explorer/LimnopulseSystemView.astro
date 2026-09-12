@@ -26,7 +26,7 @@ const graphNodes = [
     <section class="system-graph limnopulse-graph" data-system-graph aria-labelledby="system-map-title">
       <div class="graph-heading"><h3 id="system-map-title">Operational map</h3><p>Observations move through telemetry and event bands, with operational boundaries framing the flow.</p></div>
       <div class="graph-stage">
-        <SystemGraphConnectors components={caseStudy.architecture} nodes={graphNodes} relations={relations} />
+        <SystemGraphConnectors components={caseStudy.architecture} nodes={graphNodes} relations={relations} nodeHalfWidth={14} nodeHalfHeight={11.17} />
         <div class="operational-bands">{bands.map((band, index) => <h4 style={`--band-x: ${[18, 50, 82][index]}%`}>{band.title}</h4>)}</div>
         <ol class="graph-nodes" aria-label="Limnopulse system components">
           {graphNodes.map(node => { const component = componentFor(node.id); const isBoundary = boundaries.includes(node.id); const band = bands.find(candidate => candidate.ids.includes(node.id)); return <li id={`graph-node-${node.id}`} data-graph-node={node.id} class={isBoundary ? 'graph-node boundary-node' : 'graph-node'} style={`--node-x: ${node.x}%; --node-y: ${node.y}%`}><a href={`#component-${node.id}`} data-component-link={node.id}><span class="graph-node-kicker" aria-hidden="true">{isBoundary ? 'Boundary' : band?.title}</span><strong>{component.title}</strong><span class="selection-marker" aria-hidden="true">Selected</span></a></li>; })}
@@ -37,16 +37,9 @@ const graphNodes = [
   </div>
 </div>
 <style>
-  .limnopulse-system-view { min-width: 0; }
-  .system-view-layout { display: grid; grid-template-columns: minmax(0, 3fr) minmax(280px, 2fr); gap: 24px; align-items: start; margin-top: 24px; }
-  .system-graph { min-width: 0; border: 1px solid var(--line); border-radius: 12px; background: linear-gradient(140deg, rgba(141,202,255,.1), rgba(7,18,31,.35)); padding: 20px; overflow: hidden; }
-  .graph-heading h3 { margin: 0; }.graph-heading p { margin: 8px 0 0; color: var(--muted-strong); font-size: .8rem; line-height: 1.5; }
-  .graph-stage { --graph-connector: #8dcaff; position: relative; height: 430px; margin-top: 20px; }.graph-nodes { position: absolute; inset: 0; z-index: 2; margin: 0; padding: 0; list-style: none; }
+  .limnopulse-system-view { --graph-accent: #8dcaff; --graph-connector: #8dcaff; --graph-node-width: 28%; --graph-node-height: 96px; --graph-node-padding: 11px; }
+  .system-graph { background: linear-gradient(140deg, rgba(141,202,255,.1), rgba(7,18,31,.35)); }
+  .graph-stage { position: relative; height: 430px; margin-top: 20px; }
   .operational-bands { position: absolute; inset: 30% 0 0; z-index: 0; }.operational-bands h4 { position: absolute; left: var(--band-x); top: 0; width: 27%; height: 58%; margin: 0; transform: translateX(-50%); border-top: 2px solid #8dcaff; background: rgba(141,202,255,.035); color: #8dcaff; padding: 6px 8px; font-size: .62rem; letter-spacing: .06em; text-transform: uppercase; }
-  .graph-node { position: absolute; left: var(--node-x); top: var(--node-y); width: 28%; min-width: 0; transform: translate(-50%, -50%); }.graph-node a { display: flex; flex-direction: column; gap: 6px; min-height: 72px; padding: 11px; border: 1px solid var(--line-strong); border-radius: 8px; background: rgba(4,14,25,.92); color: var(--text); }
-  .boundary-node a { border-style: dashed; }.graph-node-kicker { color: #8dcaff; font-size: .61rem; letter-spacing: .08em; text-transform: uppercase; }.graph-node strong { font-size: .77rem; line-height: 1.25; }
-  .selection-marker { display: none; margin-top: auto; color: #8dcaff; font-size: .65rem; }.graph-node a[aria-current="true"] { border: 2px solid #8dcaff; }.graph-node a[aria-current="true"] .selection-marker { display: block; }
-  a:focus-visible { outline: 3px solid #8dcaff; outline-offset: 4px; }
-  @media (max-width: 760px) { .system-view-layout { grid-template-columns: 1fr; } }
-  @media (max-width: 520px) { .graph-stage { height: 470px; }.graph-node { width: 30%; } }
+  .boundary-node a { border-style: dashed; }
 </style>

@@ -116,3 +116,51 @@ Results: build and smoke passed; `npm run test` passed 49 tests with 1 skipped; 
 - Each unchanged `ProjectRelation` produces a labeled SVG path with explicit `data-connector-from` and `data-connector-to` references; connector paths are rendered in the same positioned graph stage as their nodes.
 - Browser coverage verifies every relation, its unique from/to connector, its rendered path, and that path start/end coordinates land inside its declared source/target node rectangles. A detached list cannot satisfy this contract.
 - CnesData's Central API is now a visual connection hub; Limnopulse's band and boundary nodes are joined by the relevant relation paths; Infrastructure's sources visibly converge on Reference topology.
+
+## Final review fix wave
+
+### Finding disposition
+
+- The static smoke runner explicitly starts both TypeScript-importing checks with `--experimental-strip-types`, matching the Node 22.12 support floor.
+- Connector paths now begin and end on the corresponding visible node rectangles, and browser geometry verifies a boundary landing plus an inbound final segment.
+- Reciprocal Limnopulse relations now follow opposite quadratic routes with a 16-unit perpendicular bend; their labels have separate rendered boxes at desktop and mobile widths.
+- Common graph layout, node, focus, and link styles now live in `system-graph.css`; view files retain only their project-specific palette and layout treatments.
+- Connector labels use the stable `from→to` relation identity for known wording. Unknown labels remove status words before rendering, so editorial status changes do not affect graph copy.
+
+### TDD evidence
+
+RED commands and observed failures:
+
+```sh
+rtk npm run smoke
+rtk npm run test
+rtk proxy env EXPLORER_BASE_URL=http://127.0.0.1:4331 npx playwright test tests/browser/integrated-system-view.spec.ts
+```
+
+- Smoke initially failed because `process.execArgv` did not include `--experimental-strip-types`.
+- The focused unit test initially failed because `relationKey` was not exported.
+- The browser geometry contract initially measured endpoints about `39.9px` from the visible node boundary, exposing center-based paths.
+- After adding reciprocal-route coverage, all four browser variants failed with `Expected: > 12; Received: 0`; after correcting the route direction, mobile variants still exposed overlapping label boxes. The final 16-unit bend resolves both route and label separation.
+
+### GREEN verification
+
+```sh
+rtk npm run build
+rtk npm run smoke
+rtk npm run test
+rtk proxy env EXPLORER_BASE_URL=http://127.0.0.1:4331 npx playwright test tests/browser/integrated-system-view.spec.ts
+rtk proxy env EXPLORER_BASE_URL=http://127.0.0.1:4331 npx playwright test tests/browser/limnopulse.spec.ts
+rtk proxy env EXPLORER_BASE_URL=http://127.0.0.1:4331 npx playwright test tests/browser/infrastructure.spec.ts
+rtk git diff --check
+```
+
+Results: build passed; smoke passed; `npm run test` passed 51 tests with 1 skipped; all 4 integrated-view variants passed; all 6 Limnopulse variants passed; all 4 Infrastructure variants passed; whitespace validation passed.
+
+### Self-review
+
+- The smoke runtime now explicitly strips TypeScript types.
+- Arrow endpoints land at visible boundaries, preserving a visible inbound direction.
+- Limnopulse reciprocal routes and labels are separate at both responsive widths.
+- Shared graph CSS is extracted without changing project-specific presentation.
+- Endpoint-based labels are stable and their fallback is status-neutral.
+- Unrelated asset, scene, and Observatory work remains unstaged.

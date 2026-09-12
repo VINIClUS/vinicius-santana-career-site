@@ -10,6 +10,8 @@ const root = new URL('../', import.meta.url);
 const fromRoot = (...segments) => new URL(segments.join('/'), root);
 const expectedResumeHash = 'b2cca4eac1313462b8ff44eb0c42a3143e5bd1a3ac02a2d756b1b38bc16b769e';
 
+assert.ok(process.execArgv.includes('--experimental-strip-types'), 'smoke must explicitly enable TypeScript stripping for the supported Node 22 runtime');
+
 async function assertFile(relativePath) {
   const details = await stat(fromRoot(relativePath));
   assert.ok(details.isFile(), `${relativePath} must be a file`);
