@@ -9,5 +9,6 @@ export const legacyRoutes = Object.freeze({
 export function resolveLegacyDestination(currentUrl: URL): string | undefined {
   if (!Object.hasOwn(legacyRoutes, currentUrl.pathname)) return undefined;
   const destination = legacyRoutes[currentUrl.pathname as keyof typeof legacyRoutes];
-  return destination + currentUrl.search + currentUrl.hash;
+  const fragment = currentUrl.hash === '#architecture' ? '#system' : currentUrl.hash;
+  return destination + currentUrl.search + fragment;
 }

@@ -108,6 +108,52 @@ test('touch walkthrough remains usable without WebGL or 3D assets', async ({ bro
   await context.close();
 });
 
+test('component selection keeps the detail panel usable at 360px', async ({ browser, baseURL }) => {
+  const context = await browser.newContext({ baseURL, viewport: { width: 360, height: 844 }, hasTouch: true, isMobile: true });
+  const page = await context.newPage();
+
+  for (const [project, component] of [
+    ['cnesdata', 'edge-agent'],
+    ['limnopulse', 'mqtt-ingestion'],
+    ['infrastructure', 'image-builds'],
+  ]) {
+    await page.goto(`/explore/${project}/`);
+    const link = page.locator(`[data-component-link="${component}"]`).first();
+    await link.click();
+    await expect(page).toHaveURL(new RegExp(`/explore/${project}/#component-${component}$`));
+    await expect(page.locator(`[data-component-detail="${component}"]`)).toHaveAttribute('data-selected', 'true');
+    await expect(page.locator(`[data-component-detail="${component}"]`)).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+
+  await context.close();
+});
+
+test('system views retain components, relationships, qualifiers and transcripts without JavaScript at 360px', async ({ browser, baseURL }) => {
+  const context = await browser.newContext({ baseURL, viewport: { width: 360, height: 844 }, javaScriptEnabled: false });
+  const page = await context.newPage();
+
+  for (const [project, qualifier] of [
+    ['cnesdata', 'Planned'],
+    ['limnopulse', 'Planned'],
+    ['infrastructure', 'Illustrative'],
+  ]) {
+    await page.goto(`/explore/${project}/`);
+    await expect(page.locator('[data-component-detail]')).not.toHaveCount(0);
+    await expect(page.locator('[data-component-detail]').last()).toBeVisible();
+    await expect(page.locator('.system-relationships li').first()).toBeVisible();
+    await expect(page.locator('[data-component-detail] .component-status').filter({ hasText: qualifier }).first()).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+
+  await page.goto('/explore/cnesdata/');
+  for (const id of ['raw-first-write', 'raw-identical-replay', 'raw-content-conflict']) {
+    await expect(page.locator(`#transcript-${id}`)).toBeVisible();
+  }
+
+  await context.close();
+});
+
 for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
   test(`canonical CnesData narrative, history and all scenarios at ${viewport.width}`, async ({ page }, testInfo) => {
     await page.setViewportSize(viewport);
