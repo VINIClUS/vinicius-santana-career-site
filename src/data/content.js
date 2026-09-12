@@ -30,10 +30,6 @@ export const roleFit = [
   {
     title: 'Software Engineering',
     text: 'Backend APIs, automation tooling, testable workflows and maintainable service boundaries.'
-  },
-  {
-    title: 'Platform / DevOps',
-    text: 'Linux-first operations, containers, delivery automation, monitoring, runbooks and recovery practices.'
   }
 ];
 
