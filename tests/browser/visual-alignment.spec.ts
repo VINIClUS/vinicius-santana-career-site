@@ -52,11 +52,15 @@ test('About cards stack in one column on mobile', async ({ page }) => {
 });
 
 for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
-  test(`Experience timeline connects both role markers at ${viewport.width}`, async ({ page }) => {
-    await page.setViewportSize(viewport);
-    await page.goto('/#experience');
+  for (const experiencePage of [
+    { name: 'Home', path: '/#experience', headingId: 'home-municipal-experience' },
+    { name: 'About', path: '/about/', headingId: 'about-municipal-experience' }
+  ]) {
+    test(`${experiencePage.name} experience timeline connects both role markers at ${viewport.width}`, async ({ page }) => {
+      await page.setViewportSize(viewport);
+      await page.goto(experiencePage.path);
 
-    const card = page.locator('.timeline-card[aria-labelledby="home-municipal-experience"]');
+    const card = page.locator(`.timeline-card[aria-labelledby="${experiencePage.headingId}"]`);
     await expect(card.locator('h3')).toHaveText('Prefeitura de Presidente Epitácio');
     await expect(card.locator('.timeline-role')).toHaveCount(2);
 
@@ -98,7 +102,8 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     expect(Math.abs(geometry.connector.bottom - geometry.markers[1].y)).toBeLessThanOrEqual(1);
     expect(geometry.metadataDoesNotOverlap).toBe(true);
     expect(geometry.noHorizontalOverflow).toBe(true);
-  });
+    });
+  }
 }
 
 for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {

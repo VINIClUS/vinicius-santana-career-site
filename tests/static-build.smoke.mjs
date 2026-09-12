@@ -138,10 +138,19 @@ function assertExperienceSection(pageHtml, pageName, headingId) {
   assert.match(municipalArticle, /<h3[^>]*>Prefeitura de Presidente Epitácio<\/h3>/i);
   assert.match(municipalArticle, /Nov 2021 — Present/);
 
-  const municipalRoleOffsets = [
-    'Health Informatics Analyst &amp; Data Engineer',
-    'IT Infrastructure &amp; Systems Support · Internship'
-  ].map((title) => municipalArticle.indexOf(title));
+  const municipalRoles = [
+    ['Health Informatics Analyst &amp; Data Engineer', 'Oct 2023 — Present'],
+    ['IT Infrastructure &amp; Systems Support · Internship', 'Nov 2021 — Oct 2023']
+  ];
+  for (const [title, period] of municipalRoles) {
+    assert.match(
+      municipalArticle,
+      new RegExp(`<h4[^>]*>${escapeRegExp(title)}<\\/h4>[\\s\\S]*?${escapeRegExp(period)}`, 'i'),
+      `${pageName} must associate ${title} with ${period}`
+    );
+  }
+
+  const municipalRoleOffsets = municipalRoles.map(([title]) => municipalArticle.indexOf(title));
   assert.ok(municipalRoleOffsets.every((offset) => offset >= 0), `${pageName} must render both municipal roles`);
   assert.deepEqual(
     municipalRoleOffsets,
@@ -149,6 +158,10 @@ function assertExperienceSection(pageHtml, pageName, headingId) {
     `${pageName} must render municipal roles in reverse chronological order`
   );
   assert.equal((municipalArticle.match(/<h4/g) || []).length, 2, `${pageName} must expose both municipal roles below the organization heading`);
+
+  const internshipMarkup = municipalArticle.slice(municipalRoleOffsets[1]);
+  assert.equal((internshipMarkup.match(/<li>/g) || []).length, 3, `${pageName} internship must expose exactly three highlights`);
+  assert.match(internshipMarkup, /Maintained rotating snapshots plus incremental and weekly full backups/);
 
   assert.match(articles[1], /<h3[^>]*>Irmãos Santana<\/h3>/i);
   assert.match(articles[1], /<h4[^>]*>Business Analyst &amp; Operations Manager<\/h4>/i);
