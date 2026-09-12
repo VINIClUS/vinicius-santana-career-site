@@ -39,19 +39,26 @@ if (root) {
     controller.dispatch({ type: 'SELECT_DISTRICT', districtId });
     if (restoreFocus) links.find(link => link.dataset.districtLink === (districtId ?? previousDistrictId))?.focus({ preventScroll: true });
   };
+  const historyDepth = () => {
+    const value = (history.state as { __atlasPanelDepth?: unknown } | null)?.__atlasPanelDepth;
+    return typeof value === 'number' && value > 0 ? value : 0;
+  };
   const closePanel = (restoreFocus = true) => {
     const selectedDistrictId = controller.getState().selectedDistrictId;
     if (!selectedDistrictId) return;
-    history.replaceState(history.state, '', `${location.pathname}${location.search}`);
+    const depth = historyDepth();
+    if (depth > 0) history.go(-depth);
+    else history.replaceState(history.state, '', `${location.pathname}${location.search}`);
     controller.dispatch({ type: 'SELECT_DISTRICT', districtId: null });
     if (restoreFocus) links.find(link => link.dataset.districtLink === selectedDistrictId)?.focus({ preventScroll: true });
   };
   const selectDistrict = (districtId: DistrictId) => {
     const repeated = controller.getState().selectedDistrictId === districtId;
-    if (repeated) history.replaceState(history.state, '', `${location.pathname}${location.search}`);
-    else history.pushState(history.state, '', `#district-${districtId}`);
+    if (repeated) { closePanel(); return; }
+    const depth = historyDepth();
+    const nextDepth = depth > 0 ? depth + 1 : location.hash === '' ? 1 : 0;
+    history.pushState({ ...history.state, __atlasPanelDepth: nextDepth }, '', `#district-${districtId}`);
     controller.dispatch({ type: 'ACTIVATE_DISTRICT', districtId });
-    if (repeated) links.find(link => link.dataset.districtLink === districtId)?.focus({ preventScroll: true });
   };
   const use2D = () => {
     const canvas = map.querySelector('[data-observatory-canvas]');
@@ -88,6 +95,7 @@ if (root) {
       focusedPanelDistrictId = districtIds.find(id => id === panelId) ?? null;
     }, { signal });
     for (const link of links) link.addEventListener('click', event => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       event.preventDefault();
       const districtId = districtIds.find(id => id === link.dataset.districtLink);
       if (districtId) selectDistrict(districtId);

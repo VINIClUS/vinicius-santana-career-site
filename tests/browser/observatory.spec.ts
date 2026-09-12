@@ -59,6 +59,29 @@ test('project panel selection, replacement, closing and history stay coherent', 
   await expect(page).toHaveURL(/\/explore\/$/);
 });
 
+test('closing a pushed panel returns to the base history entry and modified clicks stay native', async ({ page }) => {
+  await page.goto('/about/');
+  await page.goto('/explore/');
+  await link(page, 'cnesdata').click();
+  await panel(page, 'cnesdata').getByRole('link', { name: 'Close CnesData panel' }).click();
+  await expect(page).toHaveURL(/\/explore\/$/);
+  await page.goBack();
+  await expect(page).toHaveURL(/\/about\/$/);
+  await page.goForward();
+
+  const result = await link(page, 'limnopulse').evaluate(element => {
+    let applicationPrevented = false;
+    element.addEventListener('click', event => {
+      applicationPrevented = event.defaultPrevented;
+      event.preventDefault();
+    }, { once: true });
+    element.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, ctrlKey: true }));
+    return { applicationPrevented, hash: location.hash };
+  });
+  expect(result).toEqual({ applicationPrevented: false, hash: '' });
+  await expect(page.locator('[data-district-link][aria-current]')).toHaveCount(0);
+});
+
 test('mobile supports touch, project changes, closing, repeated activation and history', async ({ browser, baseURL }) => {
   const context = await browser.newContext({ baseURL, viewport: { width: 390, height: 844 }, hasTouch: true });
   const page = await context.newPage();
