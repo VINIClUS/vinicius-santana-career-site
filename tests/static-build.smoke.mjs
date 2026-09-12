@@ -293,21 +293,26 @@ console.log('Static build smoke checks passed.');
 const overview = await readBuiltPage('dist/explore/index.html');
 assertEditorialShell(overview, 'explorer overview', true);
 assertMetadata(overview, '/explore/', origin);
-assert.match(overview, /Systems Observatory/);
+assert.match(overview, /Systems Atlas/);
 const districtDestinations = {
   cnesdata: '/explore/cnesdata/',
-  'public-health': '/#experience',
   infrastructure: '/explore/infrastructure/',
-  observability: '/#stack',
   limnopulse: '/explore/limnopulse/',
 };
-assert.equal([...overview.matchAll(/<article\b[^>]*data-district-detail=/g)].length, 5, 'overview renders all five district articles');
+assert.equal([...overview.matchAll(/<article\b[^>]*data-district-detail=/g)].length, 3, 'overview renders exactly three project articles');
 for (const [id, href] of Object.entries(districtDestinations)) {
   assert.match(overview, new RegExp(`href="#district-${id}"`));
   const article = overview.match(new RegExp(`<article[^>]*id="district-${id}"[^>]*>[\\s\\S]*?</article>`))?.[0];
   assert.ok(article, `${id} article is present without JavaScript`);
   assert.match(article, new RegExp(`href="${escapeRegExp(href)}"`));
 }
+assert.equal([...overview.matchAll(/data-district-link=/g)].length, 3);
+for (const [id, href] of [['public-health', '/#experience'], ['observability', '/#stack']]) {
+  assert.doesNotMatch(overview, new RegExp(`data-district-(?:link|detail)="${id}"`));
+  assert.match(overview, new RegExp(`id="district-${id}"`));
+  assert.ok(overview.includes(`href="${href}"`));
+}
+assert.doesNotMatch(overview, /href="#district-hub"|data-district-(?:link|detail)="hub"/);
 assert.doesNotMatch(overview, /<canvas|<astro-island|\.(glb|gltf|ktx2)["']/i);
 for (const { slug, title } of caseStudies) {
   assert.match(overview, new RegExp(`href="/explore/${slug}/"`));

@@ -1,7 +1,8 @@
 import type { ProjectId } from '../../features/explorer/projects.ts';
 
-/** Visual districts are broader than routable portfolio projects. */
-export type DistrictId = ProjectId | 'public-health' | 'observability';
+export type AtlasDistrictId = ProjectId;
+/** Compatibility alias for existing Atlas renderer imports. */
+export type DistrictId = AtlasDistrictId;
 export type Vector3 = readonly [number, number, number];
 export interface VisualImage {
   readonly src: string;

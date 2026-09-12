@@ -6,23 +6,23 @@ import { projectToPoster } from '../../features/explorer/observatory-projection.
 import '../../features/explorer/explorer.css';
 import '../../features/explorer/observatory.css';
 const { poster, layouts } = overview;
-const linkLabels = { cnesdata: 'Explore CnesData', 'public-health': 'View public-health experience', infrastructure: 'Explore Infrastructure', observability: 'View monitoring tools', limnopulse: 'Explore LimnoPulse' };
+const linkLabels = { cnesdata: 'Explore CnesData', infrastructure: 'Explore Infrastructure', limnopulse: 'Explore LimnoPulse' };
 const positionStyle = (desktop: { x: number; y: number }, mobile: { x: number; y: number }) => `--desktop-x:${desktop.x}%;--desktop-y:${desktop.y}%;--mobile-x:${mobile.x}%;--mobile-y:${mobile.y}%;`;
 ---
-<EditorialLayout title="Systems Observatory — Vinicius Santana" description="Explore five engineering districts around a central hub, with component views and synthetic walkthroughs in 2D." canonicalPath="/explore/" currentPath="/explore/" observatory>
+<EditorialLayout title="Systems Atlas — Vinicius Santana" description="Explore CnesData, LimnoPulse and Infrastructure: three projects spanning data platforms, environmental telemetry and systems operations." canonicalPath="/explore/" currentPath="/explore/" observatory>
   <div class="shell explorer" data-observatory data-scene-state="fallback">
     <header class="explorer-heading">
-      <p class="eyebrow">Systems Observatory</p>
-      <h1>Explore the systems.</h1>
-      <p>Five districts. Connected engineering perspectives. Select a district to explore its work, components and relationships.</p>
-      <p class="explorer-note">Illustrative views, not live systems or production dashboards.</p>
+      <p class="eyebrow">Systems Atlas</p>
+      <h1>Systems Atlas.</h1>
+      <p>Three projects. From data contracts to environmental telemetry and repeatable infrastructure. Choose a project to explore its architecture.</p>
+      <p class="explorer-note">The hub and connections organize this portfolio conceptually; they do not represent deployed integrations.</p>
     </header>
-    <nav class="observatory-map" aria-label="Select a district">
+    <nav class="observatory-map" aria-label="Select a project">
       <picture>
         <source media="(max-width: 700px)" srcset={poster.mobile.src} width={poster.mobile.width} height={poster.mobile.height} />
         <img src={poster.desktop.src} alt={poster.desktop.alt} width={poster.desktop.width} height={poster.desktop.height} fetchpriority="high" />
       </picture>
-      <span class="observatory-hub" style={positionStyle(projectToPoster(layouts.desktop.hubPosition, layouts.desktop.camera), projectToPoster(layouts.mobile.hubPosition, layouts.mobile.camera))}>Systems hub</span>
+      <span class="observatory-hub" style={positionStyle(projectToPoster(layouts.desktop.hubPosition, layouts.desktop.camera), projectToPoster(layouts.mobile.hubPosition, layouts.mobile.camera))}>Portfolio hub</span>
       {districtIds.map((id, index) => <a
         class={`district-link district-link-${id}`}
         href={`#district-${id}`}
@@ -31,20 +31,24 @@ const positionStyle = (desktop: { x: number; y: number }, mobile: { x: number; y
       ><span class="district-number" aria-hidden="true">0{index + 1}</span><span>{districtRegistry[id].label}</span></a>)}
     </nav>
     <div class="observatory-controls" data-scene-controls hidden aria-label="3D view controls" role="group">
-      <button type="button" data-scene-action="zoom-in">Zoom in</button>
-      <button type="button" data-scene-action="zoom-out">Zoom out</button>
-      <button type="button" data-scene-action="reset">Reset view</button>
+      <button type="button" data-scene-action="zoom-in" disabled>Zoom in</button>
+      <button type="button" data-scene-action="zoom-out" disabled>Zoom out</button>
+      <button type="button" data-scene-action="reset" disabled>Reset view</button>
       <button type="button" data-scene-action="fallback">View 2D</button>
     </div>
-    <p class="observatory-instruction">Choose a district above, or browse all five below. Each district links to its project or related experience.</p>
+    <p class="observatory-instruction">Select a project on the map or browse the summaries below. Every project stays available in both 2D and 3D.</p>
     <div class="district-details">
       {districtIds.map(id => <article id={`district-${id}`} class={`explorer-area area-${id}`} data-district-detail={id} data-selected="false" tabindex="-1" aria-labelledby={`district-title-${id}`}>
-        <p class="eyebrow">{districtRegistry[id].kind === 'project' ? 'Project district' : 'Engineering domain'}</p>
+        <p class="eyebrow">Project</p>
         <h2 id={`district-title-${id}`}>{districtRegistry[id].label}</h2>
         <p>{districtRegistry[id].description}</p>
         <a class="button button-primary" href={districtRegistry[id].href}>{linkLabels[id]}</a>
       </article>)}
     </div>
+    <aside class="atlas-context" aria-label="Context and capabilities">
+      <p id="district-public-health"><strong>Public Health</strong> · Domain experience connecting services, information systems and their users. <a href="/#experience">View experience</a></p>
+      <p id="district-observability"><strong>Observability</strong> · A capability across monitoring, diagnostics and operations. <a href="/#stack">View stack</a></p>
+    </aside>
   </div>
 </EditorialLayout>
 <script>

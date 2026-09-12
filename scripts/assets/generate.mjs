@@ -3,10 +3,22 @@ import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { resolve, extname, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "@playwright/test";
-import { sceneIds } from "./scenes.mjs";
+import { districtIds, normalizeGeneratedMetadata, sceneIds } from "./scenes.mjs";
+import { projectIds } from "../../src/features/explorer/projects.ts";
 import { createInitialInfraState, transitionInfrastructure } from "../../src/features/explorer/simulation/infrastructure.ts";
 
 const root = fileURLToPath(new URL("../../", import.meta.url));
+const generatedSceneIds = [...sceneIds, "detail-infrastructure-failed"];
+if (
+  districtIds.length !== projectIds.length ||
+  districtIds.some((id, index) => id !== projectIds[index])
+) {
+  throw new Error(`Generated district IDs must match projectIds: ${projectIds.join(", ")}`);
+}
+const requestedIds = process.argv.slice(2);
+for (const id of requestedIds) {
+  if (!generatedSceneIds.includes(id)) throw new Error(`Unknown scene ${id}`);
+}
 const mime = {
   ".mjs": "text/javascript",
   ".js": "text/javascript",
@@ -53,11 +65,9 @@ try {
       ),
     );
   } catch {}
-  for (const id of process.argv.slice(2).length
-    ? process.argv.slice(2)
-    : [...sceneIds, "detail-infrastructure-failed"]) {
+  metadata = normalizeGeneratedMetadata(metadata);
+  for (const id of requestedIds.length ? requestedIds : generatedSceneIds) {
     const failure = id === "detail-infrastructure-failed";
-    if (!sceneIds.includes(id) && !failure) throw Error(`Unknown scene ${id}`);
     const entry = { posters: {}, cameras: {} };
     for (const [variant, width, height] of [
       ["desktop", 1200, 800],

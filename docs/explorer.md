@@ -1,6 +1,6 @@
-# Explorer and Observatory contracts
+# Systems Atlas and project explorer contracts
 
-Astro renders an Observatory overview and three project routes using the case-study collection. Architecture IDs live in `src/content/case-studies.yaml`; titles, descriptions and evidence statuses are reused from that collection. `src/features/explorer/projects.ts` supplies only project IDs, areas, component IDs and illustrative relationships. Scene nodes reuse those IDs, scoped to their project.
+Astro renders a Systems Atlas overview and three project routes using the case-study collection. Architecture IDs live in `src/content/case-studies.yaml`; titles, descriptions and evidence statuses are reused from that collection. `src/features/explorer/projects.ts` supplies only project IDs, areas, component IDs and illustrative relationships. Scene nodes reuse those IDs, scoped to their project.
 
 `createExplorerController(projectId)` exposes `getState()`, `dispatch(command)` and `subscribe(listener)`, which returns an unsubscribe function. State holds `projectId`, `selectedComponentId` and the corresponding optional `simulation` (CnesData) or `infrastructureSimulation`. `SELECT_COMPONENT` changes selection independently of simulation. `SELECT_SCENARIO` and `STEP` affect only CnesData; `FAIL_NODE` affects only Infrastructure. `RESET` resets the current project's simulation. LimnoPulse ignores simulation commands. Project switching uses ordinary route navigation and creates a fresh controller with default state, without persistence.
 
@@ -8,31 +8,27 @@ The DOM is a projection of controller state. Component fragments support initial
 
 CnesData uses fictional keys/content only. Results are synthetic and illustrative; they do not demonstrate backend calls, authentication, conversion, Parquet generation, latency or the production status of architecture components. Infrastructure relationships are sanitized illustrative references.
 
-## Five districts
+## Three project districts
 
-`src/features/explorer/districts.ts` owns the labels, descriptions, kinds and destinations for all five `DistrictId` values. `ProjectId` still contains only CnesData, LimnoPulse and Infrastructure. Public Health Systems links to `/#experience`; Observability links to `/#stack`. They are portfolio domains, not additional project routes. Existing scene-manifest exports remain compatible.
+`projectIds` in `src/features/explorer/projects.ts` is the identity source: `['cnesdata', 'limnopulse', 'infrastructure']`. `AtlasDistrictId = ProjectId`; `DistrictId` is a compatibility alias. `districtIds` derives from `projectIds`. The registry owns each project's label, summary and matching `/explore/{id}/` destination. The initial HTML always includes all three selectors, summaries and canonical links.
 
-`createObservatoryController()` starts with no selection and accepts `SELECT_DISTRICT`. Invalid IDs are inert; `null` clears selection. Native `#district-<id>` navigation supports deep links and browser history, while the client synchronizes selection and article focus. Unrecognized fragments clear selection. Every district article and destination is rendered in the initial HTML; CSS `:target` preserves highlighting without JavaScript.
+Public Health appears as secondary domain context with `/#experience`; Observability is a capability with `/#stack`. Their legacy `#district-public-health` and `#district-observability` fragments redirect using fixed `location.replace` destinations outside the controller. Without JavaScript, those fragments target visible secondary content with equivalent links. Neither theme, nor the visual hub, can be selected.
 
-The overview renders the existing desktop/mobile posters with link positions projected from each crop's scene camera and placements. All five articles and their normal links remain in the page throughout loading and interaction.
+`createObservatoryController()` starts with no selection and accepts `SELECT_DISTRICT`. Invalid IDs are inert; `null` clears selection. Native project fragments support deep links, keyboard navigation and browser history while synchronizing article focus. Unknown fragments clear selection. After initialization ARIA/state attributes own highlighting; CSS `:target` covers the no-JavaScript fallback.
 
-## Progressive 3D Observatory
+## Progressive 3D Atlas
 
-Only `/explore/` loads the scene renderer. The lightweight launcher checks Save-Data and WebGL before importing React Three Fiber and Three.js. The poster stays visible until the six overview GLBs (hub and five districts) have loaded and the first frame has rendered. Import, initialization, model-loading and context-loss failures return to the existing 2D presentation.
+The desktop layout is a broad triangle; mobile uses a taller triangular arrangement. Both are authored with paired camera/placement metadata. Labels project from those same positions in the poster and renderer. The hub and connections organize the portfolio conceptually and do not claim a deployed integration.
 
-The renderer consumes `hub`, `districts`, `overview.layouts` and the five-entry `districtRegistry`. React subscribes to `createObservatoryController()`; the controller remains the source of selection. Canvas selection updates the fragment with `pushState` without scrolling. HTML fragment links retain their native navigation and article focus, including initial deep links and back/forward history.
+Only `/explore/` loads the renderer. Save-Data or unavailable WebGL 2 retains 2D without downloading React Three Fiber, Three.js or models. A single 15-second deadline starts at activation and includes the dynamic import, all four essential GLBs (hub plus three projects), scene initialization and first valid frame. The poster remains visible until that complete composition renders. Import, model, initialization, timeout or context-loss failures return to 2D. Late completions are ignored; teardown cancels essential downloads and disposes resources.
 
-After controller initialization, state/ARIA attributes govern highlighting; `:target` styling serves only the no-JavaScript fallback. Native fragment navigation synchronizes through one `hashchange` listener so duplicate history notifications cannot steal focus from the next selector.
+**View 2D** is available throughout loading. Zoom and reset enable only after readiness. Fallback restores original label positions and preserves selection; it restores selector focus only when the focused canvas/control disappears. Surviving HTML focus remains unchanged. The 2D choice lasts for the visit and is not persisted.
 
-Selecting CnesData or Infrastructure lazily loads its detail model into that district's footprint, retaining the hub and the other districts. Selecting another district restores the previous overview maquette. Loaded models are reused during the visit; a superseded download cannot overwrite a newer selection or force fallback if it fails. Failed loads leave the cache so selecting that district again can retry the download. A failure of the currently selected detail still returns to 2D. These models illustrate architecture and do not own or run the project simulations.
+Selecting a project changes its highlight and shared controller state only. The Atlas never requests detailed CnesData or Infrastructure maquettes; their assets remain available for canonical project pages. Canvas selection uses `pushState` without scrolling or moving focus. Native fragment selection and history focus the corresponding article through one `hashchange` listener. Page exit cancels work; a back/forward-cache return reconnects navigation once and stays in 2D.
 
-The orthographic camera uses the paired desktop/mobile manifest at the 700px breakpoint. Orbit is limited to ±15° horizontally and ±5° vertically, zoom to 0.9–1.2 times the initial view, and pan is disabled. HTML controls provide zoom and reset; HTML label positions follow the current camera and viewport. Rendering is on demand with DPR capped at 1.5. There is no continuous camera movement; reduced motion keeps 3D available with immediate highlighting.
+The orthographic camera switches authored layouts at 700px. Orbit is limited to ±15° horizontally and ±5° vertically, zoom to 0.9–1.2 times the authored view, and pan is disabled. OrbitControls' inline touch action is reset to `pan-y` after connection so vertical touch scrolling remains native; taps still select. Rendering is on demand, DPR is capped at 1.5, and reduced motion uses immediate highlighting without continuous movement.
 
-After a successful mount, **View 2D** discards the renderer, restores the poster and original label positions, preserves the selected district and focuses its HTML selector (the first selector when none is selected). The choice lasts until leaving or reloading the page and is not stored. Teardown cancels pending downloads, guards late completion, unmounts React and releases controls, listeners and graphic resources.
-
-Automatic fallback also restores selector focus when a focused 3D control disappears. Focus on surviving HTML links or articles stays where the reader put it.
-
-Home and individual project routes do not download the Observatory renderer or GLBs. JavaScript-disabled navigation and both existing synthetic simulations retain their contracts. See [SO-08 evidence](design/so-08/README.md) for browser scenarios and desktop/mobile captures.
+`assets:generate` validates authored district IDs against `projectIds`, rejects unknown scene requests before generation and removes obsolete district metadata even on partial runs. Regenerate the composition with `npm run assets:generate -- overview`. Historical evidence and project illustrations/detail assets are preserved. See [SA-01 evidence](design/sa-01/README.md) for validation and loading comparison.
 
 ## Infrastructure scenario
 
