@@ -48,7 +48,9 @@ test('project panel selection, replacement, closing and history stay coherent', 
 test('mobile supports touch, project changes, closing, repeated activation and history', async ({ browser, baseURL }) => {
   const context = await browser.newContext({ baseURL, viewport: { width: 390, height: 844 }, hasTouch: true });
   const page = await context.newPage();
-  await page.goto('/explore/');
+  await page.goto('/explore/#district-limnopulse');
+  await expect(panel(page, 'limnopulse')).toBeVisible();
+  await panel(page, 'limnopulse').getByRole('link', { name: 'Close Limnopulse panel' }).tap();
 
   await link(page, 'infrastructure').tap();
   await expect(panel(page, 'infrastructure')).toBeVisible();
