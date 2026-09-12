@@ -87,6 +87,16 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
           });
           expect(obstructions, `${project}: ${relation.from} → ${relation.to}`).toEqual({ overlappingLabels: [], crossedNodes: [], pathMissesLabel: false });
         }
+        const labelCollisions = await view.locator('[data-graph-edge-label]').evaluateAll(labels => labels.flatMap((label, index) => {
+          const box = label.getBoundingClientRect();
+          return labels.slice(index + 1)
+            .filter(candidate => {
+              const candidateBox = candidate.getBoundingClientRect();
+              return !(box.right <= candidateBox.left || candidateBox.right <= box.left || box.bottom <= candidateBox.top || candidateBox.bottom <= box.top);
+            })
+            .map(candidate => `${label.textContent?.trim()} / ${candidate.textContent?.trim()}`);
+        }));
+        expect(labelCollisions, `${project}: connector labels`).toEqual([]);
         if (project === 'limnopulse') {
           const forward = view.locator('[data-connector-from="alert-rules"][data-connector-to="evaluator"]');
           const reverse = view.locator('[data-connector-from="evaluator"][data-connector-to="alert-rules"]');
