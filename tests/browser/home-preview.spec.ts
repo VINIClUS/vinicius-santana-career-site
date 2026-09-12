@@ -256,11 +256,25 @@ for (const failure of ['import', 'model'] as const) {
 test('one 15 second deadline covers the renderer import and model loading', async ({ page }) => {
   await page.clock.install({ time: new Date('2026-01-01T00:00:00Z') });
   await page.clock.pauseAt(new Date('2026-01-01T00:00:00Z'));
+  // Install after the clock so its idle shim cannot overwrite our activation seam.
+  await page.addInitScript(() => {
+    const state = window as typeof window & {
+      homeIdleCount?: () => number;
+      runHomeIdle?: () => void;
+    };
+    const callbacks: IdleRequestCallback[] = [];
+    window.requestIdleCallback = callback => { callbacks.push(callback); return callbacks.length; };
+    window.cancelIdleCallback = id => { callbacks[id - 1] = () => {}; };
+    state.homeIdleCount = () => callbacks.length;
+    state.runHomeIdle = () => callbacks.splice(0).forEach(callback => callback({ didTimeout: false, timeRemaining: () => 50 }));
+  });
   const renderer = holdRequest(page, '**/_astro/preview.*.js');
   const model = holdRequest(page, '**/hub.glb');
   await renderer.installed;
   await model.installed;
   await page.goto('/');
+  await expect.poll(() => page.evaluate(() => (window as typeof window & { homeIdleCount: () => number }).homeIdleCount())).toBeGreaterThan(0);
+  await page.evaluate(() => (window as typeof window & { runHomeIdle: () => void }).runHomeIdle());
   await renderer.arrived;
   await page.clock.fastForward(10_000);
   renderer.release();
