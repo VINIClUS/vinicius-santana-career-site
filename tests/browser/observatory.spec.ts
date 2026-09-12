@@ -17,14 +17,25 @@ test('project panel selection, replacement, closing and history stay coherent', 
   await expect(panel(page, 'cnesdata')).toBeVisible();
   await expect(link(page, 'cnesdata')).toBeFocused();
 
+  await panel(page, 'cnesdata').getByRole('link', { name: 'Explore CnesData' }).focus();
+  await page.goBack();
+  await expect(panel(page, 'cnesdata')).toBeHidden();
+  await expect(link(page, 'cnesdata')).toBeFocused();
+  await page.goForward();
+  await expect(panel(page, 'cnesdata')).toBeVisible();
+
   await link(page, 'limnopulse').click();
   await expect(page).toHaveURL(/#district-limnopulse$/);
   await expect(panel(page, 'cnesdata')).toBeHidden();
   await expect(panel(page, 'limnopulse')).toBeVisible();
+  await panel(page, 'limnopulse').getByRole('link', { name: 'Explore Limnopulse' }).focus();
   await page.goBack();
   await expect(panel(page, 'cnesdata')).toBeVisible();
+  await expect(link(page, 'cnesdata')).toBeFocused();
+  await panel(page, 'cnesdata').getByRole('link', { name: 'Close CnesData panel' }).focus();
   await page.goForward();
   await expect(panel(page, 'limnopulse')).toBeVisible();
+  await expect(link(page, 'limnopulse')).toBeFocused();
 
   await panel(page, 'limnopulse').getByRole('link', { name: 'Close Limnopulse panel' }).click();
   await expect(page).toHaveURL(/\/explore\/$/);

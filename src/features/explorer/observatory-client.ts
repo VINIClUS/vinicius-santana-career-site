@@ -15,6 +15,7 @@ if (root) {
   let scene: ObservatoryScene | undefined;
   let stopped = false;
   let loadingDeadline: ReturnType<typeof setTimeout> | undefined;
+  let focusedPanelDistrictId: DistrictId | null = null;
   const pending = new AbortController();
 
   const render = () => {
@@ -29,7 +30,10 @@ if (root) {
   };
   const syncFragment = () => {
     const districtId = districtIds.find(id => location.hash === `#district-${id}`) ?? null;
+    const previousDistrictId = controller.getState().selectedDistrictId;
+    const restoreFocus = focusedPanelDistrictId === previousDistrictId && districtId !== previousDistrictId;
     controller.dispatch({ type: 'SELECT_DISTRICT', districtId });
+    if (restoreFocus) links.find(link => link.dataset.districtLink === (districtId ?? previousDistrictId))?.focus({ preventScroll: true });
   };
   const closePanel = (restoreFocus = true) => {
     const selectedDistrictId = controller.getState().selectedDistrictId;
@@ -72,6 +76,12 @@ if (root) {
     const { signal } = nativeEvents;
     // Fragment traversal also emits hashchange; listening to popstate would focus twice.
     window.addEventListener('hashchange', syncFragment, { signal });
+    document.addEventListener('focusin', event => {
+      const panelId = event.target instanceof Element
+        ? event.target.closest<HTMLElement>('[data-district-detail]')?.dataset.districtDetail
+        : undefined;
+      focusedPanelDistrictId = districtIds.find(id => id === panelId) ?? null;
+    }, { signal });
     for (const link of links) link.addEventListener('click', event => {
       event.preventDefault();
       const districtId = districtIds.find(id => id === link.dataset.districtLink);
