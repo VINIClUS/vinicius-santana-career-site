@@ -321,7 +321,7 @@ for (const { slug, title } of caseStudies) {
   assertEditorialShell(explorer, slug + ' explorer', true);
   assertMetadata(explorer, `/explore/${slug}/`, origin);
   assert.match(explorer, new RegExp(`<h1[^>]*>${title}</h1>`));
-  if (slug === 'cnesdata') assert.doesNotMatch(explorer, /href="\/work\/cnesdata\//);
+  if (slug === 'cnesdata' || slug === 'limnopulse') assert.doesNotMatch(explorer, new RegExp(`href="/work/${slug}/"`));
   else assert.match(explorer, new RegExp(`href="/work/${slug}/"`));
   assert.match(explorer, /Component details/);
   assert.match(explorer, /Relationships/);
@@ -427,3 +427,50 @@ assert.match(canonicalCnes, /detail-cnesdata-desktop\.webp/);
 assert.match(canonicalCnes, /detail-cnesdata-mobile\.webp/);
 assert.equal([...canonicalCnes.matchAll(/id="([^" ]+)"/g)].length, new Set([...canonicalCnes.matchAll(/id="([^" ]+)"/g)].map(match => match[1])).size, 'canonical IDs must be unique');
 console.log('Canonical CnesData content equivalence passed.');
+
+// SA-03: all public facts remain available in the canonical HTML without a runtime.
+const canonicalLimno = await readBuiltPage('dist/explore/limnopulse/index.html');
+const limno = yaml.load(await readFile(fromRoot('src/content/case-studies.yaml'), 'utf8')).find(entry => entry.id === 'limnopulse');
+assert.match(canonicalLimno, /data-visual-mode="telemetry"/);
+assert.match(canonicalLimno, /<title>Limnopulse — Vinicius Santana<\/title>/);
+for (const id of ['overview', 'architecture', 'engineering', 'results', 'evidence', 'limitations']) {
+  assert.ok(canonicalLimno.includes(`id="${id}"`));
+  assert.ok(canonicalLimno.includes(`href="#${id}"`));
+}
+assert.match(canonicalLimno, /id="architecture-title"/);
+for (const heading of ['Observations', 'Telemetry', 'Events', 'Problem', 'Context', 'Contribution', 'Decisions', 'Reliability', 'Outcomes', 'Public evidence']) {
+  assert.match(canonicalLimno, new RegExp(`<h[234][^>]*>${heading}</h[234]>`));
+}
+for (const value of [limno.eyebrow, limno.summary, limno.problem, limno.context, ...limno.technologies, ...limno.contribution, ...limno.decisions, ...limno.reliability, ...limno.outcomes, ...limno.limitations]) {
+  assert.ok(canonicalLimno.includes(escapeHtml(value)), `canonical Limnopulse retains: ${value}`);
+}
+assert.equal(limno.architecture.length, 7);
+for (const component of limno.architecture) {
+  const article = canonicalLimno.match(new RegExp(`<article[^>]*id="component-${component.id}"[^>]*>[\\s\\S]*?</article>`))?.[0];
+  assert.ok(article, `${component.id} details are static HTML`);
+  for (const value of [component.title, component.description]) assert.ok(article.includes(escapeHtml(value)));
+  assert.match(article, new RegExp(component.status, 'i'), `${component.id} status stays adjacent`);
+  assert.ok(canonicalLimno.includes(`data-component-link="${component.id}"`));
+}
+for (const evidence of limno.evidence) {
+  const article = [...canonicalLimno.matchAll(/<article[^>]*class="evidence-card"[^>]*>[\s\S]*?<\/article>/g)].map(match => match[0]).find(article => article.includes(`href="${evidence.url}"`));
+  assert.ok(article, `${evidence.label} has an evidence card`);
+  assert.ok(article.includes(escapeHtml(evidence.description)));
+  assert.ok(article.includes(`aria-label="Open ${evidence.label} in a new tab"`));
+  assert.match(article, new RegExp(evidence.status, 'i'));
+}
+assert.match(canonicalLimno, /docs\/architecture.md/);
+assert.match(canonicalLimno, /docs\/notifications-phase-3c-b.md/);
+const limnoIds = [...canonicalLimno.matchAll(/\bid="([^" ]+)"/g)].map(match => match[1]);
+assert.equal(limnoIds.length, new Set(limnoIds).size, 'Limnopulse IDs must be unique');
+assert.doesNotMatch(canonicalLimno, /href="\/work\/limnopulse\/"|data-step|data-scenario|data-reset|id="simulation"|<canvas|<astro-island|\.(?:glb|gltf|ktx2)["']/i);
+const limnoRelations = [...canonicalLimno.matchAll(/<li[^>]*data-relation-from="([^"]+)"[^>]*data-relation-to="([^"]+)"[^>]*>[\s\S]*?<\/li>/g)];
+assert.ok(limnoRelations.length >= 6, 'directional relationships are rendered');
+for (const [relation, from, to] of limnoRelations) {
+  assert.ok(limno.architecture.some(component => component.id === from));
+  assert.ok(limno.architecture.some(component => component.id === to));
+  assert.notEqual(from, to);
+  assert.match(relation, /<svg[^>]*aria-hidden="true"/);
+  assert.match(relation, /visually-hidden[^>]*>to</);
+}
+console.log('Canonical Limnopulse content and relationship checks passed.');
