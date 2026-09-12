@@ -29,6 +29,28 @@ function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+function escapeHtmlText(value) {
+  return value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+}
+
+function assertTechnologyList(html, projectTitle, technologies) {
+  const list = html.match(
+    new RegExp(`<ul(?=[^>]*\\bclass="[^"]*\\btechnology-labels\\b[^"]*")(?=[^>]*\\baria-label="Technologies used in ${escapeRegExp(projectTitle)}")(?=[^>]*\\brole="list")[^>]*>[\\s\\S]*?</ul>`, 'i')
+  )?.[0];
+
+  assert.ok(list, `${projectTitle} must expose a specifically labelled technology list`);
+  assert.equal((list.match(/<li\b/g) || []).length, technologies.length, `${projectTitle} must render every technology exactly once`);
+
+  const offsets = technologies.map((technology) => {
+    const offset = list.indexOf(`>${escapeHtmlText(technology)}</li>`);
+    assert.notEqual(offset, -1, `${projectTitle} must render ${technology}`);
+    return offset;
+  });
+  assert.deepEqual(offsets, [...offsets].sort((left, right) => left - right), `${projectTitle} must preserve technology order`);
+
+  return list;
+}
+
 function assertMetadata(html, route, origin) {
   const canonicalUrl = new URL(route, origin).href;
   const expectedUrl = escapeRegExp(canonicalUrl);
@@ -290,12 +312,27 @@ const districtDestinations = {
   infrastructure: '/explore/infrastructure/',
   limnopulse: '/explore/limnopulse/',
 };
+const explorerProjects = yaml.load(await readFile(fromRoot('src/content/case-studies.yaml'), 'utf8'));
+const expectedTechnologies = {
+  cnesdata: ['Python', 'FastAPI', 'Go', 'PostgreSQL', 'Parquet', 'Docker', 'React'],
+  limnopulse: ['Python', 'FastAPI', 'Go', 'DynamoDB', 'InfluxDB', 'SQS', 'OpenTofu'],
+  infrastructure: ['Ansible', 'Packer', 'Proxmox VE', 'Python', 'PowerShell', 'Bash', 'Docker'],
+};
 assert.equal([...overview.matchAll(/<article\b[^>]*data-district-detail=/g)].length, 3, 'overview renders exactly three project articles');
 for (const [id, href] of Object.entries(districtDestinations)) {
   assert.match(overview, new RegExp(`href="#district-${id}"`));
   const article = overview.match(new RegExp(`<article[^>]*id="district-${id}"[^>]*>[\\s\\S]*?</article>`))?.[0];
   assert.ok(article, `${id} article is present without JavaScript`);
   assert.match(article, new RegExp(`href="${escapeRegExp(href)}"`));
+  const project = explorerProjects.find(entry => entry.id === id);
+  assert.deepEqual(project.technologies, expectedTechnologies[id], `${id} technology source must retain the approved stack and order`);
+  const technologyList = assertTechnologyList(article, escapeHtmlText(project.title), project.technologies);
+  const technologyOffset = article.indexOf(technologyList);
+  assert.ok(
+    (article.slice(0, technologyOffset).match(/<\/p>/g) || []).length === 2
+      && technologyOffset < article.indexOf('<a class="button'),
+    `${project.title} overview technologies must sit between the description and button`
+  );
 }
 assert.equal([...overview.matchAll(/data-district-link=/g)].length, 3);
 for (const [id, href] of [['public-health', '/#experience'], ['observability', '/#stack']]) {
@@ -303,6 +340,8 @@ for (const [id, href] of [['public-health', '/#experience'], ['observability', '
   assert.match(overview, new RegExp(`id="district-${id}"`));
   assert.ok(overview.includes(`href="${href}"`));
 }
+const atlasContext = overview.match(/<aside[^>]*class="atlas-context"[^>]*>[\s\S]*?<\/aside>/)?.[0];
+assert.doesNotMatch(atlasContext, /technology-labels/, 'domain context must not render project technology labels');
 assert.doesNotMatch(overview, /href="#district-hub"|data-district-(?:link|detail)="hub"/);
 assert.doesNotMatch(overview, /<canvas|<astro-island|\.(glb|gltf|ktx2)["']/i);
 for (const { slug, title } of caseStudies) {
@@ -311,6 +350,15 @@ for (const { slug, title } of caseStudies) {
   assertEditorialShell(explorer, slug + ' explorer', true);
   assertMetadata(explorer, `/explore/${slug}/`, origin);
   assert.match(explorer, new RegExp(`<h1[^>]*>${title}</h1>`));
+  const project = explorerProjects.find(entry => entry.id === slug);
+  const projectHeader = explorer.match(/<header[^>]*class="case-hero"[^>]*>[\s\S]*?<\/header>/)?.[0];
+  const technologyList = assertTechnologyList(projectHeader, title, project.technologies);
+  const technologyOffset = projectHeader.indexOf(technologyList);
+  assert.ok(
+    (projectHeader.slice(0, technologyOffset).match(/<\/p>/g) || []).length === 2
+      && technologyOffset < projectHeader.indexOf('<div class="hero-evidence"'),
+    `${project.title} technologies must sit between the summary and public evidence`
+  );
   assert.doesNotMatch(explorer, new RegExp(`href="/work/${slug}/"`));
   assert.match(explorer, /Component details/);
   assert.match(explorer, /Relationships/);
