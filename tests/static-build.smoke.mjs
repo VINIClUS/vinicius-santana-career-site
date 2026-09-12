@@ -3,6 +3,8 @@ import { createHash } from 'node:crypto';
 import { readFile, readdir, stat } from 'node:fs/promises';
 import path from 'node:path';
 import yaml from 'js-yaml';
+import { projectDefinitions } from '../src/features/explorer/projects.ts';
+import { graphLabel } from '../src/features/explorer/system-view.ts';
 
 const root = new URL('../', import.meta.url);
 const fromRoot = (...segments) => new URL(segments.join('/'), root);
@@ -44,6 +46,31 @@ function assertMetadata(html, route, origin) {
   const structuredData = JSON.parse(structuredDataMatch[1]);
   assert.equal(structuredData.url, origin, `${route} structured data must use the configured origin`);
   assert.equal(structuredData.image, new URL('/assets/images/og-image.jpg', origin).href, `${route} structured data image must use the configured origin`);
+}
+
+function assertIntegratedSystemView(html, study, projectId) {
+  const view = html.match(/<div class="integrated-system-view[^"]*"[\s\S]*?<\/div>\s*<\/div>/)?.[0];
+  assert.ok(view, `${projectId} renders one integrated graph and cards view`);
+  assert.match(view, /data-system-graph/, `${projectId} exposes a labeled graph region`);
+  assert.match(view, /data-component-cards/, `${projectId} exposes a component-card region`);
+  assert.doesNotMatch(view, />Relationships</, `${projectId} removes the standalone relationships section`);
+  assert.doesNotMatch(view, /status-(?:implemented|documented|planned|historical|illustrative)/, `${projectId} removes status from the system view`);
+  assert.doesNotMatch(view, /Back to System View/, `${projectId} cards do not link back to the system view`);
+
+  for (const component of study.architecture) {
+    assert.equal([...view.matchAll(new RegExp(`data-component-link="${component.id}"`, 'g'))].length, 1, `${projectId}:${component.id} has exactly one graph node link`);
+    const card = view.match(new RegExp(`<article[^>]*id="component-${component.id}"[^>]*>[\\s\\S]*?<\\/article>`))?.[0];
+    assert.ok(card, `${projectId}:${component.id} has one static detail card`);
+    assert.ok(card.includes(escapeHtml(component.description)), `${projectId}:${component.id} card keeps its description`);
+    assert.match(card, /Receives from|Sends to/, `${projectId}:${component.id} card derives directional relationship text`);
+    assert.doesNotMatch(card, /<a\b/i, `${projectId}:${component.id} card contains no links`);
+  }
+
+  for (const relation of projectDefinitions[projectId].relations) {
+    const connector = view.match(new RegExp(`<li[^>]*data-graph-connector[^>]*data-relation-from="${relation.from}"[^>]*data-relation-to="${relation.to}"[^>]*>[\\s\\S]*?<\\/li>`))?.[0];
+    assert.ok(connector, `${projectId} preserves ${relation.from} → ${relation.to} as a graph connector`);
+    assert.ok(connector.includes(escapeHtml(graphLabel(relation))), `${projectId} connector keeps its label`);
+  }
 }
 
 const html = await readFile(fromRoot('dist/index.html'), 'utf8');
@@ -188,10 +215,6 @@ for (const caseStudy of caseStudies) {
     assert.match(caseHtml, new RegExp(`<h[23][^>]*>${heading}<\\/h[23]>`, 'i'), `${caseStudy.slug} must include ${heading}`);
   }
 
-  for (const status of caseStudy.statuses) {
-    assert.match(caseHtml, new RegExp(`>${status}<`, 'i'), `${caseStudy.slug} must render the ${status} status`);
-  }
-
   for (const repositoryUrl of caseStudy.repositoryUrls) {
     assert.match(caseHtml, new RegExp(`href="${repositoryUrl}"`, 'i'), `${caseStudy.slug} must link public evidence`);
   }
@@ -313,7 +336,8 @@ for (const { slug, title } of caseStudies) {
   assert.match(explorer, new RegExp(`<h1[^>]*>${title}</h1>`));
   assert.doesNotMatch(explorer, new RegExp(`href="/work/${slug}/"`));
   assert.match(explorer, /Component details/);
-  assert.match(explorer, /Relationships/);
+  assert.match(explorer, /Receives from/);
+  assert.match(explorer, /Sends to/);
   assert.match(explorer, /data-component-link/);
   assert.match(explorer, /data-component-detail/);
   assert.doesNotMatch(explorer, /<canvas|<astro-island|\.(glb|gltf|ktx2)["']/i);
@@ -405,8 +429,9 @@ for (const component of cnes.architecture) {
   const article = canonicalCnes.match(new RegExp(`<article[^>]*id="component-${component.id}"[^>]*>[\\s\\S]*?</article>`))?.[0];
   assert.ok(article, `${component.id} details are static HTML`);
   assert.ok(article.includes(escapeHtml(component.description)));
-  assert.match(article, new RegExp(component.status, 'i'), `${component.id} status stays adjacent`);
+  assert.doesNotMatch(article, new RegExp(component.status, 'i'), `${component.id} status is not repeated in its card`);
 }
+assertIntegratedSystemView(canonicalCnes, cnes, 'cnesdata');
 for (const evidence of cnes.evidence) {
   assert.ok(canonicalCnes.includes(`href="${evidence.url}"`));
   assert.ok(canonicalCnes.includes(escapeHtml(evidence.description)));
@@ -428,8 +453,10 @@ for (const text of [infra.eyebrow, infra.summary, infra.problem, infra.context, 
 for (const component of infra.architecture) {
   const article = canonicalInfra.match(new RegExp(`<article[^>]*id="component-${component.id}"[^>]*>[\\s\\S]*?</article>`))?.[0];
   assert.ok(article?.includes(escapeHtml(component.description)));
-  assert.match(article, new RegExp(component.status, 'i'));
+  assert.doesNotMatch(article, new RegExp(component.status, 'i'));
 }
+assertIntegratedSystemView(canonicalInfra, infra, 'infrastructure');
+assert.doesNotMatch(canonicalInfra, /Synthetic simulation · Illustrative/);
 for (const evidence of infra.evidence) {
   assert.ok(canonicalInfra.includes(`href="${evidence.url}"`));
   assert.ok(canonicalInfra.includes(escapeHtml(evidence.description)));
@@ -460,9 +487,10 @@ for (const component of limno.architecture) {
   const article = canonicalLimno.match(new RegExp(`<article[^>]*id="component-${component.id}"[^>]*>[\\s\\S]*?</article>`))?.[0];
   assert.ok(article, `${component.id} details are static HTML`);
   for (const value of [component.title, component.description]) assert.ok(article.includes(escapeHtml(value)));
-  assert.match(article, new RegExp(component.status, 'i'), `${component.id} status stays adjacent`);
+  assert.doesNotMatch(article, new RegExp(component.status, 'i'), `${component.id} status is not repeated in its card`);
   assert.ok(canonicalLimno.includes(`data-component-link="${component.id}"`));
 }
+assertIntegratedSystemView(canonicalLimno, limno, 'limnopulse');
 for (const evidence of limno.evidence) {
   const article = [...canonicalLimno.matchAll(/<article[^>]*class="evidence-card"[^>]*>[\s\S]*?<\/article>/g)].map(match => match[0]).find(article => article.includes(`href="${evidence.url}"`));
   assert.ok(article, `${evidence.label} has an evidence card`);
@@ -475,14 +503,13 @@ assert.match(canonicalLimno, /docs\/notifications-phase-3c-b.md/);
 const limnoIds = [...canonicalLimno.matchAll(/\bid="([^" ]+)"/g)].map(match => match[1]);
 assert.equal(limnoIds.length, new Set(limnoIds).size, 'Limnopulse IDs must be unique');
 assert.doesNotMatch(canonicalLimno, /href="\/work\/limnopulse\/"|data-step|data-scenario|data-reset|id="simulation"|<canvas|<astro-island|\.(?:glb|gltf|ktx2)["']/i);
-const limnoRelations = [...canonicalLimno.matchAll(/<li[^>]*data-relation-from="([^"]+)"[^>]*data-relation-to="([^"]+)"[^>]*>[\s\S]*?<\/li>/g)];
+const limnoRelations = [...canonicalLimno.matchAll(/<li[^>]*data-graph-connector[^>]*data-relation-from="([^"]+)"[^>]*data-relation-to="([^"]+)"[^>]*>[\s\S]*?<\/li>/g)];
 assert.ok(limnoRelations.length >= 6, 'directional relationships are rendered');
 for (const [relation, from, to] of limnoRelations) {
   assert.ok(limno.architecture.some(component => component.id === from));
   assert.ok(limno.architecture.some(component => component.id === to));
   assert.notEqual(from, to);
-  assert.match(relation, /<svg[^>]*aria-hidden="true"/);
-  assert.match(relation, /visually-hidden[^>]*>to</);
+  assert.match(relation, /graph-connector-label/);
 }
 console.log('Canonical Limnopulse content and relationship checks passed.');
 
