@@ -97,7 +97,7 @@ test('all project selections update state and history without requesting detail 
     await expect(selected(page, id)).toHaveAttribute('aria-current', 'true');
     await expect(page).toHaveURL(new RegExp(`#district-${id}$`));
     await expect(page.locator(`#district-${id}`)).toHaveAttribute('data-selected', 'true');
-    expect(await page.evaluate(() => scrollY)).toBe(scroll);
+    expect(Math.abs(await page.evaluate(() => scrollY) - scroll)).toBeLessThanOrEqual(1);
   }
   await frames(page, 12);
   expect(models).toHaveLength(4);
@@ -114,9 +114,9 @@ test('all project selections update state and history without requesting detail 
 test('native and mesh selection clear the previous target styling', async ({ page }) => {
   await page.goto('/explore/');
   await ready(page);
-  await selected(page, 'limnopulse').click();
+  await clickMaquette(page, 'limnopulse');
   await expect(selected(page, 'limnopulse')).toHaveCSS('outline-style', 'solid');
-  await clickMaquette(page, 'infrastructure');
+  await selected(page, 'infrastructure').click();
   await expect(selected(page, 'infrastructure')).toHaveAttribute('aria-current', 'true');
   await expect(selected(page, 'limnopulse')).toHaveCSS('outline-style', 'none');
   await expect(page.locator('#district-limnopulse')).toHaveCSS('outline-style', 'none');

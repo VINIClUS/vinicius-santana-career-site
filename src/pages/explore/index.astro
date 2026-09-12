@@ -26,13 +26,15 @@ const positionStyle = (desktop: { x: number; y: number }, mobile: { x: number; y
           <img src={poster.desktop.src} alt={poster.desktop.alt} width={poster.desktop.width} height={poster.desktop.height} fetchpriority="high" />
         </picture>
         <span class="observatory-hub" style={positionStyle(projectToPoster(layouts.desktop.hubPosition, layouts.desktop.camera), projectToPoster(layouts.mobile.hubPosition, layouts.mobile.camera))}>Portfolio hub</span>
-        {projects.map((project, index) => <a
-          class={`district-link district-link-${project.id}`}
-          href={`#district-${project.id}`}
-          data-district-link={project.id}
-          aria-controls={`district-${project.id}`}
-          style={positionStyle(projectToPoster(layouts.desktop.placements[project.id], layouts.desktop.camera), projectToPoster(layouts.mobile.placements[project.id], layouts.mobile.camera))}
-        ><span class="district-number" aria-hidden="true">0{index + 1}</span><span>{project.title}</span></a>)}
+        <div class="district-selectors">
+          {projects.map((project, index) => <a
+            class={`district-link district-link-${project.id}`}
+            href={`#district-${project.id}`}
+            data-district-link={project.id}
+            aria-controls={`district-${project.id}`}
+            style={positionStyle(projectToPoster(layouts.desktop.placements[project.id], layouts.desktop.camera), projectToPoster(layouts.mobile.placements[project.id], layouts.mobile.camera))}
+          ><span class="district-number" aria-hidden="true">0{index + 1}</span><span>{project.title}</span></a>)}
+        </div>
       </nav>
       <div class="district-details">
         {projects.map(project => <article id={`district-${project.id}`} class={`explorer-area area-${project.id}`} data-district-detail={project.id} data-selected="false" aria-labelledby={`district-title-${project.id}`}>
