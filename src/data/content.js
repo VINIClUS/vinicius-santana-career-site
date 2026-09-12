@@ -36,10 +36,11 @@ export const roleFit = [
 export const experience = {
   summary:
     'Experience spanning public-health software and data, Linux infrastructure and operational automation, with measurable improvements to reliability and decision-making.',
+  organization: 'Prefeitura de Presidente Epitácio',
+  period: 'Nov 2021 — Present',
   roles: [
     {
-      role: 'Health Informatics Analyst & Data Engineer',
-      organization: 'Municipality of Presidente Epitácio',
+      title: 'Health Informatics Analyst & Data Engineer',
       period: 'Oct 2023 — Present',
       highlights: [
         'Process 21,000+ public-health records each month across municipal and partner facilities.',
@@ -50,18 +51,23 @@ export const experience = {
       ]
     },
     {
-      role: 'IT Infrastructure & Systems Support Intern',
-      organization: 'Municipality of Presidente Epitácio',
+      title: 'IT Infrastructure & Systems Support · Internship',
       period: 'Nov 2021 — Oct 2023',
       highlights: [
         'Operated nine municipal Proxmox/Linux compute nodes, two backup nodes, 23 LXCs and seven VMs.',
         'Maintained rotating snapshots plus incremental and weekly full backups for clinical and billing systems.',
         'Used Ceph replication for high-availability services and resolved replication failures.'
       ]
-    },
+    }
+  ]
+};
+
+export const familyBusinessExperience = {
+  organization: 'Irmãos Santana',
+  period: 'Feb 2021 — Jan 2026 · Part-time',
+  roles: [
     {
-      role: 'Business Analyst & Operations Manager',
-      organization: 'Irmãos Santana',
+      title: 'Business Analyst & Operations Manager',
       period: 'Feb 2021 — Jan 2026 · Part-time',
       highlights: [
         'Increased profitability by 26% and reduced feed waste by 11% through redesigned controls and workflows.',

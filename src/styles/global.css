@@ -662,24 +662,16 @@ h3 {
   border-radius: var(--radius-lg);
 }
 
-.timeline-card::before {
-  position: absolute;
-  top: 36px;
-  left: -9px;
-  width: 18px;
-  height: 18px;
-  border: 4px solid var(--bg);
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 0 1px rgba(132, 244, 230, 0.4);
-  content: "";
+.experience-card-header {
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .timeline-meta {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-bottom: 18px;
+  margin-bottom: 12px;
 }
 
 .timeline-meta span {
@@ -688,6 +680,64 @@ h3 {
   border-radius: 999px;
   color: var(--muted-strong);
   font-size: 0.85rem;
+  font-weight: 750;
+}
+
+.role-timeline {
+  position: relative;
+  display: grid;
+  margin: 0;
+  padding: 0 0 0 28px;
+  list-style: none;
+}
+
+.timeline-role {
+  position: relative;
+  padding-block: 26px;
+}
+
+.timeline-role:not(:last-child) {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.timeline-role::before {
+  position: absolute;
+  box-sizing: border-box;
+  top: 31px;
+  left: -27px;
+  z-index: 1;
+  width: 14px;
+  height: 14px;
+  border: 3px solid var(--bg);
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 1px rgba(132, 244, 230, 0.45);
+  content: "";
+}
+
+.role-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 18px;
+  margin-bottom: 18px;
+}
+
+.role-heading h4,
+.role-period {
+  margin: 0;
+}
+
+.role-heading h4 {
+  flex: 1 1 280px;
+  color: var(--text-strong);
+  font-size: clamp(1.08rem, 2vw, 1.3rem);
+}
+
+.role-period {
+  color: var(--muted-strong);
+  font-size: 0.88rem;
   font-weight: 750;
 }
 
@@ -713,6 +763,16 @@ h3 {
   box-shadow: 0 0 0 6px rgba(132, 244, 230, 0.08);
   content: "";
   transform: translateY(-50%);
+}
+
+.timeline-role:not(:last-child)::after {
+  position: absolute;
+  top: 38px;
+  bottom: -38px;
+  left: -21px;
+  width: 2px;
+  background: rgba(132, 244, 230, 0.48);
+  content: "";
 }
 
 .check-list.compact {
@@ -926,8 +986,23 @@ h3 {
     grid-template-columns: repeat(3, 1fr);
   }
 
-  .timeline-card::before {
-    display: none;
+}
+
+@media (max-width: 520px) {
+  .role-timeline {
+    padding-left: 22px;
+  }
+
+  .timeline-role::before {
+    left: -21px;
+  }
+
+  .timeline-role:not(:last-child)::after {
+    left: -15px;
+  }
+
+  .role-heading {
+    display: grid;
   }
 }
 
