@@ -1,5 +1,7 @@
 # Systems Observatory — Tech Spec
 
+> **Superseded for future implementation:** the approved [Systems Atlas Navigation & Project Experience Simplification](./2026-09-11-systems-atlas-navigation-project-experience-spec-v2.md) replaces this document where the two conflict. This file remains an historical record of the Systems Observatory release.
+
 **Date:** 2026-09-09  
 **Revision:** 2026-09-10 — visual-direction alignment  
 **Status:** Approved for implementation  

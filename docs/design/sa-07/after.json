@@ -1,0 +1,1037 @@
+{
+  "measuredUrl": "http://127.0.0.1:4326/",
+  "browser": {
+    "name": "Chromium",
+    "version": "153.0.8010.12"
+  },
+  "profile": {
+    "network": {
+      "downloadMbps": 10,
+      "uploadMbps": 1,
+      "latencyMs": 40,
+      "downloadThroughput": 1310720,
+      "uploadThroughput": 131072
+    },
+    "cpuSlowdownMultiplier": 4,
+    "coldCache": true
+  },
+  "runsPerViewport": 3,
+  "results": [
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "run": 1,
+      "startedAt": "2026-09-12T14:09:52.387Z",
+      "timingsMs": {
+        "domContentLoaded": 423.7999999988824,
+        "load": 424.5,
+        "firstContentfulPaint": 392,
+        "firstGlDraw": 1095.699999999255,
+        "previewReady": 1171.5999999996275
+      },
+      "htmlAtDcl": {
+        "observedAt": 423,
+        "heroPresent": true,
+        "heroVisible": true,
+        "ctaPresent": true,
+        "ctaVisible": true
+      },
+      "poster": {
+        "currentSrc": "http://127.0.0.1:4326/assets/posters/overview-desktop.webp",
+        "complete": true,
+        "naturalWidth": 1200,
+        "naturalHeight": 800,
+        "renderedWidth": 618.109375,
+        "renderedHeight": 412.0625,
+        "loadObservedAt": 342.69999999925494,
+        "responseEnd": 140.59999999962747
+      },
+      "drawCalls": {
+        "total": 1454,
+        "idleWindowStart": 3429.4000000003725,
+        "idleWindowDuration": 2007.699999999255,
+        "duringIdleWindow": 0,
+        "previewStateAtStart": "ready"
+      },
+      "longTasks": {
+        "count": 4,
+        "totalDuration": 686,
+        "maxDuration": 333,
+        "entries": [
+          {
+            "startTime": 121.59999999962747,
+            "duration": 214
+          },
+          {
+            "startTime": 956,
+            "duration": 50
+          },
+          {
+            "startTime": 1006.6999999992549,
+            "duration": 333
+          },
+          {
+            "startTime": 1341.199999999255,
+            "duration": 89
+          }
+        ]
+      },
+      "resources": {
+        "javascript": {
+          "requestCount": 7,
+          "transferSize": 157563,
+          "encodedBodySize": 155463,
+          "resources": [
+            {
+              "name": "http://127.0.0.1:4326/_astro/index.astro_astro_type_script_index_0_lang.CgJ4As9W.js",
+              "initiatorType": "script",
+              "transferSize": 1584,
+              "encodedBodySize": 1284,
+              "responseEnd": 115.40000000037253
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/preload-helper.CxFQXtKk.js",
+              "initiatorType": "script",
+              "transferSize": 1029,
+              "encodedBodySize": 729,
+              "responseEnd": 417.59999999962747
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/preview.BF-yKs_3.js",
+              "initiatorType": "script",
+              "transferSize": 1292,
+              "encodedBodySize": 992,
+              "responseEnd": 498.40000000037253
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/resources.bqh5LE5E.js",
+              "initiatorType": "script",
+              "transferSize": 150108,
+              "encodedBodySize": 149808,
+              "responseEnd": 628.5
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/composition.B4fhAqux.js",
+              "initiatorType": "script",
+              "transferSize": 2061,
+              "encodedBodySize": 1761,
+              "responseEnd": 503.7999999988824
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/districts.DZ7i_Qno.js",
+              "initiatorType": "script",
+              "transferSize": 361,
+              "encodedBodySize": 61,
+              "responseEnd": 501.40000000037253
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/projects.q_jrk2kO.js",
+              "initiatorType": "script",
+              "transferSize": 1128,
+              "encodedBodySize": 828,
+              "responseEnd": 503.90000000037253
+            }
+          ]
+        },
+        "model": {
+          "requestCount": 4,
+          "transferSize": 193844,
+          "encodedBodySize": 192644,
+          "resources": [
+            {
+              "name": "http://127.0.0.1:4326/assets/scenes/hub.glb",
+              "initiatorType": "fetch",
+              "transferSize": 34304,
+              "encodedBodySize": 34004,
+              "responseEnd": 826.2999999988824
+            },
+            {
+              "name": "http://127.0.0.1:4326/assets/scenes/district-cnesdata.glb",
+              "initiatorType": "fetch",
+              "transferSize": 57188,
+              "encodedBodySize": 56888,
+              "responseEnd": 871.7999999988824
+            },
+            {
+              "name": "http://127.0.0.1:4326/assets/scenes/district-limnopulse.glb",
+              "initiatorType": "fetch",
+              "transferSize": 59116,
+              "encodedBodySize": 58816,
+              "responseEnd": 874.2999999988824
+            },
+            {
+              "name": "http://127.0.0.1:4326/assets/scenes/district-infrastructure.glb",
+              "initiatorType": "fetch",
+              "transferSize": 43236,
+              "encodedBodySize": 42936,
+              "responseEnd": 850
+            }
+          ]
+        },
+        "poster": {
+          "requestCount": 1,
+          "transferSize": 34956,
+          "encodedBodySize": 34656,
+          "resources": [
+            {
+              "name": "http://127.0.0.1:4326/assets/posters/overview-desktop.webp",
+              "initiatorType": "img",
+              "transferSize": 34956,
+              "encodedBodySize": 34656,
+              "responseEnd": 140.59999999962747
+            }
+          ]
+        }
+      }
+    },
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "run": 2,
+      "startedAt": "2026-09-12T14:09:57.871Z",
+      "timingsMs": {
+        "domContentLoaded": 321.69999999925494,
+        "load": 322.2999999988824,
+        "firstContentfulPaint": 328,
+        "firstGlDraw": 939.6999999992549,
+        "previewReady": 1033.2999999988824
+      },
+      "htmlAtDcl": {
+        "observedAt": 321.19999999925494,
+        "heroPresent": true,
+        "heroVisible": true,
+        "ctaPresent": true,
+        "ctaVisible": true
+      },
+      "poster": {
+        "currentSrc": "http://127.0.0.1:4326/assets/posters/overview-desktop.webp",
+        "complete": true,
+        "naturalWidth": 1200,
+        "naturalHeight": 800,
+        "renderedWidth": 618.109375,
+        "renderedHeight": 412.0625,
+        "loadObservedAt": 273.5,
+        "responseEnd": 133.5
+      },
+      "drawCalls": {
+        "total": 1454,
+        "idleWindowStart": 3324.7999999988824,
+        "idleWindowDuration": 2007.7000000011176,
+        "duringIdleWindow": 0,
+        "previewStateAtStart": "ready"
+      },
+      "longTasks": {
+        "count": 4,
+        "totalDuration": 624,
+        "maxDuration": 329,
+        "entries": [
+          {
+            "startTime": 113.19999999925494,
+            "duration": 152
+          },
+          {
+            "startTime": 814,
+            "duration": 52
+          },
+          {
+            "startTime": 866.7999999988824,
+            "duration": 329
+          },
+          {
+            "startTime": 1198.2999999988824,
+            "duration": 91
+          }
+        ]
+      },
+      "resources": {
+        "javascript": {
+          "requestCount": 7,
+          "transferSize": 157563,
+          "encodedBodySize": 155463,
+          "resources": [
+            {
+              "name": "http://127.0.0.1:4326/_astro/index.astro_astro_type_script_index_0_lang.CgJ4As9W.js",
+              "initiatorType": "script",
+              "transferSize": 1584,
+              "encodedBodySize": 1284,
+              "responseEnd": 106.79999999888241
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/preload-helper.CxFQXtKk.js",
+              "initiatorType": "script",
+              "transferSize": 1029,
+              "encodedBodySize": 729,
+              "responseEnd": 314
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/preview.BF-yKs_3.js",
+              "initiatorType": "script",
+              "transferSize": 1292,
+              "encodedBodySize": 992,
+              "responseEnd": 392.3999999985099
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/resources.bqh5LE5E.js",
+              "initiatorType": "script",
+              "transferSize": 150108,
+              "encodedBodySize": 149808,
+              "responseEnd": 515.8999999985099
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/composition.B4fhAqux.js",
+              "initiatorType": "script",
+              "transferSize": 2061,
+              "encodedBodySize": 1761,
+              "responseEnd": 395.69999999925494
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/districts.DZ7i_Qno.js",
+              "initiatorType": "script",
+              "transferSize": 361,
+              "encodedBodySize": 61,
+              "responseEnd": 394.3999999985099
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/projects.q_jrk2kO.js",
+              "initiatorType": "script",
+              "transferSize": 1128,
+              "encodedBodySize": 828,
+              "responseEnd": 397.7999999988824
+            }
+          ]
+        },
+        "model": {
+          "requestCount": 4,
+          "transferSize": 193844,
+          "encodedBodySize": 192644,
+          "resources": [
+            {
+              "name": "http://127.0.0.1:4326/assets/scenes/hub.glb",
+              "initiatorType": "fetch",
+              "transferSize": 34304,
+              "encodedBodySize": 34004,
+              "responseEnd": 697.5
+            },
+            {
+              "name": "http://127.0.0.1:4326/assets/scenes/district-cnesdata.glb",
+              "initiatorType": "fetch",
+              "transferSize": 57188,
+              "encodedBodySize": 56888,
+              "responseEnd": 745.6999999992549
+            },
+            {
+              "name": "http://127.0.0.1:4326/assets/scenes/district-limnopulse.glb",
+              "initiatorType": "fetch",
+              "transferSize": 59116,
+              "encodedBodySize": 58816,
+              "responseEnd": 748.0999999996275
+            },
+            {
+              "name": "http://127.0.0.1:4326/assets/scenes/district-infrastructure.glb",
+              "initiatorType": "fetch",
+              "transferSize": 43236,
+              "encodedBodySize": 42936,
+              "responseEnd": 723.6999999992549
+            }
+          ]
+        },
+        "poster": {
+          "requestCount": 1,
+          "transferSize": 34956,
+          "encodedBodySize": 34656,
+          "resources": [
+            {
+              "name": "http://127.0.0.1:4326/assets/posters/overview-desktop.webp",
+              "initiatorType": "img",
+              "transferSize": 34956,
+              "encodedBodySize": 34656,
+              "responseEnd": 133.5
+            }
+          ]
+        }
+      }
+    },
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "run": 3,
+      "startedAt": "2026-09-12T14:10:03.248Z",
+      "timingsMs": {
+        "domContentLoaded": 333.40000000037253,
+        "load": 333.90000000037253,
+        "firstContentfulPaint": 352,
+        "firstGlDraw": 1064.2000000011176,
+        "previewReady": 1153.800000000745
+      },
+      "htmlAtDcl": {
+        "observedAt": 332.90000000037253,
+        "heroPresent": true,
+        "heroVisible": true,
+        "ctaPresent": true,
+        "ctaVisible": true
+      },
+      "poster": {
+        "currentSrc": "http://127.0.0.1:4326/assets/posters/overview-desktop.webp",
+        "complete": true,
+        "naturalWidth": 1200,
+        "naturalHeight": 800,
+        "renderedWidth": 618.109375,
+        "renderedHeight": 412.0625,
+        "loadObservedAt": 298.59999999962747,
+        "responseEnd": 133.7000000011176
+      },
+      "drawCalls": {
+        "total": 1454,
+        "idleWindowStart": 3336.800000000745,
+        "idleWindowDuration": 2005.5,
+        "duringIdleWindow": 0,
+        "previewStateAtStart": "ready"
+      },
+      "longTasks": {
+        "count": 3,
+        "totalDuration": 584,
+        "maxDuration": 332,
+        "entries": [
+          {
+            "startTime": 119.20000000111759,
+            "duration": 172
+          },
+          {
+            "startTime": 986.3000000007451,
+            "duration": 332
+          },
+          {
+            "startTime": 1319.800000000745,
+            "duration": 80
+          }
+        ]
+      },
+      "resources": {
+        "javascript": {
+          "requestCount": 7,
+          "transferSize": 157563,
+          "encodedBodySize": 155463,
+          "resources": [
+            {
+              "name": "http://127.0.0.1:4326/_astro/index.astro_astro_type_script_index_0_lang.CgJ4As9W.js",
+              "initiatorType": "script",
+              "transferSize": 1584,
+              "encodedBodySize": 1284,
+              "responseEnd": 107.30000000074506
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/preload-helper.CxFQXtKk.js",
+              "initiatorType": "script",
+              "transferSize": 1029,
+              "encodedBodySize": 729,
+              "responseEnd": 157
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/preview.BF-yKs_3.js",
+              "initiatorType": "script",
+              "transferSize": 1292,
+              "encodedBodySize": 992,
+              "responseEnd": 507.2000000011176
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/resources.bqh5LE5E.js",
+              "initiatorType": "script",
+              "transferSize": 150108,
+              "encodedBodySize": 149808,
+              "responseEnd": 633.4000000003725
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/composition.B4fhAqux.js",
+              "initiatorType": "script",
+              "transferSize": 2061,
+              "encodedBodySize": 1761,
+              "responseEnd": 511.30000000074506
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/districts.DZ7i_Qno.js",
+              "initiatorType": "script",
+              "transferSize": 361,
+              "encodedBodySize": 61,
+              "responseEnd": 508.09999999962747
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/projects.q_jrk2kO.js",
+              "initiatorType": "script",
+              "transferSize": 1128,
+              "encodedBodySize": 828,
+              "responseEnd": 510.09999999962747
+            }
+          ]
+        },
+        "model": {
+          "requestCount": 4,
+          "transferSize": 193844,
+          "encodedBodySize": 192644,
+          "resources": [
+            {
+              "name": "http://127.0.0.1:4326/assets/scenes/hub.glb",
+              "initiatorType": "fetch",
+              "transferSize": 34304,
+              "encodedBodySize": 34004,
+              "responseEnd": 814.2000000011176
+            },
+            {
+              "name": "http://127.0.0.1:4326/assets/scenes/district-cnesdata.glb",
+              "initiatorType": "fetch",
+              "transferSize": 57188,
+              "encodedBodySize": 56888,
+              "responseEnd": 859.9000000003725
+            },
+            {
+              "name": "http://127.0.0.1:4326/assets/scenes/district-limnopulse.glb",
+              "initiatorType": "fetch",
+              "transferSize": 59116,
+              "encodedBodySize": 58816,
+              "responseEnd": 862.3000000007451
+            },
+            {
+              "name": "http://127.0.0.1:4326/assets/scenes/district-infrastructure.glb",
+              "initiatorType": "fetch",
+              "transferSize": 43236,
+              "encodedBodySize": 42936,
+              "responseEnd": 838.4000000003725
+            }
+          ]
+        },
+        "poster": {
+          "requestCount": 1,
+          "transferSize": 34956,
+          "encodedBodySize": 34656,
+          "resources": [
+            {
+              "name": "http://127.0.0.1:4326/assets/posters/overview-desktop.webp",
+              "initiatorType": "img",
+              "transferSize": 34956,
+              "encodedBodySize": 34656,
+              "responseEnd": 133.7000000011176
+            }
+          ]
+        }
+      }
+    },
+    {
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "run": 1,
+      "startedAt": "2026-09-12T14:10:08.639Z",
+      "timingsMs": {
+        "domContentLoaded": 329.5,
+        "load": 329.59999999962747,
+        "firstContentfulPaint": 296,
+        "firstGlDraw": 946.7000000011176,
+        "previewReady": 1031.2000000011176
+      },
+      "htmlAtDcl": {
+        "observedAt": 328.40000000037253,
+        "heroPresent": true,
+        "heroVisible": true,
+        "ctaPresent": true,
+        "ctaVisible": true
+      },
+      "poster": {
+        "currentSrc": "http://127.0.0.1:4326/assets/posters/overview-mobile.webp",
+        "complete": true,
+        "naturalWidth": 720,
+        "naturalHeight": 900,
+        "renderedWidth": 362,
+        "renderedHeight": 452.5,
+        "loadObservedAt": 282.5,
+        "responseEnd": 130.59999999962747
+      },
+      "drawCalls": {
+        "total": 1454,
+        "idleWindowStart": 3332.300000000745,
+        "idleWindowDuration": 2007.199999999255,
+        "duringIdleWindow": 0,
+        "previewStateAtStart": "ready"
+      },
+      "longTasks": {
+        "count": 4,
+        "totalDuration": 580,
+        "maxDuration": 293,
+        "entries": [
+          {
+            "startTime": 116.40000000037253,
+            "duration": 159
+          },
+          {
+            "startTime": 818.2000000011176,
+            "duration": 52
+          },
+          {
+            "startTime": 870.7000000011176,
+            "duration": 293
+          },
+          {
+            "startTime": 1164.800000000745,
+            "duration": 76
+          }
+        ]
+      },
+      "resources": {
+        "javascript": {
+          "requestCount": 7,
+          "transferSize": 157563,
+          "encodedBodySize": 155463,
+          "resources": [
+            {
+              "name": "http://127.0.0.1:4326/_astro/index.astro_astro_type_script_index_0_lang.CgJ4As9W.js",
+              "initiatorType": "script",
+              "transferSize": 1584,
+              "encodedBodySize": 1284,
+              "responseEnd": 109.5
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/preload-helper.CxFQXtKk.js",
+              "initiatorType": "script",
+              "transferSize": 1029,
+              "encodedBodySize": 729,
+              "responseEnd": 323.30000000074506
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/preview.BF-yKs_3.js",
+              "initiatorType": "script",
+              "transferSize": 1292,
+              "encodedBodySize": 992,
+              "responseEnd": 394.80000000074506
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/resources.bqh5LE5E.js",
+              "initiatorType": "script",
+              "transferSize": 150108,
+              "encodedBodySize": 149808,
+              "responseEnd": 522.5
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/composition.B4fhAqux.js",
+              "initiatorType": "script",
+              "transferSize": 2061,
+              "encodedBodySize": 1761,
+              "responseEnd": 398.30000000074506
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/districts.DZ7i_Qno.js",
+              "initiatorType": "script",
+              "transferSize": 361,
+              "encodedBodySize": 61,
+              "responseEnd": 396.5
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/projects.q_jrk2kO.js",
+              "initiatorType": "script",
+              "transferSize": 1128,
+              "encodedBodySize": 828,
+              "responseEnd": 398.5
+            }
+          ]
+        },
+        "model": {
+          "requestCount": 4,
+          "transferSize": 193844,
+          "encodedBodySize": 192644,
+          "resources": [
+            {
+              "name": "http://127.0.0.1:4326/assets/scenes/hub.glb",
+              "initiatorType": "fetch",
+              "transferSize": 34304,
+              "encodedBodySize": 34004,
+              "responseEnd": 701.0999999996275
+            },
+            {
+              "name": "http://127.0.0.1:4326/assets/scenes/district-cnesdata.glb",
+              "initiatorType": "fetch",
+              "transferSize": 57188,
+              "encodedBodySize": 56888,
+              "responseEnd": 747.7000000011176
+            },
+            {
+              "name": "http://127.0.0.1:4326/assets/scenes/district-limnopulse.glb",
+              "initiatorType": "fetch",
+              "transferSize": 59116,
+              "encodedBodySize": 58816,
+              "responseEnd": 750.0999999996275
+            },
+            {
+              "name": "http://127.0.0.1:4326/assets/scenes/district-infrastructure.glb",
+              "initiatorType": "fetch",
+              "transferSize": 43236,
+              "encodedBodySize": 42936,
+              "responseEnd": 726.3000000007451
+            }
+          ]
+        },
+        "poster": {
+          "requestCount": 1,
+          "transferSize": 29598,
+          "encodedBodySize": 29298,
+          "resources": [
+            {
+              "name": "http://127.0.0.1:4326/assets/posters/overview-mobile.webp",
+              "initiatorType": "img",
+              "transferSize": 29598,
+              "encodedBodySize": 29298,
+              "responseEnd": 130.59999999962747
+            }
+          ]
+        }
+      }
+    },
+    {
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "run": 2,
+      "startedAt": "2026-09-12T14:10:14.023Z",
+      "timingsMs": {
+        "domContentLoaded": 299,
+        "load": 300,
+        "firstContentfulPaint": 300,
+        "firstGlDraw": 950.2000000011176,
+        "previewReady": 1052.4000000003725
+      },
+      "htmlAtDcl": {
+        "observedAt": 298.30000000074506,
+        "heroPresent": true,
+        "heroVisible": true,
+        "ctaPresent": true,
+        "ctaVisible": true
+      },
+      "poster": {
+        "currentSrc": "http://127.0.0.1:4326/assets/posters/overview-mobile.webp",
+        "complete": true,
+        "naturalWidth": 720,
+        "naturalHeight": 900,
+        "renderedWidth": 362,
+        "renderedHeight": 452.5,
+        "loadObservedAt": 284,
+        "responseEnd": 130.5
+      },
+      "drawCalls": {
+        "total": 1454,
+        "idleWindowStart": 3302.5,
+        "idleWindowDuration": 2006.6000000014901,
+        "duringIdleWindow": 0,
+        "previewStateAtStart": "ready"
+      },
+      "longTasks": {
+        "count": 5,
+        "totalDuration": 684,
+        "maxDuration": 323,
+        "entries": [
+          {
+            "startTime": 115.10000000149012,
+            "duration": 159
+          },
+          {
+            "startTime": 726,
+            "duration": 54
+          },
+          {
+            "startTime": 802.8000000007451,
+            "duration": 70
+          },
+          {
+            "startTime": 874.2000000011176,
+            "duration": 323
+          },
+          {
+            "startTime": 1199.800000000745,
+            "duration": 78
+          }
+        ]
+      },
+      "resources": {
+        "javascript": {
+          "requestCount": 7,
+          "transferSize": 157563,
+          "encodedBodySize": 155463,
+          "resources": [
+            {
+              "name": "http://127.0.0.1:4326/_astro/index.astro_astro_type_script_index_0_lang.CgJ4As9W.js",
+              "initiatorType": "script",
+              "transferSize": 1584,
+              "encodedBodySize": 1284,
+              "responseEnd": 107.90000000037253
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/preload-helper.CxFQXtKk.js",
+              "initiatorType": "script",
+              "transferSize": 1029,
+              "encodedBodySize": 729,
+              "responseEnd": 159.80000000074506
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/preview.BF-yKs_3.js",
+              "initiatorType": "script",
+              "transferSize": 1292,
+              "encodedBodySize": 992,
+              "responseEnd": 382.1000000014901
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/resources.bqh5LE5E.js",
+              "initiatorType": "script",
+              "transferSize": 150108,
+              "encodedBodySize": 149808,
+              "responseEnd": 504
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/composition.B4fhAqux.js",
+              "initiatorType": "script",
+              "transferSize": 2061,
+              "encodedBodySize": 1761,
+              "responseEnd": 392.7000000011176
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/districts.DZ7i_Qno.js",
+              "initiatorType": "script",
+              "transferSize": 361,
+              "encodedBodySize": 61,
+              "responseEnd": 388.80000000074506
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/projects.q_jrk2kO.js",
+              "initiatorType": "script",
+              "transferSize": 1128,
+              "encodedBodySize": 828,
+              "responseEnd": 389.90000000037253
+            }
+          ]
+        },
+        "model": {
+          "requestCount": 4,
+          "transferSize": 193844,
+          "encodedBodySize": 192644,
+          "resources": [
+            {
+              "name": "http://127.0.0.1:4326/assets/scenes/hub.glb",
+              "initiatorType": "fetch",
+              "transferSize": 34304,
+              "encodedBodySize": 34004,
+              "responseEnd": 685.1000000014901
+            },
+            {
+              "name": "http://127.0.0.1:4326/assets/scenes/district-cnesdata.glb",
+              "initiatorType": "fetch",
+              "transferSize": 57188,
+              "encodedBodySize": 56888,
+              "responseEnd": 731.6000000014901
+            },
+            {
+              "name": "http://127.0.0.1:4326/assets/scenes/district-limnopulse.glb",
+              "initiatorType": "fetch",
+              "transferSize": 59116,
+              "encodedBodySize": 58816,
+              "responseEnd": 734.1000000014901
+            },
+            {
+              "name": "http://127.0.0.1:4326/assets/scenes/district-infrastructure.glb",
+              "initiatorType": "fetch",
+              "transferSize": 43236,
+              "encodedBodySize": 42936,
+              "responseEnd": 709.8000000007451
+            }
+          ]
+        },
+        "poster": {
+          "requestCount": 1,
+          "transferSize": 29598,
+          "encodedBodySize": 29298,
+          "resources": [
+            {
+              "name": "http://127.0.0.1:4326/assets/posters/overview-mobile.webp",
+              "initiatorType": "img",
+              "transferSize": 29598,
+              "encodedBodySize": 29298,
+              "responseEnd": 130.5
+            }
+          ]
+        }
+      }
+    },
+    {
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "run": 3,
+      "startedAt": "2026-09-12T14:10:19.375Z",
+      "timingsMs": {
+        "domContentLoaded": 334.5,
+        "load": 334.59999999962747,
+        "firstContentfulPaint": 304,
+        "firstGlDraw": 950,
+        "previewReady": 1057.5
+      },
+      "htmlAtDcl": {
+        "observedAt": 333.5,
+        "heroPresent": true,
+        "heroVisible": true,
+        "ctaPresent": true,
+        "ctaVisible": true
+      },
+      "poster": {
+        "currentSrc": "http://127.0.0.1:4326/assets/posters/overview-mobile.webp",
+        "complete": true,
+        "naturalWidth": 720,
+        "naturalHeight": 900,
+        "renderedWidth": 362,
+        "renderedHeight": 452.5,
+        "loadObservedAt": 289.69999999925494,
+        "responseEnd": 130.09999999962747
+      },
+      "drawCalls": {
+        "total": 1454,
+        "idleWindowStart": 3337,
+        "idleWindowDuration": 2004.8999999985099,
+        "duringIdleWindow": 0,
+        "previewStateAtStart": "ready"
+      },
+      "longTasks": {
+        "count": 3,
+        "totalDuration": 573,
+        "maxDuration": 331,
+        "entries": [
+          {
+            "startTime": 115.69999999925494,
+            "duration": 165
+          },
+          {
+            "startTime": 868.6999999992549,
+            "duration": 331
+          },
+          {
+            "startTime": 1201,
+            "duration": 77
+          }
+        ]
+      },
+      "resources": {
+        "javascript": {
+          "requestCount": 7,
+          "transferSize": 157563,
+          "encodedBodySize": 155463,
+          "resources": [
+            {
+              "name": "http://127.0.0.1:4326/_astro/index.astro_astro_type_script_index_0_lang.CgJ4As9W.js",
+              "initiatorType": "script",
+              "transferSize": 1584,
+              "encodedBodySize": 1284,
+              "responseEnd": 108.79999999888241
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/preload-helper.CxFQXtKk.js",
+              "initiatorType": "script",
+              "transferSize": 1029,
+              "encodedBodySize": 729,
+              "responseEnd": 328.2999999988824
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/preview.BF-yKs_3.js",
+              "initiatorType": "script",
+              "transferSize": 1292,
+              "encodedBodySize": 992,
+              "responseEnd": 400.2999999988824
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/resources.bqh5LE5E.js",
+              "initiatorType": "script",
+              "transferSize": 150108,
+              "encodedBodySize": 149808,
+              "responseEnd": 527.1999999992549
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/composition.B4fhAqux.js",
+              "initiatorType": "script",
+              "transferSize": 2061,
+              "encodedBodySize": 1761,
+              "responseEnd": 406.8999999985099
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/districts.DZ7i_Qno.js",
+              "initiatorType": "script",
+              "transferSize": 361,
+              "encodedBodySize": 61,
+              "responseEnd": 403.8999999985099
+            },
+            {
+              "name": "http://127.0.0.1:4326/_astro/projects.q_jrk2kO.js",
+              "initiatorType": "script",
+              "transferSize": 1128,
+              "encodedBodySize": 828,
+              "responseEnd": 406.09999999962747
+            }
+          ]
+        },
+        "model": {
+          "requestCount": 4,
+          "transferSize": 193844,
+          "encodedBodySize": 192644,
+          "resources": [
+            {
+              "name": "http://127.0.0.1:4326/assets/scenes/hub.glb",
+              "initiatorType": "fetch",
+              "transferSize": 34304,
+              "encodedBodySize": 34004,
+              "responseEnd": 705.7999999988824
+            },
+            {
+              "name": "http://127.0.0.1:4326/assets/scenes/district-cnesdata.glb",
+              "initiatorType": "fetch",
+              "transferSize": 57188,
+              "encodedBodySize": 56888,
+              "responseEnd": 752.7999999988824
+            },
+            {
+              "name": "http://127.0.0.1:4326/assets/scenes/district-limnopulse.glb",
+              "initiatorType": "fetch",
+              "transferSize": 59116,
+              "encodedBodySize": 58816,
+              "responseEnd": 754.0999999996275
+            },
+            {
+              "name": "http://127.0.0.1:4326/assets/scenes/district-infrastructure.glb",
+              "initiatorType": "fetch",
+              "transferSize": 43236,
+              "encodedBodySize": 42936,
+              "responseEnd": 730.5
+            }
+          ]
+        },
+        "poster": {
+          "requestCount": 1,
+          "transferSize": 29598,
+          "encodedBodySize": 29298,
+          "resources": [
+            {
+              "name": "http://127.0.0.1:4326/assets/posters/overview-mobile.webp",
+              "initiatorType": "img",
+              "transferSize": 29598,
+              "encodedBodySize": 29298,
+              "responseEnd": 130.09999999962747
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

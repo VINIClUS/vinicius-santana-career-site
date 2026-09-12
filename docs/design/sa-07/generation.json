@@ -1,0 +1,91 @@
+{
+  "commit": "73b90f1c16c93e665c02f6bf60a0d4d820fefeb7",
+  "runs": [
+    {
+      "command": "rtk npm run assets:generate",
+      "exitCode": 0,
+      "seconds": 24.4,
+      "output": "Generated district-cnesdata\nGenerated district-limnopulse\nGenerated district-infrastructure\nGenerated hub\nGenerated detail-cnesdata\nGenerated detail-infrastructure\nGenerated overview\nGenerated detail-infrastructure-failed\n",
+      "metadataIds": [
+        "detail-cnesdata",
+        "detail-infrastructure",
+        "detail-infrastructure-failed",
+        "district-cnesdata",
+        "district-infrastructure",
+        "district-limnopulse",
+        "hub",
+        "overview"
+      ],
+      "posters": [
+        "detail-cnesdata-desktop.webp",
+        "detail-cnesdata-mobile.webp",
+        "detail-infrastructure-desktop.webp",
+        "detail-infrastructure-failed-desktop.webp",
+        "detail-infrastructure-failed-mobile.webp",
+        "detail-infrastructure-mobile.webp",
+        "district-cnesdata-desktop.webp",
+        "district-cnesdata-mobile.webp",
+        "district-infrastructure-desktop.webp",
+        "district-infrastructure-mobile.webp",
+        "district-limnopulse-desktop.webp",
+        "district-limnopulse-mobile.webp",
+        "hub-desktop.webp",
+        "hub-mobile.webp",
+        "overview-desktop.webp",
+        "overview-mobile.webp"
+      ],
+      "models": [
+        "detail-cnesdata.glb",
+        "detail-infrastructure.glb",
+        "district-cnesdata.glb",
+        "district-infrastructure.glb",
+        "district-limnopulse.glb",
+        "hub.glb"
+      ]
+    },
+    {
+      "command": "rtk npm run assets:generate -- hub",
+      "exitCode": 0,
+      "seconds": 4.22,
+      "output": "Generated hub\n",
+      "metadataIds": [
+        "detail-cnesdata",
+        "detail-infrastructure",
+        "detail-infrastructure-failed",
+        "district-cnesdata",
+        "district-infrastructure",
+        "district-limnopulse",
+        "hub",
+        "overview"
+      ],
+      "posters": [
+        "detail-cnesdata-desktop.webp",
+        "detail-cnesdata-mobile.webp",
+        "detail-infrastructure-desktop.webp",
+        "detail-infrastructure-failed-desktop.webp",
+        "detail-infrastructure-failed-mobile.webp",
+        "detail-infrastructure-mobile.webp",
+        "district-cnesdata-desktop.webp",
+        "district-cnesdata-mobile.webp",
+        "district-infrastructure-desktop.webp",
+        "district-infrastructure-mobile.webp",
+        "district-limnopulse-desktop.webp",
+        "district-limnopulse-mobile.webp",
+        "hub-desktop.webp",
+        "hub-mobile.webp",
+        "overview-desktop.webp",
+        "overview-mobile.webp"
+      ],
+      "models": [
+        "detail-cnesdata.glb",
+        "detail-infrastructure.glb",
+        "district-cnesdata.glb",
+        "district-infrastructure.glb",
+        "district-limnopulse.glb",
+        "hub.glb"
+      ]
+    }
+  ],
+  "passed": true,
+  "pixelPolicy": "Generated pixels remain in disposable checkout; release assets are unchanged except deliberate retired-file deletion."
+}

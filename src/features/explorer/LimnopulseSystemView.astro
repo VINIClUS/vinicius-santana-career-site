@@ -1,0 +1,107 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { projectDefinitions } from './projects.ts';
+
+interface Props { caseStudy: CollectionEntry<'caseStudies'>['data']; }
+const { caseStudy } = Astro.props;
+const { relations } = projectDefinitions.limnopulse;
+const componentFor = (id: string) => caseStudy.architecture.find(component => component.id === id)!;
+const label = (status: string) => status[0].toUpperCase() + status.slice(1);
+// Layout references only: names, descriptions, and implementation status live in the collection.
+const lanes = [
+  { id: 'observations', title: 'Observations', components: ['mqtt-ingestion'] },
+  { id: 'telemetry', title: 'Telemetry', components: ['telemetry-api', 'evaluator'] },
+  { id: 'events', title: 'Events', components: ['alert-rules', 'notifications'] },
+];
+const boundaryIds = ['cloud-infrastructure', 'production-device-layer'];
+---
+<div class="limnopulse-system-view">
+  <p class="explorer-note">Illustrative architecture map, not live telemetry. The local ingestion scaffold supports software integration; the cloud path is documented and production devices remain planned.</p>
+  <p>Select a component to read its details. Arrows describe queries, durable writes, and delivery handoffs; their text explains each direction.</p>
+  <div class="system-lanes">
+    {lanes.map(lane => <section class="system-lane" aria-labelledby={`lane-${lane.id}`}>
+      <h3 id={`lane-${lane.id}`}>{lane.title}</h3>
+      <ol class="component-map" aria-label={`${lane.title} components`}>
+        {lane.components.map(id => { const component = componentFor(id); return <li>
+          <a href={`#component-${id}`} data-component-link={id}>
+            <span><strong>{component.title}</strong><span class={`component-status status-${component.status}`}>{label(component.status)}</span></span>
+            <span class="selection-marker" aria-hidden="true">Selected</span>
+          </a>
+        </li>; })}
+      </ol>
+    </section>)}
+  </div>
+  <section class="system-boundaries" aria-labelledby="boundaries-title">
+    <h3 id="boundaries-title">Documented and planned boundaries</h3>
+    <ol class="component-map boundary-map">
+      {boundaryIds.map(id => { const component = componentFor(id); return <li>
+        <a href={`#component-${id}`} data-component-link={id}>
+          <span><strong>{component.title}</strong><span class={`component-status status-${component.status}`}>{label(component.status)}</span></span>
+          <span class="selection-marker" aria-hidden="true">Selected</span>
+        </a>
+      </li>; })}
+    </ol>
+  </section>
+  <h3 id="relationships-title">Relationships</h3>
+  <ol class="data-flow" aria-labelledby="relationships-title">
+    {relations.map(relation => <li data-relation-from={relation.from} data-relation-to={relation.to}>
+      <div class="flow-endpoints">
+        <a href={`#component-${relation.from}`}>{componentFor(relation.from).title}<span class={`component-status status-${componentFor(relation.from).status}`}>{label(componentFor(relation.from).status)}</span></a>
+        <svg width="36" height="24" viewBox="0 0 36 24" aria-hidden="true"><path d="M2 12h29m-8-8 8 8-8 8" fill="none" stroke="currentColor" stroke-width="2" /></svg><span class="visually-hidden">to</span>
+        <a href={`#component-${relation.to}`}>{componentFor(relation.to).title}<span class={`component-status status-${componentFor(relation.to).status}`}>{label(componentFor(relation.to).status)}</span></a>
+      </div>
+      <p>{relation.label}</p>
+    </li>)}
+  </ol>
+  <section class="component-panel" aria-labelledby="details-title">
+    <h3 id="details-title">Component details</h3>
+    {caseStudy.architecture.map(component => <article id={`component-${component.id}`} data-component-detail={component.id} tabindex="-1">
+      <p class={`eyebrow status-${component.status}`}>{label(component.status)}</p>
+      <h4>{component.title}</h4>
+      <p>{component.description}</p>
+      <ul class="component-relations">
+        {relations.filter(relation => relation.from === component.id || relation.to === component.id).map(relation => <li>
+          <a href={`#component-${relation.from}`}>{componentFor(relation.from).title}</a> → <a href={`#component-${relation.to}`}>{componentFor(relation.to).title}</a>: {relation.label}.
+        </li>)}
+      </ul>
+      <a class="text-link" href="#architecture">Back to System View</a>
+    </article>)}
+  </section>
+</div>
+<style>
+  .limnopulse-system-view { min-width: 0; overflow-wrap: anywhere; }
+  .system-lanes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-block: 24px; }
+  .system-lane { padding: 16px 12px; border: 1px solid var(--line); border-top: 3px solid #8dcaff; border-radius: 8px; background: rgba(141,202,255,.035); }
+  .system-lane h3 { margin: 0 0 16px; color: #8dcaff; font-size: .95rem; }
+  .component-map { margin: 0; }
+  .component-map a { padding: 12px; flex-wrap: wrap; gap: 8px; }
+  .component-map strong { font-size: .82rem; }
+  .component-map .selection-marker { font-size: .65rem; margin-left: 0; }
+  .component-status { font-size: .72rem; }
+  .status-implemented { color: var(--accent); }
+  .status-documented { color: #b7c4f3; }
+  .status-planned { color: #e8c990; }
+  .system-boundaries { border: 1px dashed var(--line-strong); padding: 18px; border-radius: 8px; margin-bottom: 32px; }
+  .system-boundaries h3 { margin-top: 0; font-size: .95rem; }
+  .boundary-map { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .boundary-map a { height: 100%; }
+  .data-flow { list-style: none; padding: 0; display: grid; gap: 12px; margin-bottom: 32px; }
+  .data-flow li { padding: 16px; border-left: 2px solid #8dcaff; background: var(--surface-soft); }
+  .flow-endpoints { display: grid; grid-template-columns: minmax(0, 1fr) 36px minmax(0, 1fr); align-items: center; gap: 16px; }
+  .flow-endpoints a { padding-block: 8px; font-size: .85rem; text-underline-offset: 4px; }
+  .flow-endpoints svg { color: #8dcaff; }
+  .data-flow p { margin: 12px 0 0; font-size: .8rem; color: var(--muted-strong); line-height: 1.75; }
+  .component-panel article { border: 0; border-top: 1px solid var(--line); border-radius: 0; padding: 24px 16px; }
+  .component-panel article:target, .component-panel article[data-selected="true"] { border: 2px solid var(--accent); }
+  .component-panel h4 { font-size: 1rem; }
+  .component-panel p, .component-relations { font-size: .88rem; color: var(--muted-strong); line-height: 1.75; }
+  .component-panel .eyebrow { color: var(--accent); }
+  .component-panel .status-documented { color: #b7c4f3; }
+  .component-panel .status-planned { color: #e8c990; }
+  a:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
+  @media (max-width: 600px) {
+    .system-lanes, .boundary-map { grid-template-columns: 1fr; }
+    .flow-endpoints { grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr); gap: 8px; }
+    .flow-endpoints svg { width: 24px; }
+  }
+</style>

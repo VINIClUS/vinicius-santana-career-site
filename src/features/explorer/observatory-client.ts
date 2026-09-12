@@ -14,6 +14,7 @@ if (root) {
   const originalStyles = labels.map(label => label.getAttribute('style'));
   let scene: ObservatoryScene | undefined;
   let stopped = false;
+  let loadingDeadline: ReturnType<typeof setTimeout> | undefined;
   const pending = new AbortController();
 
   const render = () => {
@@ -44,10 +45,11 @@ if (root) {
     controller.dispatch({ type: 'ACTIVATE_DISTRICT', districtId });
     if (repeated) links.find(link => link.dataset.districtLink === districtId)?.focus({ preventScroll: true });
   };
-  const use2D = (focus = false) => {
+  const use2D = () => {
     const canvas = map.querySelector('[data-observatory-canvas]');
-    const restoreFocus = focus || toolbar.contains(document.activeElement) || (canvas !== null && canvas === document.activeElement);
+    const restoreFocus = toolbar.contains(document.activeElement) || (canvas !== null && canvas === document.activeElement);
     stopped = true;
+    clearTimeout(loadingDeadline);
     pending.abort();
     scene?.dispose();
     scene = undefined;
@@ -60,9 +62,11 @@ if (root) {
     });
     if (restoreFocus) (links.find(link => link.dataset.districtLink === controller.getState().selectedDistrictId) ?? links[0])?.focus({ preventScroll: true });
   };
-  let nativeEvents: AbortController;
-  let unsubscribe: () => void;
+  let nativeEvents: AbortController | undefined;
+  let unsubscribe: (() => void) | undefined;
   const connectNavigation = () => {
+    nativeEvents?.abort();
+    unsubscribe?.();
     nativeEvents = new AbortController();
     unsubscribe = controller.subscribe(render);
     const { signal } = nativeEvents;
@@ -90,15 +94,15 @@ if (root) {
   root.dataset.controllerReady = 'true';
   toolbar.addEventListener('click', event => {
     const action = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-scene-action]')?.dataset.sceneAction;
-    if (action === 'fallback') use2D(true);
+    if (action === 'fallback') use2D();
     if (action === 'zoom-in') scene?.zoom(1);
     if (action === 'zoom-out') scene?.zoom(-1);
     if (action === 'reset') scene?.reset();
   }, { signal: pending.signal });
   window.addEventListener('pagehide', () => {
     use2D();
-    nativeEvents.abort();
-    unsubscribe();
+    nativeEvents?.abort();
+    unsubscribe?.();
   });
   // A bfcache return stays in 2D but keeps normal fragment navigation usable.
   window.addEventListener('pageshow', event => { if (event.persisted) connectNavigation(); });
@@ -114,6 +118,8 @@ if (root) {
   };
   if (capable()) {
     root.dataset.sceneState = 'loading';
+    toolbar.hidden = false;
+    loadingDeadline = setTimeout(() => use2D(), 15_000);
     void import('./scene/renderer.tsx').then(({ mountObservatoryScene }) => {
       if (stopped) return;
       scene = mountObservatoryScene({
@@ -123,7 +129,9 @@ if (root) {
         },
         onReady() {
           if (stopped) return;
+          clearTimeout(loadingDeadline);
           root.dataset.sceneState = 'ready';
+          for (const button of toolbar.querySelectorAll<HTMLButtonElement>('button')) button.disabled = false;
           toolbar.hidden = false;
         },
         onFailure() { use2D(); },

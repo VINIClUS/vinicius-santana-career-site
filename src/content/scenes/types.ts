@@ -1,6 +1,8 @@
 import type { ProjectId } from '../../features/explorer/projects.ts';
 
-export type DistrictId = ProjectId;
+export type AtlasDistrictId = ProjectId;
+/** Compatibility alias for existing Atlas renderer imports. */
+export type DistrictId = AtlasDistrictId;
 export type Vector3 = readonly [number, number, number];
 export interface VisualImage {
   readonly src: string;

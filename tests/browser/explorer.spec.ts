@@ -15,7 +15,7 @@ test('project navigation and keyboard component selection', async ({ page }) => 
     await expect(page.locator('[data-component-link]')).not.toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Advance one attempt' })).toHaveCount(0);
     await expect(page.locator('canvas')).toHaveCount(0);
-    await expect(page.locator(`a[href="/work/${project}/"]`)).toBeVisible();
+    await expect(page.locator(`a[href="/work/${project}/"]`)).toHaveCount(0);
   }
 });
 
@@ -42,6 +42,30 @@ test('conflict preserves A, reset and scenario change', async ({ page }) => {
   await expect(page.locator('[data-objects] li')).toHaveCount(1);
 });
 
+test('canonical routes keep the primary detail selected at #system while simulations run', async ({ page }) => {
+  for (const [project, primaryComponent] of [
+    ['cnesdata', 'central-api'],
+    ['limnopulse', 'evaluator'],
+    ['infrastructure', 'reference-topology'],
+  ]) {
+    await page.goto(`/explore/${project}/`);
+    await expect(page.locator(`[data-component-detail="${primaryComponent}"]`)).toBeVisible();
+    await page.locator('a[href="#system"]').click();
+    await expect(page).toHaveURL(new RegExp(`/explore/${project}/#system$`));
+    await expect(page.locator(`[data-component-detail="${primaryComponent}"]`)).toBeVisible();
+
+    if (project === 'cnesdata') {
+      await page.getByRole('button', { name: 'Advance one attempt' }).click();
+      await expect(page.locator('[data-result]')).toContainText('stored');
+    }
+    if (project === 'infrastructure') {
+      await page.getByRole('button', { name: 'Fail node-02' }).click();
+      await expect(page.locator('[data-infra-workload]')).toContainText('node-01');
+    }
+    await expect(page).toHaveURL(new RegExp(`/explore/${project}/#system$`));
+  }
+});
+
 test('static navigation, details and every transcript without JavaScript', async ({ browser, baseURL }) => {
   const context = await browser.newContext({ baseURL, javaScriptEnabled: false });
   const page = await context.newPage();
@@ -57,6 +81,12 @@ test('static navigation, details and every transcript without JavaScript', async
     await expect(page.locator(`#transcript-${id}`)).toBeVisible();
     await expect(page.locator(`#transcript-${id}`)).toContainText('synthetic-content-A');
   }
+  for (const id of ['overview', 'system', 'simulation', 'engineering', 'results', 'evidence', 'limitations']) {
+    await expect(page.locator(`#${id}`)).toBeVisible();
+  }
+  await expect(page.getByLabel('Scenario')).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Reset scenario' })).toBeDisabled();
+  await expect(page.locator('[data-system-view]')).toHaveCount(1);
   await page.locator('nav[aria-label="Explorer projects"] a[href="/explore/limnopulse/"]').click();
   await expect(page.getByRole('heading', { name: 'Limnopulse', exact: true })).toBeVisible();
   await context.close();
@@ -80,3 +110,150 @@ test('touch walkthrough remains usable without WebGL or 3D assets', async ({ bro
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await context.close();
 });
+
+test('component selection keeps the detail panel usable at 360px', async ({ browser, baseURL }) => {
+  const context = await browser.newContext({ baseURL, viewport: { width: 360, height: 844 }, hasTouch: true, isMobile: true });
+  const page = await context.newPage();
+
+  for (const [project, component] of [
+    ['cnesdata', 'edge-agent'],
+    ['limnopulse', 'mqtt-ingestion'],
+    ['infrastructure', 'image-builds'],
+  ]) {
+    await page.goto(`/explore/${project}/`);
+    const link = page.locator(`[data-component-link="${component}"]`).first();
+    await link.click();
+    await expect(page).toHaveURL(new RegExp(`/explore/${project}/#component-${component}$`));
+    await expect(page.locator(`[data-component-detail="${component}"]`)).toHaveAttribute('data-selected', 'true');
+    await expect(page.locator(`[data-component-detail="${component}"]`)).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+
+  await context.close();
+});
+
+for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }, { width: 360, height: 844 }]) {
+  test(`direct component fragments initialize and reload their selected details at ${viewport.width}px`, async ({ page }) => {
+    await page.setViewportSize(viewport);
+
+    for (const [project, component] of [
+      ['cnesdata', 'edge-agent'],
+      ['limnopulse', 'mqtt-ingestion'],
+      ['infrastructure', 'image-builds'],
+    ]) {
+      const destination = `/explore/${project}/#component-${component}`;
+      const detail = page.locator(`[data-component-detail="${component}"]`);
+      const link = page.locator(`[data-component-link="${component}"]`).first();
+
+      await page.goto(destination);
+      await expect(page.locator('[data-system-view]')).toHaveAttribute('data-enhanced', 'true');
+      await expect(page).toHaveURL(destination);
+      await expect(link).toHaveAttribute('aria-current', 'true');
+      await expect(detail).toHaveAttribute('data-selected', 'true');
+      await expect(detail).toBeVisible();
+
+      await page.reload();
+      await expect(page.locator('[data-system-view]')).toHaveAttribute('data-enhanced', 'true');
+      await expect(page).toHaveURL(destination);
+      await expect(link).toHaveAttribute('aria-current', 'true');
+      await expect(detail).toHaveAttribute('data-selected', 'true');
+      await expect(detail).toBeVisible();
+    }
+  });
+}
+
+test('system views retain components, relationships, qualifiers and transcripts without JavaScript at 360px', async ({ browser, baseURL }) => {
+  const context = await browser.newContext({ baseURL, viewport: { width: 360, height: 844 }, javaScriptEnabled: false });
+  const page = await context.newPage();
+
+  for (const [project, qualifier] of [
+    ['cnesdata', 'Planned'],
+    ['limnopulse', 'Planned'],
+    ['infrastructure', 'Illustrative'],
+  ]) {
+    await page.goto(`/explore/${project}/`);
+    await expect(page.locator('[data-component-detail]')).not.toHaveCount(0);
+    await expect(page.locator('[data-component-detail]').last()).toBeVisible();
+    await expect(page.locator('.system-relationships li').first()).toBeVisible();
+    await expect(page.locator('[data-component-detail] .component-status').filter({ hasText: qualifier }).first()).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+
+  await page.goto('/explore/cnesdata/');
+  for (const id of ['raw-first-write', 'raw-identical-replay', 'raw-content-conflict']) {
+    await expect(page.locator(`#transcript-${id}`)).toBeVisible();
+  }
+
+  await context.close();
+});
+
+for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+  test(`canonical CnesData narrative, history and all scenarios at ${viewport.width}`, async ({ page }, testInfo) => {
+    await page.setViewportSize(viewport);
+    const models: string[] = [];
+    page.on('request', request => { if (/\.(glb|gltf|ktx2)(?:\?|$)/.test(request.url())) models.push(request.url()); });
+    await page.goto('/explore/cnesdata/');
+    await expect(page).toHaveTitle('CnesData — Vinicius Santana');
+    await expect(page.locator('a[href="/work/cnesdata/"]')).toHaveCount(0);
+    for (const id of ['overview', 'system', 'simulation', 'engineering', 'results', 'evidence', 'limitations']) {
+      await page.locator(`a[href="#${id}"]`).first().click();
+      await expect(page).toHaveURL(new RegExp(`#${id}$`));
+      await expect(page.locator(`#${id}`)).toBeVisible();
+    }
+    const first = page.locator('[data-component-link]').first();
+    const second = page.locator('[data-component-link]').nth(1);
+    const firstHash = (await first.getAttribute('href'))!;
+    const secondHash = (await second.getAttribute('href'))!;
+    await first.focus();
+    await page.keyboard.press('Enter');
+    await expect(page).toHaveURL(new RegExp(`${firstHash}$`));
+    await expect(first).toHaveAttribute('aria-current', 'true');
+    await expect(page.locator(firstHash)).toBeFocused();
+    await second.focus();
+    await page.keyboard.press('Enter');
+    await expect(page).toHaveURL(new RegExp(`${secondHash}$`));
+    await expect(second).toHaveAttribute('aria-current', 'true');
+    await expect(page.locator(secondHash)).toBeFocused();
+    await page.goBack();
+    await expect(page).toHaveURL(new RegExp(`${firstHash}$`));
+    await expect(page.locator(firstHash)).toBeFocused();
+    await expect(first).toHaveAttribute('aria-current', 'true');
+    await page.goForward();
+    await expect(page).toHaveURL(new RegExp(`${secondHash}$`));
+    await expect(page.locator(secondHash)).toBeFocused();
+
+    const scenario = page.getByLabel('Scenario');
+    const advance = page.getByRole('button', { name: 'Advance one attempt' });
+    const expected = [
+      ['raw-first-write', ['stored']],
+      ['raw-identical-replay', ['stored', 'replayed']],
+      ['raw-content-conflict', ['stored', 'conflict']],
+    ] as const;
+    for (const [id, outcomes] of expected) {
+      await scenario.selectOption(id);
+      await expect(page.locator('[data-objects]')).toHaveText('No objects stored.');
+      for (const [index, outcome] of outcomes.entries()) {
+        await advance.click();
+        await expect(page.locator('[data-progress]')).toHaveText(`${index + 1} of ${outcomes.length} attempts · ${index + 1 === outcomes.length ? 'complete' : 'running'}`);
+        await expect(page.locator('[data-result]')).toContainText(`Result: ${outcome}.`);
+        await expect(page.locator('[data-objects] li')).toHaveCount(1);
+        await expect(page.locator('[data-objects]')).toContainText('synthetic-content-A');
+        await expect(page.locator('[data-objects]')).not.toContainText('synthetic-content-B');
+        const transcriptStep = page.locator(`#transcript-${id} > ol > li`).nth(index);
+        await expect(transcriptStep).toContainText(`Result: ${outcome}. Stored objects: 1.`);
+        await expect(transcriptStep).toContainText('synthetic-content-A');
+      }
+      await expect(advance).toBeDisabled();
+      await page.getByRole('button', { name: 'Reset scenario' }).click();
+      await expect(scenario).toHaveValue(id);
+      await expect(page.locator('[data-progress]')).toHaveText(`0 of ${outcomes.length} attempts · ready`);
+      await expect(advance).toBeEnabled();
+    }
+    await expect(page.locator('[data-system-view]')).toHaveCount(1);
+    await expect(page.locator('img[src*="detail-cnesdata"], canvas')).toHaveCount(0);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    expect(models).toEqual([]);
+    await page.goto('/explore/cnesdata/');
+    await page.screenshot({ path: testInfo.outputPath(`cnesdata-${viewport.width}.png`), fullPage: true });
+  });
+}

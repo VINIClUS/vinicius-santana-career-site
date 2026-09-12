@@ -4,6 +4,11 @@ import { once } from 'node:events';
 import { mkdir } from 'node:fs/promises';
 import { chromium } from '@playwright/test';
 
+const expectedIds = [
+  'district-cnesdata', 'district-limnopulse', 'district-infrastructure', 'hub',
+  'detail-cnesdata', 'detail-infrastructure', 'overview', 'detail-infrastructure-failed',
+];
+
 const server = spawn(process.execPath, ['--experimental-strip-types', 'scripts/gallery/server.mjs'], { env: { ...process.env, PORT: '4323' }, stdio: ['ignore', 'pipe', 'inherit'] });
 let browser;
 try {
@@ -15,13 +20,19 @@ try {
     const page = await context.newPage();
     await page.goto('http://127.0.0.1:4323/');
     const images = page.locator('img');
-    assert.equal(await images.count(), 15);
-    for (const img of await images.all()) {
+    assert.deepEqual(await page.locator('main article').evaluateAll(cards => cards.map(card => card.id)), expectedIds);
+    assert.equal(await images.count(), expectedIds.length);
+    for (const id of expectedIds) {
+      const img = page.locator(`#${id} img`);
       await img.scrollIntoViewIfNeeded();
       await img.evaluate(element => element.decode());
       const state = await img.evaluate(element => ({ width: element.naturalWidth, src: element.currentSrc }));
       assert.ok(state.width > 0);
-      assert.ok(state.src.endsWith(`-${name}.webp`));
+      assert.equal(new URL(state.src).pathname, `/assets/posters/${id}-${name}.webp`);
+      const served = await context.request.get(state.src);
+      assert.equal(served.status(), 200, state.src);
+      assert.match(served.headers()['content-type'], /^image\/webp/);
+      assert.ok((await served.body()).length > 0, state.src);
     }
     assert.equal(await page.locator('canvas').count(), 0);
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));

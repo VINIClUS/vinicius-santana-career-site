@@ -1,13 +1,14 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
+import { spawnSync } from 'node:child_process';
 import test from 'node:test';
 import { Box3 } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { allPosters, districtIds, districts, sceneAssets, overview, workPosters } from '../src/content/scenes/index.ts';
+import { allPosters, details, districtIds, districts, sceneAssets, overview } from '../src/content/scenes/index.ts';
 import { projectDefinitions, projectIds } from '../src/features/explorer/projects.ts';
+import { makeScene, normalizeGeneratedMetadata } from '../scripts/assets/scenes.mjs';
 
 const publicRoot = new URL('../public/', import.meta.url);
-const generated = JSON.parse(await readFile(new URL('../src/content/scenes/generated.json', import.meta.url), 'utf8'));
 const assetFile = src => {
   assert.match(src, /^\/assets\/(posters|scenes)\/[a-z0-9-]+\.(webp|glb)$/);
   return new URL(src.slice(1), publicRoot);
@@ -30,23 +31,13 @@ function webpSize(bytes) {
   throw new Error('WebP dimensions not found');
 }
 
-test('scene contract contains only project districts and keeps detail assets available', () => {
+test('scene contract covers the three routable projects and preserves system detail artwork', () => {
   assert.deepEqual(projectIds, ['cnesdata', 'limnopulse', 'infrastructure']);
-  assert.deepEqual(districtIds, projectIds);
+  assert.deepEqual([...districtIds], projectIds);
   assert.deepEqual(Object.keys(districts).sort(), [...districtIds].sort());
   assert.deepEqual(Object.keys(overview.placements).sort(), [...districtIds].sort());
-  assert.ok(workPosters['public-health']);
+  assert.deepEqual(Object.keys(details).sort(), ['cnesdata', 'infrastructure']);
   assert.equal(sceneAssets.length, 6);
-  assert.deepEqual(Object.keys(generated).sort(), [
-    'detail-cnesdata',
-    'detail-infrastructure',
-    'detail-infrastructure-failed',
-    'district-cnesdata',
-    'district-infrastructure',
-    'district-limnopulse',
-    'hub',
-    'overview',
-  ]);
   assert.equal(new Set(sceneAssets.map(asset => asset.id)).size, sceneAssets.length);
   assert.equal(new Set(sceneAssets.map(asset => asset.model.src)).size, sceneAssets.length);
   for (const vector of [...Object.values(overview.placements), overview.hubPosition, overview.camera.position, overview.camera.target, overview.camera.up]) assert.ok(vector.length === 3 && vector.every(Number.isFinite));
@@ -64,13 +55,73 @@ test('scene contract contains only project districts and keeps detail assets ava
     assert.deepEqual(layout.camera, overview.cameras[variant]);
   }
   assert.notDeepEqual(overview.layouts.mobile.placements, overview.layouts.desktop.placements, 'Portrait layout must compose its districts for the narrow frame');
+  const desktopXs = Object.values(overview.layouts.desktop.placements).map(position => position[0]);
+  const desktopZs = Object.values(overview.layouts.desktop.placements).map(position => position[2]);
+  assert.ok(Math.max(...desktopXs) - Math.min(...desktopXs) > Math.max(...desktopZs) - Math.min(...desktopZs), 'Desktop triangle should use the wide frame');
+  const projectedHorizontal = position => position[0] - position[2];
+  const projectedVertical = position => position[0] + position[2];
+  const mobile = overview.layouts.mobile.placements;
+  assert.ok(projectedVertical(mobile.cnesdata) < projectedVertical(mobile.infrastructure));
+  assert.ok(projectedVertical(mobile.cnesdata) < projectedVertical(mobile.limnopulse));
+  assert.ok(projectedHorizontal(mobile.infrastructure) < projectedHorizontal(overview.layouts.mobile.hubPosition));
+  assert.ok(projectedHorizontal(mobile.limnopulse) > projectedHorizontal(overview.layouts.mobile.hubPosition));
   assert.deepEqual(overview.placements, overview.layouts.desktop.placements);
+});
+
+test('partial generation retains supported detail metadata and purges obsolete districts', async () => {
+  const metadata = JSON.parse(await readFile(new URL('../src/content/scenes/generated.json', import.meta.url), 'utf8'));
+  assert.ok(metadata['detail-cnesdata']);
+  assert.ok(metadata['detail-infrastructure']);
+  assert.equal(metadata['district-public-health'], undefined);
+  assert.equal(metadata['district-observability'], undefined);
+});
+
+test('partial generation sanitizer removes obsolete metadata and placements', () => {
+  const stalePositions = {
+    cnesdata: [-5, 0, -6],
+    'public-health': [5, 0, -6],
+    infrastructure: [-7, 0, 4],
+    observability: [0, 0, 7],
+    limnopulse: [7, 0, 4],
+  };
+  const metadata = normalizeGeneratedMetadata({
+      overview: {
+        districtPositions: stalePositions,
+        layouts: {
+          desktop: { districtPositions: stalePositions },
+          mobile: { districtPositions: stalePositions },
+        },
+      },
+      'detail-cnesdata': { retained: true },
+      'district-public-health': { obsolete: true },
+  });
+  assert.ok(metadata['detail-cnesdata']);
+  assert.equal(metadata['district-public-health'], undefined);
+  assert.deepEqual(Object.keys(metadata.overview.districtPositions), projectIds);
+  for (const layout of Object.values(metadata.overview.layouts)) {
+    assert.deepEqual(Object.keys(layout.districtPositions), projectIds);
+  }
+});
+
+test('scene authoring rejects unknown and retired district identities', () => {
+  for (const id of ['district-public-health', 'district-observability', 'unknown', '__proto__']) {
+    assert.throws(() => makeScene(id), /Unknown scene/);
+  }
+});
+
+test('asset generator rejects obsolete and unknown scene IDs before launching Chromium', () => {
+  for (const id of ['district-public-health', 'district-observability', 'district-unknown']) {
+    const result = spawnSync(process.execPath, ['--experimental-strip-types', 'scripts/assets/generate.mjs', id], { cwd: new URL('..', import.meta.url), encoding: 'utf8' });
+    assert.notEqual(result.status, 0, id);
+    assert.match(result.stderr, new RegExp(`Unknown scene ${id}`));
+  }
 });
 
 test('every responsive fallback exists with its declared dimensions and alternative text', async () => {
   const images = allPosters.flatMap(poster => [poster.desktop, poster.mobile]);
-  assert.equal(images.length, 26);
+  assert.equal(images.length, 16);
   assert.equal(new Set(images.map(image => image.src)).size, images.length);
+  assert.deepEqual((await readdir(new URL('assets/posters/', publicRoot))).sort(), images.map(image => image.src.split('/').at(-1)).sort());
   for (const image of images) {
     assert.ok(image.alt.trim().length > 20, image.src);
     const bytes = await readFile(assetFile(image.src));
@@ -146,6 +197,7 @@ for (const asset of sceneAssets) test(`${asset.id}: self-contained GLB loads wit
 
 test('built output publishes every referenced asset byte-for-byte when requested', { skip: process.env.VERIFY_BUILT_ASSETS !== '1' }, async () => {
   const paths = [...allPosters.flatMap(poster => [poster.desktop.src, poster.mobile.src]), ...sceneAssets.map(asset => asset.model.src)];
+  assert.deepEqual((await readdir(new URL('../dist/assets/posters/', import.meta.url))).sort(), allPosters.flatMap(poster => [poster.desktop.src, poster.mobile.src]).map(src => src.split('/').at(-1)).sort());
   for (const src of paths) {
     const built = await readFile(new URL(`../dist${src}`, import.meta.url));
     assert.deepEqual(built, await readFile(assetFile(src)), src);

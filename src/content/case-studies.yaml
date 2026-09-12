@@ -109,19 +109,19 @@
     - id: alert-rules
       title: Rules and durable alert events
       status: implemented
-      description: Versioned rules feed durable opening, acknowledgement, resolution, and recovery workflows.
+      description: Versioned rules guide evaluation; DynamoDB stores durable alert events and outboxes for opening, acknowledgement, resolution, and recovery workflows.
     - id: evaluator
       title: One-shot evaluator
       status: implemented
-      description: A Go runtime evaluates owned work and exits, leaving scheduling as an external responsibility.
+      description: A Go runtime queries reading windows in InfluxDB, evaluates owned work once per call, and persists events and outboxes in DynamoDB before exiting. Scheduling remains external.
     - id: notifications
       title: Notification delivery
       status: implemented
-      description: Separate email and Telegram paths preserve authoritative delivery, attempt, and idempotency state.
+      description: An outbox relay publishes per-channel work to SQS. Separate email and Telegram queues and workers preserve authoritative delivery, attempt, and idempotency state.
     - id: mqtt-ingestion
       title: Local MQTT ingestion
       status: implemented
-      description: MQTT, Telegraf, and sample publishers form a loopback-only local ingestion scaffold.
+      description: MQTT, Telegraf, and sample publishers write readings to InfluxDB in a loopback-only local ingestion scaffold.
     - id: cloud-infrastructure
       title: Cloud infrastructure path
       status: documented
@@ -159,6 +159,15 @@
       status: documented
       url: https://github.com/VINIClUS/limnopulse/blob/main/docs/notifications-phase-3c-a.md
       description: Public delivery-state, retry, rollout, and recovery documentation.
+
+    - label: Limnopulse architecture
+      status: documented
+      url: https://github.com/VINIClUS/limnopulse/blob/main/docs/architecture.md
+      description: Public boundaries for authorized telemetry, one-shot evaluation, durable events, outbox relays, and channel-specific notification work.
+    - label: Telegram notification operations
+      status: documented
+      url: https://github.com/VINIClUS/limnopulse/blob/main/docs/notifications-phase-3c-b.md
+      description: Public Telegram binding, worker, delivery-state, and retry contracts, separated from email delivery.
 
 - id: infrastructure
   order: 3

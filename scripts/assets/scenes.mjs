@@ -374,24 +374,24 @@ export const districtIds = [
   "infrastructure",
 ];
 export const overviewPositions = {
-  cnesdata: [0, 0, -6.5],
-  limnopulse: [6, 0, 4],
-  infrastructure: [-6, 0, 4],
+  cnesdata: [-7.5, 0, -5],
+  limnopulse: [7.5, 0, -5],
+  infrastructure: [0, 0, 6.5],
 };
 export const overviewLayouts = {
   desktop: {
     districtPositions: overviewPositions,
     hubPosition: [0, 0, 0],
-    districtScale: 0.7,
+    districtScale: 0.84,
   },
   mobile: {
     districtPositions: {
-      cnesdata: [0, 0, -6.5],
-      limnopulse: [5.25, 0, 4],
-      infrastructure: [-5.25, 0, 4],
+      cnesdata: [-6, 0, -6],
+      limnopulse: [7, 0, -1],
+      infrastructure: [-1, 0, 7],
     },
     hubPosition: [0, 0, 0],
-    districtScale: 0.7,
+    districtScale: 0.9,
   },
 };
 export const sceneIds = [
@@ -401,7 +401,24 @@ export const sceneIds = [
   "detail-infrastructure",
   "overview",
 ];
+export function normalizeGeneratedMetadata(metadata) {
+  const generatedSceneIds = [...sceneIds, "detail-infrastructure-failed"];
+  const normalized = Object.fromEntries(
+    Object.entries(metadata).filter(([id]) => generatedSceneIds.includes(id)),
+  );
+  if (!normalized.overview) return normalized;
+  const keepPlacements = (positions = {}) =>
+    Object.fromEntries(districtIds.map((id) => [id, positions[id]]));
+  normalized.overview.districtPositions = keepPlacements(
+    normalized.overview.districtPositions,
+  );
+  for (const layout of Object.values(normalized.overview.layouts ?? {})) {
+    layout.districtPositions = keepPlacements(layout.districtPositions);
+  }
+  return normalized;
+}
 export function makeScene(id, variant = "desktop") {
+  if (!sceneIds.includes(id)) throw new Error(`Unknown scene ${id}`);
   if (id.startsWith("district-")) return district(id.slice(9));
   if (id === "hub") return hub();
   if (id === "detail-cnesdata") return cnesDetail();

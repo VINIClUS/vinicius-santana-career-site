@@ -1,3 +1,5 @@
+> Historical delivery record: superseded where it describes separate Work/Explore, the Home globe or five selectable districts. See [Systems Atlas specification](../../superpowers/specs/2026-09-11-systems-atlas-navigation-project-experience-spec-v2.md). Original evidence below is retained.
+
 # SO-08 — progressive 3D Observatory
 
 Implements Issue #12 on the SO-11 baseline (`0e1d996`), under EPIC #4. The [approved reference](../systems-observatory-visual-reference.png), especially panel 02, and the [SO-07 asset kit](../so-07-asset-kit.md) supply the composition and art direction. The three project routes and their synthetic simulations keep their existing contracts.

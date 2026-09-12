@@ -32,7 +32,7 @@ test('project panel selection, replacement, closing and history stay coherent', 
   await expect(link(page, 'limnopulse')).toBeFocused();
 
   await link(page, 'infrastructure').click();
-  await page.getByRole('heading', { name: 'Explore the systems.' }).click();
+  await page.getByRole('heading', { name: 'Systems Atlas.' }).click();
   await expect(panel(page, 'infrastructure')).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(panel(page, 'infrastructure')).toBeHidden();
@@ -84,9 +84,11 @@ test('direct and invalid fragments synchronize only the three project panels', a
     await expect(link(page, id)).toHaveAttribute('aria-expanded', 'true');
     await expect(panel(page, id).getByRole('link', { name: /^Explore/ })).toHaveAttribute('href', `/explore/${id}/`);
   }
-  await page.goto('/explore/#district-unknown');
-  await expect(page.locator('[data-district-detail]:visible')).toHaveCount(0);
-  await expect(page.locator('[data-district-link][aria-current]')).toHaveCount(0);
+  for (const id of ['unknown', 'public-health', 'observability']) {
+    await page.goto(`/explore/#district-${id}`);
+    await expect(page.locator('[data-district-detail]:visible')).toHaveCount(0);
+    await expect(page.locator('[data-district-link][aria-current]')).toHaveCount(0);
+  }
 });
 
 for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {

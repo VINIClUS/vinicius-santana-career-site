@@ -1,7 +1,6 @@
 import generated from './generated.json' with { type: 'json' };
 import type { DistrictId, OverviewLayout, ResponsivePoster, SceneAsset, SceneCamera, Vector3 } from './types.ts';
-import type { ProjectId } from '../../features/explorer/projects.ts';
-export type { DistrictId, OverviewLayout, ResponsivePoster, SceneAsset, SceneCamera, SceneModel, Vector3, VisualImage } from './types.ts';
+export type { AtlasDistrictId, DistrictId, OverviewLayout, ResponsivePoster, SceneAsset, SceneCamera, SceneModel, Vector3, VisualImage } from './types.ts';
 
 export { districtIds } from '../../features/explorer/districts.ts';
 
@@ -48,21 +47,6 @@ function scene(id: string, alt: string): SceneAsset {
     poster: poster(id, alt),
   };
 }
-function illustration(stem: string, alt: string): ResponsivePoster {
-  return {
-    desktop: { src: `/assets/posters/${stem}-desktop.webp`, width: 1200, height: 800, alt },
-    mobile: { src: `/assets/posters/${stem}-mobile.webp`, width: 600, height: 600, alt },
-  };
-}
-
-export const homeVisual = illustration('home-globe', 'Luminous globe floating in navy space, connected by fine data-network arcs.');
-export const workPosters = {
-  cnesdata: illustration('work-cnesdata', 'Isometric data platform with connected processing and storage architecture.'),
-  limnopulse: illustration('work-limnopulse', 'Aquatic environment with illustrative sensing instruments and telemetry connections.'),
-  infrastructure: illustration('work-infrastructure', 'Isometric infrastructure cluster with illuminated server racks and shared connections.'),
-  'public-health': illustration('work-public-health', 'Public-health campus with connected clinical and administrative buildings.'),
-} as const satisfies Record<ProjectId | 'public-health', ResponsivePoster>;
-
 export const districts = {
   cnesdata: scene('district-cnesdata', 'Isometric data platform with distinct processing, storage, and orchestration buildings.'),
   limnopulse: scene('district-limnopulse', 'Water basin with sensing buoys and illustrative telemetry instruments.'),
@@ -81,7 +65,7 @@ const overviewLayouts = {
 } as const;
 export const overview = {
   id: 'overview',
-  poster: poster('overview', 'Three architectural project districts arranged around a luminous central hub.'),
+  poster: poster('overview', 'CnesData, Infrastructure, and LimnoPulse form a triangular systems map around a conceptual luminous hub.'),
   layouts: overviewLayouts,
   placements: overviewLayouts.desktop.placements,
   districtScale: overviewLayouts.desktop.districtScale,
@@ -93,4 +77,4 @@ export const overview = {
 export const sceneAssets: readonly SceneAsset[] = [...Object.values(districts), hub, ...Object.values(details)];
 export const infrastructureFailurePoster = poster('detail-infrastructure-failed', 'Synthetic Infrastructure failure: node-02 highlighted red, workload transferred to node-01, node-03 and shared layer available.');
 
-export const allPosters: readonly ResponsivePoster[] = [homeVisual, ...Object.values(workPosters), ...sceneAssets.map(asset => asset.poster), overview.poster, infrastructureFailurePoster];
+export const allPosters: readonly ResponsivePoster[] = [...sceneAssets.map(asset => asset.poster), overview.poster, infrastructureFailurePoster];
