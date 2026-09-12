@@ -1,3 +1,5 @@
+> Historical delivery record: superseded where it describes separate Work/Explore, the Home globe or five selectable districts. See [Systems Atlas specification](../superpowers/specs/2026-09-11-systems-atlas-navigation-project-experience-spec-v2.md). Original evidence below is retained.
+
 # SO-07 visual asset kit
 
 This kit implements #11 under EPIC #4. The approved lossless [reference](systems-observatory-visual-reference.png) from #23 remains unchanged (SHA-256 `6171a4fc7222a3027846e77ca1d3acfd56aff762e608e762c91e5044e6ac5986`). It controls art direction, never factual metrics or topology.

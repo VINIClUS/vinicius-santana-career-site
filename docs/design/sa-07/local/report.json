@@ -1,0 +1,668 @@
+{
+  "startedAt": "2026-09-12T14:15:31.557Z",
+  "baseUrl": "http://127.0.0.1:4326/",
+  "baseline": "c686a47",
+  "allowFallback": false,
+  "metadata": [
+    {
+      "route": "/",
+      "canonical": "https://dev.vinisantana.com/",
+      "title": "Vinicius Santana — Data Engineer & Software Engineer",
+      "main": true,
+      "h1": "ViniciusSantana",
+      "uniqueIds": 19
+    },
+    {
+      "route": "/explore/",
+      "canonical": "https://dev.vinisantana.com/explore/",
+      "title": "Systems Atlas — Vinicius Santana",
+      "main": true,
+      "h1": "Systems Atlas.",
+      "uniqueIds": 10
+    },
+    {
+      "route": "/explore/cnesdata/",
+      "canonical": "https://dev.vinisantana.com/explore/cnesdata/",
+      "title": "CnesData — Vinicius Santana",
+      "main": true,
+      "h1": "CnesData",
+      "uniqueIds": 37
+    },
+    {
+      "route": "/explore/limnopulse/",
+      "canonical": "https://dev.vinisantana.com/explore/limnopulse/",
+      "title": "Limnopulse — Vinicius Santana",
+      "main": true,
+      "h1": "Limnopulse",
+      "uniqueIds": 34
+    },
+    {
+      "route": "/explore/infrastructure/",
+      "canonical": "https://dev.vinisantana.com/explore/infrastructure/",
+      "title": "Infrastructure & Operations — Vinicius Santana",
+      "main": true,
+      "h1": "Infrastructure & Operations",
+      "uniqueIds": 30
+    },
+    {
+      "route": "/about/",
+      "canonical": "https://dev.vinisantana.com/about/",
+      "title": "About — Vinicius Santana",
+      "main": true,
+      "h1": "Engineering grounded in operational reality.",
+      "uniqueIds": 6
+    },
+    {
+      "route": "/resume/",
+      "canonical": "https://dev.vinisantana.com/resume/",
+      "title": "Resume — Vinicius Santana",
+      "main": true,
+      "h1": "Software and data engineering, in one concise document.",
+      "uniqueIds": 3
+    },
+    {
+      "route": "/privacy/",
+      "canonical": "https://dev.vinisantana.com/privacy/",
+      "title": "Privacy — Vinicius Santana",
+      "main": true,
+      "h1": "A small static site with a small data footprint.",
+      "uniqueIds": 2
+    },
+    {
+      "route": "/work/",
+      "canonical": "https://dev.vinisantana.com/explore/",
+      "title": "Work has moved — Vinicius Santana",
+      "main": true,
+      "h1": "Work has moved",
+      "uniqueIds": 1
+    },
+    {
+      "route": "/work/cnesdata/",
+      "canonical": "https://dev.vinisantana.com/explore/cnesdata/",
+      "title": "Work has moved — Vinicius Santana",
+      "main": true,
+      "h1": "Work has moved",
+      "uniqueIds": 1
+    },
+    {
+      "route": "/work/limnopulse/",
+      "canonical": "https://dev.vinisantana.com/explore/limnopulse/",
+      "title": "Work has moved — Vinicius Santana",
+      "main": true,
+      "h1": "Work has moved",
+      "uniqueIds": 1
+    },
+    {
+      "route": "/work/infrastructure/",
+      "canonical": "https://dev.vinisantana.com/explore/infrastructure/",
+      "title": "Work has moved — Vinicius Santana",
+      "main": true,
+      "h1": "Work has moved",
+      "uniqueIds": 1
+    }
+  ],
+  "links": [
+    "/#main",
+    "/",
+    "/explore/",
+    "/about/",
+    "/#contact",
+    "/resume/",
+    "/assets/vinicius-santana-resume.pdf",
+    "/privacy/",
+    "/explore/#main",
+    "/explore/#district-cnesdata",
+    "/explore/#district-limnopulse",
+    "/explore/#district-infrastructure",
+    "/explore/cnesdata/",
+    "/explore/limnopulse/",
+    "/explore/infrastructure/",
+    "/#experience",
+    "/#stack",
+    "/explore/cnesdata/#main",
+    "/explore/cnesdata/#overview",
+    "/explore/cnesdata/#architecture",
+    "/explore/cnesdata/#engineering",
+    "/explore/cnesdata/#simulation",
+    "/explore/cnesdata/#results",
+    "/explore/cnesdata/#evidence",
+    "/explore/cnesdata/#limitations",
+    "/explore/cnesdata/#component-canonical-contracts",
+    "/explore/cnesdata/#component-edge-agent",
+    "/explore/cnesdata/#component-central-api",
+    "/explore/cnesdata/#component-tenant-isolation",
+    "/explore/cnesdata/#component-web-dashboard",
+    "/explore/cnesdata/#component-parquet-to-gold",
+    "/explore/cnesdata/#component-kubernetes",
+    "/explore/limnopulse/#main",
+    "/explore/limnopulse/#overview",
+    "/explore/limnopulse/#architecture",
+    "/explore/limnopulse/#engineering",
+    "/explore/limnopulse/#results",
+    "/explore/limnopulse/#evidence",
+    "/explore/limnopulse/#limitations",
+    "/explore/limnopulse/#component-mqtt-ingestion",
+    "/explore/limnopulse/#component-telemetry-api",
+    "/explore/limnopulse/#component-evaluator",
+    "/explore/limnopulse/#component-alert-rules",
+    "/explore/limnopulse/#component-notifications",
+    "/explore/limnopulse/#component-cloud-infrastructure",
+    "/explore/limnopulse/#component-production-device-layer",
+    "/explore/infrastructure/#main",
+    "/explore/infrastructure/#overview",
+    "/explore/infrastructure/#architecture",
+    "/explore/infrastructure/#engineering",
+    "/explore/infrastructure/#simulation",
+    "/explore/infrastructure/#results",
+    "/explore/infrastructure/#evidence",
+    "/explore/infrastructure/#limitations",
+    "/explore/infrastructure/#component-ansible-contracts",
+    "/explore/infrastructure/#component-image-builds",
+    "/explore/infrastructure/#component-operations-automation",
+    "/explore/infrastructure/#component-reference-topology",
+    "/about/#main",
+    "/resume/#main",
+    "/privacy/#main"
+  ],
+  "hashes": [
+    {
+      "file": "CNAME",
+      "baselineSha256": "50ea872cd8828a877db512188d9ef5789bfef1ebe863d58e345eeb23f983fb7d",
+      "verifiedSha256": "50ea872cd8828a877db512188d9ef5789bfef1ebe863d58e345eeb23f983fb7d",
+      "source": "local dist/CNAME (Astro preview does not serve extensionless CNAME)",
+      "httpStatus": 404
+    },
+    {
+      "file": "assets/vinicius-santana-resume.pdf",
+      "baselineSha256": "b2cca4eac1313462b8ff44eb0c42a3143e5bd1a3ac02a2d756b1b38bc16b769e",
+      "verifiedSha256": "b2cca4eac1313462b8ff44eb0c42a3143e5bd1a3ac02a2d756b1b38bc16b769e",
+      "source": "HTTP response body",
+      "httpStatus": 200
+    }
+  ],
+  "captures": [
+    {
+      "route": "/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "home-1440x900.png",
+      "rendererReady": true,
+      "rendererState": "ready",
+      "images": [
+        {
+          "src": "http://127.0.0.1:4326/assets/posters/overview-desktop.webp",
+          "complete": true,
+          "width": 1200,
+          "height": 800
+        }
+      ],
+      "overflow": {
+        "scrollWidth": 1440,
+        "innerWidth": 1440
+      },
+      "errors": []
+    },
+    {
+      "route": "/explore/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "explore-1440x900.png",
+      "rendererReady": true,
+      "rendererState": "ready",
+      "images": [
+        {
+          "src": "http://127.0.0.1:4326/assets/posters/overview-desktop.webp",
+          "complete": true,
+          "width": 1200,
+          "height": 800
+        }
+      ],
+      "overflow": {
+        "scrollWidth": 1440,
+        "innerWidth": 1440
+      },
+      "errors": []
+    },
+    {
+      "route": "/explore/cnesdata/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "explore-cnesdata-1440x900.png",
+      "rendererReady": null,
+      "rendererState": null,
+      "images": [
+        {
+          "src": "http://127.0.0.1:4326/assets/posters/detail-cnesdata-desktop.webp",
+          "complete": true,
+          "width": 1200,
+          "height": 800
+        }
+      ],
+      "overflow": {
+        "scrollWidth": 1440,
+        "innerWidth": 1440
+      },
+      "errors": []
+    },
+    {
+      "route": "/explore/cnesdata/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "cnesdata-raw-first-write-1440x900.png",
+      "scenario": "raw-first-write",
+      "result": "Result: stored. One object stored."
+    },
+    {
+      "route": "/explore/cnesdata/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "cnesdata-raw-identical-replay-1440x900.png",
+      "scenario": "raw-identical-replay",
+      "result": "Result: replayed. Accepted without duplication."
+    },
+    {
+      "route": "/explore/cnesdata/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "cnesdata-raw-content-conflict-1440x900.png",
+      "scenario": "raw-content-conflict",
+      "result": "Result: conflict. Content A remains intact; content B was rejected."
+    },
+    {
+      "route": "/explore/limnopulse/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "explore-limnopulse-1440x900.png",
+      "rendererReady": null,
+      "rendererState": null,
+      "images": [],
+      "overflow": {
+        "scrollWidth": 1440,
+        "innerWidth": 1440
+      },
+      "errors": []
+    },
+    {
+      "route": "/explore/infrastructure/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "explore-infrastructure-1440x900.png",
+      "rendererReady": true,
+      "rendererState": "ready",
+      "images": [
+        {
+          "src": "http://127.0.0.1:4326/assets/posters/detail-infrastructure-desktop.webp",
+          "complete": true,
+          "width": 1200,
+          "height": 800
+        }
+      ],
+      "overflow": {
+        "scrollWidth": 1440,
+        "innerWidth": 1440
+      },
+      "errors": []
+    },
+    {
+      "route": "/explore/infrastructure/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "infrastructure-failure-1440x900.png",
+      "failed": true,
+      "workload": "Workload: node-01",
+      "rendererState": "fallback"
+    },
+    {
+      "route": "/explore/infrastructure/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "infrastructure-reset-1440x900.png",
+      "failed": false,
+      "workload": "Workload: node-02",
+      "rendererState": "fallback"
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "home-no-js-1440x900.png",
+      "javaScriptEnabled": false,
+      "reducedMotion": "reduce",
+      "images": [
+        {
+          "src": "http://127.0.0.1:4326/assets/posters/overview-desktop.webp",
+          "width": 1200
+        }
+      ]
+    },
+    {
+      "route": "/explore/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "explore-no-js-1440x900.png",
+      "javaScriptEnabled": false,
+      "reducedMotion": "reduce",
+      "images": [
+        {
+          "src": "http://127.0.0.1:4326/assets/posters/overview-desktop.webp",
+          "width": 1200
+        }
+      ]
+    },
+    {
+      "route": "/explore/cnesdata/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "explore-cnesdata-no-js-1440x900.png",
+      "javaScriptEnabled": false,
+      "reducedMotion": "reduce",
+      "images": [
+        {
+          "src": "http://127.0.0.1:4326/assets/posters/detail-cnesdata-desktop.webp",
+          "width": 1200
+        }
+      ]
+    },
+    {
+      "route": "/explore/limnopulse/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "explore-limnopulse-no-js-1440x900.png",
+      "javaScriptEnabled": false,
+      "reducedMotion": "reduce",
+      "images": []
+    },
+    {
+      "route": "/explore/infrastructure/",
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "file": "explore-infrastructure-no-js-1440x900.png",
+      "javaScriptEnabled": false,
+      "reducedMotion": "reduce",
+      "images": [
+        {
+          "src": "http://127.0.0.1:4326/assets/posters/detail-infrastructure-desktop.webp",
+          "width": 1200
+        }
+      ]
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "home-390x844.png",
+      "rendererReady": true,
+      "rendererState": "ready",
+      "images": [
+        {
+          "src": "http://127.0.0.1:4326/assets/posters/overview-mobile.webp",
+          "complete": true,
+          "width": 720,
+          "height": 900
+        }
+      ],
+      "overflow": {
+        "scrollWidth": 390,
+        "innerWidth": 390
+      },
+      "errors": []
+    },
+    {
+      "route": "/explore/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "explore-390x844.png",
+      "rendererReady": true,
+      "rendererState": "ready",
+      "images": [
+        {
+          "src": "http://127.0.0.1:4326/assets/posters/overview-mobile.webp",
+          "complete": true,
+          "width": 720,
+          "height": 900
+        }
+      ],
+      "overflow": {
+        "scrollWidth": 390,
+        "innerWidth": 390
+      },
+      "errors": []
+    },
+    {
+      "route": "/explore/cnesdata/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "explore-cnesdata-390x844.png",
+      "rendererReady": null,
+      "rendererState": null,
+      "images": [
+        {
+          "src": "http://127.0.0.1:4326/assets/posters/detail-cnesdata-mobile.webp",
+          "complete": true,
+          "width": 720,
+          "height": 900
+        }
+      ],
+      "overflow": {
+        "scrollWidth": 390,
+        "innerWidth": 390
+      },
+      "errors": []
+    },
+    {
+      "route": "/explore/cnesdata/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "cnesdata-raw-first-write-390x844.png",
+      "scenario": "raw-first-write",
+      "result": "Result: stored. One object stored."
+    },
+    {
+      "route": "/explore/cnesdata/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "cnesdata-raw-identical-replay-390x844.png",
+      "scenario": "raw-identical-replay",
+      "result": "Result: replayed. Accepted without duplication."
+    },
+    {
+      "route": "/explore/cnesdata/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "cnesdata-raw-content-conflict-390x844.png",
+      "scenario": "raw-content-conflict",
+      "result": "Result: conflict. Content A remains intact; content B was rejected."
+    },
+    {
+      "route": "/explore/limnopulse/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "explore-limnopulse-390x844.png",
+      "rendererReady": null,
+      "rendererState": null,
+      "images": [],
+      "overflow": {
+        "scrollWidth": 390,
+        "innerWidth": 390
+      },
+      "errors": []
+    },
+    {
+      "route": "/explore/infrastructure/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "explore-infrastructure-390x844.png",
+      "rendererReady": true,
+      "rendererState": "ready",
+      "images": [
+        {
+          "src": "http://127.0.0.1:4326/assets/posters/detail-infrastructure-mobile.webp",
+          "complete": true,
+          "width": 720,
+          "height": 900
+        }
+      ],
+      "overflow": {
+        "scrollWidth": 390,
+        "innerWidth": 390
+      },
+      "errors": []
+    },
+    {
+      "route": "/explore/infrastructure/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "infrastructure-failure-390x844.png",
+      "failed": true,
+      "workload": "Workload: node-01",
+      "rendererState": "fallback"
+    },
+    {
+      "route": "/explore/infrastructure/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "infrastructure-reset-390x844.png",
+      "failed": false,
+      "workload": "Workload: node-02",
+      "rendererState": "fallback"
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "home-no-js-390x844.png",
+      "javaScriptEnabled": false,
+      "reducedMotion": "reduce",
+      "images": [
+        {
+          "src": "http://127.0.0.1:4326/assets/posters/overview-mobile.webp",
+          "width": 720
+        }
+      ]
+    },
+    {
+      "route": "/explore/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "explore-no-js-390x844.png",
+      "javaScriptEnabled": false,
+      "reducedMotion": "reduce",
+      "images": [
+        {
+          "src": "http://127.0.0.1:4326/assets/posters/overview-mobile.webp",
+          "width": 720
+        }
+      ]
+    },
+    {
+      "route": "/explore/cnesdata/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "explore-cnesdata-no-js-390x844.png",
+      "javaScriptEnabled": false,
+      "reducedMotion": "reduce",
+      "images": [
+        {
+          "src": "http://127.0.0.1:4326/assets/posters/detail-cnesdata-mobile.webp",
+          "width": 720
+        }
+      ]
+    },
+    {
+      "route": "/explore/limnopulse/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "explore-limnopulse-no-js-390x844.png",
+      "javaScriptEnabled": false,
+      "reducedMotion": "reduce",
+      "images": []
+    },
+    {
+      "route": "/explore/infrastructure/",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "explore-infrastructure-no-js-390x844.png",
+      "javaScriptEnabled": false,
+      "reducedMotion": "reduce",
+      "images": [
+        {
+          "src": "http://127.0.0.1:4326/assets/posters/detail-infrastructure-mobile.webp",
+          "width": 720
+        }
+      ]
+    }
+  ],
+  "chromium": "153.0.8010.12",
+  "sitemap": [
+    "https://dev.vinisantana.com/",
+    "https://dev.vinisantana.com/about/",
+    "https://dev.vinisantana.com/explore/",
+    "https://dev.vinisantana.com/explore/cnesdata/",
+    "https://dev.vinisantana.com/explore/infrastructure/",
+    "https://dev.vinisantana.com/explore/limnopulse/",
+    "https://dev.vinisantana.com/privacy/",
+    "https://dev.vinisantana.com/resume/"
+  ],
+  "passed": true,
+  "finishedAt": "2026-09-12T14:16:05.777Z"
+}

@@ -1,8 +1,7 @@
 # Local asset inspection
 
 Run `rtk npm run gallery`, then open `http://127.0.0.1:4322/`.
-This server reads `src/content/scenes/index.ts`, the same typed manifests intended
-for later page and renderer integration. It serves inspection HTML dynamically;
+This server reads `src/content/scenes/index.ts`, the same typed manifests used by the canonical pages and renderers. It serves inspection HTML dynamically;
 neither the gallery nor its scripts are part of Astro's published routes.
 
 Every card contains a server-rendered responsive `<picture>` with dimensions and
@@ -20,3 +19,5 @@ the automated checks cannot determine those qualities.
 `rtk npm test` verifies manifests, actual WebP dimensions, and every GLB with
 `GLTFLoader`. After building, `rtk npm run smoke` additionally verifies that all
 referenced assets were copied into `dist` byte-for-byte.
+
+The active kit has eight responsive poster pairs: three districts, hub, two details, overview and Infrastructure failure. Six cards offer GLB inspection. Verification checks the exact card IDs and the actual served responsive images, not a historical count. Retired Home globe and Work illustrations are not published or generated.
