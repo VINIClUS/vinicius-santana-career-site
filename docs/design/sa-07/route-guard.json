@@ -1,0 +1,23 @@
+{
+  "method": "Build real Astro getStaticPaths in temporary source copies with shared immutable dependencies; discard copies afterwards.",
+  "cases": [
+    {
+      "case": "unknown-id",
+      "exitCode": 1,
+      "expectedError": "Project routes must match projectIds exactly: cnesdata, limnopulse, infrastructure",
+      "unexpectedPagePublished": false
+    },
+    {
+      "case": "missing-id",
+      "exitCode": 1,
+      "expectedError": "Project routes must match projectIds exactly: cnesdata, limnopulse, infrastructure",
+      "unexpectedPagePublished": false
+    },
+    {
+      "case": "additional-id",
+      "exitCode": 1,
+      "expectedError": "Project routes must match projectIds exactly: cnesdata, limnopulse, infrastructure",
+      "unexpectedPagePublished": false
+    }
+  ]
+}

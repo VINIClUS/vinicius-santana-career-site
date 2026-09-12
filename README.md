@@ -56,13 +56,15 @@ npm ci
 npm test
 npm run build
 npm run smoke
+npm run test:explorer
+npm run gallery:verify
 ```
 
 The smoke command validates files in `dist/`, so always run the build first.
 
 `npm test` checks the pure simulation TypeScript modules and runs the focused
 Node tests. The [CnesData simulation API](docs/cnesdata-simulation.md) documents
-the synthetic engine and generated transcripts for the SO-06 explorer.
+the synthetic engine and generated transcripts used by the canonical CnesData project.
 
 ## Project structure
 
@@ -203,7 +205,7 @@ There is no backend, database, authentication or contact form. Contact actions u
 
 ## Systems Atlas
 
-**Explore** is available in the primary navigation. Open `/explore/` for the
+**Work** in the primary navigation opens Systems Atlas. Open `/explore/` for the
 three-project Systems Atlas, or `/explore/{cnesdata,limnopulse,infrastructure}/`
 for the individual project walkthroughs.
 
@@ -217,7 +219,7 @@ preview. Its small launcher waits for page load, actual viewport intersection,
 document visibility and an idle opportunity before downloading Three.js or models.
 One 15-second deadline covers activation through the first complete draw; failure
 retains the responsive poster. The only Home work CTA is **Explore my work** →
-`/explore/`. Work and the current static project views do not load this preview.
+`/explore/`. The Atlas and project pages do not load the Home preview. CnesData and LimnoPulse use HTML/SVG System Views; Infrastructure optionally projects its controller state in 3D.
 See [SA-05 validation](docs/design/sa-05/validation.md) for loading and performance evidence.
 
 `npm test` checks the simulation and explorer TypeScript modules and runs the focused Node tests. After `npm run build`, run `npm run smoke` and `npm run test:explorer`. Install the browser once with `npx playwright install --with-deps chromium`. Playwright 1.63.0 runs the Chromium browser suites with one worker; screenshots and traces are retained only on failure. To run the same smoke against a deployment, set `EXPLORER_BASE_URL` to its origin.
@@ -238,3 +240,5 @@ The explicit route map preserves query strings and fragments, including
 `#architecture`; query parameters never select a redirect destination. Without
 JavaScript, the HTML link opens the canonical page. These are not HTTP 301/308
 responses. The sitemap contains only the eight canonical pages.
+
+HTML owns content and navigation; deterministic controllers own selection and simulation. Optional renderers project that state without replacing evidence, focus or static fallbacks. See [SA-07 validation](docs/design/sa-07/validation.md) for migration cleanup and release evidence.

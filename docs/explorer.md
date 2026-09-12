@@ -28,7 +28,7 @@ Selecting a project changes its highlight and shared controller state only. The 
 
 The orthographic camera switches authored layouts at 700px. Orbit is limited to ±15° horizontally and ±5° vertically, zoom to 0.9–1.2 times the authored view, and pan is disabled. OrbitControls' inline touch action is reset to `pan-y` after connection so vertical touch scrolling remains native; taps still select. Rendering is on demand, DPR is capped at 1.5, and reduced motion uses immediate highlighting without continuous movement.
 
-`assets:generate` validates authored district IDs against `projectIds`, rejects unknown scene requests before generation and removes obsolete district metadata even on partial runs. Regenerate the composition with `npm run assets:generate -- overview`. Historical evidence and project illustrations/detail assets are preserved. See [SA-01 evidence](design/sa-01/README.md) for validation and loading comparison.
+`assets:generate` validates authored district IDs against `projectIds`, rejects unknown scene requests before generation and removes obsolete district metadata even on partial runs. Regenerate the composition with `npm run assets:generate -- overview`. Historical evidence is retained with supersession notices. Retired Home/Work illustrations and their optimizer are removed; the three districts, hub, overview, two detail models and failure posters remain available for generation and inspection. See [SA-01 evidence](design/sa-01/README.md) for validation and loading comparison.
 
 ## Infrastructure scenario
 
@@ -36,7 +36,7 @@ The pure engine in `simulation/infrastructure.ts` starts with three online nodes
 
 The panel presents the state in text and responsive posters, with a polite announcement and a static scenario transcript. Controls start disabled and activate only after initialization. There are no timestamps, uptime or recovery metrics, backend calls or operational data. The failure posters are generated from the transitioned state via `simulationId` anchors; the original GLB stays unchanged.
 
-**Explore** remains in the primary navigation until SA-06. The shared shell is
+**Work** opens the canonical Systems Atlas at `/explore/`. The shared shell is
 ordinary HTML; graphics are route-specific progressive enhancements.
 
 ## Home preview (SA-05)
@@ -99,7 +99,7 @@ The legacy `/work/cnesdata/` route is a small compatibility page; the canonical 
 page contains the full narrative and evidence. Limnopulse and Infrastructure
 also use their canonical `/explore/` project pages.
 
-SA-06 makes **Work → `/explore/`** the single primary work destination. All four
+SA-06 established **Work → `/explore/`** the single primary work destination. All four
 `/work/*` compatibility pages use destination metadata, `noindex`, a static
 fallback link and restricted `location.replace`, preserving query and fragment
 data. They are excluded from the sitemap.

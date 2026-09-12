@@ -1,3 +1,5 @@
+> Historical delivery record: superseded where it describes separate Work/Explore, the Home globe or five selectable districts. See [Systems Atlas specification](../../superpowers/specs/2026-09-11-systems-atlas-navigation-project-experience-spec-v2.md). Original evidence below is retained.
+
 # SO-09 — reference release audit
 
 This release aligns the shared portfolio routes, selected-work details and

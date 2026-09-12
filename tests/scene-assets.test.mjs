@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
 import test from 'node:test';
 import { Box3 } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { allPosters, details, districtIds, districts, sceneAssets, overview, workPosters } from '../src/content/scenes/index.ts';
+import { allPosters, details, districtIds, districts, sceneAssets, overview } from '../src/content/scenes/index.ts';
 import { projectDefinitions, projectIds } from '../src/features/explorer/projects.ts';
 import { makeScene, normalizeGeneratedMetadata } from '../scripts/assets/scenes.mjs';
 
@@ -31,12 +31,11 @@ function webpSize(bytes) {
   throw new Error('WebP dimensions not found');
 }
 
-test('scene contract covers the three routable projects and preserves contextual artwork', () => {
+test('scene contract covers the three routable projects and preserves system detail artwork', () => {
   assert.deepEqual(projectIds, ['cnesdata', 'limnopulse', 'infrastructure']);
   assert.deepEqual([...districtIds], projectIds);
   assert.deepEqual(Object.keys(districts).sort(), [...districtIds].sort());
   assert.deepEqual(Object.keys(overview.placements).sort(), [...districtIds].sort());
-  assert.ok(workPosters['public-health']);
   assert.deepEqual(Object.keys(details).sort(), ['cnesdata', 'infrastructure']);
   assert.equal(sceneAssets.length, 6);
   assert.equal(new Set(sceneAssets.map(asset => asset.id)).size, sceneAssets.length);
@@ -120,8 +119,9 @@ test('asset generator rejects obsolete and unknown scene IDs before launching Ch
 
 test('every responsive fallback exists with its declared dimensions and alternative text', async () => {
   const images = allPosters.flatMap(poster => [poster.desktop, poster.mobile]);
-  assert.equal(images.length, 26);
+  assert.equal(images.length, 16);
   assert.equal(new Set(images.map(image => image.src)).size, images.length);
+  assert.deepEqual((await readdir(new URL('assets/posters/', publicRoot))).sort(), images.map(image => image.src.split('/').at(-1)).sort());
   for (const image of images) {
     assert.ok(image.alt.trim().length > 20, image.src);
     const bytes = await readFile(assetFile(image.src));
@@ -197,6 +197,7 @@ for (const asset of sceneAssets) test(`${asset.id}: self-contained GLB loads wit
 
 test('built output publishes every referenced asset byte-for-byte when requested', { skip: process.env.VERIFY_BUILT_ASSETS !== '1' }, async () => {
   const paths = [...allPosters.flatMap(poster => [poster.desktop.src, poster.mobile.src]), ...sceneAssets.map(asset => asset.model.src)];
+  assert.deepEqual((await readdir(new URL('../dist/assets/posters/', import.meta.url))).sort(), allPosters.flatMap(poster => [poster.desktop.src, poster.mobile.src]).map(src => src.split('/').at(-1)).sort());
   for (const src of paths) {
     const built = await readFile(new URL(`../dist${src}`, import.meta.url));
     assert.deepEqual(built, await readFile(assetFile(src)), src);

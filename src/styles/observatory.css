@@ -32,12 +32,6 @@ body.observatory {
 .domain-pillars li { font-size: .75rem; line-height: 1.4; }
 .domain-pillars span { display: block; color: #c1dfef; font-size: 1.6rem; margin-bottom: 7px; }
 .hero-location { color: var(--muted); font-size: .7rem; margin: 30px 0 0; }
-.globe-visual { margin: 0; min-width: 0; }
-.globe-visual picture { mask-image: radial-gradient(ellipse, #000 52%, transparent 75%); filter: drop-shadow(0 0 35px #0d75901a); }
-.globe-visual figcaption { text-align: right; font-size: .65rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-top: 12px; }
-.observatory .project-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
-.observatory .work-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-@media (max-width: 1100px) { .observatory .work-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 820px) {
   .compact-header .nav { gap: 14px; }
   .compact-header .brand { margin-right: auto; }
@@ -47,12 +41,9 @@ body.observatory {
   .observatory-hero-grid { grid-template-columns: 1fr; gap: 26px; }
   .observatory .observatory-hero { padding-block: 36px; }
   .domain-pillars { gap: 12px; margin-block: 24px; }
-  .globe-visual { max-width: 480px; justify-self: center; }
-  .observatory .project-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .observatory .section { padding-block: 40px; }
 }
 @media (max-width: 560px) {
-  .observatory .project-grid { grid-template-columns: 1fr; }
   .observatory .hero-actions { flex-direction: column; align-items: stretch; gap: 12px; }
   .domain-pillars { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .domain-pillars li { display: flex; gap: 10px; align-items: center; }
