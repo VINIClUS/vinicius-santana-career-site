@@ -1,6 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import type { ProjectDefinition } from './projects.ts';
+import type { ProjectDefinition, ProjectDiagramStage } from './projects.ts';
 
 interface Props {
   caseStudy: CollectionEntry<'caseStudies'>['data'];
@@ -8,8 +8,21 @@ interface Props {
 }
 
 const { caseStudy, definition } = Astro.props;
-const componentFor = (id: string) => caseStudy.architecture.find(component => component.id === id)!;
+const componentFor = (id: string) => {
+  const component = caseStudy.architecture.find(candidate => candidate.id === id);
+  if (!component) throw new Error(`SystemView requires a case-study component with id "${id}".`);
+  return component;
+};
 const statusLabel = (status: string) => status[0].toUpperCase() + status.slice(1);
+const flowStages = definition.diagram.stages.filter(stage => stage.kind === 'flow');
+const stageArrowLabel = (stage: ProjectDiagramStage) => {
+  const stageIndex = flowStages.indexOf(stage);
+  const laterComponentIds = new Set(flowStages.slice(stageIndex + 1).flatMap(candidate => candidate.componentIds));
+  const labels = definition.relations
+    .filter(relation => stage.componentIds.includes(relation.from) && laterComponentIds.has(relation.to))
+    .map(relation => relation.shortLabel);
+  return labels.length > 0 ? labels.join(' · ') : `To ${flowStages[stageIndex + 1].label}`;
+};
 ---
 
 <div class="system-view" data-system-view data-primary-component-id={definition.primaryComponentId}>
@@ -18,7 +31,7 @@ const statusLabel = (status: string) => status[0].toUpperCase() + status.slice(1
       <h3 id="system-diagram-title">System diagram</h3>
       <p class="system-view-intro">Select a component to inspect its public status, relationships, and details.</p>
       <div class="system-stages">
-        {definition.diagram.stages.map((stage, index) => <section class:list={['system-stage', `system-stage-${stage.kind}`]} aria-labelledby={`stage-${stage.id}`}>
+        {definition.diagram.stages.map(stage => <section class:list={['system-stage', `system-stage-${stage.kind}`]} aria-labelledby={`stage-${stage.id}`}>
           <h4 id={`stage-${stage.id}`}>{stage.label}</h4>
           <ol class="system-blocks" aria-label={`${stage.label} components`}>
             {stage.componentIds.map(id => {
@@ -35,7 +48,10 @@ const statusLabel = (status: string) => status[0].toUpperCase() + status.slice(1
               </li>;
             })}
           </ol>
-          {stage.kind === 'flow' && index < definition.diagram.stages.filter(candidate => candidate.kind === 'flow').length - 1 && <span class="stage-arrow" aria-hidden="true">→</span>}
+          {stage.kind === 'flow' && flowStages.indexOf(stage) < flowStages.length - 1 && <span class="stage-arrow" aria-label={`Flow from ${stage.label}: ${stageArrowLabel(stage)}`}>
+            <span aria-hidden="true">→</span>
+            <span class="stage-arrow-label" data-stage-arrow-label>{stageArrowLabel(stage)}</span>
+          </span>}
         </section>)}
       </div>
 
@@ -141,7 +157,8 @@ const statusLabel = (status: string) => status[0].toUpperCase() + status.slice(1
   .status-documented { color: #b7c4f3; }
   .status-planned { color: #e8c990; }
   .status-illustrative { color: #c7b4ff; }
-  .stage-arrow { position: absolute; z-index: 1; right: -18px; top: 50%; color: var(--accent); font-size: 1.3rem; transform: translateY(-50%); }
+  .stage-arrow { position: absolute; z-index: 1; right: -18px; top: 50%; display: inline-flex; align-items: center; gap: 4px; color: var(--accent); font-size: .68rem; font-weight: 700; line-height: 1.2; transform: translateY(-50%); }
+  .stage-arrow > span:first-child { font-size: 1.3rem; }
   .system-relationships { border-top: 1px solid var(--line); padding-top: 20px; }
   .system-relationships h4 { margin-top: 0; }
   .system-relationships ol { display: grid; gap: 10px; padding: 0; margin: 0; list-style: none; }
@@ -158,6 +175,6 @@ const statusLabel = (status: string) => status[0].toUpperCase() + status.slice(1
   .component-relations a { text-underline-offset: 3px; }
   .system-view[data-enhanced="true"] .system-detail-panel article:not([data-selected="true"]) { display: none; }
   a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
-  @media (max-width: 900px) { .system-stages { grid-template-columns: repeat(2, minmax(0, 1fr)); } .stage-arrow { display: none; } }
+  @media (max-width: 900px) { .system-stages { grid-template-columns: repeat(2, minmax(0, 1fr)); } .stage-arrow { position: static; margin-top: 12px; transform: none; } }
   @media (max-width: 680px) { .system-view-layout, .system-stages { grid-template-columns: 1fr; } .system-detail-panel { grid-row: 2; } }
 </style>
