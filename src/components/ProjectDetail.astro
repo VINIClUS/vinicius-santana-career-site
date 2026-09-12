@@ -16,6 +16,9 @@ const statusLabels = {
   historical: 'Historical', illustrative: 'Illustrative'
 } as const;
 const sections = [{ id: 'overview', label: 'Context & contribution' }, { id: 'system', label: 'System View' }, ...(presentation.simulation ? [{ id: 'simulation', label: 'Simulation' }] : []), { id: 'engineering', label: 'Engineering' }, { id: 'results', label: 'Results' }, { id: 'evidence', label: 'Evidence' }, { id: 'limitations', label: 'Limitations' }];
+const engineeringChapter = presentation.simulation ? 4 : 3;
+const resultsChapter = engineeringChapter + 1;
+const evidenceChapter = resultsChapter + 1;
 ---
 
 <EditorialLayout title={`${caseStudy.title} — Vinicius Santana`} description={caseStudy.summary} canonicalPath={canonicalPath} currentPath={canonicalPath} observatory>
@@ -63,7 +66,7 @@ const sections = [{ id: 'overview', label: 'Context & contribution' }, { id: 'sy
       </section>}
 
       <section id="engineering" tabindex="-1" class="chapter" aria-labelledby="engineering-heading">
-        <div class="chapter-heading"><p class="eyebrow">04 / Technical choices</p><h2 id="engineering-heading">Engineering</h2></div>
+        <div class="chapter-heading"><p class="eyebrow">{String(engineeringChapter).padStart(2, '0')} / Technical choices</p><h2 id="engineering-heading">Engineering</h2></div>
         <div class="chapter-content overview-grid">
           <div><h3 id="decisions-heading">Decisions</h3><ul class="detail-list">{caseStudy.decisions.map(item => <li>{item}</li>)}</ul></div>
           <div><h3 id="reliability-heading">Reliability</h3><ul class="detail-list">{caseStudy.reliability.map(item => <li>{item}</li>)}</ul></div>
@@ -71,13 +74,13 @@ const sections = [{ id: 'overview', label: 'Context & contribution' }, { id: 'sy
       </section>
 
       <section id="results" tabindex="-1" class="chapter" aria-labelledby="results-heading">
-        <div class="chapter-heading"><p class="eyebrow">05 / Outcomes</p><h2 id="results-heading">Results</h2></div>
+        <div class="chapter-heading"><p class="eyebrow">{String(resultsChapter).padStart(2, '0')} / Outcomes</p><h2 id="results-heading">Results</h2></div>
         <div class="chapter-content">
           <h3 id="outcomes-heading">Outcomes</h3><ul class="detail-list">{caseStudy.outcomes.map(item => <li>{item}</li>)}</ul>
         </div>
       </section>
       <section id="evidence" tabindex="-1" class="chapter" aria-labelledby="evidence-section-heading">
-        <div class="chapter-heading"><p class="eyebrow">06 / Public record</p><h2 id="evidence-section-heading">Evidence & limitations</h2></div>
+        <div class="chapter-heading"><p class="eyebrow">{String(evidenceChapter).padStart(2, '0')} / Public record</p><h2 id="evidence-section-heading">Evidence & limitations</h2></div>
         <div class="chapter-content">
           <div id="limitations" class="limitations" tabindex="-1"><h3 id="limitations-heading">{presentation.id === 'infrastructure' ? <span id="limits-title">Limitations</span> : 'Limitations'}</h3><ul class="detail-list">{caseStudy.limitations.map(item => <li>{item}</li>)}</ul></div>
           <h3 id="evidence-heading">Public evidence</h3>

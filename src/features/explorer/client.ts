@@ -1,5 +1,5 @@
 import { createExplorerController } from './controller.ts';
-import { projectIds, type ProjectId } from './projects.ts';
+import { projectDefinitions, projectIds, type ProjectId } from './projects.ts';
 import { scenarios } from '../../content/scenarios/cnesdata.ts';
 
 export function initializeExplorer() {
@@ -82,7 +82,7 @@ export function initializeExplorer() {
 
   const selectFragment = () => {
     const detail = Array.from(details).find(item => `#${item.id}` === window.location.hash);
-    controller.dispatch({ type: 'SELECT_COMPONENT', componentId: detail?.dataset.componentDetail ?? null });
+    controller.dispatch({ type: 'SELECT_COMPONENT', componentId: detail?.dataset.componentDetail ?? projectDefinitions[projectId as ProjectId].primaryComponentId });
     detail?.focus({ preventScroll: true });
   };
   controller.subscribe(render);

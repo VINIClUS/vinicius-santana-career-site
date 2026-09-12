@@ -41,6 +41,30 @@ test('conflict preserves A, reset and scenario change', async ({ page }) => {
   await expect(page.locator('[data-objects] li')).toHaveCount(1);
 });
 
+test('canonical routes keep the primary detail selected at #system while simulations run', async ({ page }) => {
+  for (const [project, primaryComponent] of [
+    ['cnesdata', 'central-api'],
+    ['limnopulse', 'evaluator'],
+    ['infrastructure', 'reference-topology'],
+  ]) {
+    await page.goto(`/explore/${project}/`);
+    await expect(page.locator(`[data-component-detail="${primaryComponent}"]`)).toBeVisible();
+    await page.locator('a[href="#system"]').click();
+    await expect(page).toHaveURL(new RegExp(`/explore/${project}/#system$`));
+    await expect(page.locator(`[data-component-detail="${primaryComponent}"]`)).toBeVisible();
+
+    if (project === 'cnesdata') {
+      await page.getByRole('button', { name: 'Advance one attempt' }).click();
+      await expect(page.locator('[data-result]')).toContainText('stored');
+    }
+    if (project === 'infrastructure') {
+      await page.getByRole('button', { name: 'Fail node-02' }).click();
+      await expect(page.locator('[data-infra-workload]')).toContainText('node-01');
+    }
+    await expect(page).toHaveURL(new RegExp(`/explore/${project}/#system$`));
+  }
+});
+
 test('static navigation, details and every transcript without JavaScript', async ({ browser, baseURL }) => {
   const context = await browser.newContext({ baseURL, javaScriptEnabled: false });
   const page = await context.newPage();
