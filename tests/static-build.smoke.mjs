@@ -112,6 +112,40 @@ assert.equal((editorialPages.work.match(/<article class="project-card visual-wor
 assert.match(editorialPages.work, /Health Systems/);
 assert.match(editorialPages.work, /href="\/#experience"[^>]*>View experience/);
 assert.match(editorialPages.about, /alt="Professional portrait of Vinicius Santana"/);
+
+const experiencePages = new Map([
+  ['home', html],
+  ['about', editorialPages.about]
+]);
+
+for (const [pageName, pageHtml] of experiencePages) {
+  const experienceArticle = pageHtml.match(/<article class="timeline-card"[\s\S]*?<\/article>/i)?.[0];
+  assert.ok(experienceArticle, `${pageName} must render the municipal experience as one article`);
+  assert.equal(
+    (experienceArticle.match(/Prefeitura de Presidente Epitácio/g) || []).length,
+    1,
+    `${pageName} must name the organization once within the experience article`
+  );
+  assert.match(
+    experienceArticle,
+    /<h3[^>]*>Prefeitura de Presidente Epitácio<\/h3>/i,
+    `${pageName} must expose the organization as the article heading`
+  );
+  assert.match(experienceArticle, /Nov 2021 — Present/, `${pageName} must show the complete employment period`);
+
+  for (const [role, period] of [
+    ['Health Informatics Analyst &amp; Data Engineer', 'Oct 2023 — Present'],
+    ['IT Infrastructure &amp; Systems Support · Internship', 'Nov 2021 — Oct 2023']
+  ]) {
+    assert.match(experienceArticle, new RegExp(`<h4[^>]*>${role}<\\/h4>`, 'i'), `${pageName} must expose ${role} as a role heading`);
+    assert.match(experienceArticle, new RegExp(escapeRegExp(period)), `${pageName} must show ${period}`);
+  }
+
+  const currentRoleOffset = experienceArticle.indexOf('Health Informatics Analyst &amp; Data Engineer');
+  const internshipOffset = experienceArticle.indexOf('IT Infrastructure &amp; Systems Support · Internship');
+  assert.ok(currentRoleOffset < internshipOffset, `${pageName} must list roles from newest to oldest`);
+}
+
 const workCardOffsets = ['CnesData', 'Limnopulse', 'Infrastructure &amp; Operations'].map((title) => editorialPages.work.indexOf(title));
 assert.ok(workCardOffsets.every((offset) => offset >= 0), 'Work must list all three selected case studies');
 assert.deepEqual(workCardOffsets, [...workCardOffsets].sort((left, right) => left - right), 'Work must follow collection order');

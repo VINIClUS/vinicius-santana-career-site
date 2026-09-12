@@ -1,5 +1,6 @@
 ---
 import ExternalLink from '../components/ExternalLink.astro';
+import ExperienceCard from '../components/ExperienceCard.astro';
 import PracticeCards from '../components/PracticeCards.astro';
 import StackGrid from '../components/StackGrid.astro';
 import { experience, profile } from '../data/content.js';
@@ -34,11 +35,7 @@ import EditorialLayout from '../layouts/EditorialLayout.astro';
         <h2 id="experience-heading">Public-health data and software work.</h2>
         <p>{experience.summary}</p>
       </div>
-      <article class="timeline-card">
-        <div class="timeline-meta"><span>{experience.period}</span><span>{experience.organization}</span></div>
-        <h3>{experience.role}</h3>
-        <ul class="check-list">{experience.highlights.map((item) => <li>{item}</li>)}</ul>
-      </article>
+      <ExperienceCard experience={experience} headingId="about-municipal-experience" />
     </div>
   </section>
 

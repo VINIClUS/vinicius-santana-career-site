@@ -38,17 +38,31 @@ export const roleFit = [
 ];
 
 export const experience = {
-  role: 'Health Informatics Analyst & Data Engineer',
   organization: 'Prefeitura de Presidente Epitácio',
-  period: 'Oct 2023 — Present',
+  period: 'Nov 2021 — Present',
   summary:
     'Data and software work for public-health operations, with emphasis on reliability, reporting integrity, automation and maintainable workflows.',
-  highlights: [
-    'Build validation and reconciliation workflows for SUS-related public-health data.',
-    'Automate recurring reporting routines that otherwise depend on manual spreadsheet checks.',
-    'Work across PostgreSQL, Python, SQL, APIs, data-quality rules, Linux environments and operational monitoring.',
-    'Make failures visible earlier across billing, reporting and health-data handoffs.',
-    'Document operational routines so systems can be maintained without relying on memory or one-off scripts.'
+  roles: [
+    {
+      title: 'Health Informatics Analyst & Data Engineer',
+      period: 'Oct 2023 — Present',
+      highlights: [
+        'Build validation and reconciliation workflows for SUS-related public-health data.',
+        'Automate recurring reporting routines that otherwise depend on manual spreadsheet checks.',
+        'Work across PostgreSQL, Python, SQL, APIs, data-quality rules, Linux environments and operational monitoring.',
+        'Make failures visible earlier across billing, reporting and health-data handoffs.',
+        'Document operational routines so systems can be maintained without relying on memory or one-off scripts.'
+      ]
+    },
+    {
+      title: 'IT Infrastructure & Systems Support · Internship',
+      period: 'Nov 2021 — Oct 2023',
+      highlights: [
+        'Operated 9 municipal Linux/Proxmox compute nodes, 2 backup nodes, 23 LXCs and 7 VMs, including the production e-SUS PEC environment for 293 active professionals.',
+        'Maintained rotating snapshots, incremental database backups and weekly full backups for e-SUS PEC and billing hosts, while resolving Ceph replication failures.',
+        'Operated LXC-hosted services for identity, secrets, object storage, observability, automation, CI, NAS, IT service management and inventory.'
+      ]
+    }
   ]
 };
 

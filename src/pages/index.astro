@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import ExternalLink from '../components/ExternalLink.astro';
+import ExperienceCard from '../components/ExperienceCard.astro';
 import PracticeCards from '../components/PracticeCards.astro';
 import SelectedWorkCard from '../components/SelectedWorkCard.astro';
 import ResponsivePoster from '../components/ResponsivePoster.astro';
@@ -103,11 +104,7 @@ const legacyAnchors: Record<string, { primary: string; aliases: string[] }> = {
         <h2 id="experience-title">Public-health data and software in an operational setting.</h2>
         <p>{experience.summary}</p>
       </div>
-      <article class="timeline-card">
-        <div class="timeline-meta"><span>{experience.period}</span><span>{experience.organization}</span></div>
-        <h3>{experience.role}</h3>
-        <ul class="check-list">{experience.highlights.map((item) => <li>{item}</li>)}</ul>
-      </article>
+      <ExperienceCard experience={experience} headingId="home-municipal-experience" />
     </div>
   </section>
 
