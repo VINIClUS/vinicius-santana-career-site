@@ -31,7 +31,7 @@ const sections = [{ id: 'overview', label: 'Overview' }, { id: 'architecture', l
       <p class="eyebrow">{caseStudy.eyebrow}</p>
       <h1>{caseStudy.title}</h1>
       <p class="summary">{caseStudy.summary}</p>
-      <ul class="technology-list" aria-label="Technologies used">
+      <ul class="technology-labels" aria-label={`Technologies used in ${caseStudy.title}`} role="list">
         {caseStudy.technologies.map(technology => <li>{technology}</li>)}
       </ul>
       <div class="hero-evidence">
@@ -104,9 +104,7 @@ const sections = [{ id: 'overview', label: 'Overview' }, { id: 'architecture', l
   .case-hero { padding-block: 22px 30px; max-width: 920px; }
   .case-hero h1 { font-size: clamp(2.4rem, 5.3vw, 4.7rem); margin-bottom: 18px; line-height: 1.08; }
   .summary { max-width: 780px; color: var(--muted-strong); font-size: clamp(1.05rem, 1.6vw, 1.2rem); line-height: 1.65; }
-  .technology-list, .detail-list { padding: 0; list-style: none; }
-  .technology-list { display: flex; flex-wrap: wrap; gap: 7px; margin: 22px 0 18px; }
-  .technology-list li { padding: 5px 10px; border: 1px solid var(--line); border-radius: 5px; background: var(--surface-soft); color: var(--muted-strong); font-size: .75rem; }
+  .detail-list { padding: 0; list-style: none; }
   .hero-evidence { display: flex; flex-wrap: wrap; gap: 12px 24px; font-size: .82rem; }
   .hero-evidence :global(a) { color: var(--accent); text-underline-offset: 4px; }
   .section-nav { display: flex; flex-wrap: wrap; gap: 0 28px; border-bottom: 1px solid var(--line); margin-bottom: 24px; }
