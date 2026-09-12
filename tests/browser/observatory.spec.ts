@@ -104,12 +104,17 @@ test('mobile supports touch, project changes, closing, repeated activation and h
     await page.setViewportSize({ width, height: 844 });
     const openPanelLabels = await page.locator('[data-district-link]').evaluateAll(links => links.map(link => ({
       fontSize: parseFloat(getComputedStyle(link).fontSize),
-      ...link.getBoundingClientRect().toJSON()
+      link: link.getBoundingClientRect().toJSON(),
+      text: link.lastElementChild!.getBoundingClientRect().toJSON()
     })));
     for (const label of openPanelLabels) {
       expect(label.fontSize).toBeGreaterThanOrEqual(14);
-      expect(label.left).toBeGreaterThanOrEqual(0);
-      expect(label.right).toBeLessThanOrEqual(width);
+      expect(label.link.left).toBeGreaterThanOrEqual(0);
+      expect(label.link.right).toBeLessThanOrEqual(width);
+      expect(label.text.left).toBeGreaterThanOrEqual(label.link.left);
+      expect(label.text.right).toBeLessThanOrEqual(label.link.right);
+      expect(label.text.top).toBeGreaterThanOrEqual(label.link.top);
+      expect(label.text.bottom).toBeLessThanOrEqual(label.link.bottom);
     }
   }
   await page.setViewportSize({ width: 390, height: 844 });
