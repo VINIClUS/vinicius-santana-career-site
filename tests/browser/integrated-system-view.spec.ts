@@ -89,10 +89,11 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
         }
         const labelCollisions = await view.locator('[data-graph-edge-label]').evaluateAll(labels => labels.flatMap((label, index) => {
           const box = label.getBoundingClientRect();
+          const minimumGap = 4;
           return labels.slice(index + 1)
             .filter(candidate => {
               const candidateBox = candidate.getBoundingClientRect();
-              return !(box.right <= candidateBox.left || candidateBox.right <= box.left || box.bottom <= candidateBox.top || candidateBox.bottom <= box.top);
+              return !(box.right + minimumGap <= candidateBox.left || candidateBox.right + minimumGap <= box.left || box.bottom + minimumGap <= candidateBox.top || candidateBox.bottom + minimumGap <= box.top);
             })
             .map(candidate => `${label.textContent?.trim()} / ${candidate.textContent?.trim()}`);
         }));
