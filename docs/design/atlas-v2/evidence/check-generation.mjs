@@ -1,7 +1,8 @@
-// rtk node docs/design/atlas-v2/lighting-motion/check-generation.mjs
+// rtk proxy node docs/design/atlas-v2/evidence/check-generation.mjs
 // Creates one disposable worktree, snapshots the candidate authoring files, and
 // records full/partial generation comparisons. It never copies generated pixels
-// or metadata back to the candidate. The checkout remains for artifact review.
+// or metadata back to the candidate. The checkout and a fresh report inside it
+// remain for artifact review; archived evidence is never overwritten.
 import { execFileSync, spawn } from 'node:child_process';
 import { cp, mkdir, mkdtemp, readFile, readdir, symlink, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
@@ -12,7 +13,6 @@ import os from 'node:os';
 import sharp from 'sharp';
 
 const root = fileURLToPath(new URL('../../../../', import.meta.url));
-const reportPath = path.join(root, 'docs/design/atlas-v2/lighting-motion/generation.json');
 const baselineSha = '773022dee346f9e614b4b227aaf1b38fa721ec1c';
 const git = (cwd, ...args) => execFileSync('rtk', ['proxy', 'git', ...args], { cwd, maxBuffer: 20 * 1024 * 1024 });
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
@@ -27,10 +27,11 @@ const detailIds = ['detail-cnesdata', 'detail-infrastructure', 'detail-infrastru
 const expectedMetadata = ['district-cnesdata', 'district-limnopulse', 'district-infrastructure', 'hub', 'detail-cnesdata', 'detail-infrastructure', 'overview', 'detail-infrastructure-failed'].sort();
 const expectedModels = ['district-cnesdata', 'district-limnopulse', 'district-infrastructure', 'hub', 'detail-cnesdata', 'detail-infrastructure'].map(id => `${id}.glb`).sort();
 const expectedPosters = expectedMetadata.flatMap(id => ['desktop', 'mobile'].map(variant => `${id}-${variant}.webp`)).sort();
-const baselineInventory = JSON.parse(await readFile(path.join(root, 'docs/design/atlas-v2/baseline/inventory.json'), 'utf8'));
+const baselineInventory = JSON.parse(await readFile(new URL('./baseline-inventory.json', import.meta.url), 'utf8'));
 const baselineAssets = Object.fromEntries(baselineInventory.source.map(file => [file.path, file]));
 const baselineMetadata = JSON.parse(git(root, 'show', `${baselineSha}:src/content/scenes/generated.json`).toString());
-const temporary = await mkdtemp('/tmp/atlas-v2-lighting-motion-generation-');
+const temporary = await mkdtemp(path.join(os.tmpdir(), 'atlas-v2-generation-'));
+const reportPath = path.join(temporary, 'generation-report.json');
 report.disposableWorktree = temporary;
 git(root, 'worktree', 'add', '--detach', temporary, baselineSha);
 await symlink(path.join(root, 'node_modules'), path.join(temporary, 'node_modules'), 'dir');

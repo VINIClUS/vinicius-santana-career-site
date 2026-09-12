@@ -102,8 +102,11 @@
     {
       "file": "check-generation.mjs",
       "archivedSource": "lighting-motion/check-generation.mjs",
-      "bytes": 13239,
-      "sha256": "19b7c8b6bc9c2cf35ddc94ec8826268058ddce7fafa3187a5f92d5459cc82363"
+      "bytes": 13277,
+      "sha256": "ee691bf6deb629e84d79b34ece7f3caa7218252273f51d74f32e8b8cc897c35d",
+      "archivedSourceSha256": "19b7c8b6bc9c2cf35ddc94ec8826268058ddce7fafa3187a5f92d5459cc82363",
+      "archivedSourceBytes": 13239,
+      "maintenance": "Updated the invocation and relocated baseline inventory path; reruns now write a fresh report in their disposable checkout. Generation and comparison logic is unchanged."
     },
     {
       "file": "motion-fix-red.json",
