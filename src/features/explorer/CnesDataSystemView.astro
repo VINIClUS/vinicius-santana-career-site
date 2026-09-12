@@ -2,82 +2,64 @@
 import type { CollectionEntry } from 'astro:content';
 import ResponsivePoster from '../../components/ResponsivePoster.astro';
 import { details } from '../../content/scenes';
+import SystemViewCards from './SystemViewCards.astro';
+import SystemGraphConnectors from './SystemGraphConnectors.astro';
 import { projectDefinitions } from './projects.ts';
 
 interface Props { caseStudy: CollectionEntry<'caseStudies'>['data']; }
 const { caseStudy } = Astro.props;
 const { relations } = projectDefinitions.cnesdata;
 const componentFor = (id: string) => caseStudy.architecture.find(component => component.id === id)!;
-const label = (status: string) => status[0].toUpperCase() + status.slice(1);
+const graphNodes = [
+  { id: 'canonical-contracts', x: 16, y: 16 }, { id: 'edge-agent', x: 16, y: 46 }, { id: 'web-dashboard', x: 16, y: 78 },
+  { id: 'central-api', x: 50, y: 50 },
+  { id: 'tenant-isolation', x: 84, y: 26 }, { id: 'parquet-to-gold', x: 84, y: 55 }, { id: 'kubernetes', x: 84, y: 82 },
+];
+const routes = {
+  'canonical-contracts→edge-agent': { via: [{ x: 16, y: 31 }], label: { x: 16, y: 31 } },
+  'canonical-contracts→central-api': { via: [{ x: 50, y: 20 }], label: { x: 50, y: 20 } },
+  'edge-agent→central-api': { via: [{ x: 50, y: 32 }], label: { x: 50, y: 32 } },
+  'central-api→tenant-isolation': { via: [{ x: 50, y: 8 }], label: { x: 50, y: 8 } },
+  'web-dashboard→central-api': { via: [{ x: 16, y: 62 }], label: { x: 16, y: 62 } },
+  'central-api→parquet-to-gold': { via: [{ x: 50, y: 69 }], label: { x: 50, y: 69 } },
+  'kubernetes→central-api': { via: [{ x: 50, y: 91 }], label: { x: 50, y: 91 } },
+};
 ---
-<div class="cnesdata-system-view">
-  <p class="explorer-note">Illustrative architecture map. Component statuses describe the public work; connections summarize relationships, not a live deployment. Full Parquet-to-Gold processing and Kubernetes deployment remain planned.</p>
-  <p>Select a component to read its details and relationships. The arrows below show direction and purpose.</p>
-  <ol class="component-map" aria-label="System components">
-    {caseStudy.architecture.map((component, index) => <li>
-      <a href={`#component-${component.id}`} data-component-link={component.id}>
-        <span class="component-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
-        <span><strong>{component.title}</strong><span class={`component-status status-${component.status}`}>{label(component.status)}</span></span>
-        <span class="selection-marker" aria-hidden="true">Selected</span>
-      </a>
-    </li>)}
-  </ol>
-  <h3 id="relationships-title">Relationships</h3>
-  <ol class="data-flow" aria-labelledby="relationships-title">
-    {relations.map(relation => <li>
-      <div class="flow-endpoints">
-        <a href={`#component-${relation.from}`}>{componentFor(relation.from).title}<span class={`component-status status-${componentFor(relation.from).status}`}>{label(componentFor(relation.from).status)}</span></a>
-        <svg width="36" height="24" viewBox="0 0 36 24" aria-hidden="true"><path d="M2 12h29m-8-8 8 8-8 8" fill="none" stroke="currentColor" stroke-width="2" /></svg><span class="visually-hidden">to</span>
-        <a href={`#component-${relation.to}`}>{componentFor(relation.to).title}<span class={`component-status status-${componentFor(relation.to).status}`}>{label(componentFor(relation.to).status)}</span></a>
-      </div>
-      <p>{relation.label}</p>
-    </li>)}
-  </ol>
-  <figure class="system-poster">
-    <ResponsivePoster poster={details.cnesdata.poster} />
-    <figcaption>CnesData / Detailed architectural maquette · Static, illustrative poster. Component statuses and relationships are described in text above.</figcaption>
-  </figure>
-  <section class="component-panel" aria-labelledby="details-title">
-    <h3 id="details-title">Component details</h3>
-    {caseStudy.architecture.map(component => <article id={`component-${component.id}`} data-component-detail={component.id} tabindex="-1">
-      <p class={`eyebrow status-${component.status}`}>{label(component.status)}</p>
-      <h4>{component.title}</h4>
-      <p>{component.description}</p>
-      <ul class="component-relations">
-        {relations.filter(relation => relation.from === component.id || relation.to === component.id).map(relation => <li>{relation.label}: <a href={`#component-${relation.from === component.id ? relation.to : relation.from}`}>{componentFor(relation.from === component.id ? relation.to : relation.from).title}</a></li>)}
-      </ul>
-      <a class="text-link" href="#architecture">Back to System View</a>
-    </article>)}
-  </section>
+<div class="integrated-system-view cnesdata-system-view" data-integrated-system-view>
+  <p class="explorer-note">Conceptual architecture map for public discussion. Connections describe system responsibilities rather than a live deployment; processing and deployment boundaries remain illustrative.</p>
+  <div class="system-view-layout">
+    <div class="system-graph-column">
+      <section class="system-graph cnesdata-graph" data-system-graph aria-labelledby="system-map-title">
+        <div class="graph-heading"><h3 id="system-map-title">System map</h3><p>Central API is the branching hub between contracts, clients, and downstream boundaries.</p></div>
+        <div class="graph-stage">
+          <SystemGraphConnectors components={caseStudy.architecture} nodes={graphNodes} relations={relations} nodeHalfWidth={14.5} nodeHalfHeight={10.91} {routes} />
+          <ol class="graph-nodes" aria-label="CnesData system components">
+          {graphNodes.map(node => { const component = componentFor(node.id); return <li id={`graph-node-${node.id}`} data-graph-node={node.id} class={node.id === 'central-api' ? 'graph-node graph-node-hub' : 'graph-node'} style={`--node-x: ${node.x}%; --node-y: ${node.y}%`}>
+            <a href={`#component-${node.id}`} data-component-link={node.id}>
+              <span class="graph-node-kicker" aria-hidden="true">{node.id === 'central-api' ? 'Hub' : 'Component'}</span>
+              <strong>{component.title}</strong>
+              <span class="selection-marker" aria-hidden="true">Selected</span>
+            </a>
+          </li>; })}
+          </ol>
+        </div>
+      </section>
+      <figure class="system-poster">
+        <ResponsivePoster poster={details.cnesdata.poster} />
+        <figcaption>CnesData / detailed architectural maquette · static, illustrative poster.</figcaption>
+      </figure>
+    </div>
+    <SystemViewCards components={caseStudy.architecture} relations={relations} />
+  </div>
 </div>
 <style>
-  .cnesdata-system-view { min-width: 0; }
-  .component-map { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 32px; }
-  .component-map a { height: 100%; }
-  .component-map strong { font-size: .88rem; }
-  .component-map .selection-marker { font-size: .65rem; }
-  .status-planned { color: #e8c990; }
-  .data-flow { list-style: none; padding: 0; display: grid; gap: 12px; margin-bottom: 32px; }
-  .data-flow li { padding: 16px; border-left: 2px solid var(--accent); background: var(--surface-soft); }
-  .flow-endpoints { display: grid; grid-template-columns: minmax(0, 1fr) 36px minmax(0, 1fr); align-items: center; gap: 16px; }
-  .flow-endpoints a { font-size: .85rem; text-underline-offset: 4px; }
-  .flow-endpoints svg { color: var(--accent); }
-  .component-status { font-size: .72rem; }
-  .data-flow p { margin: 12px 0 0; font-size: .8rem; color: var(--muted-strong); }
-  .system-poster { overflow: hidden; margin: 32px 0; border: 1px solid var(--line); border-radius: 12px; background: #080f19; }
+  .cnesdata-system-view { --graph-accent: var(--accent); --graph-connector: var(--accent); --graph-node-height: 96px; }
+  .system-graph-column { display: grid; gap: 20px; min-width: 0; }
+  .system-graph { background: linear-gradient(140deg, rgba(132,244,230,.08), rgba(7,18,31,.35)); }
+  .graph-stage { position: relative; height: 440px; margin-top: 20px; }
+  .graph-node-hub a { border-color: var(--accent); box-shadow: inset 0 0 0 1px rgba(132,244,230,.25); }
+  .system-poster { overflow: hidden; margin: 0; border: 1px solid var(--line); border-radius: 12px; background: #080f19; }
   .system-poster :global(picture), .system-poster :global(img) { display: block; }
   .system-poster :global(img) { height: auto; object-fit: contain; }
-  .system-poster figcaption { padding: 16px; border-top: 1px solid var(--line); font-size: .75rem; color: var(--muted-strong); }
-  .component-panel article { border: 0; border-top: 1px solid var(--line); border-radius: 0; padding: 24px 16px; }
-  .component-panel article:target, .component-panel article[data-selected="true"] { border: 2px solid var(--accent); }
-  .component-panel h4 { font-size: 1rem; }
-  .component-panel p, .component-relations { font-size: .88rem; color: var(--muted-strong); line-height: 1.75; }
-  .component-panel .eyebrow { color: var(--accent); }
-  .component-panel .status-planned { color: #e8c990; }
-  a:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
-  @media (max-width: 600px) {
-    .component-map { grid-template-columns: 1fr; }
-    .flow-endpoints { grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr); gap: 8px; }
-    .flow-endpoints svg { width: 24px; }
-  }
+  .system-poster figcaption { padding: 14px; border-top: 1px solid var(--line); color: var(--muted-strong); font-size: .72rem; }
 </style>

@@ -42,7 +42,12 @@ try {
     ]) assert.ok(html.includes(text), `${caseStudy.id} retains editorial content: ${text}`);
 
     assert.equal((html.match(/data-component-detail=/g) ?? []).length, caseStudy.architecture.length, `${caseStudy.id} has one detail card per case-study component`);
-    assert.doesNotMatch(html, /<(?:canvas|picture)\b|data-infra-poster|detail-(?:cnesdata|infrastructure)[^"']*\.(?:webp|glb)|infrastructure-renderer/i, `${caseStudy.id} has no project poster, canvas, or 3D loader`);
+    if (caseStudy.id === 'cnesdata') {
+      assert.match(html, /<figure[^>]*class="system-poster"[\s\S]*?<picture\b/, 'CnesData retains its architecture poster');
+      assert.doesNotMatch(html, /<canvas\b|\.glb["']|infrastructure-renderer/i, 'CnesData poster does not add a graphics runtime');
+    } else {
+      assert.doesNotMatch(html, /<(?:canvas|picture)\b|data-infra-poster|detail-(?:cnesdata|infrastructure)[^"']*\.(?:webp|glb)|infrastructure-renderer/i, `${caseStudy.id} has no project poster, canvas, or 3D loader`);
+    }
   }
 } finally {
   await rm(outputDirectory, { recursive: true, force: true });

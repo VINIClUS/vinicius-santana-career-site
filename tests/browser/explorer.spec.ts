@@ -162,20 +162,17 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
   });
 }
 
-test('system views retain components, relationships, qualifiers and transcripts without JavaScript at 360px', async ({ browser, baseURL }) => {
+test('system views retain components, connectors, evidence status and transcripts without JavaScript at 360px', async ({ browser, baseURL }) => {
   const context = await browser.newContext({ baseURL, viewport: { width: 360, height: 844 }, javaScriptEnabled: false });
   const page = await context.newPage();
 
-  for (const [project, qualifier] of [
-    ['cnesdata', 'Planned'],
-    ['limnopulse', 'Planned'],
-    ['infrastructure', 'Illustrative'],
-  ]) {
+  for (const project of ['cnesdata', 'limnopulse', 'infrastructure']) {
     await page.goto(`/explore/${project}/`);
     await expect(page.locator('[data-component-detail]')).not.toHaveCount(0);
     await expect(page.locator('[data-component-detail]').last()).toBeVisible();
-    await expect(page.locator('.system-relationships li').first()).toBeVisible();
-    await expect(page.locator('[data-component-detail] .component-status').filter({ hasText: qualifier }).first()).toBeVisible();
+    await expect(page.locator('[data-graph-connector]').first()).toBeAttached();
+    await expect(page.locator('[data-component-detail] .component-status')).toHaveCount(0);
+    await expect(page.locator('#evidence .status').first()).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
 
@@ -250,7 +247,8 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       await expect(advance).toBeEnabled();
     }
     await expect(page.locator('[data-system-view]')).toHaveCount(1);
-    await expect(page.locator('img[src*="detail-cnesdata"], canvas')).toHaveCount(0);
+    await expect(page.locator('img[src*="detail-cnesdata"]')).toBeVisible();
+    await expect(page.locator('canvas')).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     expect(models).toEqual([]);
     await page.goto('/explore/cnesdata/');

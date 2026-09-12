@@ -46,9 +46,9 @@ const caseStudy = ${JSON.stringify(cnesData)};
   await run(process.execPath, [astroBin, 'build', '--root', rootPath, '--outDir', outputDirectory], { cwd: rootPath });
 
   const html = await readFile(path.join(outputDirectory, fixtureRoute, 'index.html'), 'utf8');
-  const stageArrowCount = (html.match(/class="stage-arrow"/g) || []).length;
-  assert.ok(stageArrowCount > 0, 'flow stages render directional arrows');
-  assert.equal((html.match(/data-stage-arrow-label/g) || []).length, stageArrowCount, 'every stage arrow has a short text label');
+  const connectorCount = (html.match(/data-graph-connector/g) || []).length;
+  assert.equal(connectorCount, 7, 'every CnesData relation renders one directional connector');
+  assert.equal((html.match(/data-graph-edge-label/g) || []).length, connectorCount, 'every connector has a short text label');
 
   const { server, origin } = await startStaticServer(outputDirectory);
   const browser = await chromium.launch();
@@ -66,7 +66,7 @@ const caseStudy = ${JSON.stringify(cnesData)};
 
     await page.goto(`${origin}${fixtureRoute}`);
     await page.waitForSelector('[data-component-link="central-api"][aria-current="true"]');
-    await page.locator('.system-blocks [data-component-link="canonical-contracts"]').focus();
+    await page.locator('[data-system-graph] [data-component-link="canonical-contracts"]').focus();
     await page.keyboard.press('ArrowRight');
     await page.waitForURL(/#component-edge-agent$/);
     assert.equal(await page.locator('[data-component-link="edge-agent"]').first().getAttribute('aria-current'), 'true', 'keyboard selection updates aria-current');
@@ -84,9 +84,10 @@ const caseStudy = ${JSON.stringify(cnesData)};
     for (const component of cnesData.architecture) {
       assert.equal(await noJavaScriptPage.locator(`#component-${component.id}`).isVisible(), true, `${component.id} remains readable without JavaScript`);
       const detailText = await noJavaScriptPage.locator(`#component-${component.id}`).textContent();
-      assert.match(detailText, new RegExp(component.status, 'i'), `${component.id} retains its status without JavaScript`);
+      assert.doesNotMatch(detailText, new RegExp(component.status, 'i'), `${component.id} does not repeat status without JavaScript`);
       assert.ok(detailText.includes(component.title), `${component.id} retains its title without JavaScript`);
       assert.ok(detailText.includes(component.description), `${component.id} retains its description without JavaScript`);
+      assert.equal(await noJavaScriptPage.locator(`#component-${component.id} a`).count(), 0, `${component.id} card contains no links`);
     }
     await noJavaScriptContext.close();
   } finally {

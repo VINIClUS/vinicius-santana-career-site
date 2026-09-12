@@ -3,20 +3,12 @@ import { test, expect } from '@playwright/test';
 const projects = ['cnesdata', 'limnopulse', 'infrastructure'] as const;
 
 for (const project of projects) {
-  test(`${project}: desktop connectors never cover component cards`, async ({ page }, testInfo) => {
+  test(`${project}: desktop graph and component cards remain side by side`, async ({ page }, testInfo) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto(`/explore/${project}/#system`);
-    const intersections = await page.locator('[data-system-view]').evaluate(view => {
-      const cards = [...view.querySelectorAll('.system-blocks a')].map(card => card.getBoundingClientRect());
-      return [...view.querySelectorAll('.stage-arrow')].filter(arrow => {
-        const box = arrow.getBoundingClientRect();
-        return cards.some(card => box.left < card.right && box.right > card.left && box.top < card.bottom && box.bottom > card.top);
-      }).map(arrow => arrow.textContent?.trim());
-    });
     await page.locator('[data-system-view]').screenshot({ path: testInfo.outputPath(`${project}-desktop.png`) });
-    expect(intersections).toEqual([]);
-    const diagram = await page.locator('.system-diagram').boundingBox();
-    const detail = await page.locator('.system-detail-panel').boundingBox();
+    const diagram = await page.locator('[data-system-graph]').boundingBox();
+    const detail = await page.locator('[data-component-cards]').boundingBox();
     expect(diagram!.x + diagram!.width).toBeLessThan(detail!.x);
   });
 
@@ -27,7 +19,7 @@ for (const project of projects) {
     if (project === 'infrastructure') await page.locator('[data-fail-node]').click();
     const simulation = page.locator(project === 'cnesdata' ? '[data-progress]' : '[data-infra-workload]');
     const before = project === 'limnopulse' ? null : await simulation.textContent();
-    const controls = page.locator('.system-blocks [data-component-link]');
+    const controls = page.locator('[data-system-graph] [data-component-link]');
     const ids = await controls.evaluateAll(links => links.map(link => (link as HTMLElement).dataset.componentLink));
     await controls.first().focus();
     for (const [key, index] of [['ArrowRight', 1], ['ArrowRight', 2], ['End', ids.length - 1], ['ArrowRight', 0], ['ArrowLeft', ids.length - 1], ['Home', 0], ['ArrowDown', 1], ['ArrowUp', 0]] as const) {
@@ -36,7 +28,7 @@ for (const project of projects) {
       await expect(controls.nth(index)).toBeFocused();
       await expect(controls.nth(index)).toHaveAttribute('aria-current', 'true');
       await expect(page.locator(`[data-component-detail="${ids[index]}"]`)).toBeVisible();
-      await expect(page.locator('.system-blocks [aria-current="true"]')).toHaveCount(1);
+      await expect(page.locator('[data-system-graph] [aria-current="true"]')).toHaveCount(1);
     }
     if (before !== null) await expect(simulation).toHaveText(before);
     await page.goBack();
@@ -50,36 +42,52 @@ for (const project of projects) {
       await page.locator(project === 'cnesdata' ? '[data-reset]' : '[data-infra-reset]').click();
       await expect(controls.first()).toHaveAttribute('aria-current', 'true');
     }
-    const relationshipLink = page.locator('.relationship-direction a').first();
-    await relationshipLink.focus();
-    const fragment = page.url();
-    await page.keyboard.press('End');
-    await expect(relationshipLink).toBeFocused();
-    expect(page.url()).toBe(fragment);
+    await expect(page.locator('[data-component-cards] a')).toHaveCount(0);
   });
 }
+
+test('Limnopulse stacks before the parent chapter narrows its graph column', async ({ page }) => {
+  await page.setViewportSize({ width: 901, height: 900 });
+  await page.goto('/explore/limnopulse/#component-production-device-layer');
+  const diagram = await page.locator('[data-system-graph]').boundingBox();
+  const detail = await page.locator('[data-component-cards]').boundingBox();
+  expect(diagram!.y + diagram!.height).toBeLessThan(detail!.y);
+  const selectedNode = page.locator('[data-component-link="production-device-layer"]');
+  expect(await selectedNode.evaluate(node => node.scrollHeight <= node.clientHeight)).toBe(true);
+});
 
 test('Infrastructure renders three parallel inputs directed only to reference topology', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/explore/infrastructure/#system');
-  const edges = page.locator('.system-stages .stage-arrow');
+  const edges = page.locator('[data-system-graph] [data-graph-connector]');
   await expect(edges).toHaveCount(3);
   expect(await edges.evaluateAll(arrows => arrows.map(arrow => [arrow.getAttribute('data-connector-from'), arrow.getAttribute('data-connector-to')]).sort())).toEqual([
     ['ansible-contracts', 'reference-topology'],
     ['image-builds', 'reference-topology'],
     ['operations-automation', 'reference-topology'],
   ]);
-  const inputs = page.locator('.system-stage').filter({ hasNot: page.locator('[data-component-link="reference-topology"]') });
-  const positions = await inputs.evaluateAll(stages => stages.map(stage => stage.getBoundingClientRect().x));
+  const inputs = page.locator('[data-graph-node="ansible-contracts"], [data-graph-node="image-builds"], [data-graph-node="operations-automation"]');
+  const positions = await inputs.evaluateAll(nodes => nodes.map(node => node.getBoundingClientRect().x));
   expect(new Set(positions).size).toBe(1);
-  const target = await page.locator('.system-blocks [data-component-link="reference-topology"]').boundingBox();
+  const target = await page.locator('[data-graph-node="reference-topology"]').boundingBox();
   expect(target!.x).toBeGreaterThan(positions[0]);
 });
 
-test('relationship fallback announces direction without relying on its visual arrow', async ({ page }) => {
+test('connector labels paint above every connector path', async ({ page }) => {
+  await page.goto('/explore/cnesdata/#system');
+  const layers = await page.locator('[data-graph-connector]').evaluateAll(connectors => connectors.map(connector => ({
+    connector: getComputedStyle(connector).zIndex,
+    path: getComputedStyle(connector.querySelector('svg')!).zIndex,
+    label: getComputedStyle(connector.querySelector('[data-graph-edge-label]')!).zIndex,
+  })));
+  expect(layers.every(layer => layer.connector === 'auto' && layer.path === 'auto' && Number(layer.label) > 0)).toBe(true);
+});
+
+test('connectors announce both endpoints without relying on their decorative arrows', async ({ page }) => {
   await page.goto('/explore/infrastructure/');
-  const directions = page.locator('.relationship-direction');
-  for (const direction of await directions.all()) {
-    expect(await direction.ariaSnapshot()).toMatch(/text: to/);
+  const connectors = page.locator('[data-graph-connector]');
+  await expect(page.getByRole('img', { name: /Connection from .+ to .+:/ })).toHaveCount(3);
+  for (const connector of await connectors.all()) {
+    await expect(connector).toHaveAttribute('aria-label', /Connection from .+ to .+:/);
   }
 });

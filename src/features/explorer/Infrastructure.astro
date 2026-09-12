@@ -4,7 +4,6 @@ const initial = createInitialInfraState();
 const transcript = transitionInfrastructure(initial, { type: 'FAIL_NODE', nodeId: 'node-02' });
 ---
 <section class="walkthrough infrastructure-simulation" data-infrastructure-simulation aria-labelledby="infra-title">
-  <p class="eyebrow">Synthetic simulation · Illustrative</p>
   <h2 id="infra-title">Infrastructure failover</h2>
   <p>Explore a synthetic three-node cluster. Fail node-02 to transfer its workload to node-01 while the shared layer stays available.</p>
   <div class="infra-layout">

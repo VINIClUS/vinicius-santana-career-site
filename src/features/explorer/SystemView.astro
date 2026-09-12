@@ -1,6 +1,9 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import type { ProjectDefinition } from './projects.ts';
+import CnesDataSystemView from './CnesDataSystemView.astro';
+import InfrastructureSystemView from './InfrastructureSystemView.astro';
+import LimnopulseSystemView from './LimnopulseSystemView.astro';
+import { projectDefinitions, projectIds, type ProjectDefinition } from './projects.ts';
 
 interface Props {
   caseStudy: CollectionEntry<'caseStudies'>['data'];
@@ -8,97 +11,21 @@ interface Props {
 }
 
 const { caseStudy, definition } = Astro.props;
-const componentFor = (id: string) => {
-  const component = caseStudy.architecture.find(candidate => candidate.id === id);
-  if (!component) throw new Error(`SystemView requires a case-study component with id "${id}".`);
-  return component;
-};
-const statusLabel = (status: string) => status[0].toUpperCase() + status.slice(1);
-const stages = definition.diagram.stages;
-const stageFor = (id: string) => stages.find(stage => stage.componentIds.includes(id))!;
-const connections = definition.relations.filter(relation => stageFor(relation.from) !== stageFor(relation.to));
-const destinations = new Set(connections.map(relation => stageFor(relation.to)));
-const convergenceTarget = destinations.size === 1 && connections.length > 1 ? [...destinations][0] : undefined;
-const inputStages = stages.filter(stage => stage !== convergenceTarget);
+const projectId = projectIds.find(id => projectDefinitions[id] === definition);
+if (!projectId) throw new Error('SystemView requires a canonical project definition.');
 ---
 
 <div class="system-view" data-system-view data-primary-component-id={definition.primaryComponentId}>
-  <div class="system-view-layout">
-    <section class="system-diagram" aria-labelledby="system-diagram-title">
-      <h3 id="system-diagram-title">System diagram</h3>
-      <p class="system-view-intro">Select a component to inspect its public status, relationships, and details.</p>
-      <div class:list={['system-stages', { 'system-stages-converging': convergenceTarget }]}>
-        {stages.map(stage => <>
-        <section class:list={['system-stage', `system-stage-${stage.kind}`, { 'system-stage-destination': stage === convergenceTarget }]} style={convergenceTarget ? `--stage-row: ${inputStages.indexOf(stage) + 1}; --input-count: ${inputStages.length}` : undefined} aria-labelledby={`stage-${stage.id}`}>
-          <h4 id={`stage-${stage.id}`}>{stage.label}</h4>
-          <ol class="system-blocks" aria-label={`${stage.label} components`}>
-            {stage.componentIds.map(id => {
-              const component = componentFor(id);
-              return <li>
-                <a
-                  href={`#component-${id}`}
-                  data-component-link={id}
-                  aria-current={id === definition.primaryComponentId ? 'true' : undefined}
-                >
-                  <strong>{component.title}</strong>
-                  <span class:list={['component-status', `status-${component.status}`]}>{statusLabel(component.status)}</span>
-                </a>
-              </li>;
-            })}
-          </ol>
-        </section>
-        {connections.some(relation => stageFor(relation.from) === stage) && <div class="stage-connectors" style={convergenceTarget ? `--stage-row: ${inputStages.indexOf(stage) + 1}` : undefined}>
-          {connections.filter(relation => stageFor(relation.from) === stage).map(relation => <span class="stage-arrow" data-connector-from={relation.from} data-connector-to={relation.to}>
-            <span class="stage-arrow-symbol" aria-hidden="true">{convergenceTarget ? '→' : stages.indexOf(stageFor(relation.to)) > stages.indexOf(stage) ? '↓' : '↑'}</span>
-            <span class="stage-arrow-label" data-stage-arrow-label>{relation.shortLabel}<span class="connector-destination"> to {stageFor(relation.to).label}</span></span>
-          </span>)}
-        </div>}
-        </>)}
-      </div>
-
-      <section class="system-relationships" aria-labelledby="relationships-title">
-        <h4 id="relationships-title">Relationships</h4>
-        <ol>
-          {definition.relations.map(relation => {
-            const from = componentFor(relation.from);
-            const to = componentFor(relation.to);
-            return <li data-relation-from={relation.from} data-relation-to={relation.to}>
-              <div class="relationship-direction">
-                <a href={`#component-${relation.from}`} data-component-link={relation.from}>{from.title}</a>
-                <span class="relationship-arrow" aria-hidden="true">→</span>
-                <span class="visually-hidden">to</span>
-                <a href={`#component-${relation.to}`} data-component-link={relation.to}>{to.title}</a>
-              </div>
-              <p><strong>{relation.shortLabel}</strong><span class="visually-hidden">: </span><span> — {relation.label}</span></p>
-            </li>;
-          })}
-        </ol>
-      </section>
-    </section>
-
-    <section class="system-detail-panel" aria-labelledby="details-title">
-      <h3 id="details-title">Component details</h3>
-      {caseStudy.architecture.map(component => <article id={`component-${component.id}`} data-component-detail={component.id} data-selected={component.id === definition.primaryComponentId ? 'true' : undefined} tabindex="-1">
-        <p class:list={['component-status', `status-${component.status}`]}>{statusLabel(component.status)}</p>
-        <h4>{component.title}</h4>
-        <p>{component.description}</p>
-        <ul class="component-relations" aria-label={`Relationships for ${component.title}`}>
-          {definition.relations.filter(relation => relation.from === component.id || relation.to === component.id).map(relation => {
-            const otherId = relation.from === component.id ? relation.to : relation.from;
-            const direction = relation.from === component.id ? 'to' : 'from';
-            return <li><strong>{relation.shortLabel}</strong>: {direction} <a href={`#component-${otherId}`} data-component-link={otherId}>{componentFor(otherId).title}</a>. {relation.label}</li>;
-          })}
-        </ul>
-      </article>)}
-    </section>
-  </div>
+  {projectId === 'cnesdata' && <CnesDataSystemView {caseStudy} />}
+  {projectId === 'limnopulse' && <LimnopulseSystemView {caseStudy} />}
+  {projectId === 'infrastructure' && <InfrastructureSystemView {caseStudy} />}
 </div>
 
 <script is:inline>
   for (const view of document.querySelectorAll('[data-system-view]')) {
+    if (view.dataset.enhanced === 'true') continue;
     const primaryComponentId = view.dataset.primaryComponentId;
-    const links = [...view.querySelectorAll('[data-component-link]')];
-    const controls = [...view.querySelectorAll('.system-blocks [data-component-link]')];
+    const controls = [...view.querySelectorAll('[data-system-graph] [data-component-link]')];
     const details = [...view.querySelectorAll('[data-component-detail]')];
     const componentIds = new Set(details.map(detail => detail.dataset.componentDetail));
 
@@ -107,26 +34,19 @@ const inputStages = stages.filter(stage => stage !== convergenceTarget);
       const componentId = match?.[1];
       return componentIds.has(componentId) ? componentId : primaryComponentId;
     };
-
     const select = (componentId) => {
-      for (const link of links) {
-        const selected = link.dataset.componentLink === componentId;
-        if (selected) link.setAttribute('aria-current', 'true');
+      for (const link of controls) {
+        if (link.dataset.componentLink === componentId) link.setAttribute('aria-current', 'true');
         else link.removeAttribute('aria-current');
       }
-      for (const detail of details) {
-        detail.dataset.selected = String(detail.dataset.componentDetail === componentId);
-      }
+      for (const detail of details) detail.dataset.selected = String(detail.dataset.componentDetail === componentId);
     };
-
     const selectFromLocation = () => select(componentIdFromHash());
+
     view.dataset.enhanced = 'true';
     selectFromLocation();
-
-    for (const link of links) {
-      link.addEventListener('click', () => select(link.dataset.componentLink));
-    }
     for (const link of controls) {
+      link.addEventListener('click', () => select(link.dataset.componentLink));
       link.addEventListener('keydown', (event) => {
         if (!['ArrowDown', 'ArrowRight', 'ArrowUp', 'ArrowLeft', 'Home', 'End'].includes(event.key)) return;
         event.preventDefault();
@@ -136,12 +56,10 @@ const inputStages = stages.filter(stage => stage !== convergenceTarget);
         const componentId = next.dataset.componentLink;
         if (window.location.hash !== `#component-${componentId}`) window.history.pushState(null, '', `#component-${componentId}`);
         select(componentId);
-        // The controller synchronizes selection without taking keyboard focus.
         view.dispatchEvent(new CustomEvent('system-view-select', { bubbles: true, detail: { componentId } }));
         next.focus();
       });
     }
-
     window.addEventListener('hashchange', selectFromLocation);
     window.addEventListener('popstate', selectFromLocation);
   }
@@ -149,46 +67,4 @@ const inputStages = stages.filter(stage => stage !== convergenceTarget);
 
 <style>
   .system-view { min-width: 0; }
-  .system-view-layout { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(17rem, .85fr); gap: 24px; align-items: start; }
-  .system-diagram, .system-detail-panel { border: 1px solid var(--line); border-radius: 12px; padding: 20px; background: var(--surface-soft); }
-  .system-diagram > h3, .system-detail-panel > h3 { margin-top: 0; }
-  .system-view-intro { color: var(--muted-strong); font-size: .9rem; line-height: 1.6; }
-  .system-stages { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; align-items: stretch; margin-block: 20px 28px; }
-  .system-stage { min-width: 0; padding: 14px; border: 1px solid var(--line); border-top: 3px solid var(--accent); border-radius: 8px; background: rgba(255, 255, 255, .02); overflow-wrap: anywhere; }
-  .system-stage h4 { margin: 0 0 12px; font-size: .85rem; }
-  .system-stage-support { border-style: dashed; border-top-style: solid; }
-  .system-blocks { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr)); gap: 8px; padding: 0; margin: 0; list-style: none; }
-  .system-blocks a { display: grid; gap: 6px; align-content: center; min-block-size: 44px; padding: 10px; border: 1px solid var(--line); border-radius: 6px; color: inherit; background: var(--surface); text-decoration: none; }
-  .system-blocks a[aria-current="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
-  .system-blocks strong { font-size: .82rem; line-height: 1.3; }
-  .component-status { display: block; margin: 0; font-size: .72rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
-  .status-implemented { color: var(--accent); }
-  .status-documented { color: #b7c4f3; }
-  .status-planned { color: #e8c990; }
-  .status-illustrative { color: #c7b4ff; }
-  .stage-connectors { display: grid; gap: 8px; align-content: center; min-width: 0; padding-inline: 12px; }
-  .stage-arrow { display: flex; align-items: center; gap: 6px; min-width: 0; color: var(--accent); font-size: .75rem; font-weight: 700; line-height: 1.4; overflow-wrap: anywhere; }
-  .stage-arrow-symbol { font-size: 1.3rem; }
-  .connector-destination { color: var(--muted-strong); font-weight: 400; }
-  .system-stages-converging { grid-template-columns: minmax(0, 1fr) minmax(6rem, .7fr) minmax(0, 1fr); column-gap: 0; }
-  .system-stages-converging > .system-stage { grid-column: 1; grid-row: var(--stage-row); }
-  .system-stages-converging > .stage-connectors { grid-column: 2; grid-row: var(--stage-row); }
-  .system-stages-converging > .system-stage-destination { grid-column: 3; grid-row: 1 / span var(--input-count); display: grid; align-content: center; }
-  .system-relationships { border-top: 1px solid var(--line); padding-top: 20px; }
-  .system-relationships h4 { margin-top: 0; }
-  .system-relationships ol { display: grid; gap: 10px; padding: 0; margin: 0; list-style: none; }
-  .system-relationships li { padding: 12px; border-left: 2px solid var(--accent); background: var(--surface); }
-  .relationship-direction { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: .85rem; }
-  .relationship-direction a { min-block-size: 44px; display: inline-flex; align-items: center; text-underline-offset: 3px; }
-  .relationship-arrow { color: var(--accent); font-weight: 700; }
-  .system-relationships p { margin: 4px 0 0; color: var(--muted-strong); font-size: .82rem; line-height: 1.5; }
-  .system-detail-panel article { padding-block: 16px; border-top: 1px solid var(--line); }
-  .system-detail-panel article:first-of-type { border-top: 0; padding-top: 0; }
-  .system-detail-panel h4 { margin-block: 6px 10px; font-size: 1rem; }
-  .system-detail-panel article > p:not(.component-status), .component-relations { color: var(--muted-strong); font-size: .88rem; line-height: 1.65; }
-  .component-relations { display: grid; gap: 8px; padding-left: 18px; }
-  .component-relations a { text-underline-offset: 3px; }
-  .system-view[data-enhanced="true"] .system-detail-panel article:not([data-selected="true"]) { display: none; }
-  a:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
-  @media (max-width: 680px) { .system-view-layout, .system-stages { grid-template-columns: minmax(0, 1fr); } .system-detail-panel { grid-row: 2; } .system-stages-converging > .system-stage, .system-stages-converging > .stage-connectors { grid-column: auto; grid-row: auto; } }
 </style>

@@ -1,0 +1,53 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import type { ProjectRelation } from './projects.ts';
+import { graphLabel } from './system-view.ts';
+
+type Component = CollectionEntry<'caseStudies'>['data']['architecture'][number];
+interface Props {
+  components: readonly Component[];
+  relations: readonly ProjectRelation[];
+}
+const { components, relations } = Astro.props;
+const componentFor = (id: string) => components.find(component => component.id === id)!;
+---
+<section class="component-panel component-cards" data-component-cards aria-labelledby="details-title">
+  <h3 id="details-title">Component details</h3>
+  <div class="component-card-list">
+    {components.map(component => {
+      const receives = relations.filter(relation => relation.to === component.id);
+      const sends = relations.filter(relation => relation.from === component.id);
+      return <article id={`component-${component.id}`} data-component-detail={component.id} tabindex="-1">
+        <h4>{component.title}</h4>
+        <p>{component.description}</p>
+        <div class="card-relationships">
+          {receives.length > 0 && <section aria-label={`Receives from for ${component.title}`}>
+            <h5>Receives from</h5>
+            <ul>{receives.map(relation => <li><strong>{componentFor(relation.from).title}</strong><span>{graphLabel(relation)}</span></li>)}</ul>
+          </section>}
+          {sends.length > 0 && <section aria-label={`Sends to for ${component.title}`}>
+            <h5>Sends to</h5>
+            <ul>{sends.map(relation => <li><strong>{componentFor(relation.to).title}</strong><span>{graphLabel(relation)}</span></li>)}</ul>
+          </section>}
+        </div>
+      </article>;
+    })}
+  </div>
+</section>
+<style>
+  .component-cards { min-width: 0; }
+  .component-cards > h3 { margin-top: 0; }
+  .component-card-list { display: grid; gap: 12px; }
+  .component-cards article { scroll-margin-top: calc(var(--header-height) + 24px); border: 1px solid var(--line); border-radius: 10px; background: var(--surface-soft); padding: 18px; }
+  .component-cards article:target, .component-cards article[data-selected="true"] { border: 2px solid var(--accent); }
+  .component-cards article:focus { outline: 3px solid var(--accent); outline-offset: 4px; }
+  .component-cards h4 { margin: 0; font-size: .96rem; }
+  .component-cards p { margin: 10px 0 0; color: var(--muted-strong); font-size: .82rem; line-height: 1.6; }
+  .card-relationships { display: grid; gap: 10px; margin-top: 16px; }
+  .card-relationships section { border-top: 1px solid var(--line); padding-top: 10px; }
+  .card-relationships h5 { margin: 0 0 8px; color: var(--accent); font-size: .65rem; letter-spacing: .08em; text-transform: uppercase; }
+  .card-relationships ul { display: grid; gap: 7px; margin: 0; padding: 0; list-style: none; }
+  .card-relationships li { display: grid; gap: 2px; font-size: .74rem; line-height: 1.45; }
+  .card-relationships strong { font-size: .75rem; }
+  .card-relationships span { color: var(--muted-strong); }
+</style>
