@@ -31,14 +31,18 @@ import EditorialLayout from '../layouts/EditorialLayout.astro';
     <div class="shell experience-grid">
       <div class="section-heading">
         <p class="eyebrow">Experience</p>
-        <h2 id="experience-heading">Public-health data and software work.</h2>
+        <h2 id="experience-heading">Experience across software, data, infrastructure and operations.</h2>
         <p>{experience.summary}</p>
       </div>
-      <article class="timeline-card">
-        <div class="timeline-meta"><span>{experience.period}</span><span>{experience.organization}</span></div>
-        <h3>{experience.role}</h3>
-        <ul class="check-list">{experience.highlights.map((item) => <li>{item}</li>)}</ul>
-      </article>
+      <div class="experience-roles">
+        {experience.roles.map((role) => (
+          <article class="timeline-card">
+            <div class="timeline-meta"><span>{role.period}</span><span>{role.organization}</span></div>
+            <h3>{role.role}</h3>
+            <ul class="check-list">{role.highlights.map((item) => <li>{item}</li>)}</ul>
+          </article>
+        ))}
+      </div>
     </div>
   </section>
 
