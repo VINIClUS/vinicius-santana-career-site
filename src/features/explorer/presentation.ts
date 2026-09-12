@@ -14,3 +14,9 @@ export const cnesdataPresentation = {
   systemHeading: 'System View',
   simulation: 'cnesdata-write',
 } as const satisfies ProjectPresentation;
+
+export const limnopulsePresentation = {
+  id: 'limnopulse',
+  visualMode: 'telemetry',
+  systemHeading: 'System View',
+} as const satisfies ProjectPresentation;

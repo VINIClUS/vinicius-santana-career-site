@@ -14,7 +14,8 @@ test('project navigation and keyboard component selection', async ({ page }) => 
     await expect(page.locator('[data-component-link]')).not.toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Advance one attempt' })).toHaveCount(0);
     await expect(page.locator('canvas')).toHaveCount(0);
-    await expect(page.locator(`a[href="/work/${project}/"]`)).toBeVisible();
+    if (project === 'infrastructure') await expect(page.locator(`a[href="/work/${project}/"]`)).toBeVisible();
+    else await expect(page.locator(`a[href="/work/${project}/"]`)).toHaveCount(0);
   }
 });
 
