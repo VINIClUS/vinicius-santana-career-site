@@ -10,10 +10,17 @@ const poster = details.infrastructure.poster;
   <h2 id="infra-title">Infrastructure failover</h2>
   <p>Explore a synthetic three-node cluster. Fail node-02 to transfer its workload to node-01 while the shared layer stays available.</p>
   <div class="infra-layout">
+    <div class="infra-visual" data-infra-visual data-scene-state="fallback">
+    <div class="infra-viewport">
     <picture>
       <source media="(max-width: 640px)" srcset={poster.mobile.src} width={poster.mobile.width} height={poster.mobile.height} data-infra-poster-mobile data-initial-src={poster.mobile.src} data-failed-src={infrastructureFailurePoster.mobile.src} />
       <img src={poster.desktop.src} width={poster.desktop.width} height={poster.desktop.height} alt={poster.desktop.alt} data-infra-poster data-initial-src={poster.desktop.src} data-failed-src={infrastructureFailurePoster.desktop.src} data-initial-alt={poster.desktop.alt} data-failed-alt={infrastructureFailurePoster.desktop.alt} />
     </picture>
+    <div class="infra-canvas-host" data-infra-canvas-host aria-hidden="true"></div>
+    </div>
+    <button type="button" class="button button-secondary" data-infra-view disabled>View 3D</button>
+    <p data-infra-view-status role="status">2D view. The simulation state is described alongside the maquette.</p>
+    </div>
     <div class="walkthrough-state">
       <h3>Cluster state</h3>
       <ul class="infra-nodes">{infraNodeIds.map(id => <li data-infra-node={id}>{id}: {initial.nodes[id]}</li>)}</ul>
@@ -38,6 +45,12 @@ const poster = details.infrastructure.poster;
 </section>
 <style>
   .infra-layout { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+  .infra-viewport { position: relative; }
+  .infra-canvas-host { position: absolute; inset: 0; visibility: hidden; pointer-events: none; }
+  .infra-canvas-host :global(canvas) { display: block; width: 100%; height: 100%; }
+  [data-scene-state="ready"] .infra-canvas-host { visibility: visible; }
+  [data-scene-state="ready"] picture { visibility: hidden; }
+  [data-infra-view] { margin-top: 12px; }
   picture { display: block; background: #050a11; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
   img { display: block; width: 100%; height: auto; }
   .infra-nodes { display: grid; gap: 12px; }

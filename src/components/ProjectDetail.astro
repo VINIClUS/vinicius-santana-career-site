@@ -54,7 +54,7 @@ const sections = [{ id: 'overview', label: 'Overview' }, { id: 'architecture', l
 
       <section id="architecture" tabindex="-1" class="chapter" aria-labelledby="architecture-title">
         <div class="chapter-heading"><p class="eyebrow">02 / System boundaries</p><h2 id="architecture-title">{presentation.systemHeading}</h2></div>
-        <div class="chapter-content"><slot name="system-view" /></div>
+        <div class="chapter-content"><slot name="system-view" />{presentation.simulation && presentation.simulationPlacement === 'system-view' && <div id="simulation" tabindex="-1" class="simulation-section"><slot name="simulation" /></div>}</div>
       </section>
 
       <section id="engineering" tabindex="-1" class="chapter" aria-labelledby="engineering-heading">
@@ -65,7 +65,7 @@ const sections = [{ id: 'overview', label: 'Overview' }, { id: 'architecture', l
         </div>
       </section>
 
-      {presentation.simulation && <div id="simulation" tabindex="-1" class="simulation-section"><slot name="simulation" /></div>}
+      {presentation.simulation && presentation.simulationPlacement !== 'system-view' && <div id="simulation" tabindex="-1" class="simulation-section"><slot name="simulation" /></div>}
 
       <section id="results" tabindex="-1" class="chapter" aria-labelledby="results-heading">
         <div class="chapter-heading"><p class="eyebrow">04 / Outcomes</p><h2 id="results-heading">Results</h2></div>
@@ -76,7 +76,7 @@ const sections = [{ id: 'overview', label: 'Overview' }, { id: 'architecture', l
       <section id="evidence" tabindex="-1" class="chapter" aria-labelledby="evidence-section-heading">
         <div class="chapter-heading"><p class="eyebrow">05 / Public record</p><h2 id="evidence-section-heading">Evidence & limitations</h2></div>
         <div class="chapter-content">
-          <div id="limitations" class="limitations" tabindex="-1"><h3 id="limitations-heading">Limitations</h3><ul class="detail-list">{caseStudy.limitations.map(item => <li>{item}</li>)}</ul></div>
+          <div id="limitations" class="limitations" tabindex="-1"><h3 id="limitations-heading">{presentation.id === 'infrastructure' ? <span id="limits-title">Limitations</span> : 'Limitations'}</h3><ul class="detail-list">{caseStudy.limitations.map(item => <li>{item}</li>)}</ul></div>
           <h3 id="evidence-heading">Public evidence</h3>
           <div class="evidence-grid">
             {caseStudy.evidence.map(item => <article class="evidence-card">

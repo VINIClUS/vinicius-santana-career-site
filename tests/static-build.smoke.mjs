@@ -321,7 +321,7 @@ for (const { slug, title } of caseStudies) {
   assertEditorialShell(explorer, slug + ' explorer', true);
   assertMetadata(explorer, `/explore/${slug}/`, origin);
   assert.match(explorer, new RegExp(`<h1[^>]*>${title}</h1>`));
-  if (slug === 'cnesdata') assert.doesNotMatch(explorer, /href="\/work\/cnesdata\//);
+  if (['cnesdata', 'infrastructure'].includes(slug)) assert.doesNotMatch(explorer, new RegExp(`href="/work/${slug}/`));
   else assert.match(explorer, new RegExp(`href="/work/${slug}/"`));
   assert.match(explorer, /Component details/);
   assert.match(explorer, /Relationships/);
@@ -427,3 +427,25 @@ assert.match(canonicalCnes, /detail-cnesdata-desktop\.webp/);
 assert.match(canonicalCnes, /detail-cnesdata-mobile\.webp/);
 assert.equal([...canonicalCnes.matchAll(/id="([^" ]+)"/g)].length, new Set([...canonicalCnes.matchAll(/id="([^" ]+)"/g)].map(match => match[1])).size, 'canonical IDs must be unique');
 console.log('Canonical CnesData content equivalence passed.');
+
+const canonicalInfra = await readBuiltPage('dist/explore/infrastructure/index.html');
+const infra = yaml.load(await readFile(fromRoot('src/content/case-studies.yaml'), 'utf8')).find(entry => entry.id === 'infrastructure');
+for (const id of ['overview', 'architecture', 'architecture-title', 'engineering', 'simulation', 'results', 'evidence', 'limitations', 'infra-title', 'details-title']) {
+  assert.equal([...canonicalInfra.matchAll(new RegExp(`id="${id}"`, 'g'))].length, 1, `unique Infrastructure #${id}`);
+}
+for (const text of [infra.eyebrow, infra.summary, infra.problem, infra.context, ...infra.contribution, ...infra.decisions, ...infra.reliability, ...infra.outcomes, ...infra.limitations]) {
+  assert.ok(canonicalInfra.includes(escapeHtml(text)), `Infrastructure retains: ${text}`);
+}
+for (const component of infra.architecture) {
+  const article = canonicalInfra.match(new RegExp(`<article[^>]*id="component-${component.id}"[^>]*>[\\s\\S]*?</article>`))?.[0];
+  assert.ok(article?.includes(escapeHtml(component.description)));
+  assert.match(article, new RegExp(component.status, 'i'));
+}
+for (const evidence of infra.evidence) {
+  assert.ok(canonicalInfra.includes(`href="${evidence.url}"`));
+  assert.ok(canonicalInfra.includes(escapeHtml(evidence.description)));
+}
+assert.equal([...canonicalInfra.matchAll(/id="([^" ]+)"/g)].length, new Set([...canonicalInfra.matchAll(/id="([^" ]+)"/g)].map(match => match[1])).size);
+assert.match(canonicalInfra, /data-visual-mode="cluster"/);
+assert.ok(canonicalInfra.indexOf('id="simulation"') < canonicalInfra.indexOf('id="engineering"'));
+console.log('Canonical Infrastructure content equivalence passed.');
