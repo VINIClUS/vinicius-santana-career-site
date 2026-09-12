@@ -113,6 +113,33 @@ const editorialPages = {
   notFound: await readBuiltPage('dist/404.html')
 };
 
+function assertExperienceSection(pageHtml, pageName, headingId) {
+  const section = pageHtml.match(new RegExp(`<section[^>]*aria-labelledby="${headingId}"[^>]*>[\\s\\S]*?</section>`))?.[0];
+  assert.ok(section, `${pageName} must render its experience section`);
+  assert.equal((section.match(/<article class="timeline-card"/g) || []).length, 3, `${pageName} must render three experience cards`);
+
+  const roleOffsets = [
+    'Health Informatics Analyst &amp; Data Engineer',
+    'IT Infrastructure &amp; Systems Support Intern',
+    'Business Analyst &amp; Operations Manager'
+  ].map((title) => section.indexOf(title));
+  assert.ok(roleOffsets.every((offset) => offset >= 0), `${pageName} must render all three experience titles`);
+  assert.deepEqual(roleOffsets, [...roleOffsets].sort((left, right) => left - right), `${pageName} must render experience in reverse chronological order`);
+
+  for (const evidence of ['21,000+', '12%+', 'below 1%', '240+', 'about 4 hours', '10,000+', 'Proxmox/Linux', 'Ceph', '26%', '11%', 'Python', 'MQTT']) {
+    assert.ok(section.includes(evidence), `${pageName} experience must include ${evidence}`);
+  }
+  assert.match(section, /Java and Spring/, `${pageName} must identify Java and Spring as current-role technologies`);
+}
+
+assertExperienceSection(html, 'home', 'experience-title');
+assertExperienceSection(editorialPages.about, 'about', 'experience-heading');
+
+for (const pageHtml of [html, editorialPages.about]) {
+  for (const item of ['Java', 'Spring', 'AWS', 'Redis', 'Platform &amp; Reliability']) assert.ok(pageHtml.includes(item));
+  for (const retiredItem of ['Firebird', 'DevOps / Infra', 'Observability']) assert.doesNotMatch(pageHtml, new RegExp(`>${escapeRegExp(retiredItem)}<`));
+}
+
 const publicCname = await readFile(fromRoot('public/CNAME'));
 const origin = `https://${publicCname.toString().trim()}`;
 const routePages = new Map([
