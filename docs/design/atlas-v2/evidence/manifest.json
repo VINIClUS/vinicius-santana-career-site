@@ -1,0 +1,143 @@
+{
+  "scope": "Selected unchanged visual and measurement artifacts from the approved lighting/motion iteration. These are historical frozen-build observations, distinct from verification against the current main branch. Full local iteration history was preserved rather than added to this PR.",
+  "files": [
+    {
+      "file": "atlas-desktop.png",
+      "archivedSource": "lighting-motion/atlas-3d-panel-1440x900.png",
+      "bytes": 295966,
+      "sha256": "da1e4a778bfde153bb105bc255ae632dfb490771f61c4c6d59debf06562e3ac0"
+    },
+    {
+      "file": "atlas-mobile.png",
+      "archivedSource": "lighting-motion/atlas-3d-panel-390x844.png",
+      "bytes": 102000,
+      "sha256": "3508c9098fdd53bfb9d78cce50a33c480eb3f051c7aa8fd1853d86cf23cf9141"
+    },
+    {
+      "file": "home-desktop.png",
+      "archivedSource": "lighting-motion/home-3d-viewport-1440x900.png",
+      "bytes": 422067,
+      "sha256": "00a13b05652ad2e446d690e267b49eceaf0a5da1a132054f5f19d5bac02fbc02"
+    },
+    {
+      "file": "home-mobile.png",
+      "archivedSource": "lighting-motion/home-3d-panel-390x844.png",
+      "bytes": 125052,
+      "sha256": "6beaceef13e67091cf76904cee4c1ba58a9d6d8fcfb40d5580f109eda1440f74"
+    },
+    {
+      "file": "reference.png",
+      "archivedSource": "lighting-motion/concept-board.png",
+      "bytes": 2500969,
+      "sha256": "af965888b82660de1a14aff64208080acaa200d3fea8868d8e8c369c10ca8054"
+    },
+    {
+      "file": "baseline-metrics.json",
+      "archivedSource": "lighting-motion/baseline/metrics.json",
+      "bytes": 229832,
+      "sha256": "462a251813f000ab16e680cd753ecee2181b89450396f9e0e151b2b253ce9f89"
+    },
+    {
+      "file": "candidate-metrics.json",
+      "archivedSource": "lighting-motion/candidate/metrics.json",
+      "bytes": 515615,
+      "sha256": "0b11adaf6bc06baebd98dd97f2ca2ff5aa642bc1ee9a478c8cd0237b5af67d55"
+    },
+    {
+      "file": "initial-failed-metrics.json",
+      "archivedSource": "lighting-motion/candidate-before-mql-fix/metrics.json",
+      "bytes": 543276,
+      "sha256": "392d2f766cc6d6ee45268fbf1b2bf2a72167a835918be9ce0ed12397fdbf2118"
+    },
+    {
+      "file": "performance-comparison.json",
+      "archivedSource": "lighting-motion/comparison.json",
+      "bytes": 372083,
+      "sha256": "90fecdcb4fad52a0f0aa78dd1d9f0b5e9d25aee34145da63e88a0b52f81d506d"
+    },
+    {
+      "file": "generation.json",
+      "archivedSource": "lighting-motion/generation.json",
+      "bytes": 31172,
+      "sha256": "7b9d38c1635f6117756f026aba60d7d5ecc454ee194e9c35ed36204b0eb4b190"
+    },
+    {
+      "file": "baseline-inventory.json",
+      "archivedSource": "lighting-motion/baseline/inventory.json",
+      "bytes": 33754,
+      "sha256": "c19d0e0749f50067e2d41b61640082d6bc8a12f7ea7a6cea5d7ae2fd639ed8e4"
+    },
+    {
+      "file": "candidate-inventory-before.json",
+      "archivedSource": "lighting-motion/candidate/inventory.json",
+      "bytes": 37021,
+      "sha256": "c77967cac546922d57ed672a24aec431ab3df9ec65f4249d17527824d6302c45"
+    },
+    {
+      "file": "candidate-inventory-after.json",
+      "archivedSource": "lighting-motion/candidate/inventory-after.json",
+      "bytes": 36724,
+      "sha256": "eb59b334cec69b528952b1bfbe63aa1df412fd012f5dd5fecb5a187485e682c3"
+    },
+    {
+      "file": "source-provenance.json",
+      "archivedSource": "lighting-motion/source-provenance.json",
+      "bytes": 18638,
+      "sha256": "8f9f0aec7b3d131667d7f3306db1078ec80ddd48ef2afed34c3e25ed11161e58"
+    },
+    {
+      "file": "performance-disposition.md",
+      "archivedSource": "lighting-motion/performance-disposition.md",
+      "bytes": 14063,
+      "sha256": "a9fb9c7b857e6351f58ae6449c70b24615fecedc9c8958be783f68625ad03834"
+    },
+    {
+      "file": "measure.mjs",
+      "archivedSource": "lighting-motion/measure.mjs",
+      "bytes": 29975,
+      "sha256": "d0984271f5080cefd9eec2341ab5a3479e03c3d8554c5c949ba97b9f0babcf87"
+    },
+    {
+      "file": "check-generation.mjs",
+      "archivedSource": "lighting-motion/check-generation.mjs",
+      "bytes": 13239,
+      "sha256": "19b7c8b6bc9c2cf35ddc94ec8826268058ddce7fafa3187a5f92d5459cc82363"
+    },
+    {
+      "file": "motion-fix-red.json",
+      "archivedSource": "lighting-motion/motion-fix-red.json",
+      "bytes": 12914,
+      "sha256": "ec69c50eb64b9c3b95263843f9c41a587f057f8ec3e034995d5c9cb79b424958"
+    },
+    {
+      "file": "motion-fix-green.json",
+      "archivedSource": "lighting-motion/motion-fix-green.json",
+      "bytes": 12330,
+      "sha256": "53d75a31241b4ea3dccf5ab623e9496dbae9446d27be8d36702518a5b88f86ae"
+    },
+    {
+      "file": "atlas-motion-1440x900.webm",
+      "archivedSource": "lighting-motion/atlas-motion-1440x900.webm",
+      "bytes": 1131116,
+      "sha256": "fc59abd08bf253b3012ffd8ebd0a379f314642b3d7e3d7bd5d3a045462ed66a9"
+    },
+    {
+      "file": "atlas-motion-390x844.webm",
+      "archivedSource": "lighting-motion/atlas-motion-390x844.webm",
+      "bytes": 410344,
+      "sha256": "8d6dff19c7211151d8562ccc7967007e8a7ce7381404a7d264d6d513377b7512"
+    },
+    {
+      "file": "home-motion-1440x900.webm",
+      "archivedSource": "lighting-motion/home-motion-1440x900.webm",
+      "bytes": 1024487,
+      "sha256": "39973f495495a660f5c31a742edfbac1810f4d0f65cf068a1cf118a396caaf73"
+    },
+    {
+      "file": "home-motion-390x844.webm",
+      "archivedSource": "lighting-motion/home-motion-390x844.webm",
+      "bytes": 351559,
+      "sha256": "67785d8ee72c750ece790936a30c477eb8747b8070585368e508d3f579482fc5"
+    }
+  ]
+}

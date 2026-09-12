@@ -20,15 +20,15 @@ Public Health appears as secondary domain context with `/#experience`; Observabi
 
 ## Progressive 3D Atlas
 
-The desktop layout is a broad triangle; mobile uses a taller triangular arrangement. Both are authored with paired camera/placement metadata. Labels project from those same positions in the poster and renderer. The hub and connections organize the portfolio conceptually and do not claim a deployed integration.
+The desktop layout is a broad triangle; mobile uses a vertical arrangement. Shared authoring and world factories provide terrain, maquettes, cameras, lighting and static contact treatment to posters and both runtime presentations. Labels project from local anchors through the complete district transforms. The low `00` origin is decorative, and the terrain contains no inter-project traffic connections.
 
 Only `/explore/` loads the interactive Atlas renderer. Home has a separate decorative entry described below. Save-Data or unavailable WebGL 2 retains 2D without downloading React Three Fiber, Three.js or models. A single 15-second deadline starts at activation and includes the dynamic import, all four essential GLBs (hub plus three projects), scene initialization and first valid frame. The poster remains visible until that complete composition renders. Import, model, initialization, timeout or context-loss failures return to 2D. Late completions are ignored; teardown cancels essential downloads and disposes resources.
 
 **View 2D** is available throughout loading. Zoom and reset enable only after readiness. Fallback restores original label positions and preserves selection; it restores selector focus only when the focused canvas/control disappears. Surviving HTML focus remains unchanged. The 2D choice lasts for the visit and is not persisted.
 
-Selecting a project changes its highlight and shared controller state only. The Atlas never requests detailed CnesData or Infrastructure maquettes; their shared assets remain available for generation and inspection, but canonical project pages do not load them. Canvas selection uses `pushState` without scrolling or moving focus. Native fragment selection and history focus the corresponding article through one `hashchange` listener. Page exit cancels work; a back/forward-cache return reconnects navigation once and stays in 2D.
+Selecting a project updates persistent highlighting and shared controller state. Canvas activation follows the matching native HTML link, preserving its fragment, history entry, scroll and summary focus. Hover and keyboard focus are transient and do not replace selection. A delayed fragment event respects focus that the reader has already moved; history traversal focuses its destination summary once. The Atlas never requests detailed CnesData or Infrastructure maquettes; their assets remain available for generation and inspection, but canonical project pages do not load them. Page exit cancels work; a back/forward-cache return reconnects navigation once and stays in 2D.
 
-The orthographic camera switches authored layouts at 700px. Orbit is limited to ±15° horizontally and ±5° vertically, zoom to 0.9–1.2 times the authored view, and pan is disabled. OrbitControls' inline touch action is reset to `pan-y` after connection so vertical touch scrolling remains native; taps still select. Rendering is on demand, DPR is capped at 1.5, and reduced motion uses immediate highlighting without continuous movement.
+The orthographic camera switches authored layouts at 700px. Desktop orbit is limited to ±10° horizontally and ±3° vertically, with zoom at 0.9–1.1 times the authored view; mobile uses ±5°, ±2.5° and 0.9–1.05. Pan is disabled. OrbitControls' inline touch action is reset to `pan-y` after connection so vertical touch scrolling remains native; taps still select. DPR is capped at 1.5. Visible ambient animation is capped at 24fps and has an accessible Pause/Resume control. Paused, hidden, offscreen and reduced-motion presentations stop scheduling after settling; reduced motion restores the authored poster pose. Explicit camera or selection changes still render on demand. See [Atlas V2 evidence and limits](design/atlas-v2/README.md).
 
 `assets:generate` validates authored district IDs against `projectIds`, rejects unknown scene requests before generation and removes obsolete district metadata even on partial runs. Regenerate the composition with `npm run assets:generate -- overview`. Historical evidence is retained with supersession notices. Retired Home/Work illustrations and their optimizer are removed; the three districts, hub, overview, two detail models and failure posters remain available for generation and inspection. See [SA-01 evidence](design/sa-01/README.md) for validation and loading comparison.
 
@@ -60,10 +60,13 @@ so a busy main thread cannot hide the poster after delaying the timeout callback
 JavaScript module imports cannot be canceled by the browser API; late imports
 are ignored. Model fetches are aborted and late parses are disposed.
 
-`scene/preview.ts` shares only composition, cameras and resource ownership with
-the Atlas renderer. It has no selection, controls, project details, simulations
-or event capture. Draws occur only while visible and dirty, with DPR capped at
-1.5; the fixed camera also applies with reduced motion. The poster hides only
+`scene/preview.ts` shares the authored world, cameras, resource ownership and
+pauseable ambient-motion scheduler with the Atlas renderer. It has no project
+selection, orbit controls, project details or simulations. Its Pause/Resume
+utility is independent of the single discovery CTA. Running animation draws
+only while visible, with DPR capped at 1.5; paused, reduced-motion, hidden and
+offscreen states stop scheduling after settling. Reduced motion uses the fixed
+camera and authored poster pose. The poster hides only
 after a valid draw of all four models and returns on failure/context loss.
 Page exit cancels scheduling and disposes owned resources. A history-cache
 return retains the poster without restarting graphics.
