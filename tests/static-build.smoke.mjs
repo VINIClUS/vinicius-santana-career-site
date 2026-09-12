@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
+import yaml from 'js-yaml';
 
 const root = new URL('../', import.meta.url);
 const fromRoot = (...segments) => new URL(segments.join('/'), root);
@@ -315,7 +316,8 @@ for (const { slug, title } of caseStudies) {
   assertEditorialShell(explorer, slug + ' explorer', true);
   assertMetadata(explorer, `/explore/${slug}/`, origin);
   assert.match(explorer, new RegExp(`<h1[^>]*>${title}</h1>`));
-  assert.match(explorer, new RegExp(`href="/work/${slug}/"`));
+  if (slug === 'cnesdata') assert.doesNotMatch(explorer, /href="\/work\/cnesdata\//);
+  else assert.match(explorer, new RegExp(`href="/work/${slug}/"`));
   assert.match(explorer, /Component details/);
   assert.match(explorer, /Relationships/);
   assert.match(explorer, /data-component-link/);
@@ -390,3 +392,33 @@ for (const [route, pageHtml] of publishedPages) {
     assert.doesNotMatch(pageHtml, metric, `${route} must not publish unsupported reference metrics`);
   }
 }
+
+// SA-02: canonical content must be complete before the legacy route is retired.
+const canonicalCnes = await readBuiltPage('dist/explore/cnesdata/index.html');
+const cnes = yaml.load(await readFile(fromRoot('src/content/case-studies.yaml'), 'utf8')).find(entry => entry.id === 'cnesdata');
+const escapeHtml = value => value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
+for (const id of ['overview', 'architecture', 'engineering', 'simulation', 'results', 'evidence', 'limitations']) {
+  assert.match(canonicalCnes, new RegExp(`id="${id}"`), `canonical CnesData preserves #${id}`);
+  assert.match(canonicalCnes, new RegExp(`href="#${id}"`), `canonical navigation exposes #${id}`);
+}
+assert.match(canonicalCnes, /<title>CnesData — Vinicius Santana<\/title>/);
+assert.match(canonicalCnes, /System View/);
+assert.match(canonicalCnes, /id="architecture-title"/, 'legacy explorer System View fragment remains a target');
+for (const text of [cnes.eyebrow, cnes.summary, cnes.problem, cnes.context, ...cnes.contribution, ...cnes.decisions, ...cnes.reliability, ...cnes.outcomes, ...cnes.limitations]) {
+  assert.ok(canonicalCnes.includes(escapeHtml(text)), `canonical HTML retains: ${text}`);
+}
+for (const component of cnes.architecture) {
+  const article = canonicalCnes.match(new RegExp(`<article[^>]*id="component-${component.id}"[^>]*>[\\s\\S]*?</article>`))?.[0];
+  assert.ok(article, `${component.id} details are static HTML`);
+  assert.ok(article.includes(escapeHtml(component.description)));
+  assert.match(article, new RegExp(component.status, 'i'), `${component.id} status stays adjacent`);
+}
+for (const evidence of cnes.evidence) {
+  assert.ok(canonicalCnes.includes(`href="${evidence.url}"`));
+  assert.ok(canonicalCnes.includes(escapeHtml(evidence.description)));
+  assert.ok(canonicalCnes.includes(`aria-label="Open ${evidence.label} in a new tab"`));
+}
+assert.match(canonicalCnes, /detail-cnesdata-desktop\.webp/);
+assert.match(canonicalCnes, /detail-cnesdata-mobile\.webp/);
+assert.equal([...canonicalCnes.matchAll(/id="([^" ]+)"/g)].length, new Set([...canonicalCnes.matchAll(/id="([^" ]+)"/g)].map(match => match[1])).size, 'canonical IDs must be unique');
+console.log('Canonical CnesData content equivalence passed.');

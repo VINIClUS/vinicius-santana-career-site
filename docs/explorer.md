@@ -46,3 +46,29 @@ or GLBs. The 3D view is a current progressive enhancement of `/explore/`, not
 required for navigation or comprehension: the initial poster/HTML map is
 immediately available and is the retained fallback for capability gates,
 runtime failures and **View 2D**.
+
+## Canonical CnesData project (SA-02)
+
+`/explore/cnesdata/` now combines the complete case-study narrative and the
+existing explorer behavior. `ProjectDetail.astro` renders collection-backed
+context, contribution, engineering, results, public evidence and limitations
+at build time, with `system-view` and `simulation` slots. Presentation metadata
+contains only the project ID, visual mode, System View heading and optional
+simulation choice; the case-study collection remains the authority for facts.
+
+CnesData uses an accessible HTML data flow and the existing detailed maquette
+as a responsive static poster inside its System View. Component statuses and
+directed relationships remain readable without graphics or JavaScript. The
+page does not request GLBs or initialize a renderer. Its route initializes the
+existing explorer controller once, retaining native component fragments,
+keyboard focus, history, and the unchanged synthetic write/replay/conflict API.
+
+The canonical route retains `#overview`, `#architecture`, `#engineering`,
+`#simulation`, `#results`, and every `#component-*` fragment, and adds direct
+`#evidence` and `#limitations` sections. All three transcripts are built HTML;
+simulation controls start disabled until the controller is initialized.
+Full Parquet-to-Gold processing and Kubernetes deployment remain planned.
+
+The legacy `/work/cnesdata/` page remains until SA-06; the canonical CnesData
+page no longer points readers to that duplicate. Other projects, Home and
+Atlas routing/rendering changes belong to their separate migration issues.

@@ -1,0 +1,143 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import ExternalLink from './ExternalLink.astro';
+import EditorialLayout from '../layouts/EditorialLayout.astro';
+import type { ProjectPresentation } from '../features/explorer/presentation.ts';
+
+interface Props {
+  caseStudy: CollectionEntry<'caseStudies'>['data'];
+  presentation: ProjectPresentation;
+  projects: CollectionEntry<'caseStudies'>[];
+}
+const { caseStudy, presentation, projects } = Astro.props;
+const canonicalPath = `/explore/${presentation.id}/`;
+const statusLabels = {
+  implemented: 'Implemented', documented: 'Documented', planned: 'Planned',
+  historical: 'Historical', illustrative: 'Illustrative'
+} as const;
+const sections = [{ id: 'overview', label: 'Overview' }, { id: 'architecture', label: 'System View' }, { id: 'engineering', label: 'Engineering' }, ...(presentation.simulation ? [{ id: 'simulation', label: 'Simulation' }] : []), { id: 'results', label: 'Results' }, { id: 'evidence', label: 'Evidence' }, { id: 'limitations', label: 'Limitations' }];
+---
+
+<EditorialLayout title={`${caseStudy.title} — Vinicius Santana`} description={caseStudy.summary} canonicalPath={canonicalPath} currentPath={canonicalPath} observatory>
+  <div class="case-study project-detail shell" data-explorer data-project={presentation.id} data-visual-mode={presentation.visualMode}>
+    <nav class="case-nav" aria-label="Case study navigation">
+      <a class="back-link" href="/explore/">← Back to Atlas</a>
+      <span>Project / {String(caseStudy.order).padStart(2, '0')}</span>
+    </nav>
+    <nav class="explorer-nav" aria-label="Explorer projects">
+      {projects.map(({ data: entry }) => <a href={`/explore/${entry.id}/`} aria-current={entry.id === caseStudy.id ? 'page' : undefined}>{entry.title}</a>)}
+    </nav>
+    <header class="case-hero">
+      <p class="eyebrow">{caseStudy.eyebrow}</p>
+      <h1>{caseStudy.title}</h1>
+      <p class="summary">{caseStudy.summary}</p>
+      <ul class="technology-list" aria-label="Technologies used">
+        {caseStudy.technologies.map(technology => <li>{technology}</li>)}
+      </ul>
+      <div class="hero-evidence">
+        {caseStudy.evidence.slice(0, 2).map(item => <ExternalLink href={item.url} ariaLabel={`Open ${item.label} in a new tab`}>{item.label} ↗</ExternalLink>)}
+      </div>
+    </header>
+
+    <nav class="section-nav" aria-label="Project sections">
+      {sections.map(section => <a href={`#${section.id}`}>{section.label}</a>)}
+    </nav>
+
+    <div class="case-body">
+      <section id="overview" tabindex="-1" class="chapter" aria-labelledby="overview-heading">
+        <div class="chapter-heading"><p class="eyebrow">01 / Context</p><h2 id="overview-heading">Overview</h2></div>
+        <div class="chapter-content overview-grid">
+          <div><h3 id="problem-heading">Problem</h3><p>{caseStudy.problem}</p><h3 id="context-heading">Context</h3><p>{caseStudy.context}</p></div>
+          <div><h3 id="contribution-heading">Contribution</h3><ul class="detail-list">{caseStudy.contribution.map(item => <li>{item}</li>)}</ul></div>
+        </div>
+      </section>
+
+      <section id="architecture" tabindex="-1" class="chapter" aria-labelledby="architecture-title">
+        <div class="chapter-heading"><p class="eyebrow">02 / System boundaries</p><h2 id="architecture-title">{presentation.systemHeading}</h2></div>
+        <div class="chapter-content"><slot name="system-view" /></div>
+      </section>
+
+      <section id="engineering" tabindex="-1" class="chapter" aria-labelledby="engineering-heading">
+        <div class="chapter-heading"><p class="eyebrow">03 / Technical choices</p><h2 id="engineering-heading">Engineering</h2></div>
+        <div class="chapter-content overview-grid">
+          <div><h3 id="decisions-heading">Decisions</h3><ul class="detail-list">{caseStudy.decisions.map(item => <li>{item}</li>)}</ul></div>
+          <div><h3 id="reliability-heading">Reliability</h3><ul class="detail-list">{caseStudy.reliability.map(item => <li>{item}</li>)}</ul></div>
+        </div>
+      </section>
+
+      {presentation.simulation && <div id="simulation" tabindex="-1" class="simulation-section"><slot name="simulation" /></div>}
+
+      <section id="results" tabindex="-1" class="chapter" aria-labelledby="results-heading">
+        <div class="chapter-heading"><p class="eyebrow">04 / Outcomes</p><h2 id="results-heading">Results</h2></div>
+        <div class="chapter-content">
+          <h3 id="outcomes-heading">Outcomes</h3><ul class="detail-list">{caseStudy.outcomes.map(item => <li>{item}</li>)}</ul>
+        </div>
+      </section>
+      <section id="evidence" tabindex="-1" class="chapter" aria-labelledby="evidence-section-heading">
+        <div class="chapter-heading"><p class="eyebrow">05 / Public record</p><h2 id="evidence-section-heading">Evidence & limitations</h2></div>
+        <div class="chapter-content">
+          <div id="limitations" class="limitations" tabindex="-1"><h3 id="limitations-heading">Limitations</h3><ul class="detail-list">{caseStudy.limitations.map(item => <li>{item}</li>)}</ul></div>
+          <h3 id="evidence-heading">Public evidence</h3>
+          <div class="evidence-grid">
+            {caseStudy.evidence.map(item => <article class="evidence-card">
+              <span class={`status status-${item.status}`}>{statusLabels[item.status]}</span>
+              <h4>{item.label}</h4><p>{item.description}</p>
+              <ExternalLink class="evidence-link" href={item.url} ariaLabel={`Open ${item.label} in a new tab`}>Open public evidence ↗</ExternalLink>
+            </article>)}
+          </div>
+        </div>
+      </section>
+    </div>
+    <nav class="case-footer" aria-label="Case study footer navigation"><a class="back-link" href="/explore/">← Back to Atlas</a><a href="#overview">Back to overview ↑</a></nav>
+  </div>
+</EditorialLayout>
+
+<style>
+  :global(html:has(.project-detail)) { scroll-behavior: auto; }
+  .simulation-section { padding-block: 32px; border-bottom: 1px solid var(--line); }
+  .case-study :global(a:focus-visible), .case-study :global(button:focus-visible), .case-study :global(select:focus-visible) { outline: 3px solid var(--accent); outline-offset: 4px; }
+  .chapter-content { min-width: 0; }
+  .limitations { margin-bottom: 32px; }
+  .case-study { padding-bottom: 36px; }
+  .case-nav { display: flex; justify-content: space-between; gap: 16px; padding-block: 24px; font-size: .8rem; color: var(--muted-strong); }
+  .back-link, .evidence-link { color: var(--accent); }
+  .case-hero { padding-block: 22px 30px; max-width: 920px; }
+  .case-hero h1 { font-size: clamp(2.4rem, 5.3vw, 4.7rem); margin-bottom: 18px; line-height: 1.08; }
+  .summary { max-width: 780px; color: var(--muted-strong); font-size: clamp(1.05rem, 1.6vw, 1.2rem); line-height: 1.65; }
+  .technology-list, .detail-list { padding: 0; list-style: none; }
+  .technology-list { display: flex; flex-wrap: wrap; gap: 7px; margin: 22px 0 18px; }
+  .technology-list li { padding: 5px 10px; border: 1px solid var(--line); border-radius: 5px; background: var(--surface-soft); color: var(--muted-strong); font-size: .75rem; }
+  .hero-evidence { display: flex; flex-wrap: wrap; gap: 12px 24px; font-size: .82rem; }
+  .hero-evidence :global(a) { color: var(--accent); text-underline-offset: 4px; }
+  .section-nav { display: flex; flex-wrap: wrap; gap: 0 28px; border-bottom: 1px solid var(--line); margin-bottom: 24px; }
+  .section-nav a { display: block; flex-shrink: 0; padding: 16px 0; font-size: .83rem; color: var(--muted-strong); }
+  .section-nav a:hover { color: var(--accent); }
+  .chapter { display: grid; grid-template-columns: minmax(160px, .7fr) minmax(0, 2.3fr); gap: 38px; border-bottom: 1px solid var(--line); padding-block: 48px; }
+  .case-study :global([id]) { scroll-margin-top: calc(var(--header-height) + 28px); }
+  .chapter h2 { font-size: clamp(1.6rem, 2.2vw, 2rem); }
+  .chapter h3 { font-size: 1rem; letter-spacing: -.015em; }
+  .chapter h4 { font-size: .95rem; }
+  .chapter p, .detail-list li { color: var(--muted-strong); font-size: .88rem; line-height: 1.75; }
+  .chapter .eyebrow { font-size: .66rem; color: var(--accent); }
+  .overview-grid, .evidence-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+  .evidence-card { padding: 20px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-soft); }
+  .status { display: inline-flex; width: fit-content; flex: 0 0 auto; padding: 5px 7px; border: 1px solid var(--line-strong); border-radius: 4px; color: var(--accent); background: rgba(132,244,230,.06); font-size: .6rem; font-weight: 700; letter-spacing: .06em; line-height: 1; text-transform: uppercase; }
+  .status-planned, .status-illustrative { color: #e8c990; border-color: rgba(232,201,144,.3); background: rgba(232,201,144,.05); }
+  .status-documented, .status-historical { color: #b7c4f3; border-color: rgba(183,196,243,.3); background: rgba(183,196,243,.05); }
+  .detail-list { display: grid; gap: 12px; margin: 0; }
+  .detail-list li { position: relative; padding-left: 16px; }
+  .detail-list li::before { position: absolute; top: .8em; left: 0; width: 4px; height: 4px; border-radius: 50%; background: var(--accent); content: ''; }
+  .limitations { padding-left: 20px; border-left: 2px solid rgba(232,201,144,.35); }
+  .evidence-grid { gap: 12px; }
+  .evidence-card { display: flex; align-items: flex-start; flex-direction: column; }
+  .evidence-card h4 { margin-block: 14px 0; }
+  .evidence-link { margin-top: auto; font-size: .8rem; }
+  .case-footer { display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between; padding-block: 32px; font-size: .85rem; }
+  @media (max-width: 900px) { .chapter { grid-template-columns: 1fr; gap: 18px; } }
+  @media (max-width: 600px) {
+    .overview-grid, .evidence-grid { grid-template-columns: 1fr; }
+    .case-hero { padding-top: 12px; }
+    .section-nav { gap: 22px; }
+    .chapter { padding-block: 32px; }
+  }
+</style>
