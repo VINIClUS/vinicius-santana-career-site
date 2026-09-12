@@ -3,14 +3,18 @@ import type { CollectionEntry } from 'astro:content';
 import ResponsivePoster from '../../components/ResponsivePoster.astro';
 import { details } from '../../content/scenes';
 import SystemViewCards from './SystemViewCards.astro';
+import SystemGraphConnectors from './SystemGraphConnectors.astro';
 import { projectDefinitions } from './projects.ts';
-import { graphLabel } from './system-view.ts';
 
 interface Props { caseStudy: CollectionEntry<'caseStudies'>['data']; }
 const { caseStudy } = Astro.props;
 const { relations } = projectDefinitions.cnesdata;
 const componentFor = (id: string) => caseStudy.architecture.find(component => component.id === id)!;
-const nodeOrder = ['canonical-contracts', 'edge-agent', 'web-dashboard', 'central-api', 'tenant-isolation', 'parquet-to-gold', 'kubernetes'];
+const graphNodes = [
+  { id: 'canonical-contracts', x: 16, y: 16 }, { id: 'edge-agent', x: 16, y: 46 }, { id: 'web-dashboard', x: 16, y: 78 },
+  { id: 'central-api', x: 50, y: 50 },
+  { id: 'tenant-isolation', x: 84, y: 26 }, { id: 'parquet-to-gold', x: 84, y: 55 }, { id: 'kubernetes', x: 84, y: 82 },
+];
 ---
 <div class="integrated-system-view cnesdata-system-view" data-integrated-system-view>
   <p class="explorer-note">Conceptual architecture map for public discussion. Connections describe system responsibilities rather than a live deployment; processing and deployment boundaries remain illustrative.</p>
@@ -18,21 +22,18 @@ const nodeOrder = ['canonical-contracts', 'edge-agent', 'web-dashboard', 'centra
     <div class="system-graph-column">
       <section class="system-graph cnesdata-graph" data-system-graph aria-labelledby="system-map-title">
         <div class="graph-heading"><h3 id="system-map-title">System map</h3><p>Central API is the branching hub between contracts, clients, and downstream boundaries.</p></div>
-        <ol class="graph-nodes" aria-label="CnesData system components">
-          {nodeOrder.map(id => { const component = componentFor(id); return <li class={id === 'central-api' ? 'graph-node graph-node-hub' : 'graph-node'}>
-            <a href={`#component-${id}`} data-component-link={id}>
-              <span class="graph-node-kicker" aria-hidden="true">{id === 'central-api' ? 'Hub' : 'Component'}</span>
+        <div class="graph-stage">
+          <SystemGraphConnectors components={caseStudy.architecture} nodes={graphNodes} relations={relations} />
+          <ol class="graph-nodes" aria-label="CnesData system components">
+          {graphNodes.map(node => { const component = componentFor(node.id); return <li id={`graph-node-${node.id}`} data-graph-node={node.id} class={node.id === 'central-api' ? 'graph-node graph-node-hub' : 'graph-node'} style={`--node-x: ${node.x}%; --node-y: ${node.y}%`}>
+            <a href={`#component-${node.id}`} data-component-link={node.id}>
+              <span class="graph-node-kicker" aria-hidden="true">{node.id === 'central-api' ? 'Hub' : 'Component'}</span>
               <strong>{component.title}</strong>
               <span class="selection-marker" aria-hidden="true">Selected</span>
             </a>
           </li>; })}
-        </ol>
-        <ol class="graph-connectors" aria-label="CnesData relationships">
-          {relations.map(relation => <li data-graph-connector data-relation-from={relation.from} data-relation-to={relation.to}>
-            <svg viewBox="0 0 36 16" aria-hidden="true"><path d="M2 8h27m-7-5 7 5-7 5" fill="none" stroke="currentColor" stroke-width="1.5" /></svg>
-            <span class="graph-connector-label">{graphLabel(relation)}</span>
-          </li>)}
-        </ol>
+          </ol>
+        </div>
       </section>
       <figure class="system-poster">
         <ResponsivePoster poster={details.cnesdata.poster} />
@@ -49,24 +50,21 @@ const nodeOrder = ['canonical-contracts', 'edge-agent', 'web-dashboard', 'centra
   .system-graph { min-width: 0; border: 1px solid var(--line); border-radius: 12px; background: linear-gradient(140deg, rgba(132,244,230,.08), rgba(7,18,31,.35)); padding: 20px; overflow: hidden; }
   .graph-heading h3 { margin: 0; }
   .graph-heading p { margin: 8px 0 0; color: var(--muted-strong); font-size: .8rem; line-height: 1.5; }
-  .graph-nodes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 20px 0; padding: 0; list-style: none; }
-  .graph-node { min-width: 0; }
-  .graph-node a { display: flex; flex-direction: column; gap: 6px; min-height: 88px; padding: 14px; border: 1px solid var(--line-strong); border-radius: 8px; background: rgba(4,14,25,.6); color: var(--text); }
-  .graph-node:nth-child(4) { grid-column: 2; }
+  .graph-stage { --graph-connector: var(--accent); position: relative; height: 440px; margin-top: 20px; }
+  .graph-nodes { position: absolute; inset: 0; z-index: 2; margin: 0; padding: 0; list-style: none; }
+  .graph-node { position: absolute; left: var(--node-x); top: var(--node-y); width: 29%; min-width: 0; transform: translate(-50%, -50%); }
+  .graph-node a { display: flex; flex-direction: column; gap: 6px; min-height: 74px; padding: 12px; border: 1px solid var(--line-strong); border-radius: 8px; background: rgba(4,14,25,.92); color: var(--text); }
   .graph-node-hub a { border-color: var(--accent); box-shadow: inset 0 0 0 1px rgba(132,244,230,.25); }
   .graph-node-kicker { color: var(--accent); font-size: .62rem; letter-spacing: .08em; text-transform: uppercase; }
   .graph-node strong { font-size: .8rem; line-height: 1.25; }
   .selection-marker { display: none; margin-top: auto; color: var(--accent); font-size: .65rem; }
   .graph-node a[aria-current="true"] { border: 2px solid var(--accent); }
   .graph-node a[aria-current="true"] .selection-marker { display: block; }
-  .graph-connectors { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; }
-  .graph-connectors li { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 7px; align-items: start; border-left: 2px solid var(--accent); background: rgba(255,255,255,.025); padding: 8px; color: var(--muted-strong); font-size: .7rem; line-height: 1.35; }
-  .graph-connectors svg { width: 28px; margin-top: 2px; color: var(--accent); }
   .system-poster { overflow: hidden; margin: 0; border: 1px solid var(--line); border-radius: 12px; background: #080f19; }
   .system-poster :global(picture), .system-poster :global(img) { display: block; }
   .system-poster :global(img) { height: auto; object-fit: contain; }
   .system-poster figcaption { padding: 14px; border-top: 1px solid var(--line); color: var(--muted-strong); font-size: .72rem; }
   a:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
   @media (max-width: 760px) { .system-view-layout { grid-template-columns: 1fr; } }
-  @media (max-width: 520px) { .graph-nodes, .graph-connectors { grid-template-columns: 1fr; } .graph-node:nth-child(4) { grid-column: auto; } }
+  @media (max-width: 520px) { .graph-stage { height: 470px; } .graph-node { width: 30%; } }
 </style>

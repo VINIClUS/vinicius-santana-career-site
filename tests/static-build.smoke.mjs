@@ -59,6 +59,7 @@ function assertIntegratedSystemView(html, study, projectId) {
 
   for (const component of study.architecture) {
     assert.equal([...view.matchAll(new RegExp(`data-component-link="${component.id}"`, 'g'))].length, 1, `${projectId}:${component.id} has exactly one graph node link`);
+    assert.match(view, new RegExp(`id="graph-node-${component.id}"[^>]*data-graph-node="${component.id}"|data-graph-node="${component.id}"[^>]*id="graph-node-${component.id}"`), `${projectId}:${component.id} is an addressable graph endpoint`);
     const card = view.match(new RegExp(`<article[^>]*id="component-${component.id}"[^>]*>[\\s\\S]*?<\\/article>`))?.[0];
     assert.ok(card, `${projectId}:${component.id} has one static detail card`);
     assert.ok(card.includes(escapeHtml(component.description)), `${projectId}:${component.id} card keeps its description`);
@@ -67,8 +68,10 @@ function assertIntegratedSystemView(html, study, projectId) {
   }
 
   for (const relation of projectDefinitions[projectId].relations) {
-    const connector = view.match(new RegExp(`<li[^>]*data-graph-connector[^>]*data-relation-from="${relation.from}"[^>]*data-relation-to="${relation.to}"[^>]*>[\\s\\S]*?<\\/li>`))?.[0];
-    assert.ok(connector, `${projectId} preserves ${relation.from} → ${relation.to} as a graph connector`);
+    const connector = view.match(new RegExp(`<div[^>]*data-graph-connector[^>]*data-connector-from="${relation.from}"[^>]*data-connector-to="${relation.to}"[^>]*>[\\s\\S]*?<\\/div>`))?.[0];
+    assert.ok(connector, `${projectId} renders ${relation.from} → ${relation.to} as a node-anchored graph connector`);
+    assert.match(connector, /aria-label="Connection from [^"]+ to [^"]+:/, `${projectId} connector names both endpoints`);
+    assert.match(connector, /<path[^>]*d="M /, `${projectId} connector draws a path instead of a detached list item`);
     assert.ok(connector.includes(escapeHtml(graphLabel(relation))), `${projectId} connector keeps its label`);
   }
 }
@@ -503,7 +506,7 @@ assert.match(canonicalLimno, /docs\/notifications-phase-3c-b.md/);
 const limnoIds = [...canonicalLimno.matchAll(/\bid="([^" ]+)"/g)].map(match => match[1]);
 assert.equal(limnoIds.length, new Set(limnoIds).size, 'Limnopulse IDs must be unique');
 assert.doesNotMatch(canonicalLimno, /href="\/work\/limnopulse\/"|data-step|data-scenario|data-reset|id="simulation"|<canvas|<astro-island|\.(?:glb|gltf|ktx2)["']/i);
-const limnoRelations = [...canonicalLimno.matchAll(/<li[^>]*data-graph-connector[^>]*data-relation-from="([^"]+)"[^>]*data-relation-to="([^"]+)"[^>]*>[\s\S]*?<\/li>/g)];
+const limnoRelations = [...canonicalLimno.matchAll(/<div[^>]*data-graph-connector[^>]*data-relation-from="([^"]+)"[^>]*data-relation-to="([^"]+)"[^>]*>[\s\S]*?<\/div>/g)];
 assert.ok(limnoRelations.length >= 6, 'directional relationships are rendered');
 for (const [relation, from, to] of limnoRelations) {
   assert.ok(limno.architecture.some(component => component.id === from));

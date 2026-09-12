@@ -75,3 +75,44 @@ Implementation commit: `16c7e96267799d1aa1bb18d2b38e160abdfc1840` (`feat: integr
 ## Concerns
 
 None. The build retains the repository's pre-existing Vite chunk-size warning; it is unrelated to this task.
+
+## Fix round 1/5 — node-anchored connectors
+
+### Changed files
+
+- `src/features/explorer/SystemGraphConnectors.astro` (new shared SVG-path connector renderer)
+- `src/features/explorer/CnesDataSystemView.astro`
+- `src/features/explorer/LimnopulseSystemView.astro`
+- `src/features/explorer/InfrastructureSystemView.astro`
+- `tests/static-build.smoke.mjs`
+- `tests/browser/integrated-system-view.spec.ts`
+
+### RED evidence
+
+After strengthening the static and browser contracts, the following commands failed as intended against the detached-list implementation:
+
+```sh
+rtk npm run build && rtk npm run smoke
+rtk proxy env EXPLORER_BASE_URL=http://127.0.0.1:4324 npx playwright test tests/browser/integrated-system-view.spec.ts
+```
+
+The smoke test reported that `cnesdata:canonical-contracts` was not an addressable graph endpoint. The browser test reported zero connectors matching `data-connector-from="canonical-contracts"` and `data-connector-to="edge-agent"`. Both failures directly identified the missing endpoint-bound connector behavior.
+
+### GREEN verification
+
+```sh
+rtk npm run build && rtk npm run smoke
+rtk npm run test
+rtk proxy env EXPLORER_BASE_URL=http://127.0.0.1:4324 npx playwright test tests/browser/integrated-system-view.spec.ts
+rtk proxy env EXPLORER_BASE_URL=http://127.0.0.1:4324 npx playwright test tests/browser/limnopulse.spec.ts
+rtk git diff --check
+```
+
+Results: build and smoke passed; `npm run test` passed 49 tests with 1 skipped; all 4 integrated-view desktop/mobile and JS/no-JS variants passed; all 6 Limnopulse variants passed; whitespace validation passed.
+
+### Self-review
+
+- Every graph node now has an addressable `graph-node-*` ID and `data-graph-node` identifier.
+- Each unchanged `ProjectRelation` produces a labeled SVG path with explicit `data-connector-from` and `data-connector-to` references; connector paths are rendered in the same positioned graph stage as their nodes.
+- Browser coverage verifies every relation, its unique from/to connector, its rendered path, and that path start/end coordinates land inside its declared source/target node rectangles. A detached list cannot satisfy this contract.
+- CnesData's Central API is now a visual connection hub; Limnopulse's band and boundary nodes are joined by the relevant relation paths; Infrastructure's sources visibly converge on Reference topology.

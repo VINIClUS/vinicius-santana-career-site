@@ -1,0 +1,42 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import type { ProjectRelation } from './projects.ts';
+import { graphLabel } from './system-view.ts';
+
+type Component = CollectionEntry<'caseStudies'>['data']['architecture'][number];
+export interface GraphNodePosition { readonly id: string; readonly x: number; readonly y: number; }
+interface Props {
+  components: readonly Component[];
+  nodes: readonly GraphNodePosition[];
+  relations: readonly ProjectRelation[];
+}
+const { components, nodes, relations } = Astro.props;
+const nodeFor = (id: string) => nodes.find(node => node.id === id)!;
+const componentFor = (id: string) => components.find(component => component.id === id)!;
+const pathFor = (relation: ProjectRelation) => {
+  const from = nodeFor(relation.from);
+  const to = nodeFor(relation.to);
+  const bend = (from.x + to.x) / 2;
+  return `M ${from.x} ${from.y} L ${bend} ${from.y} L ${bend} ${to.y} L ${to.x} ${to.y}`;
+};
+const labelPosition = (relation: ProjectRelation, index: number) => {
+  const from = nodeFor(relation.from);
+  const to = nodeFor(relation.to);
+  return { x: (from.x + to.x) / 2, y: (from.y + to.y) / 2 + ((index % 3) - 1) * 3 };
+};
+---
+{relations.map((relation, index) => {
+  const label = graphLabel(relation);
+  const position = labelPosition(relation, index);
+  const markerId = `arrow-${relation.from}-${relation.to}`;
+  return <div class="graph-connector" data-graph-connector data-relation-from={relation.from} data-relation-to={relation.to} data-connector-from={relation.from} data-connector-to={relation.to} aria-label={`Connection from ${componentFor(relation.from).title} to ${componentFor(relation.to).title}: ${label}`}>
+    <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><defs><marker id={markerId} markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="currentColor" /></marker></defs><path d={pathFor(relation)} marker-end={`url(#${markerId})`} /></svg>
+    <span class="graph-connector-label" data-graph-edge-label style={`--label-x: ${position.x}%; --label-y: ${position.y}%`}>{label}</span>
+  </div>;
+})}
+<style>
+  .graph-connector { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+  .graph-connector svg { display: block; width: 100%; height: 100%; overflow: visible; color: var(--graph-connector, var(--accent)); }
+  .graph-connector path { fill: none; stroke: currentColor; stroke-width: 1.1; vector-effect: non-scaling-stroke; opacity: .72; }
+  .graph-connector-label { position: absolute; left: var(--label-x); top: var(--label-y); max-width: 28%; transform: translate(-50%, -50%); border: 1px solid color-mix(in srgb, var(--graph-connector, var(--accent)) 48%, transparent); border-radius: 4px; background: var(--bg-strong); color: var(--muted-strong); padding: 3px 5px; font-size: .56rem; line-height: 1.25; text-align: center; }
+</style>

@@ -1,8 +1,8 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import SystemViewCards from './SystemViewCards.astro';
+import SystemGraphConnectors from './SystemGraphConnectors.astro';
 import { projectDefinitions } from './projects.ts';
-import { graphLabel } from './system-view.ts';
 
 interface Props { caseStudy: CollectionEntry<'caseStudies'>['data']; }
 const { caseStudy } = Astro.props;
@@ -10,22 +10,22 @@ const { relations } = projectDefinitions.infrastructure;
 const componentFor = (id: string) => caseStudy.architecture.find(component => component.id === id)!;
 const sources = ['image-builds', 'ansible-contracts', 'operations-automation'];
 const topology = 'reference-topology';
+const graphNodes = [
+  { id: 'image-builds', x: 20, y: 20 }, { id: 'ansible-contracts', x: 20, y: 50 }, { id: 'operations-automation', x: 20, y: 80 },
+  { id: topology, x: 78, y: 50 },
+];
 ---
 <div class="integrated-system-view infrastructure-system-view" data-integrated-system-view>
   <p class="explorer-note">Conceptual reference topology, not a production inventory or a map of any real environment. Connectors describe responsibilities converging on a shared topology rather than an active deployment.</p>
   <div class="system-view-layout">
     <section class="system-graph infrastructure-graph" data-system-graph aria-labelledby="system-map-title">
       <div class="graph-heading"><h3 id="system-map-title">Reference topology map</h3><p>Three source capabilities converge on one reference topology.</p></div>
-      <div class="topology-flow">
-        <ol class="source-nodes" aria-label="Infrastructure source components">
-          {sources.map(id => { const component = componentFor(id); return <li class="graph-node"><a href={`#component-${id}`} data-component-link={id}><span class="graph-node-kicker" aria-hidden="true">Source</span><strong>{component.title}</strong><span class="selection-marker" aria-hidden="true">Selected</span></a></li>; })}
+      <div class="graph-stage">
+        <SystemGraphConnectors components={caseStudy.architecture} nodes={graphNodes} relations={relations} />
+        <ol class="graph-nodes" aria-label="Infrastructure system components">
+          {graphNodes.map(node => { const component = componentFor(node.id); return <li id={`graph-node-${node.id}`} data-graph-node={node.id} class={node.id === topology ? 'graph-node graph-node-hub' : 'graph-node'} style={`--node-x: ${node.x}%; --node-y: ${node.y}%`}><a href={`#component-${node.id}`} data-component-link={node.id}><span class="graph-node-kicker" aria-hidden="true">{sources.includes(node.id) ? 'Source' : 'Convergence'}</span><strong>{component.title}</strong><span class="selection-marker" aria-hidden="true">Selected</span></a></li>; })}
         </ol>
-        <div class="topology-arrow" aria-hidden="true"><svg viewBox="0 0 80 44"><path d="M4 22h62m-16-14 16 14-16 14" fill="none" stroke="currentColor" stroke-width="2" /></svg></div>
-        {(() => { const component = componentFor(topology); return <ol class="topology-node" aria-label="Reference topology"><li class="graph-node graph-node-hub"><a href={`#component-${topology}`} data-component-link={topology}><span class="graph-node-kicker" aria-hidden="true">Convergence</span><strong>{component.title}</strong><span class="selection-marker" aria-hidden="true">Selected</span></a></li></ol>; })()}
       </div>
-      <ol class="graph-connectors" aria-label="Infrastructure relationships">
-        {relations.map(relation => <li data-graph-connector data-relation-from={relation.from} data-relation-to={relation.to}><svg viewBox="0 0 36 16" aria-hidden="true"><path d="M2 8h27m-7-5 7 5-7 5" fill="none" stroke="currentColor" stroke-width="1.5" /></svg><span class="graph-connector-label">{graphLabel(relation)}</span></li>)}
-      </ol>
     </section>
     <SystemViewCards components={caseStudy.architecture} relations={relations} />
   </div>
@@ -33,10 +33,9 @@ const topology = 'reference-topology';
 <style>
   .infrastructure-system-view { min-width: 0; }.system-view-layout { display: grid; grid-template-columns: minmax(0, 3fr) minmax(280px, 2fr); gap: 24px; align-items: start; margin-top: 24px; }
   .system-graph { min-width: 0; border: 1px solid var(--line); border-radius: 12px; background: linear-gradient(140deg, rgba(196,184,247,.1), rgba(7,18,31,.35)); padding: 20px; overflow: hidden; }.graph-heading h3 { margin: 0; }.graph-heading p { margin: 8px 0 0; color: var(--muted-strong); font-size: .8rem; line-height: 1.5; }
-  .topology-flow { display: grid; grid-template-columns: minmax(0, 1fr) 80px minmax(160px, .8fr); gap: 14px; align-items: center; margin: 24px 0; }.source-nodes, .topology-node, .graph-connectors { margin: 0; padding: 0; list-style: none; }.source-nodes { display: grid; gap: 10px; }.topology-node { display: grid; }.topology-arrow { color: #c4b8f7; }.topology-arrow svg { display: block; width: 100%; }
-  .graph-node { min-width: 0; }.graph-node a { display: flex; flex-direction: column; gap: 6px; min-height: 82px; padding: 12px; border: 1px solid var(--line-strong); border-radius: 8px; background: rgba(4,14,25,.6); color: var(--text); }.graph-node-hub a { min-height: 134px; justify-content: center; border-color: #c4b8f7; }.graph-node-kicker { color: #c4b8f7; font-size: .61rem; letter-spacing: .08em; text-transform: uppercase; }.graph-node strong { font-size: .8rem; line-height: 1.25; }.selection-marker { display: none; margin-top: auto; color: #c4b8f7; font-size: .65rem; }.graph-node a[aria-current="true"] { border: 2px solid #c4b8f7; }.graph-node a[aria-current="true"] .selection-marker { display: block; }
-  .graph-connectors { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }.graph-connectors li { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 7px; align-items: start; border-left: 2px solid #c4b8f7; background: rgba(255,255,255,.025); padding: 8px; color: var(--muted-strong); font-size: .7rem; line-height: 1.35; }.graph-connectors svg { width: 28px; margin-top: 2px; color: #c4b8f7; }
+  .graph-stage { --graph-connector: #c4b8f7; position: relative; height: 360px; margin-top: 20px; }.graph-nodes { position: absolute; inset: 0; z-index: 2; margin: 0; padding: 0; list-style: none; }
+  .graph-node { position: absolute; left: var(--node-x); top: var(--node-y); width: 31%; min-width: 0; transform: translate(-50%, -50%); }.graph-node a { display: flex; flex-direction: column; gap: 6px; min-height: 70px; padding: 12px; border: 1px solid var(--line-strong); border-radius: 8px; background: rgba(4,14,25,.92); color: var(--text); }.graph-node-hub a { min-height: 116px; justify-content: center; border-color: #c4b8f7; }.graph-node-kicker { color: #c4b8f7; font-size: .61rem; letter-spacing: .08em; text-transform: uppercase; }.graph-node strong { font-size: .8rem; line-height: 1.25; }.selection-marker { display: none; margin-top: auto; color: #c4b8f7; font-size: .65rem; }.graph-node a[aria-current="true"] { border: 2px solid #c4b8f7; }.graph-node a[aria-current="true"] .selection-marker { display: block; }
   a:focus-visible { outline: 3px solid #c4b8f7; outline-offset: 4px; }
-  @media (max-width: 760px) { .system-view-layout { grid-template-columns: 1fr; } }.topology-arrow { transform: rotate(0deg); }
-  @media (max-width: 520px) { .topology-flow { grid-template-columns: 1fr; }.topology-arrow { transform: rotate(90deg); justify-self: center; }.graph-connectors { grid-template-columns: 1fr; } }
+  @media (max-width: 760px) { .system-view-layout { grid-template-columns: 1fr; } }
+  @media (max-width: 520px) { .graph-stage { height: 390px; }.graph-node { width: 32%; } }
 </style>
