@@ -5,6 +5,7 @@ export interface ProjectPresentation {
   id: ProjectId;
   visualMode: 'data-flow' | 'telemetry' | 'cluster';
   systemHeading: string;
+  simulationPlacement?: 'system-view' | 'after-engineering';
   simulation?: 'cnesdata-write' | 'infrastructure-failover';
 }
 
@@ -13,6 +14,11 @@ export const cnesdataPresentation = {
   visualMode: 'data-flow',
   systemHeading: 'System View',
   simulation: 'cnesdata-write',
+} as const satisfies ProjectPresentation;
+
+export const infrastructurePresentation = {
+  id: 'infrastructure', visualMode: 'cluster', systemHeading: 'System View',
+  simulation: 'infrastructure-failover', simulationPlacement: 'system-view',
 } as const satisfies ProjectPresentation;
 
 export const limnopulsePresentation = {

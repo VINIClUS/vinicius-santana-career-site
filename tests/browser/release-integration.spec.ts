@@ -82,7 +82,7 @@ for (const viewport of viewports) {
     await expect(simulation.locator('[data-infra-workload]')).toContainText('node-02');
     await expectLoadedImagesAndNoHorizontalOverflow(page);
 
-    await page.getByRole('link', { name: 'All systems', exact: true }).click();
+    await page.getByRole('navigation', { name: 'Case study navigation', exact: true }).getByRole('link', { name: 'Back to Atlas', exact: false }).click();
     await expect(page).toHaveURL(/\/explore\/$/);
     await page.getByRole('button', { name: 'View 2D', exact: true }).click();
     await expect(page.locator('[data-observatory]')).toHaveAttribute('data-scene-state', 'fallback');

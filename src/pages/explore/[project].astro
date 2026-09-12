@@ -2,8 +2,9 @@
 import { getCollection } from 'astro:content';
 import ProjectDetail from '../../components/ProjectDetail.astro';
 import CnesDataSystemView from '../../features/explorer/CnesDataSystemView.astro';
+import InfrastructureSystemView from '../../features/explorer/InfrastructureSystemView.astro';
 import LimnopulseSystemView from '../../features/explorer/LimnopulseSystemView.astro';
-import { cnesdataPresentation, limnopulsePresentation } from '../../features/explorer/presentation.ts';
+import { cnesdataPresentation, limnopulsePresentation, infrastructurePresentation } from '../../features/explorer/presentation.ts';
 import EditorialLayout from '../../layouts/EditorialLayout.astro';
 import Infrastructure from '../../features/explorer/Infrastructure.astro';
 import Walkthrough from '../../features/explorer/Walkthrough.astro';
@@ -21,6 +22,9 @@ const statusLabel = (status: string) => status[0].toUpperCase() + status.slice(1
 {project.id === 'cnesdata' ? <ProjectDetail caseStudy={project} presentation={cnesdataPresentation} projects={projects}>
   <CnesDataSystemView slot="system-view" caseStudy={project} />
   <Walkthrough slot="simulation" />
+</ProjectDetail> : project.id === 'infrastructure' ? <ProjectDetail caseStudy={project} presentation={infrastructurePresentation} projects={projects}>
+  <InfrastructureSystemView slot="system-view" caseStudy={project} />
+  <Infrastructure slot="simulation" />
 </ProjectDetail> : project.id === 'limnopulse' ? <ProjectDetail caseStudy={project} presentation={limnopulsePresentation} projects={projects}>
   <LimnopulseSystemView slot="system-view" caseStudy={project} />
 </ProjectDetail> : <EditorialLayout title={`${project.title} explorer — Vinicius Santana`} description={project.summary} canonicalPath={`/explore/${project.id}/`} currentPath={`/explore/${project.id}/`} observatory>

@@ -1,3 +1,4 @@
+import { initializeInfrastructureView } from './infrastructure-client.ts';
 import { createExplorerController } from './controller.ts';
 import { projectIds, type ProjectId } from './projects.ts';
 import { scenarios } from '../../content/scenarios/cnesdata.ts';
@@ -6,6 +7,8 @@ export function initializeExplorer() {
   const root = document.querySelector<HTMLElement>('[data-explorer]');
   const projectId = root?.dataset.project;
   if (!root || !projectIds.some(id => id === projectId)) return;
+  if (root.dataset.controllerReady === 'true') return;
+  root.dataset.controllerReady = 'true';
   const controller = createExplorerController(projectId as ProjectId);
   const links = root.querySelectorAll<HTMLAnchorElement>('[data-component-link]');
   const details = root.querySelectorAll<HTMLElement>('[data-component-detail]');
@@ -98,6 +101,7 @@ export function initializeExplorer() {
   }
   selectFragment();
   render();
+  initializeInfrastructureView(root, controller);
   if (scenario && reset) {
     scenario.disabled = false;
     reset.disabled = false;
