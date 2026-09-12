@@ -53,6 +53,10 @@ try {
       ),
     );
   } catch {}
+  const retainedIds = new Set([...sceneIds, "detail-infrastructure-failed"]);
+  metadata = Object.fromEntries(
+    Object.entries(metadata).filter(([id]) => retainedIds.has(id)),
+  );
   for (const id of process.argv.slice(2).length
     ? process.argv.slice(2)
     : [...sceneIds, "detail-infrastructure-failed"]) {

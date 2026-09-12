@@ -7,6 +7,7 @@ import { allPosters, districtIds, districts, sceneAssets, overview, workPosters 
 import { projectDefinitions, projectIds } from '../src/features/explorer/projects.ts';
 
 const publicRoot = new URL('../public/', import.meta.url);
+const generated = JSON.parse(await readFile(new URL('../src/content/scenes/generated.json', import.meta.url), 'utf8'));
 const assetFile = src => {
   assert.match(src, /^\/assets\/(posters|scenes)\/[a-z0-9-]+\.(webp|glb)$/);
   return new URL(src.slice(1), publicRoot);
@@ -29,13 +30,23 @@ function webpSize(bytes) {
   throw new Error('WebP dimensions not found');
 }
 
-test('scene contract covers five districts without expanding routable projects', () => {
+test('scene contract contains only project districts and keeps detail assets available', () => {
   assert.deepEqual(projectIds, ['cnesdata', 'limnopulse', 'infrastructure']);
-  assert.deepEqual([...districtIds].sort(), ['cnesdata', 'infrastructure', 'limnopulse', 'observability', 'public-health']);
+  assert.deepEqual(districtIds, projectIds);
   assert.deepEqual(Object.keys(districts).sort(), [...districtIds].sort());
   assert.deepEqual(Object.keys(overview.placements).sort(), [...districtIds].sort());
   assert.ok(workPosters['public-health']);
-  assert.equal(sceneAssets.length, 8);
+  assert.equal(sceneAssets.length, 6);
+  assert.deepEqual(Object.keys(generated).sort(), [
+    'detail-cnesdata',
+    'detail-infrastructure',
+    'detail-infrastructure-failed',
+    'district-cnesdata',
+    'district-infrastructure',
+    'district-limnopulse',
+    'hub',
+    'overview',
+  ]);
   assert.equal(new Set(sceneAssets.map(asset => asset.id)).size, sceneAssets.length);
   assert.equal(new Set(sceneAssets.map(asset => asset.model.src)).size, sceneAssets.length);
   for (const vector of [...Object.values(overview.placements), overview.hubPosition, overview.camera.position, overview.camera.target, overview.camera.up]) assert.ok(vector.length === 3 && vector.every(Number.isFinite));
@@ -58,7 +69,7 @@ test('scene contract covers five districts without expanding routable projects',
 
 test('every responsive fallback exists with its declared dimensions and alternative text', async () => {
   const images = allPosters.flatMap(poster => [poster.desktop, poster.mobile]);
-  assert.equal(images.length, 30);
+  assert.equal(images.length, 26);
   assert.equal(new Set(images.map(image => image.src)).size, images.length);
   for (const image of images) {
     assert.ok(image.alt.trim().length > 20, image.src);

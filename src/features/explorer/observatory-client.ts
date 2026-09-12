@@ -6,7 +6,8 @@ const root = document.querySelector<HTMLElement>('[data-observatory]');
 if (root) {
   const controller = createObservatoryController();
   const links = [...root.querySelectorAll<HTMLAnchorElement>('[data-district-link]')];
-  const articles = root.querySelectorAll<HTMLElement>('[data-district-detail]');
+  const articles = [...root.querySelectorAll<HTMLElement>('[data-district-detail]')];
+  const closeLinks = [...root.querySelectorAll<HTMLAnchorElement>('[data-district-close]')];
   const map = root.querySelector<HTMLElement>('.observatory-map')!;
   const toolbar = root.querySelector<HTMLElement>('[data-scene-controls]')!;
   const labels = [...links, root.querySelector<HTMLElement>('.observatory-hub')!];
@@ -18,7 +19,9 @@ if (root) {
   const render = () => {
     const { selectedDistrictId } = controller.getState();
     for (const link of links) {
-      if (link.dataset.districtLink === selectedDistrictId) link.setAttribute('aria-current', 'true');
+      const selected = link.dataset.districtLink === selectedDistrictId;
+      link.setAttribute('aria-expanded', String(selected));
+      if (selected) link.setAttribute('aria-current', 'true');
       else link.removeAttribute('aria-current');
     }
     for (const article of articles) article.dataset.selected = String(article.dataset.districtDetail === selectedDistrictId);
@@ -26,7 +29,21 @@ if (root) {
   const syncFragment = () => {
     const districtId = districtIds.find(id => location.hash === `#district-${id}`) ?? null;
     controller.dispatch({ type: 'SELECT_DISTRICT', districtId });
-    if (districtId) root.querySelector<HTMLElement>(`[data-district-detail="${districtId}"]`)?.focus({ preventScroll: true });
+  };
+  const closePanel = (restoreFocus = true) => {
+    const selectedDistrictId = controller.getState().selectedDistrictId;
+    if (!selectedDistrictId) return;
+    history.replaceState(history.state, '', `${location.pathname}${location.search}`);
+    controller.dispatch({ type: 'SELECT_DISTRICT', districtId: null });
+    if (restoreFocus) links.find(link => link.dataset.districtLink === selectedDistrictId)?.focus({ preventScroll: true });
+  };
+  const selectDistrict = (districtId: DistrictId) => {
+    if (controller.getState().selectedDistrictId === districtId) {
+      closePanel();
+      return;
+    }
+    history.pushState(history.state, '', `#district-${districtId}`);
+    controller.dispatch({ type: 'SELECT_DISTRICT', districtId });
   };
   const use2D = (focus = false) => {
     const canvas = map.querySelector('[data-observatory-canvas]');
@@ -52,9 +69,20 @@ if (root) {
     const { signal } = nativeEvents;
     // Fragment traversal also emits hashchange; listening to popstate would focus twice.
     window.addEventListener('hashchange', syncFragment, { signal });
-    for (const link of links) link.addEventListener('click', () => {
-      // Native fragments own scrolling and history; repeated fragments still focus the article.
-      if (link.hash === location.hash) root.querySelector<HTMLElement>(`[data-district-detail="${link.dataset.districtLink}"]`)?.focus({ preventScroll: true });
+    for (const link of links) link.addEventListener('click', event => {
+      event.preventDefault();
+      const districtId = districtIds.find(id => id === link.dataset.districtLink);
+      if (districtId) selectDistrict(districtId);
+    }, { signal });
+    for (const closeLink of closeLinks) closeLink.addEventListener('click', event => {
+      event.preventDefault();
+      closePanel();
+    }, { signal });
+    window.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && controller.getState().selectedDistrictId) {
+        event.preventDefault();
+        closePanel();
+      }
     }, { signal });
     render();
     syncFragment();
@@ -92,8 +120,7 @@ if (root) {
       scene = mountObservatoryScene({
         host: map, controller,
         onSelect(districtId: DistrictId) {
-          if (location.hash !== `#district-${districtId}`) history.pushState(null, '', `#district-${districtId}`);
-          controller.dispatch({ type: 'SELECT_DISTRICT', districtId });
+          selectDistrict(districtId);
         },
         onReady() {
           if (stopped) return;

@@ -1,7 +1,6 @@
 import type { ProjectId } from '../../features/explorer/projects.ts';
 
-/** Visual districts are broader than routable portfolio projects. */
-export type DistrictId = ProjectId | 'public-health' | 'observability';
+export type DistrictId = ProjectId;
 export type Vector3 = readonly [number, number, number];
 export interface VisualImage {
   readonly src: string;

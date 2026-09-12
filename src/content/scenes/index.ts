@@ -1,5 +1,6 @@
 import generated from './generated.json' with { type: 'json' };
 import type { DistrictId, OverviewLayout, ResponsivePoster, SceneAsset, SceneCamera, Vector3 } from './types.ts';
+import type { ProjectId } from '../../features/explorer/projects.ts';
 export type { DistrictId, OverviewLayout, ResponsivePoster, SceneAsset, SceneCamera, SceneModel, Vector3, VisualImage } from './types.ts';
 
 export { districtIds } from '../../features/explorer/districts.ts';
@@ -16,10 +17,8 @@ function layout(value: { districtPositions: Record<DistrictId, number[]>; distri
   return {
     placements: {
       cnesdata: vector(value.districtPositions.cnesdata),
-      'public-health': vector(value.districtPositions['public-health']),
-      infrastructure: vector(value.districtPositions.infrastructure),
-      observability: vector(value.districtPositions.observability),
       limnopulse: vector(value.districtPositions.limnopulse),
+      infrastructure: vector(value.districtPositions.infrastructure),
     },
     districtScale: value.districtScale,
     hubPosition: vector(value.hubPosition),
@@ -62,14 +61,12 @@ export const workPosters = {
   limnopulse: illustration('work-limnopulse', 'Aquatic environment with illustrative sensing instruments and telemetry connections.'),
   infrastructure: illustration('work-infrastructure', 'Isometric infrastructure cluster with illuminated server racks and shared connections.'),
   'public-health': illustration('work-public-health', 'Public-health campus with connected clinical and administrative buildings.'),
-} as const satisfies Partial<Record<DistrictId, ResponsivePoster>>;
+} as const satisfies Record<ProjectId | 'public-health', ResponsivePoster>;
 
 export const districts = {
   cnesdata: scene('district-cnesdata', 'Isometric data platform with distinct processing, storage, and orchestration buildings.'),
-  'public-health': scene('district-public-health', 'Public-health campus of clinical buildings, paths, and planted courtyards.'),
-  infrastructure: scene('district-infrastructure', 'Server-rack district with three connected infrastructure nodes.'),
-  observability: scene('district-observability', 'Observability instruments arranged around a monitoring tower.'),
   limnopulse: scene('district-limnopulse', 'Water basin with sensing buoys and illustrative telemetry instruments.'),
+  infrastructure: scene('district-infrastructure', 'Server-rack district with three connected infrastructure nodes.'),
 } as const satisfies Record<DistrictId, SceneAsset>;
 export const hub = scene('hub', 'Luminous central hub on a circular architectural platform.');
 export const details = {
@@ -84,7 +81,7 @@ const overviewLayouts = {
 } as const;
 export const overview = {
   id: 'overview',
-  poster: poster('overview', 'Five distinct architectural districts arranged around a luminous central hub.'),
+  poster: poster('overview', 'Three architectural project districts arranged around a luminous central hub.'),
   layouts: overviewLayouts,
   placements: overviewLayouts.desktop.placements,
   districtScale: overviewLayouts.desktop.districtScale,

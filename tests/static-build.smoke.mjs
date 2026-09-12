@@ -170,6 +170,8 @@ const caseStudies = [
   {
     slug: 'cnesdata',
     title: 'CnesData',
+    summary: 'A contract-led platform for moving municipal source extracts from edge environments into a tenant-isolated central data layer.',
+    technologies: ['Python', 'FastAPI', 'Go', 'PostgreSQL'],
     repositoryUrls: ['https://github.com/VINIClUS/CnesData'],
     evidenceLabels: ['CnesData public repository', 'Architecture documentation'],
     statuses: ['Implemented', 'Planned']
@@ -177,6 +179,8 @@ const caseStudies = [
   {
     slug: 'limnopulse',
     title: 'Limnopulse',
+    summary: 'An API and evaluation runtime for authorized telemetry reads, alert rules, durable incidents, and notification delivery.',
+    technologies: ['Python', 'FastAPI', 'Go', 'DynamoDB'],
     repositoryUrls: ['https://github.com/VINIClUS/limnopulse'],
     evidenceLabels: ['Limnopulse public repository', 'Alert evaluator operations', 'Notification operations'],
     statuses: ['Implemented', 'Documented']
@@ -184,6 +188,8 @@ const caseStudies = [
   {
     slug: 'infrastructure',
     title: 'Infrastructure &amp; Operations',
+    summary: 'Public infrastructure work that separates reusable automation, image-building, and system runbooks from private runtime configuration.',
+    technologies: ['Ansible', 'Packer', 'Proxmox VE', 'Python'],
     repositoryUrls: [
       'https://github.com/VINIClUS/infra-ansible',
       'https://github.com/VINIClUS/packer-proxmox-templates',
@@ -323,20 +329,18 @@ const overview = await readBuiltPage('dist/explore/index.html');
 assertEditorialShell(overview, 'explorer overview', true);
 assertMetadata(overview, '/explore/', origin);
 assert.match(overview, /Systems Observatory/);
-const districtDestinations = {
-  cnesdata: '/explore/cnesdata/',
-  'public-health': '/#experience',
-  infrastructure: '/explore/infrastructure/',
-  observability: '/#stack',
-  limnopulse: '/explore/limnopulse/',
-};
-assert.equal([...overview.matchAll(/<article\b[^>]*data-district-detail=/g)].length, 5, 'overview renders all five district articles');
-for (const [id, href] of Object.entries(districtDestinations)) {
+assert.equal([...overview.matchAll(/<article\b[^>]*data-district-detail=/g)].length, 3, 'overview renders the three project panels');
+for (const { slug: id, title, summary, technologies } of caseStudies) {
+  const href = `/explore/${id}/`;
   assert.match(overview, new RegExp(`href="#district-${id}"`));
   const article = overview.match(new RegExp(`<article[^>]*id="district-${id}"[^>]*>[\\s\\S]*?</article>`))?.[0];
   assert.ok(article, `${id} article is present without JavaScript`);
+  assert.match(article, new RegExp(escapeRegExp(summary)));
+  for (const technology of technologies) assert.match(article, new RegExp(`<li>${escapeRegExp(technology)}</li>`));
   assert.match(article, new RegExp(`href="${escapeRegExp(href)}"`));
+  assert.match(article, new RegExp(`Explore ${escapeRegExp(title)}`));
 }
+assert.doesNotMatch(overview, /district-(?:public-health|observability)|data-district-(?:link|detail)="(?:public-health|observability)"/);
 assert.doesNotMatch(overview, /<canvas|<astro-island|\.(glb|gltf|ktx2)["']/i);
 for (const { slug, title } of caseStudies) {
   assert.match(overview, new RegExp(`href="/explore/${slug}/"`));

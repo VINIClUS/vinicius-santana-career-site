@@ -1,74 +1,106 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
-const destinations = {
-  cnesdata: '/explore/cnesdata/',
-  'public-health': '/#experience',
-  infrastructure: '/explore/infrastructure/',
-  observability: '/#stack',
-  limnopulse: '/explore/limnopulse/',
-};
+const projects = ['cnesdata', 'limnopulse', 'infrastructure'];
+const link = (page: Page, id: string) => page.locator(`[data-district-link="${id}"]`);
+const panel = (page: Page, id: string) => page.locator(`[data-district-detail="${id}"]`);
 
-test('all five districts support keyboard selection, links, fragments and history', async ({ page }) => {
+test('project panel selection, replacement, closing and history stay coherent', async ({ page }) => {
   await page.goto('/explore/');
   await expect(page.locator('[data-district-link][aria-current]')).toHaveCount(0);
-  for (const [id, href] of Object.entries(destinations)) {
-    const link = page.locator(`[data-district-link="${id}"]`);
-    await link.focus();
-    await page.keyboard.press('Enter');
-    await expect(page).toHaveURL(new RegExp(`#district-${id}$`));
-    await expect(link).toHaveAttribute('aria-current', 'true');
-    const detail = page.locator(`#district-${id}`);
-    await expect(detail).toBeFocused();
-    await expect(detail.locator(`a[href="${href}"]`)).toBeVisible();
-  }
+
+  await link(page, 'cnesdata').focus();
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/#district-cnesdata$/);
+  await expect(link(page, 'cnesdata')).toHaveAttribute('aria-current', 'true');
+  await expect(link(page, 'cnesdata')).toHaveAttribute('aria-expanded', 'true');
+  await expect(link(page, 'cnesdata')).toHaveAttribute('aria-controls', 'district-cnesdata');
+  await expect(panel(page, 'cnesdata')).toBeVisible();
+  await expect(link(page, 'cnesdata')).toBeFocused();
+
+  await link(page, 'limnopulse').click();
+  await expect(page).toHaveURL(/#district-limnopulse$/);
+  await expect(panel(page, 'cnesdata')).toBeHidden();
+  await expect(panel(page, 'limnopulse')).toBeVisible();
   await page.goBack();
-  await expect(page.locator('[data-district-link="observability"]')).toHaveAttribute('aria-current', 'true');
+  await expect(panel(page, 'cnesdata')).toBeVisible();
   await page.goForward();
-  await expect(page.locator('#district-limnopulse')).toBeFocused();
-  await page.goto('/explore/#district-unknown');
-  await expect(page.locator('[data-district-link][aria-current]')).toHaveCount(0);
-  await page.goto('/explore/#district-public-health');
-  await expect(page.locator('#district-public-health')).toBeFocused();
+  await expect(panel(page, 'limnopulse')).toBeVisible();
+
+  await panel(page, 'limnopulse').getByRole('link', { name: 'Close Limnopulse panel' }).click();
+  await expect(page).toHaveURL(/\/explore\/$/);
+  await expect(page.locator('[data-district-detail]:visible')).toHaveCount(0);
+  await expect(link(page, 'limnopulse')).toBeFocused();
+
+  await link(page, 'infrastructure').click();
+  await page.getByRole('heading', { name: 'Explore the systems.' }).click();
+  await expect(panel(page, 'infrastructure')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(panel(page, 'infrastructure')).toBeHidden();
+  await expect(page).toHaveURL(/\/explore\/$/);
+
+  await link(page, 'cnesdata').focus();
+  await page.keyboard.press('Enter');
+  await page.keyboard.press('Enter');
+  await expect(panel(page, 'cnesdata')).toBeHidden();
+  await expect(page).toHaveURL(/\/explore\/$/);
 });
 
-for (const width of [390, 1440]) {
-  test(`five districts stay usable at ${width}px without WebGL and with reduced motion`, async ({ browser, baseURL }, testInfo) => {
-    const context = await browser.newContext({ baseURL, viewport: { width, height: 900 }, hasTouch: true, reducedMotion: 'reduce' });
+test('direct and invalid fragments synchronize only the three project panels', async ({ page }) => {
+  for (const id of projects) {
+    await page.goto(`/explore/#district-${id}`);
+    await expect(panel(page, id)).toBeVisible();
+    await expect(link(page, id)).toHaveAttribute('aria-current', 'true');
+    await expect(link(page, id)).toHaveAttribute('aria-expanded', 'true');
+    await expect(panel(page, id).getByRole('link', { name: /^Explore/ })).toHaveAttribute('href', `/explore/${id}/`);
+  }
+  await page.goto('/explore/#district-unknown');
+  await expect(page.locator('[data-district-detail]:visible')).toHaveCount(0);
+  await expect(page.locator('[data-district-link][aria-current]')).toHaveCount(0);
+});
+
+for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+  test(`fallback panel works without WebGL at ${viewport.width}px`, async ({ browser, baseURL }) => {
+    const context = await browser.newContext({ baseURL, viewport, hasTouch: true, reducedMotion: 'reduce' });
     await context.addInitScript(() => {
       HTMLCanvasElement.prototype.getContext = (() => null) as typeof HTMLCanvasElement.prototype.getContext;
     });
     const page = await context.newPage();
-    const modelRequests: string[] = [];
-    page.on('request', request => { if (/\.(glb|gltf|ktx2)(?:\?|$)/.test(request.url())) modelRequests.push(request.url()); });
+    const models: string[] = [];
+    page.on('request', request => { if (request.url().endsWith('.glb')) models.push(request.url()); });
     await page.goto('/explore/');
-    for (const id of Object.keys(destinations)) {
-      await page.locator(`[data-district-link="${id}"]`).tap();
-      await expect(page.locator(`#district-${id}`)).toBeFocused();
-      await expect(page.locator(`[data-district-link="${id}"]`)).toHaveAttribute('aria-current', 'true');
-    }
+    await link(page, 'infrastructure').tap();
+    await expect(panel(page, 'infrastructure')).toBeVisible();
+    const geometry = await panel(page, 'infrastructure').evaluate(element => ({
+      height: element.getBoundingClientRect().height,
+      mapHeight: element.closest('.observatory-stage')!.getBoundingClientRect().height,
+      overflowY: getComputedStyle(element).overflowY,
+      transitionDuration: getComputedStyle(element).transitionDuration,
+      width: getComputedStyle(element).width,
+    }));
+    if (viewport.width <= 700) expect(geometry.height).toBeLessThanOrEqual(geometry.mapHeight * .6 + 1);
+    else expect(Number.parseFloat(geometry.width)).toBeGreaterThanOrEqual(320);
+    expect(geometry.overflowY).toBe('auto');
+    expect(geometry.transitionDuration.split(',').every(value => value.trim() === '0s')).toBe(true);
+    await panel(page, 'infrastructure').getByRole('link', { name: /^Explore/ }).scrollIntoViewIfNeeded();
+    await expect(panel(page, 'infrastructure').getByRole('link', { name: /^Explore/ })).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    await page.goto('/explore/');
-    await page.screenshot({ path: testInfo.outputPath(`observatory-${width}.png`), fullPage: true });
-    expect(modelRequests).toEqual([]);
+    expect(models).toEqual([]);
     await context.close();
   });
 
-  test(`five district articles and domain destinations work without JavaScript at ${width}px`, async ({ browser, baseURL }) => {
-    const context = await browser.newContext({ baseURL, javaScriptEnabled: false, viewport: { width, height: 900 } });
+  test(`project panels remain fragment-accessible without JavaScript at ${viewport.width}px`, async ({ browser, baseURL }) => {
+    const context = await browser.newContext({ baseURL, javaScriptEnabled: false, viewport });
     const page = await context.newPage();
     await page.goto('/explore/');
-    for (const [id, href] of Object.entries(destinations)) {
-      await page.locator(`a[href="#district-${id}"]`).click();
-      await expect(page.locator(`#district-${id}`)).toBeVisible();
-      await expect(page.locator(`#district-${id}:target`)).toHaveCount(1);
-      await expect(page.locator(`[data-district-link="${id}"]`)).toHaveCSS('outline-style', 'solid');
-      await expect(page.locator(`#district-${id} a[href="${href}"]`)).toBeVisible();
+    for (const id of projects) {
+      await link(page, id).click();
+      await expect(panel(page, id)).toBeVisible();
+      await expect(panel(page, id)).toHaveCSS('pointer-events', 'auto');
+      await expect(panel(page, id).locator('li')).toHaveCount(4);
+      await panel(page, id).getByRole('link', { name: /Close/ }).focus();
+      await page.keyboard.press('Enter');
+      await expect(page).toHaveURL(/\/explore\/$/);
     }
-    await page.locator('#district-public-health a[href="/#experience"]').click();
-    await expect(page.locator('#experience')).toBeVisible();
-    await page.goto('/explore/#district-observability');
-    await page.locator('#district-observability a[href="/#stack"]').click();
-    await expect(page.locator('#stack')).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await context.close();
   });
