@@ -44,7 +44,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       await page.goto(`/explore/${slug}/`);
       await expect(page).toHaveURL(new RegExp(`/explore/${slug}/$`));
       await expect(page.locator('.header-resume')).toBeVisible();
-      for (const anchor of ['overview', 'architecture', 'engineering', 'results']) {
+      for (const anchor of ['overview', 'system', 'engineering', 'results']) {
         const link = page.locator(`.section-nav a[href="#${anchor}"]`);
         await link.focus();
         await page.keyboard.press('Enter');

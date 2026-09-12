@@ -54,12 +54,12 @@ test('static navigation, details and every transcript without JavaScript', async
     await expect(page.locator(`#transcript-${id}`)).toBeVisible();
     await expect(page.locator(`#transcript-${id}`)).toContainText('synthetic-content-A');
   }
-  for (const id of ['overview', 'architecture', 'engineering', 'results', 'evidence', 'limitations']) {
+  for (const id of ['overview', 'system', 'simulation', 'engineering', 'results', 'evidence', 'limitations']) {
     await expect(page.locator(`#${id}`)).toBeVisible();
   }
   await expect(page.getByLabel('Scenario')).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Reset scenario' })).toBeDisabled();
-  await expect(page.locator('img[src*="detail-cnesdata"]')).toBeVisible();
+  await expect(page.locator('[data-system-view]')).toHaveCount(1);
   await page.locator('nav[aria-label="Explorer projects"] a[href="/explore/limnopulse/"]').click();
   await expect(page.getByRole('heading', { name: 'Limnopulse', exact: true })).toBeVisible();
   await context.close();
@@ -92,7 +92,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     await page.goto('/explore/cnesdata/');
     await expect(page).toHaveTitle('CnesData — Vinicius Santana');
     await expect(page.locator('a[href="/work/cnesdata/"]')).toHaveCount(0);
-    for (const id of ['overview', 'architecture', 'engineering', 'simulation', 'results', 'evidence', 'limitations']) {
+    for (const id of ['overview', 'system', 'simulation', 'engineering', 'results', 'evidence', 'limitations']) {
       await page.locator(`a[href="#${id}"]`).first().click();
       await expect(page).toHaveURL(new RegExp(`#${id}$`));
       await expect(page.locator(`#${id}`)).toBeVisible();
@@ -146,10 +146,8 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       await expect(page.locator('[data-progress]')).toHaveText(`0 of ${outcomes.length} attempts · ready`);
       await expect(advance).toBeEnabled();
     }
-    const poster = page.locator('img[src*="detail-cnesdata"]');
-    await poster.scrollIntoViewIfNeeded();
-    await expect(poster).toBeVisible();
-    await expect.poll(() => poster.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
+    await expect(page.locator('[data-system-view]')).toHaveCount(1);
+    await expect(page.locator('img[src*="detail-cnesdata"], canvas')).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     expect(models).toEqual([]);
     await page.goto('/explore/cnesdata/');
