@@ -439,7 +439,19 @@ for (const [id, href] of Object.entries(districtDestinations)) {
   assert.match(article, new RegExp(`href="${escapeRegExp(href)}"`));
   const project = explorerProjects.find(entry => entry.id === id);
   assert.deepEqual(project.technologies, expectedTechnologies[id], `${id} technology source must retain the approved stack and order`);
-  const technologyList = assertTechnologyList(article, escapeHtmlText(project.title), project.technologies);
+  assert.ok(article.includes(`<h2 id="district-title-${id}">${escapeHtmlText(project.title)}</h2>`), `${id} title comes from the editorial source`);
+  assert.ok(article.includes(`<p>${escapeHtmlText(project.summary)}</p>`), `${id} summary comes from the editorial source`);
+  const technologyList = article.match(/<ul class="district-technologies" aria-label="Main technologies">[\s\S]*?<\/ul>/)?.[0];
+  assert.ok(technologyList, `${project.title} must expose its main technologies`);
+  assert.equal((technologyList.match(/<li>/g) || []).length, 4, `${project.title} must render four main technologies`);
+  const technologies = project.technologies.slice(0, 4);
+  const offsets = technologies.map(technology => {
+    const offset = technologyList.indexOf(`>${escapeHtmlText(technology)}</li>`);
+    assert.notEqual(offset, -1, `${project.title} must render ${technology}`);
+    return offset;
+  });
+  assert.deepEqual(offsets, [...offsets].sort((left, right) => left - right), `${project.title} must preserve technology order`);
+  assert.ok(article.includes(`>Explore ${escapeHtmlText(project.title)}</a>`), `${id} must use the canonical CTA label`);
   const technologyOffset = article.indexOf(technologyList);
   assert.ok(
     (article.slice(0, technologyOffset).match(/<\/p>/g) || []).length === 2
@@ -448,13 +460,7 @@ for (const [id, href] of Object.entries(districtDestinations)) {
   );
 }
 assert.equal([...overview.matchAll(/data-district-link=/g)].length, 3);
-for (const [id, href] of [['public-health', '/#experience'], ['observability', '/#stack']]) {
-  assert.doesNotMatch(overview, new RegExp(`data-district-(?:link|detail)="${id}"`));
-  assert.match(overview, new RegExp(`id="district-${id}"`));
-  assert.ok(overview.includes(`href="${href}"`));
-}
-const atlasContext = overview.match(/<aside[^>]*class="atlas-context"[^>]*>[\s\S]*?<\/aside>/)?.[0];
-assert.doesNotMatch(atlasContext, /technology-labels/, 'domain context must not render project technology labels');
+assert.doesNotMatch(overview, /district-(?:public-health|observability)|atlas-context/, 'retired districts must be absent without compatibility redirects');
 assert.doesNotMatch(overview, /href="#district-hub"|data-district-(?:link|detail)="hub"/);
 assert.doesNotMatch(overview, /<canvas|<astro-island|\.(glb|gltf|ktx2)["']/i);
 for (const { slug, title } of caseStudies) {

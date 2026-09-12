@@ -6,7 +6,8 @@ const root = document.querySelector<HTMLElement>('[data-observatory]');
 if (root) {
   const controller = createObservatoryController();
   const links = [...root.querySelectorAll<HTMLAnchorElement>('[data-district-link]')];
-  const articles = root.querySelectorAll<HTMLElement>('[data-district-detail]');
+  const articles = [...root.querySelectorAll<HTMLElement>('[data-district-detail]')];
+  const closeLinks = [...root.querySelectorAll<HTMLAnchorElement>('[data-district-close]')];
   const map = root.querySelector<HTMLElement>('.observatory-map')!;
   const toolbar = root.querySelector<HTMLElement>('[data-scene-controls]')!;
   const labels = [...links, root.querySelector<HTMLElement>('.observatory-hub')!];
@@ -17,32 +18,47 @@ if (root) {
   let scene: ObservatoryScene | undefined;
   let stopped = false;
   let loadingDeadline: ReturnType<typeof setTimeout> | undefined;
+  let focusedPanelDistrictId: DistrictId | null = null;
   const pending = new AbortController();
 
   const render = () => {
     const { selectedDistrictId } = controller.getState();
     for (const link of links) {
-      if (link.dataset.districtLink === selectedDistrictId) link.setAttribute('aria-current', 'true');
+      const selected = link.dataset.districtLink === selectedDistrictId;
+      link.setAttribute('aria-expanded', String(selected));
+      if (selected) link.setAttribute('aria-current', 'true');
       else link.removeAttribute('aria-current');
     }
     for (const article of articles) article.dataset.selected = String(article.dataset.districtDetail === selectedDistrictId);
     for (const region of regions) region.dataset.selected = String(region.dataset.region === selectedDistrictId);
   };
-  const redirectLegacyFragment = () => {
-    const destination = location.hash === '#district-public-health' ? '/#experience'
-      : location.hash === '#district-observability' ? '/#stack' : null;
-    if (!destination) return false;
-    location.replace(destination);
-    return true;
-  };
-  const syncFragment = (focus: 'always' | 'preserve' | 'none' = 'preserve') => {
-    if (redirectLegacyFragment()) return;
+  const syncFragment = () => {
     const districtId = districtIds.find(id => location.hash === `#district-${id}`) ?? null;
+    const previousDistrictId = controller.getState().selectedDistrictId;
+    const restoreFocus = focusedPanelDistrictId === previousDistrictId && districtId !== previousDistrictId;
     controller.dispatch({ type: 'SELECT_DISTRICT', districtId });
-    const detail = districtId ? root.querySelector<HTMLElement>(`[data-district-detail="${districtId}"]`) : null;
-    // Link navigation already focuses its target before hashchange; traversal may
-    // retain an old article. Preserve any focus chosen after navigation completes.
-    if (detail && (focus === 'always' || (focus === 'preserve' && (document.activeElement === document.body || document.activeElement === detail)))) detail.focus({ preventScroll: true });
+    if (restoreFocus) links.find(link => link.dataset.districtLink === (districtId ?? previousDistrictId))?.focus({ preventScroll: true });
+  };
+  const historyDepth = () => {
+    const value = (history.state as { __atlasPanelDepth?: unknown } | null)?.__atlasPanelDepth;
+    return typeof value === 'number' && value > 0 ? value : 0;
+  };
+  const closePanel = (restoreFocus = true) => {
+    const selectedDistrictId = controller.getState().selectedDistrictId;
+    if (!selectedDistrictId) return;
+    const depth = historyDepth();
+    if (depth > 0) history.go(-depth);
+    else history.replaceState(history.state, '', `${location.pathname}${location.search}`);
+    controller.dispatch({ type: 'SELECT_DISTRICT', districtId: null });
+    if (restoreFocus) links.find(link => link.dataset.districtLink === selectedDistrictId)?.focus({ preventScroll: true });
+  };
+  const selectDistrict = (districtId: DistrictId) => {
+    const repeated = controller.getState().selectedDistrictId === districtId;
+    if (repeated) { closePanel(); return; }
+    const depth = historyDepth();
+    const nextDepth = depth > 0 ? depth + 1 : location.hash === '' ? 1 : 0;
+    history.pushState({ ...history.state, __atlasPanelDepth: nextDepth }, '', `#district-${districtId}`);
+    controller.dispatch({ type: 'ACTIVATE_DISTRICT', districtId });
   };
   const use2D = () => {
     const canvas = map.querySelector('[data-observatory-canvas]');
@@ -70,26 +86,32 @@ if (root) {
     nativeEvents = new AbortController();
     unsubscribe = controller.subscribe(render);
     const { signal } = nativeEvents;
-    let pendingLinkHash: string | undefined;
-    let focusedTraversalHash: string | undefined;
-    window.addEventListener('popstate', () => {
-      if (pendingLinkHash === location.hash) return;
-      // Traversal owns a new focus destination even when the browser retains the
-      // previous article. Its later hashchange must not focus a second time.
-      syncFragment('always');
-      focusedTraversalHash = location.hash;
-    }, { signal });
-    window.addEventListener('hashchange', () => {
-      syncFragment(focusedTraversalHash === location.hash ? 'none' : 'preserve');
-      pendingLinkHash = undefined;
-      focusedTraversalHash = undefined;
+    // Fragment traversal also emits hashchange; listening to popstate would focus twice.
+    window.addEventListener('hashchange', syncFragment, { signal });
+    document.addEventListener('focusin', event => {
+      const panelId = event.target instanceof Element
+        ? event.target.closest<HTMLElement>('[data-district-detail]')?.dataset.districtDetail
+        : undefined;
+      focusedPanelDistrictId = districtIds.find(id => id === panelId) ?? null;
     }, { signal });
     for (const link of links) link.addEventListener('click', event => {
       if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-      pendingLinkHash = link.hash === location.hash ? undefined : link.hash;
-      // Native fragments own scrolling and history; repeated fragments still focus the article.
-      if (link.hash === location.hash) root.querySelector<HTMLElement>(`[data-district-detail="${link.dataset.districtLink}"]`)?.focus({ preventScroll: true });
+      event.preventDefault();
+      const districtId = districtIds.find(id => id === link.dataset.districtLink);
+      if (districtId) selectDistrict(districtId);
     }, { signal });
+    for (const closeLink of closeLinks) closeLink.addEventListener('click', event => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();
+      closePanel();
+    }, { signal });
+    window.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && document.querySelector('[data-menu-toggle][aria-expanded="true"]')) return;
+      if (event.key === 'Escape' && controller.getState().selectedDistrictId) {
+        event.preventDefault();
+        closePanel();
+      }
+    }, { signal, capture: true });
     render();
     syncFragment();
   };
@@ -119,7 +141,7 @@ if (root) {
       return true;
     } catch { return false; }
   };
-  if (!redirectLegacyFragment() && capable()) {
+  if (capable()) {
     const startedAt = performance.now();
     const expired = () => performance.now() - startedAt >= 15_000;
     root.dataset.sceneState = 'loading';
@@ -131,7 +153,7 @@ if (root) {
       scene = mountObservatoryScene({
         host: map, controller,
         onSelect(districtId: DistrictId) {
-          links.find(link => link.dataset.districtLink === districtId)?.click();
+          selectDistrict(districtId);
         },
         onReady() {
           if (stopped) return;

@@ -1,7 +1,9 @@
 import { districtIds, type DistrictId } from './districts.ts';
 
 export interface ObservatoryState { readonly selectedDistrictId: DistrictId | null; }
-export type ObservatoryCommand = { readonly type: 'SELECT_DISTRICT'; readonly districtId: DistrictId | null };
+export type ObservatoryCommand =
+  | { readonly type: 'SELECT_DISTRICT'; readonly districtId: DistrictId | null }
+  | { readonly type: 'ACTIVATE_DISTRICT'; readonly districtId: DistrictId };
 export interface ObservatoryController {
   getState(): ObservatoryState;
   dispatch(command: ObservatoryCommand): void;
@@ -13,10 +15,11 @@ export function createObservatoryController(): ObservatoryController {
   return {
     getState: () => state,
     dispatch(command) {
-      if (command.type !== 'SELECT_DISTRICT') return;
       const id = command.districtId;
-      if (id === state.selectedDistrictId || (id !== null && !districtIds.includes(id))) return;
-      state = { selectedDistrictId: id };
+      if (id !== null && !districtIds.includes(id)) return;
+      const selectedDistrictId = command.type === 'ACTIVATE_DISTRICT' && id === state.selectedDistrictId ? null : id;
+      if (selectedDistrictId === state.selectedDistrictId) return;
+      state = { selectedDistrictId };
       for (const listener of listeners) listener();
     },
     subscribe(listener) {

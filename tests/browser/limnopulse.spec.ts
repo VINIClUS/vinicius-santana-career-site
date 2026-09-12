@@ -11,7 +11,8 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       const context = await browser.newContext({ baseURL, viewport, javaScriptEnabled, hasTouch: mobile, isMobile: mobile, reducedMotion });
       const page = await context.newPage();
       await page.goto('/explore/');
-      await page.getByRole('link', { name: 'Explore LimnoPulse', exact: true }).click();
+      await page.locator('[data-district-link="limnopulse"]').click();
+      await page.getByRole('link', { name: 'Explore Limnopulse', exact: true }).click();
       await expect(page).toHaveTitle('Limnopulse — Vinicius Santana');
       const models: string[] = [];
       page.on('request', request => { if (/\.(glb|gltf|ktx2)(?:\?|$)/.test(request.url())) models.push(request.url()); });

@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test('project navigation and keyboard component selection', async ({ page }) => {
   await page.goto('/explore/');
+  await page.locator('[data-district-link="cnesdata"]').click();
   await page.getByRole('link', { name: 'Explore CnesData', exact: true }).click();
   const component = page.locator('[data-component-link]').nth(1);
   await component.focus();
@@ -69,7 +70,9 @@ test('static navigation, details and every transcript without JavaScript', async
   const context = await browser.newContext({ baseURL, javaScriptEnabled: false });
   const page = await context.newPage();
   await page.goto('/explore/');
-  await page.getByRole('link', { name: 'Explore CnesData', exact: true }).click();
+  await page.locator('[data-district-link="cnesdata"]').click();
+  await page.getByRole('link', { name: 'Explore CnesData', exact: true }).focus();
+  await page.keyboard.press('Enter');
   await page.locator('[data-component-link]').nth(1).click();
   await expect(page).toHaveURL(/#component-/);
   await expect(page.locator('[data-component-detail]').nth(1)).toBeVisible();

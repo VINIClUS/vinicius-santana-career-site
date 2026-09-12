@@ -1,14 +1,15 @@
 ---
 import { getCollection } from 'astro:content';
 import EditorialLayout from '../../layouts/EditorialLayout.astro';
-import { districtIds, districtRegistry } from '../../features/explorer/districts.ts';
+import { districtIds } from '../../features/explorer/districts.ts';
 import { overview } from '../../content/scenes/index.ts';
 import { projectToPoster } from '../../features/explorer/observatory-projection.ts';
 import '../../features/explorer/explorer.css';
 import '../../features/explorer/observatory.css';
 const { poster, layouts } = overview;
-const projectByDistrict = new Map((await getCollection('caseStudies')).map(({ data }) => [data.id, data]));
-const linkLabels = { cnesdata: 'Explore CnesData', infrastructure: 'Explore Infrastructure', limnopulse: 'Explore LimnoPulse' };
+const entries = await getCollection('caseStudies');
+const projects = districtIds.map(id => entries.find(entry => entry.id === id)!.data);
+const selectorProjects = ['cnesdata', 'infrastructure', 'limnopulse'].map(id => projects.find(project => project.id === id)!);
 const positionStyle = (desktop: { x: number; y: number }, mobile: { x: number; y: number }) => `--desktop-x:${desktop.x}%;--desktop-y:${desktop.y}%;--mobile-x:${mobile.x}%;--mobile-y:${mobile.y}%;`;
 ---
 <EditorialLayout title="Systems Atlas — Vinicius Santana" description="Explore CnesData, LimnoPulse and Infrastructure: three projects spanning data platforms, environmental telemetry and systems operations." canonicalPath="/explore/" currentPath="/explore/" observatory>
@@ -19,56 +20,55 @@ const positionStyle = (desktop: { x: number; y: number }, mobile: { x: number; y
       <p>Three projects. From data contracts to environmental telemetry and repeatable infrastructure. Choose a project to explore its architecture.</p>
       <p class="explorer-note">Conceptual portfolio map — not a deployed network.</p>
     </header>
-    <nav class="observatory-map" aria-label="Select a project">
-      <picture>
-        <source media="(max-width: 700px)" srcset={poster.mobile.src} width={poster.mobile.width} height={poster.mobile.height} />
-        <img src={poster.desktop.src} alt={poster.desktop.alt} width={poster.desktop.width} height={poster.desktop.height} fetchpriority="high" />
-      </picture>
-      {(['desktop', 'mobile'] as const).map(name => <svg class={`observatory-regions region-layout-${name}`} data-region-layout={name} viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-        {districtIds.map(id => {
-          const points = layouts[name].regionOutlines[id].map(point => {
-            const { x, y } = projectToPoster(point, layouts[name].camera);
-            return `${x * 10},${y * 10}`;
-          }).join(' ');
-          return <g data-region={id}>
-            <polygon class="region-selection" points={points} data-region-points={id} vector-effect="non-scaling-stroke" />
-            <polygon class="region-highlight" points={points} data-region-points={id} vector-effect="non-scaling-stroke" />
-          </g>;
-        })}
-      </svg>)}
-      <span class="observatory-hub" aria-hidden="true" style={positionStyle(projectToPoster(layouts.desktop.hubPosition, layouts.desktop.camera), projectToPoster(layouts.mobile.hubPosition, layouts.mobile.camera))}>00</span>
-      {districtIds.map((id, index) => <a
-        class={`district-link district-link-${id}`}
-        href={`#district-${id}`}
-        data-district-link={id}
-        style={positionStyle(projectToPoster(layouts.desktop.labelPositions[id], layouts.desktop.camera), projectToPoster(layouts.mobile.labelPositions[id], layouts.mobile.camera))}
-      ><span class="district-number" aria-hidden="true">0{index + 1}</span><span>{districtRegistry[id].label}</span></a>)}
-    </nav>
+    <div class="observatory-stage">
+      <nav class="observatory-map" aria-label="Select a project">
+        <picture>
+          <source media="(max-width: 700px)" srcset={poster.mobile.src} width={poster.mobile.width} height={poster.mobile.height} />
+          <img src={poster.desktop.src} alt={poster.desktop.alt} width={poster.desktop.width} height={poster.desktop.height} fetchpriority="high" />
+        </picture>
+        {(['desktop', 'mobile'] as const).map(name => <svg class={`observatory-regions region-layout-${name}`} data-region-layout={name} viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+          {districtIds.map(id => {
+            const points = layouts[name].regionOutlines[id].map(point => {
+              const { x, y } = projectToPoster(point, layouts[name].camera);
+              return `${x * 10},${y * 10}`;
+            }).join(' ');
+            return <g data-region={id}>
+              <polygon class="region-selection" points={points} data-region-points={id} vector-effect="non-scaling-stroke" />
+              <polygon class="region-highlight" points={points} data-region-points={id} vector-effect="non-scaling-stroke" />
+            </g>;
+          })}
+        </svg>)}
+        <span class="observatory-hub" aria-hidden="true" style={positionStyle(projectToPoster(layouts.desktop.hubPosition, layouts.desktop.camera), projectToPoster(layouts.mobile.hubPosition, layouts.mobile.camera))}>00</span>
+        <div class="district-selectors">
+          {selectorProjects.map((project, index) => <a
+            class={`district-link district-link-${project.id}`}
+            href={`#district-${project.id}`}
+            data-district-link={project.id}
+            aria-controls={`district-${project.id}`}
+            style={positionStyle(projectToPoster(layouts.desktop.labelPositions[project.id], layouts.desktop.camera), projectToPoster(layouts.mobile.labelPositions[project.id], layouts.mobile.camera))}
+          ><span class="district-number" aria-hidden="true">0{index + 1}</span><span>{project.title}</span></a>)}
+        </div>
+      </nav>
+      <div class="district-details">
+        {projects.map(project => <article id={`district-${project.id}`} class={`explorer-area area-${project.id}`} data-district-detail={project.id} data-selected="false" aria-labelledby={`district-title-${project.id}`}>
+          <a class="district-panel-close" href="/explore/" data-district-close aria-label={`Close ${project.title} panel`}><span aria-hidden="true">×</span></a>
+          <p class="eyebrow">Project</p>
+          <h2 id={`district-title-${project.id}`}>{project.title}</h2>
+          <p>{project.summary}</p>
+          <ul class="district-technologies" aria-label="Main technologies">
+            {project.technologies.slice(0, 4).map(technology => <li>{technology}</li>)}
+          </ul>
+          <a class="button button-primary" href={`/explore/${project.id}/`}>Explore {project.title}</a>
+        </article>)}
+      </div>
+    </div>
     <div class="observatory-controls" data-scene-controls hidden aria-label="3D view controls" role="group">
       <button type="button" data-scene-action="zoom-in" disabled>Zoom in</button>
       <button type="button" data-scene-action="zoom-out" disabled>Zoom out</button>
       <button type="button" data-scene-action="reset" disabled>Reset view</button>
       <button type="button" data-scene-action="fallback">View 2D</button>
     </div>
-    <p class="observatory-instruction">Select a project on the map or browse the summaries below. Every project stays available in both 2D and 3D.</p>
-    <div class="district-details">
-      {districtIds.map(id => {
-        const project = projectByDistrict.get(id)!;
-        return <article id={`district-${id}`} class={`explorer-area area-${id}`} data-district-detail={id} data-selected="false" tabindex="-1" aria-labelledby={`district-title-${id}`}>
-          <p class="eyebrow">Project</p>
-          <h2 id={`district-title-${id}`}>{districtRegistry[id].label}</h2>
-          <p>{districtRegistry[id].description}</p>
-          <ul class="technology-labels" aria-label={`Technologies used in ${project.title}`} role="list">
-            {project.technologies.map(technology => <li>{technology}</li>)}
-          </ul>
-          <a class="button button-primary" href={districtRegistry[id].href}>{linkLabels[id]}</a>
-        </article>;
-      })}
-    </div>
-    <aside class="atlas-context" aria-label="Context and capabilities">
-      <p id="district-public-health"><strong>Public Health</strong> · Domain experience connecting services, information systems and their users. <a href="/#experience">View experience</a></p>
-      <p id="district-observability"><strong>Observability</strong> · A capability across monitoring, diagnostics and operations. <a href="/#stack">View stack</a></p>
-    </aside>
+    <p class="observatory-instruction">Choose a project on the map to open its preview. Every project stays available in both 2D and 3D.</p>
   </div>
 </EditorialLayout>
 <script>

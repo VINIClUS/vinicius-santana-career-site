@@ -52,7 +52,8 @@ for (const viewport of viewports) {
       await project.focus();
       await page.keyboard.press('Enter');
       await expect(project).toHaveAttribute('aria-current', 'true');
-      await expect(page.locator(`#district-${slug}`)).toBeFocused();
+      await expect(project).toBeFocused();
+      await expect(page.locator(`#district-${slug}`)).toBeVisible();
       const projectLink = page.locator(`#district-${slug} a[href="/explore/${slug}/"]`);
       await projectLink.focus();
       await page.keyboard.press('Enter');
@@ -71,7 +72,8 @@ for (const viewport of viewports) {
     await infrastructureDistrict.focus();
     await page.keyboard.press('Enter');
     await expect(infrastructureDistrict).toHaveAttribute('aria-current', 'true');
-    await expect(page.locator('#district-infrastructure')).toBeFocused();
+    await expect(infrastructureDistrict).toBeFocused();
+    await expect(page.locator('#district-infrastructure')).toBeVisible();
     await page.locator('#district-infrastructure a[href="/explore/infrastructure/"]').click();
     await expect(page).toHaveURL(/\/explore\/infrastructure\/$/);
 

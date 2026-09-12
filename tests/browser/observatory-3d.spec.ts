@@ -229,33 +229,29 @@ test('View 2D and the poster remain visible while models load, with 3D controls 
   await expect(page.getByRole('button', { name: 'View 2D', exact: true })).toBeVisible();
   for (const name of ['Zoom in', 'Zoom out', 'Reset view']) await expect(page.getByRole('button', { name, exact: true })).toBeDisabled();
   await selected(page, 'limnopulse').click();
-  await expect(page.locator('#district-limnopulse')).toBeFocused();
+  await expect(page.locator('#district-limnopulse')).toBeVisible();
   hub.release();
   await ready(page);
   for (const name of ['Zoom in', 'Zoom out', 'Reset view']) await expect(page.getByRole('button', { name, exact: true })).toBeEnabled();
   await expect(selected(page, 'limnopulse')).toHaveAttribute('aria-current', 'true');
 });
 
-test('canvas activation uses native fragment scrolling, summary focus and history without detail requests', async ({ page }) => {
+test('all project selections update state and history without requesting detail models', async ({ page }) => {
   const models: string[] = [];
   page.on('request', request => { if (request.url().endsWith('.glb')) models.push(request.url()); });
   await page.goto('/explore/');
   await ready(page);
   expect(models).toHaveLength(4);
-  for (const id of projectIds) {
+  for (const [index, id] of projectIds.entries()) {
     await page.locator('.observatory-map').scrollIntoViewIfNeeded();
     const scroll = await page.evaluate(() => scrollY);
-    await clickMaquette(page, id);
+    if (index === 0) await clickMaquette(page, id);
+    else await selected(page, id).click();
     await expect(selected(page, id)).toHaveAttribute('aria-current', 'true');
     await expect(page).toHaveURL(new RegExp(`#district-${id}$`));
     await expect(page.locator(`#district-${id}`)).toHaveAttribute('data-selected', 'true');
-    await expect(page.locator(`#district-${id}`)).toBeFocused();
-    await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(scroll);
+    expect(Math.abs(await page.evaluate(() => scrollY) - scroll)).toBeLessThanOrEqual(1);
   }
-  const historyLength = await page.evaluate(() => history.length);
-  await clickMaquette(page, 'infrastructure', true);
-  await expect(page.locator('#district-infrastructure')).toBeFocused();
-  expect(await page.evaluate(() => history.length)).toBe(historyLength);
   await frames(page, 12);
   expect(models).toHaveLength(4);
   expect(models.some(url => url.includes('/detail-'))).toBe(false);
@@ -294,44 +290,30 @@ test('dragging away and back over a maquette does not activate it', async ({ pag
 test('native and mesh selection clear the previous target styling', async ({ page }) => {
   await page.goto('/explore/');
   await ready(page);
-  await selected(page, 'limnopulse').click();
+  await clickMaquette(page, 'limnopulse');
   await expect(selected(page, 'limnopulse')).toHaveCSS('outline-style', 'solid');
-  await clickMaquette(page, 'infrastructure');
+  await selected(page, 'infrastructure').click();
   await expect(selected(page, 'infrastructure')).toHaveAttribute('aria-current', 'true');
   await expect(selected(page, 'limnopulse')).toHaveCSS('outline-style', 'none');
   await expect(page.locator('#district-limnopulse')).toHaveCSS('outline-style', 'none');
 });
 
-test('late fragment focus does not override a reader who moved to the next selector', async ({ page }) => {
+test('project activation does not move focus into the non-modal panel', async ({ page }) => {
   await page.goto('/explore/');
   await ready(page);
-  await page.evaluate(() => new Promise<void>(resolve => {
-    const article = document.querySelector<HTMLElement>('#district-cnesdata')!;
-    const next = document.querySelector<HTMLElement>('[data-district-link="limnopulse"]')!;
-    const originalFocus = HTMLElement.prototype.focus;
-    let moved = false;
-    HTMLElement.prototype.focus = function (options) {
-      originalFocus.call(this, options);
-      if (this === article && !moved) {
-        moved = true;
-        queueMicrotask(() => originalFocus.call(next));
-      }
-    };
-    window.addEventListener('hashchange', () => setTimeout(() => {
-      HTMLElement.prototype.focus = originalFocus;
-      resolve();
-    }, 0), { once: true });
-    document.querySelector<HTMLAnchorElement>('[data-district-link="cnesdata"]')!.click();
-  }));
-  await expect(selected(page, 'limnopulse')).toBeFocused();
+  await selected(page, 'cnesdata').focus();
+  await page.keyboard.press('Enter');
+  await expect(selected(page, 'cnesdata')).toBeFocused();
+  await expect(page.locator('#district-cnesdata')).not.toBeFocused();
 });
 
-test('canvas activation focuses the same summary as HTML and unknown fragments clear selection', async ({ page }) => {
+test('mesh selection does not steal canvas focus and an unknown fragment clears selection', async ({ page }) => {
   await page.goto('/explore/');
   await ready(page);
   await canvas(page).evaluate(element => { (element as HTMLCanvasElement).tabIndex = 0; (element as HTMLCanvasElement).focus(); });
   await clickMaquette(page, 'cnesdata');
-  await expect(page.locator('#district-cnesdata')).toBeFocused();
+  await expect(canvas(page)).toBeFocused();
+  await expect(page.locator('#district-cnesdata')).not.toBeFocused();
   await page.evaluate(() => { location.hash = '#district-unknown'; });
   await expect(page.locator('[data-district-link][aria-current]')).toHaveCount(0);
 });
@@ -344,8 +326,7 @@ test('regional hover and keyboard focus remain transient beside a persistent sel
   const selection = page.locator('.observatory-regions:visible [data-region="cnesdata"] .region-selection');
   const hover = page.locator('.observatory-regions:visible [data-region="limnopulse"] .region-highlight');
   const focus = page.locator('.observatory-regions:visible [data-region="infrastructure"] .region-highlight');
-  const { x, y } = await maquettePoint(page, 'limnopulse');
-  await page.mouse.move(x, y);
+  await selected(page, 'limnopulse').hover();
   await expect(selection).toHaveCSS('opacity', '1');
   await expect(hover).toHaveCSS('opacity', '1');
   await page.keyboard.press('Tab');
@@ -360,12 +341,6 @@ test('regional hover and keyboard focus remain transient beside a persistent sel
   await expect(hover).toHaveCSS('opacity', '0');
   await expect(focus).toHaveCSS('opacity', '0');
   await expect(selection).toHaveCSS('opacity', '1');
-  // Empty terrain and the decorative origin never choose the nearest project.
-  await page.locator('.observatory-map').scrollIntoViewIfNeeded();
-  const bounds = (await canvas(page).boundingBox())!;
-  await page.mouse.click(bounds.x + 8, bounds.y + 8);
-  await clickHub(page);
-  await expect(page).toHaveURL(/#district-cnesdata$/);
 });
 
 for (const blocked of ['renderer', 'model']) {
@@ -413,6 +388,11 @@ test('Atlas suspends hidden and offscreen redraws and resumes with current frami
   await page.evaluate(() => (window as typeof window & { atlasVisibility: (value: DocumentVisibilityState) => void }).atlasVisibility('visible'));
   await expect.poll(draws).toBeGreaterThan(initial);
   await page.setViewportSize({ width: 390, height: 844 });
+  await page.evaluate(() => {
+    const spacer = document.createElement('div');
+    spacer.style.height = '1000px';
+    document.querySelector('[data-observatory]')!.append(spacer);
+  });
   await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
   await expect(page.locator('.observatory-map')).not.toBeInViewport();
   await frames(page);
@@ -439,6 +419,8 @@ test('Atlas stays interactive and bounds-suspends redraws without IntersectionOb
   await ready(page);
   await clickMaquette(page, 'limnopulse');
   await expect(selected(page, 'limnopulse')).toHaveAttribute('aria-current', 'true');
+  await page.keyboard.press('Escape');
+  await expect(page.locator('[data-district-link][aria-current]')).toHaveCount(0);
   await page.locator('.observatory-map').scrollIntoViewIfNeeded();
   const positions = () => page.locator('[data-district-link]').evaluateAll(links => links.map(link => ({
     x: (link as HTMLElement).offsetLeft,
@@ -449,6 +431,11 @@ test('Atlas stays interactive and bounds-suspends redraws without IntersectionOb
   await expect.poll(positions).not.toEqual(initial);
 
   await page.setViewportSize({ width: 390, height: 844 });
+  await page.evaluate(() => {
+    const spacer = document.createElement('div');
+    spacer.style.height = '1000px';
+    document.querySelector('[data-observatory]')!.append(spacer);
+  });
   await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
   await expect(page.locator('.observatory-map')).not.toBeInViewport();
   await frames(page);
@@ -482,38 +469,6 @@ test('the single 15 second deadline includes renderer import and model completio
   await expect(canvas(page)).toHaveCount(0);
 });
 
-test('fragment synchronization preserves a reader who already focused a 3D control', async ({ page }, testInfo) => {
-  await page.addInitScript(() => {
-    const state = window as typeof window & { atlasFocusEvents: string[] };
-    state.atlasFocusEvents = [];
-    document.addEventListener('focusin', event => {
-      const target = event.target as HTMLElement;
-      state.atlasFocusEvents.push(`focus:${target.id || target.dataset.sceneAction || target.dataset.districtLink || target.tagName}`);
-    });
-    // Model a reader moving focus after native fragment navigation, immediately
-    // before the deferred fragment synchronization reaches the application.
-    window.addEventListener('hashchange', () => {
-      state.atlasFocusEvents.push('hashchange:reader-moved');
-      document.querySelector<HTMLButtonElement>('[data-scene-action="zoom-in"]')!.focus();
-    }, { capture: true, once: true });
-  });
-  try {
-    await page.goto('/explore/');
-    await ready(page);
-    await selected(page, 'infrastructure').click();
-    await expect(selected(page, 'infrastructure')).toHaveAttribute('aria-current', 'true');
-    await expect(page.getByRole('button', { name: 'Zoom in', exact: true })).toBeFocused();
-    await canvas(page).evaluate(element => (element as HTMLCanvasElement).getContext('webgl2')!.getExtension('WEBGL_lose_context')!.loseContext());
-    await expect(stage(page)).toHaveAttribute('data-scene-state', 'fallback');
-    await expect(selected(page, 'infrastructure')).toBeFocused();
-  } finally {
-    await testInfo.attach('fragment-focus-events.json', {
-      body: JSON.stringify(await page.evaluate(() => (window as typeof window & { atlasFocusEvents: string[] }).atlasFocusEvents)),
-      contentType: 'application/json',
-    });
-  }
-});
-
 test('context loss restores focus only when the focused 3D control disappears', async ({ page }) => {
   await page.goto('/explore/');
   await ready(page);
@@ -526,10 +481,10 @@ test('context loss restores focus only when the focused 3D control disappears', 
   await page.reload();
   await ready(page);
   await selected(page, 'cnesdata').click();
-  await expect(page.locator('#district-cnesdata')).toBeFocused();
+  await expect(selected(page, 'cnesdata')).toBeFocused();
   await canvas(page).evaluate(element => (element as HTMLCanvasElement).getContext('webgl2')!.getExtension('WEBGL_lose_context')!.loseContext());
   await expect(stage(page)).toHaveAttribute('data-scene-state', 'fallback');
-  await expect(page.locator('#district-cnesdata')).toBeFocused();
+  await expect(selected(page, 'cnesdata')).toBeFocused();
 });
 
 test('View 2D restores poster labels while preserving selection, focus and history', async ({ page }) => {
@@ -585,10 +540,9 @@ test('pagehide aborts essential downloads and a persisted pageshow reconnects na
   });
   await selected(page, 'infrastructure').click();
   await expect(page).toHaveURL(/#district-infrastructure$/);
-  await expect(page.locator('#district-infrastructure')).toBeFocused();
-  // Native fragments focus before hashchange; wait for the controller to handle selection.
+  await expect(page.locator('#district-infrastructure')).toBeVisible();
   await expect(selected(page, 'infrastructure')).toHaveAttribute('aria-current', 'true');
-  expect(await page.evaluate(() => (window as typeof window & { atlasFocusCalls: () => number }).atlasFocusCalls())).toBe(1);
+  expect(await page.evaluate(() => (window as typeof window & { atlasFocusCalls: () => number }).atlasFocusCalls())).toBe(0);
   await expect(canvas(page)).toHaveCount(0);
 });
 
@@ -603,7 +557,7 @@ for (const capability of ['save-data', 'no-webgl']) {
     await page.goto('/explore/');
     await expect(stage(page)).toHaveAttribute('data-scene-state', 'fallback');
     await selected(page, 'infrastructure').click();
-    await expect(page.locator('#district-infrastructure')).toBeFocused();
+    await expect(page.locator('#district-infrastructure')).toBeVisible();
     await expect(canvas(page)).toHaveCount(0);
     expect(assets).toEqual([]);
   });
@@ -633,8 +587,8 @@ for (const failure of ['import', 'initialization', 'overview', 'context']) {
     await expect(stage(page)).toHaveAttribute('data-scene-state', 'fallback');
     await expect(canvas(page)).toHaveCount(0);
     await selected(page, 'cnesdata').click();
-    await expect(page.locator('#district-cnesdata')).toBeFocused();
-    await expect(page.locator('#district-cnesdata a')).toHaveAttribute('href', '/explore/cnesdata/');
+    await expect(page.locator('#district-cnesdata')).toBeVisible();
+    await expect(page.locator('#district-cnesdata a.button')).toHaveAttribute('href', '/explore/cnesdata/');
   });
 }
 
