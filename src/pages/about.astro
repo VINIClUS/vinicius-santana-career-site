@@ -1,8 +1,9 @@
 ---
 import ExternalLink from '../components/ExternalLink.astro';
+import ExperienceCard from '../components/ExperienceCard.astro';
 import PracticeCards from '../components/PracticeCards.astro';
 import StackGrid from '../components/StackGrid.astro';
-import { experience, profile } from '../data/content.js';
+import { experience, familyBusinessExperience, profile } from '../data/content.js';
 import EditorialLayout from '../layouts/EditorialLayout.astro';
 ---
 
@@ -41,13 +42,8 @@ import EditorialLayout from '../layouts/EditorialLayout.astro';
         <p>{experience.summary}</p>
       </div>
       <div class="experience-roles">
-        {experience.roles.map((role) => (
-          <article class="timeline-card">
-            <div class="timeline-meta"><span>{role.period}</span><span>{role.organization}</span></div>
-            <h3>{role.role}</h3>
-            <ul class="check-list">{role.highlights.map((item) => <li>{item}</li>)}</ul>
-          </article>
-        ))}
+        <ExperienceCard experience={experience} headingId="about-municipal-experience" />
+        <ExperienceCard experience={familyBusinessExperience} headingId="about-family-business-experience" />
       </div>
     </div>
   </section>

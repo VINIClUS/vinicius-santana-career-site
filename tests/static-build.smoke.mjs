@@ -126,15 +126,32 @@ const editorialPages = {
 function assertExperienceSection(pageHtml, pageName, headingId) {
   const section = pageHtml.match(new RegExp(`<section[^>]*aria-labelledby="${headingId}"[^>]*>[\\s\\S]*?</section>`))?.[0];
   assert.ok(section, `${pageName} must render its experience section`);
-  assert.equal((section.match(/<article class="timeline-card"/g) || []).length, 3, `${pageName} must render three experience cards`);
+  const articles = section.match(/<article class="timeline-card"[\s\S]*?<\/article>/gi) || [];
+  assert.equal(articles.length, 2, `${pageName} must group experience into two organization articles`);
 
-  const roleOffsets = [
+  const municipalArticle = articles[0];
+  assert.equal(
+    (municipalArticle.match(/Prefeitura de Presidente Epitácio/g) || []).length,
+    1,
+    `${pageName} must name the municipality once within its article`
+  );
+  assert.match(municipalArticle, /<h3[^>]*>Prefeitura de Presidente Epitácio<\/h3>/i);
+  assert.match(municipalArticle, /Nov 2021 — Present/);
+
+  const municipalRoleOffsets = [
     'Health Informatics Analyst &amp; Data Engineer',
-    'IT Infrastructure &amp; Systems Support Intern',
-    'Business Analyst &amp; Operations Manager'
-  ].map((title) => section.indexOf(title));
-  assert.ok(roleOffsets.every((offset) => offset >= 0), `${pageName} must render all three experience titles`);
-  assert.deepEqual(roleOffsets, [...roleOffsets].sort((left, right) => left - right), `${pageName} must render experience in reverse chronological order`);
+    'IT Infrastructure &amp; Systems Support · Internship'
+  ].map((title) => municipalArticle.indexOf(title));
+  assert.ok(municipalRoleOffsets.every((offset) => offset >= 0), `${pageName} must render both municipal roles`);
+  assert.deepEqual(
+    municipalRoleOffsets,
+    [...municipalRoleOffsets].sort((left, right) => left - right),
+    `${pageName} must render municipal roles in reverse chronological order`
+  );
+  assert.equal((municipalArticle.match(/<h4/g) || []).length, 2, `${pageName} must expose both municipal roles below the organization heading`);
+
+  assert.match(articles[1], /<h3[^>]*>Irmãos Santana<\/h3>/i);
+  assert.match(articles[1], /<h4[^>]*>Business Analyst &amp; Operations Manager<\/h4>/i);
 
   for (const evidence of ['21,000+', '12%+', 'below 1%', '240+', 'about 4 hours', '10,000+', 'Proxmox/Linux', 'Ceph', '26%', '11%', 'Python', 'MQTT']) {
     assert.ok(section.includes(evidence), `${pageName} experience must include ${evidence}`);

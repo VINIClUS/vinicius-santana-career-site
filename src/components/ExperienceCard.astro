@@ -1,0 +1,22 @@
+---
+const { experience, headingId = 'municipal-experience-heading' } = Astro.props;
+---
+
+<article class="timeline-card" aria-labelledby={headingId}>
+  <header class="experience-card-header">
+    <div class="timeline-meta"><span>{experience.period}</span></div>
+    <h3 id={headingId}>{experience.organization}</h3>
+  </header>
+
+  <ol class="role-timeline" aria-label="Role progression">
+    {experience.roles.map((role) => (
+      <li class="timeline-role">
+        <div class="role-heading">
+          <h4>{role.title}</h4>
+          <p class="role-period">{role.period}</p>
+        </div>
+        <ul class="check-list">{role.highlights.map((item) => <li>{item}</li>)}</ul>
+      </li>
+    ))}
+  </ol>
+</article>
