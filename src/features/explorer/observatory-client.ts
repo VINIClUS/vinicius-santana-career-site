@@ -101,15 +101,17 @@ if (root) {
       if (districtId) selectDistrict(districtId);
     }, { signal });
     for (const closeLink of closeLinks) closeLink.addEventListener('click', event => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       event.preventDefault();
       closePanel();
     }, { signal });
     window.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && document.querySelector('[data-menu-toggle][aria-expanded="true"]')) return;
       if (event.key === 'Escape' && controller.getState().selectedDistrictId) {
         event.preventDefault();
         closePanel();
       }
-    }, { signal });
+    }, { signal, capture: true });
     render();
     syncFragment();
   };

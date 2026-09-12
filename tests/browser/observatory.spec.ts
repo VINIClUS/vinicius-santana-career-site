@@ -80,6 +80,19 @@ test('closing a pushed panel returns to the base history entry and modified clic
   });
   expect(result).toEqual({ applicationPrevented: false, hash: '' });
   await expect(page.locator('[data-district-link][aria-current]')).toHaveCount(0);
+
+  await link(page, 'limnopulse').click();
+  const closeResult = await panel(page, 'limnopulse').getByRole('link', { name: 'Close Limnopulse panel' }).evaluate(element => {
+    let applicationPrevented = false;
+    element.addEventListener('click', event => {
+      applicationPrevented = event.defaultPrevented;
+      event.preventDefault();
+    }, { once: true });
+    element.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, ctrlKey: true }));
+    return { applicationPrevented, hash: location.hash };
+  });
+  expect(closeResult).toEqual({ applicationPrevented: false, hash: '#district-limnopulse' });
+  await expect(panel(page, 'limnopulse')).toBeVisible();
 });
 
 test('mobile supports touch, project changes, closing, repeated activation and history', async ({ browser, baseURL }) => {
@@ -102,6 +115,12 @@ test('mobile supports touch, project changes, closing, repeated activation and h
   await panel(page, 'cnesdata').getByRole('link', { name: 'Close CnesData panel' }).tap();
   await expect(panel(page, 'cnesdata')).toBeHidden();
   await link(page, 'infrastructure').tap();
+  const menu = page.locator('[data-menu-toggle]');
+  await menu.tap();
+  await expect(menu).toHaveAttribute('aria-expanded', 'true');
+  await page.keyboard.press('Escape');
+  await expect(menu).toHaveAttribute('aria-expanded', 'false');
+  await expect(panel(page, 'infrastructure')).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(panel(page, 'infrastructure')).toBeHidden();
 
