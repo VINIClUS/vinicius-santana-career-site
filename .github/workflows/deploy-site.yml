@@ -37,6 +37,9 @@ jobs:
       - name: Test
         run: npm test
 
+      - name: Asset generation regression
+        run: node --experimental-strip-types --test tests/overview-generation.integration.mjs
+
       - name: Build
         run: npm run build
 

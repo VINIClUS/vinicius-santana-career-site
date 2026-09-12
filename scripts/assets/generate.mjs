@@ -15,9 +15,14 @@ if (
 ) {
   throw new Error(`Generated district IDs must match projectIds: ${projectIds.join(", ")}`);
 }
-const requestedIds = process.argv.slice(2);
+const requestedIds = new Set(process.argv.slice(2));
 for (const id of requestedIds) {
   if (!generatedSceneIds.includes(id)) throw new Error(`Unknown scene ${id}`);
+}
+// Overview reloads published GLBs, so refresh its models from source first.
+if (requestedIds.has("overview")) {
+  for (const id of districtIds) requestedIds.add(`district-${id}`);
+  requestedIds.add("hub");
 }
 const mime = {
   ".mjs": "text/javascript",
@@ -68,7 +73,7 @@ try {
   } catch {}
   metadata = normalizeGeneratedMetadata(metadata);
   // Canonical dependency order: district exports and origin always precede overview posters.
-  for (const id of generatedSceneIds.filter(id => !requestedIds.length || requestedIds.includes(id))) {
+  for (const id of generatedSceneIds.filter(id => !requestedIds.size || requestedIds.has(id))) {
     const failure = id === "detail-infrastructure-failed";
     const entry = { posters: {}, cameras: {} };
     for (const [variant, width, height] of [
