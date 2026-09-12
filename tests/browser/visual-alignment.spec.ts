@@ -1,5 +1,55 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 import { mkdir } from 'node:fs/promises';
+
+async function getAboutLayout(page: Page) {
+  return page.locator('.about-grid').evaluate((grid) => {
+    const copy = grid.querySelector('.about-copy');
+    const cards = grid.querySelector('.role-fit-cards');
+    const roleCards = [...grid.querySelectorAll('.role-card')];
+    if (!copy || !cards || roleCards.length !== 2) throw new Error('Expected About copy and exactly two role cards');
+
+    const gridBox = grid.getBoundingClientRect();
+    const copyBox = copy.getBoundingClientRect();
+    const cardsBox = cards.getBoundingClientRect();
+    const cardBoxes = roleCards.map((card) => card.getBoundingClientRect());
+    return {
+      grid: { x: gridBox.x, width: gridBox.width },
+      copy: { bottom: copyBox.bottom },
+      cards: { x: cardsBox.x, y: cardsBox.y, width: cardsBox.width },
+      cardBoxes: cardBoxes.map(({ x, y, width }) => ({ x, y, width })),
+      columns: getComputedStyle(cards).gridTemplateColumns.split(' ').length
+    };
+  });
+}
+
+for (const width of [1121, 1440]) {
+  test(`About cards remain below the copy in two full-width columns at ${width}`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/');
+    const homeLayout = await getAboutLayout(page);
+    expect(homeLayout.columns).toBe(2);
+    expect(homeLayout.cards.y - homeLayout.copy.bottom).toBeGreaterThanOrEqual(32);
+    expect(Math.abs(homeLayout.cards.x - homeLayout.grid.x)).toBeLessThanOrEqual(1);
+    expect(Math.abs(homeLayout.cards.width - homeLayout.grid.width)).toBeLessThanOrEqual(1);
+    expect(Math.abs(homeLayout.cardBoxes[0].width - homeLayout.cardBoxes[1].width)).toBeLessThanOrEqual(1);
+
+    await page.goto('/about/');
+    const aboutCards = page.locator('.role-fit-cards');
+    await expect(aboutCards.locator('.role-card')).toHaveCount(2);
+    const aboutWidths = await aboutCards.locator('.role-card').evaluateAll((cards) => cards.map((card) => card.getBoundingClientRect().width));
+    expect(await aboutCards.evaluate((cards) => getComputedStyle(cards).gridTemplateColumns.split(' ').length)).toBe(2);
+    expect(Math.abs(aboutWidths[0] - aboutWidths[1])).toBeLessThanOrEqual(1);
+  });
+}
+
+test('About cards stack in one column on mobile', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  const layout = await getAboutLayout(page);
+  expect(layout.columns).toBe(1);
+  expect(layout.cardBoxes[1].y).toBeGreaterThan(layout.cardBoxes[0].y);
+  expect(Math.abs(layout.cardBoxes[0].x - layout.cardBoxes[1].x)).toBeLessThanOrEqual(1);
+});
 
 for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
   test(`SO-10 route and visual contracts at ${viewport.width}`, async ({ page }) => {

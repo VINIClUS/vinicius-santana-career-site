@@ -106,6 +106,16 @@ const homeSectionOrder = ['hero-title', 'projects', 'contact', 'about', 'experie
 });
 assert.deepEqual(homeSectionOrder, [...homeSectionOrder].sort((left, right) => left - right), 'home must use recruiter-first section order');
 
+const homeAbout = html.match(/<section[^>]*id="about"[\s\S]*?<\/section>/i)?.[0];
+assert.ok(homeAbout, 'home must render the About section');
+assert.match(homeAbout, /I build backend systems for data-heavy, operational work\./);
+assert.match(
+  homeAbout,
+  /I’m Vinicius Santana, a Python backend engineer in Brazil\. I build FastAPI and PostgreSQL services, validation workflows and automation for municipal public-health operations—work that validates 21,000\+ records each month and reduced a municipality-wide reconciliation cycle from 240\+ person-hours to about four\./
+);
+assert.equal((homeAbout.match(/class="role-card"/g) || []).length, 2, 'home About must render exactly two role cards');
+assert.doesNotMatch(homeAbout, /Platform \/ DevOps/, 'home About must not render the removed Platform / DevOps card');
+
 const editorialPages = {
   about: await readBuiltPage('dist/about/index.html'),
   resume: await readBuiltPage('dist/resume/index.html'),
@@ -160,6 +170,22 @@ for (const [pageName, pageHtml] of Object.entries(editorialPages)) {
 }
 
 assert.match(editorialPages.about, /alt="Professional portrait of Vinicius Santana"/);
+assert.match(editorialPages.about, /<h1[^>]*>Python backend engineering grounded in operational reality\.<\/h1>/i);
+assert.match(
+  editorialPages.about,
+  /I design and operate data-intensive APIs, validation services and automation for municipal public-health systems\. My work combines FastAPI, SQLAlchemy and PostgreSQL with tenant-aware authorization, automated tests and monitored Linux deployments\./
+);
+assert.match(editorialPages.about, /Make contracts explicit, protect boundaries and design for recovery\./);
+assert.match(
+  editorialPages.about,
+  /I work from the operational problem backward: define typed contracts and exception paths, protect tenant boundaries, test deterministic rules, and keep deployment, observability, backup and rollback procedures close to the code\. The result is software that teams can inspect, recover and maintain\./
+);
+assert.match(
+  editorialPages.about,
+  /<meta name="description" content="About Vinicius Santana, a Python backend engineer building data-intensive APIs, validation services and automation for municipal public-health systems\.">/i
+);
+assert.equal((editorialPages.about.match(/class="role-card"/g) || []).length, 2, 'About must render exactly two role cards');
+assert.doesNotMatch(editorialPages.about, /Platform \/ DevOps/, 'About must not render the removed Platform / DevOps card');
 assert.match(
   editorialPages.about,
   /<img[^>]*src="\/assets\/images\/vinicius-about\.jpg"[^>]*width="900"[^>]*height="1125"/i,
