@@ -66,6 +66,7 @@ test('Infrastructure renders three parallel inputs directed only to reference to
 test('connectors announce both endpoints without relying on their decorative arrows', async ({ page }) => {
   await page.goto('/explore/infrastructure/');
   const connectors = page.locator('[data-graph-connector]');
+  await expect(page.getByRole('img', { name: /Connection from .+ to .+:/ })).toHaveCount(3);
   for (const connector of await connectors.all()) {
     await expect(connector).toHaveAttribute('aria-label', /Connection from .+ to .+:/);
   }
