@@ -22,7 +22,7 @@ body.observatory {
 .compact-header .brand-mark { background: none; border: 0; box-shadow: none; padding: 0; width: auto; font-size: 1.2rem; }
 .compact-header .nav-panel { margin-right: auto; }
 .compact-header .nav-links a { font-weight: 500; border-radius: 4px; font-size: .85rem; }
-.header-resume { border: 1px solid #526572; border-radius: 4px; padding: 10px 16px; font-size: .8rem; line-height: 1.4; }
+.header-social { border: 1px solid #526572; border-radius: 4px; padding: 10px 16px; font-size: .8rem; line-height: 1.4; }
 .observatory-hero-grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: 20px; align-items: center; }
 .observatory .observatory-hero { padding-block: 52px 64px; }
 .observatory-hero h1 { font-size: clamp(3rem, 5.3vw, 4.8rem); margin-bottom: 16px; }
@@ -37,7 +37,7 @@ body.observatory {
   .compact-header .brand { margin-right: auto; }
   .compact-header .menu-toggle { order: 3; border-radius: 4px; }
   .compact-header .nav-panel { margin-right: 0; }
-  .header-resume { margin-left: auto; }
+  .header-social { margin-left: auto; }
   .observatory-hero-grid { grid-template-columns: 1fr; gap: 26px; }
   .observatory .observatory-hero { padding-block: 36px; }
   .domain-pillars { gap: 12px; margin-block: 24px; }

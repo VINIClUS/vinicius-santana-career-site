@@ -143,7 +143,9 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       await link(page, id).click();
       await expect(panel(page, id)).toBeVisible();
       await expect(panel(page, id)).toHaveCSS('pointer-events', 'auto');
+      await expect(page.locator(`.observatory-regions:visible [data-region="${id}"] .region-selection`)).toHaveCSS('opacity', '1');
       await expect(panel(page, id).locator('li')).toHaveCount(4);
+      await expect(panel(page, id).getByRole('link', { name: /^Explore/ })).toHaveAttribute('href', `/explore/${id}/`);
       await panel(page, id).getByRole('link', { name: /Close/ }).focus();
       await page.keyboard.press('Enter');
       await expect(page).toHaveURL(/\/explore\/$/);

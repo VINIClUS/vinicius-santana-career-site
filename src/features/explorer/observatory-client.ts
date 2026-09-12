@@ -12,6 +12,9 @@ if (root) {
   const toolbar = root.querySelector<HTMLElement>('[data-scene-controls]')!;
   const labels = [...links, root.querySelector<HTMLElement>('.observatory-hub')!];
   const originalStyles = labels.map(label => label.getAttribute('style'));
+  const regions = [...map.querySelectorAll<SVGGElement>('[data-region]')];
+  const polygons = [...map.querySelectorAll<SVGPolygonElement>('[data-region-points]')];
+  const originalPoints = polygons.map(polygon => polygon.getAttribute('points')!);
   let scene: ObservatoryScene | undefined;
   let stopped = false;
   let loadingDeadline: ReturnType<typeof setTimeout> | undefined;
@@ -27,6 +30,7 @@ if (root) {
       else link.removeAttribute('aria-current');
     }
     for (const article of articles) article.dataset.selected = String(article.dataset.districtDetail === selectedDistrictId);
+    for (const region of regions) region.dataset.selected = String(region.dataset.region === selectedDistrictId);
   };
   const syncFragment = () => {
     const districtId = districtIds.find(id => location.hash === `#district-${id}`) ?? null;
@@ -64,6 +68,7 @@ if (root) {
       if (style == null) label.removeAttribute('style');
       else label.setAttribute('style', style);
     });
+    polygons.forEach((polygon, index) => polygon.setAttribute('points', originalPoints[index]!));
     if (restoreFocus) (links.find(link => link.dataset.districtLink === controller.getState().selectedDistrictId) ?? links[0])?.focus({ preventScroll: true });
   };
   let nativeEvents: AbortController | undefined;
@@ -127,11 +132,14 @@ if (root) {
     } catch { return false; }
   };
   if (capable()) {
+    const startedAt = performance.now();
+    const expired = () => performance.now() - startedAt >= 15_000;
     root.dataset.sceneState = 'loading';
     toolbar.hidden = false;
     loadingDeadline = setTimeout(() => use2D(), 15_000);
     void import('./scene/renderer.tsx').then(({ mountObservatoryScene }) => {
       if (stopped) return;
+      if (expired()) { use2D(); return; }
       scene = mountObservatoryScene({
         host: map, controller,
         onSelect(districtId: DistrictId) {
@@ -139,6 +147,7 @@ if (root) {
         },
         onReady() {
           if (stopped) return;
+          if (expired()) { use2D(); return; }
           clearTimeout(loadingDeadline);
           root.dataset.sceneState = 'ready';
           for (const button of toolbar.querySelectorAll<HTMLButtonElement>('button')) button.disabled = false;

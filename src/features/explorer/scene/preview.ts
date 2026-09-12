@@ -1,7 +1,8 @@
-import { ACESFilmicToneMapping, Color, OrthographicCamera, Scene, WebGLRenderer } from 'three';
+import { Color, OrthographicCamera, Scene, WebGLRenderer } from 'three';
 import { overview } from '../../../content/scenes/index.ts';
-import { applyOverviewCamera, createOverviewComposition } from './composition.ts';
+import { applyOverviewCamera, atlasVisual, configureOverviewRenderer, createOverviewComposition } from './composition.ts';
 import { createModelCache } from './resources.ts';
+import { createMotionPlayback } from './motion-playback.ts';
 
 export interface HomePreview {
   setActive(active: boolean): void;
@@ -22,7 +23,7 @@ export function mountHomePreview(options: Options): HomePreview {
   const cache = createModelCache(lifetime.signal);
   const composition = createOverviewComposition();
   const scene = new Scene();
-  scene.background = new Color('#050a11');
+  scene.background = new Color(atlasVisual.palette.background);
   scene.add(composition.world);
   const camera = new OrthographicCamera();
   const desktop = window.matchMedia('(min-width: 780px)');
@@ -41,11 +42,13 @@ export function mountHomePreview(options: Options): HomePreview {
   let frame: number | undefined;
   let gl: WebGLRenderer | undefined;
   let observer: ResizeObserver | undefined;
+  let motion: ReturnType<typeof createMotionPlayback> | undefined;
 
   const dispose = () => {
     if (disposed) return;
     disposed = true;
     lifetime.abort();
+    motion?.dispose();
     if (frame !== undefined) cancelAnimationFrame(frame);
     frame = undefined;
     observer?.disconnect();
@@ -81,6 +84,18 @@ export function mountHomePreview(options: Options): HomePreview {
       if (!ready) {
         ready = true;
         options.onReady();
+        if (!disposed) motion = createMotionPlayback({
+          world: composition.world,
+          controlHost: host.parentElement!,
+          active: () => active,
+          focusFallback: document.querySelector<HTMLElement>('.hero-actions a[href="/explore/"]'),
+          render() {
+            if (disposed) return;
+            if (!active) { dirty = true; return; }
+            try { gl!.render(scene, camera); }
+            catch { fail(); }
+          },
+        });
       }
     } catch { fail(); }
   };
@@ -96,8 +111,7 @@ export function mountHomePreview(options: Options): HomePreview {
     await composition.load(cache, lifetime.signal);
     if (disposed) return;
     gl = new WebGLRenderer({ canvas, antialias: true, powerPreference: 'low-power' });
-    gl.toneMapping = ACESFilmicToneMapping;
-    gl.toneMappingExposure = 0.85;
+    configureOverviewRenderer(gl);
     host.append(canvas);
     observer = new ResizeObserver(invalidate);
     observer.observe(host);
@@ -115,6 +129,7 @@ export function mountHomePreview(options: Options): HomePreview {
     setActive(value) {
       if (disposed || active === value) return;
       active = value;
+      motion?.update();
       if (!active && frame !== undefined) {
         cancelAnimationFrame(frame);
         frame = undefined;

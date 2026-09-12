@@ -12,13 +12,18 @@ function camera(value: { projection: string; position: number[]; target: number[
   if (value.projection !== 'orthographic' || !Object.values(value.frustum).every(Number.isFinite) || !Number.isFinite(value.zoom)) throw new Error('Invalid generated scene camera');
   return { projection: 'orthographic', position: vector(value.position), target: vector(value.target), up: vector(value.up), frustum: value.frustum, zoom: value.zoom };
 }
-function layout(value: { districtPositions: Record<DistrictId, number[]>; districtScale: number; hubPosition: number[] }, sceneCamera: SceneCamera): OverviewLayout {
+function layout(value: { districtPositions: Record<DistrictId, number[]>; districtScale: number; hubPosition: number[]; rotations: Record<DistrictId, number[]>; labelPositions: Record<DistrictId, number[]>; regionOutlines: Record<DistrictId, number[][]>; terrainOutline: number[][]; interaction: OverviewLayout['interaction'] }, sceneCamera: SceneCamera): OverviewLayout {
   return {
     placements: {
       cnesdata: vector(value.districtPositions.cnesdata),
       limnopulse: vector(value.districtPositions.limnopulse),
       infrastructure: vector(value.districtPositions.infrastructure),
     },
+    rotations: { cnesdata: vector(value.rotations.cnesdata), limnopulse: vector(value.rotations.limnopulse), infrastructure: vector(value.rotations.infrastructure) },
+    labelPositions: { cnesdata: vector(value.labelPositions.cnesdata), limnopulse: vector(value.labelPositions.limnopulse), infrastructure: vector(value.labelPositions.infrastructure) },
+    regionOutlines: { cnesdata: value.regionOutlines.cnesdata.map(vector), limnopulse: value.regionOutlines.limnopulse.map(vector), infrastructure: value.regionOutlines.infrastructure.map(vector) },
+    terrainOutline: value.terrainOutline,
+    interaction: value.interaction,
     districtScale: value.districtScale,
     hubPosition: vector(value.hubPosition),
     camera: sceneCamera,
@@ -48,11 +53,11 @@ function scene(id: string, alt: string): SceneAsset {
   };
 }
 export const districts = {
-  cnesdata: scene('district-cnesdata', 'Isometric data platform with distinct processing, storage, and orchestration buildings.'),
+  cnesdata: scene('district-cnesdata', 'Stepped horizontal data layers and an open gateway on low cartographic terrain.'),
   limnopulse: scene('district-limnopulse', 'Water basin with sensing buoys and illustrative telemetry instruments.'),
-  infrastructure: scene('district-infrastructure', 'Server-rack district with three connected infrastructure nodes.'),
+  infrastructure: scene('district-infrastructure', 'Three illustrative compute nodes with a lower shared layer on angular terrain.'),
 } as const satisfies Record<DistrictId, SceneAsset>;
-export const hub = scene('hub', 'Luminous central hub on a circular architectural platform.');
+export const hub = scene('hub', 'Small decorative cartographic origin ring and registration cross.');
 export const details = {
   cnesdata: scene('detail-cnesdata', 'Expanded CnesData architecture showing contract, edge, API, tenant, dashboard, processing, and orchestration elements.'),
   infrastructure: scene('detail-infrastructure', 'Infrastructure detail with three nodes, a shared layer, and an identifiable workload.'),
@@ -65,7 +70,7 @@ const overviewLayouts = {
 } as const;
 export const overview = {
   id: 'overview',
-  poster: poster('overview', 'CnesData, Infrastructure, and LimnoPulse form a triangular systems map around a conceptual luminous hub.'),
+  poster: poster('overview', 'CnesData layers, an irregular LimnoPulse basin and three Infrastructure nodes share one continuous conceptual terrain.'),
   layouts: overviewLayouts,
   placements: overviewLayouts.desktop.placements,
   districtScale: overviewLayouts.desktop.districtScale,

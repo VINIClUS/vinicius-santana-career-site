@@ -96,7 +96,35 @@ for (const id of ['case-cnesdata', 'case-aquafarm', 'case-esus-pec-bootstrap', '
   assert.match(html, new RegExp(`id=["']${id}["']`), `home must preserve #${id}`);
 }
 
-assert.match(html, /href="\/assets\/vinicius-santana-resume\.pdf"/i, 'home must link to the resume');
+const contactActions = html.match(/<div class="contact-actions"[^>]*>([\s\S]*?)<\/div>/i)?.[1];
+assert.ok(contactActions, 'home must render the contact actions');
+const homeActions = [...contactActions.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/gi)].map(([, attributes, label]) => ({
+  attributes,
+  label: label.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
+}));
+assert.deepEqual(
+  homeActions.map(({ label }) => label),
+  ['me@vinisantana.com', 'Resume', 'LinkedIn', 'GitHub'],
+  'home must present contact and social actions in the recruiter-facing order'
+);
+assert.match(homeActions[0].attributes, /href="mailto:me@vinisantana\.com\?subject=/i, 'home email must use the exact address');
+assert.match(homeActions[1].attributes, /href="\/assets\/vinicius-santana-resume\.pdf"/i, 'home Resume must use the canonical PDF');
+assert.match(homeActions[1].attributes, /\bdownload\b/i, 'home Resume must download the PDF');
+for (const socialAction of homeActions.slice(2)) {
+  assert.match(socialAction.attributes, /target="_blank"/i, `${socialAction.label} must open in a new tab`);
+  assert.match(socialAction.attributes, /rel="noopener noreferrer"/i, `${socialAction.label} must protect the opener`);
+}
+
+const headerNavigationHtml = html.match(/<nav\b[^>]*aria-label="Primary navigation"[\s\S]*?<\/nav>/i)?.[0];
+assert.ok(headerNavigationHtml, 'home must render primary navigation');
+assert.doesNotMatch(headerNavigationHtml, />Resume</i, 'header must not expose the removed Resume route');
+for (const social of ['LinkedIn', 'GitHub']) {
+  assert.match(headerNavigationHtml, new RegExp(`>${social}<`, 'i'), `header must include ${social}`);
+}
+
+const footer = html.match(/<footer\b[\s\S]*?<\/footer>/i)?.[0];
+assert.ok(footer, 'home must render a footer');
+assert.match(footer, /<a\b[^>]*href="\/assets\/vinicius-santana-resume\.pdf"[^>]*\bdownload\b[^>]*>Resume<\/a>/i, 'footer Resume must download the canonical PDF');
 assertEditorialShell(html, 'home');
 
 const homeSectionOrder = ['hero-title', 'projects', 'contact', 'about', 'experience', 'stack'].map((marker) => {
@@ -118,10 +146,16 @@ assert.doesNotMatch(homeAbout, /Platform \/ DevOps/, 'home About must not render
 
 const editorialPages = {
   about: await readBuiltPage('dist/about/index.html'),
-  resume: await readBuiltPage('dist/resume/index.html'),
   privacy: await readBuiltPage('dist/privacy/index.html'),
   notFound: await readBuiltPage('dist/404.html')
 };
+
+await assert.rejects(stat(fromRoot('dist/resume/index.html')), { code: 'ENOENT' }, 'build must not emit the removed Resume route');
+const builtHtmlFiles = (await readdir(fromRoot('dist'), { recursive: true })).filter(file => file.endsWith('.html'));
+const builtHtmlPages = await Promise.all(builtHtmlFiles.map(file => readFile(fromRoot(`dist/${file}`), 'utf8')));
+for (const pageHtml of builtHtmlPages) {
+  assert.doesNotMatch(pageHtml, /href="\/resume\//i, 'built pages must not link to the removed Resume route');
+}
 
 function assertExperienceSection(pageHtml, pageName, headingId) {
   const section = pageHtml.match(new RegExp(`<section[^>]*aria-labelledby="${headingId}"[^>]*>[\\s\\S]*?</section>`))?.[0];
@@ -185,7 +219,6 @@ const origin = `https://${publicCname.toString().trim()}`;
 const routePages = new Map([
   ['/', html],
   ['/about/', editorialPages.about],
-  ['/resume/', editorialPages.resume],
   ['/privacy/', editorialPages.privacy],
   ['/404.html', editorialPages.notFound]
 ]);
@@ -222,9 +255,6 @@ assert.match(
   'About portrait dimensions must match the approved asset set'
 );
 assert.match(editorialPages.about, /aria-current="page"[^>]*>About</i, 'About navigation must expose the active page');
-assert.match(editorialPages.resume, /aria-current="page"[^>]*>Resume</i, 'Resume navigation must expose the active page');
-assert.match(editorialPages.resume, /href="\/assets\/vinicius-santana-resume\.pdf"[^>]*target="_blank"/i, 'Resume must offer an open action');
-assert.match(editorialPages.resume, /href="\/assets\/vinicius-santana-resume\.pdf"[^>]*download/i, 'Resume must offer a download action');
 assert.match(editorialPages.privacy, /does not use analytics/i, 'Privacy must disclose the absence of analytics');
 assert.match(editorialPages.privacy, /does not set[^<]*cookies/i, 'Privacy must disclose the absence of first-party cookies');
 assert.match(editorialPages.privacy, /does not include[^<]*form/i, 'Privacy must disclose the absence of forms');
@@ -310,7 +340,7 @@ for (const caseStudy of caseStudies) {
   }
 
   assert.match(caseHtml, /target="_blank"/i, `${caseStudy.slug} must open external evidence separately`);
-  assert.match(caseHtml, /rel="noreferrer noopener"/i, `${caseStudy.slug} must protect external links`);
+  assert.match(caseHtml, /rel="noopener noreferrer"/i, `${caseStudy.slug} must protect external links`);
   assert.doesNotMatch(caseHtml, /<astro-island\b/i, `${caseStudy.slug} must not ship hydrated islands`);
 }
 
@@ -338,7 +368,6 @@ assert.doesNotMatch(
 );
 
 assert.match(html, /href="\/explore\/"/i, 'home must link to Work');
-assert.match(editorialPages.resume, /href="mailto:[^"]+"/i, 'Resume must provide a direct contact link');
 
 const [builtCname, publicResume, builtResume, robots, sitemapIndex, sitemap] = await Promise.all([
   readFile(fromRoot('dist/CNAME')),
@@ -358,9 +387,10 @@ assert.match(robots, /^Allow: \/$/m, 'robots.txt must allow the site');
 assert.match(robots, new RegExp(`^Sitemap: ${escapeRegExp(new URL('/sitemap-index.xml', origin).href)}$`, 'm'), 'robots.txt must reference the generated sitemap index');
 assert.match(sitemapIndex, new RegExp(`<loc>${escapeRegExp(new URL('/sitemap-0.xml', origin).href)}</loc>`), 'sitemap index must reference the generated page sitemap');
 
-const indexableRoutes = ['/explore/', '/explore/cnesdata/', '/explore/limnopulse/', '/explore/infrastructure/', '/', '/about/', '/privacy/', '/resume/'];
+const indexableRoutes = ['/explore/', '/explore/cnesdata/', '/explore/limnopulse/', '/explore/infrastructure/', '/', '/about/', '/privacy/'];
 const sitemapLocations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]).sort();
-assert.deepEqual(sitemapLocations, indexableRoutes.map((route) => new URL(route, origin).href).sort(), 'sitemap must contain exactly the eight canonical indexable routes');
+assert.deepEqual(sitemapLocations, indexableRoutes.map((route) => new URL(route, origin).href).sort(), 'sitemap must contain exactly the seven canonical indexable routes');
+assert.doesNotMatch(sitemap, /\/resume\//i, 'sitemap must exclude the removed Resume route');
 assert.doesNotMatch(sitemap, /\/work(?:\/|<)/i, 'sitemap must exclude compatibility routes');
 assert.doesNotMatch(sitemap, /\/404(?:\.html|\/)?<\/loc>/i, 'sitemap must exclude the 404 page');
 
@@ -493,9 +523,8 @@ function primaryNavigation(html, pageName) {
 
 assert.match(primaryNavigation(html, 'home'), /<a[^>]*href="\/explore\/"[^>]*>Work<\/a>/i, 'primary navigation must expose Work from Home');
 assert.match(primaryNavigation(overview, 'Explore'), /<a[^>]*href="\/explore\/"[^>]*aria-current="page"[^>]*>Work<\/a>/i, 'Explore navigation must expose the active page');
-assert.match(primaryNavigation(editorialPages.resume, 'Resume'), /<a[^>]*href="\/resume\/"[^>]*aria-current="page"[^>]*>Resume<\/a>/i, 'Resume navigation must retain the active page');
 
-for (const [pageName, pageHtml] of Object.entries({ about: editorialPages.about, resume: editorialPages.resume })) {
+for (const [pageName, pageHtml] of Object.entries({ about: editorialPages.about })) {
   assert.match(pageHtml, /<body\b[^>]*class="[^"]*\bobservatory\b[^"]*"/i, `${pageName} must use the shared Systems Observatory theme`);
   assert.match(pageHtml, /<header\b[^>]*class="[^"]*page-hero[^"]*"/i, `${pageName} must retain the shared technical page structure`);
 }

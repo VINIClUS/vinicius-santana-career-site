@@ -1,0 +1,853 @@
+{
+  "startedAt": "2026-09-12T19:02:59.504Z",
+  "baselineSha": "773022dee346f9e614b4b227aaf1b38fa721ec1c",
+  "candidateRoot": "/home/vinicius/code/vinicius-santana-career-site/.worktrees/atlas-v2/",
+  "environment": {
+    "node": "v24.18.0",
+    "platform": "linux",
+    "release": "7.0.0-31-generic",
+    "cpu": "Intel(R) Core(TM) i7-7700 CPU @ 3.60GHz"
+  },
+  "runs": [
+    {
+      "command": "rtk npm run assets:generate",
+      "startedAt": "2026-09-12T19:02:59.935Z",
+      "seconds": 10.328188634,
+      "exitCode": 0,
+      "stdout": "Generated district-cnesdata\nGenerated district-limnopulse\nGenerated district-infrastructure\nGenerated hub\nGenerated detail-cnesdata\nGenerated detail-infrastructure\nGenerated overview\nGenerated detail-infrastructure-failed\n",
+      "stderr": ""
+    },
+    {
+      "command": "rtk npm run assets:generate -- hub",
+      "startedAt": "2026-09-12T19:03:10.285Z",
+      "seconds": 1.5630687560000005,
+      "exitCode": 0,
+      "stdout": "Generated hub\n",
+      "stderr": ""
+    }
+  ],
+  "sourceOverlay": [
+    {
+      "path": "scripts/assets/generate.mjs",
+      "bytes": 4592,
+      "sha256": "c940e73123dc1b15be2de4be81a84480c7a7e563af8ca0c4cd7c36464cd1cbaf"
+    },
+    {
+      "path": "scripts/assets/harness.html",
+      "bytes": 8683,
+      "sha256": "6c0b61624c458dc3a06596f8b47e908935f2447c3b169b51006737bf94f2db30"
+    },
+    {
+      "path": "scripts/assets/scenes.mjs",
+      "bytes": 10312,
+      "sha256": "bbcdbe700bc588eb9b9c9555b709b183ec45d258cc146ef9e51680bd466f391d"
+    },
+    {
+      "path": "scripts/assets/atlas-landmarks.mjs",
+      "bytes": 20607,
+      "sha256": "46a2faf485c9a957efb27e8f11488b53d6068f49313d989dc36b0f0877c300ba"
+    },
+    {
+      "path": "scripts/assets/infrastructure-state.mjs",
+      "bytes": 1595,
+      "sha256": "90a013a148e072f1e64740f57867f695d9d6ea59864ddcd66571682bfeb1f8a8"
+    },
+    {
+      "path": "src/content/scenes/atlas-authoring.json",
+      "bytes": 9974,
+      "sha256": "359c07c5ab288ba2d632e47205d78933b759939293a88c1b39eb34f2c5f26bac"
+    },
+    {
+      "path": "src/content/scenes/types.ts",
+      "bytes": 1766,
+      "sha256": "947c5c25da382b5162f5a6bd20a7ac8305018b68c20bbd801644127f986b1444"
+    },
+    {
+      "path": "src/content/scenes/index.ts",
+      "bytes": 5669,
+      "sha256": "8d10e85591bc4cfe5b7f1031b20d1fc2f160e87285b8f130cf1dad34fb680ae7"
+    },
+    {
+      "path": "src/features/explorer/scene/atlas-world.mjs",
+      "bytes": 9671,
+      "sha256": "37ebfdea770887c83daedd9605a83b80c76c0e704279e73980b734d12e559919"
+    },
+    {
+      "path": "src/features/explorer/scene/atlas-terrain.mjs",
+      "bytes": 9768,
+      "sha256": "b00900e67b5e1839ed3ea1910ebf0ce6d077ed7a1117069a6b913d657da371a1"
+    },
+    {
+      "path": "src/content/scenes/generated.json",
+      "bytes": 52483,
+      "sha256": "5e4ff2fd985ea105e4216415034889f03ca1376cc8b91e500e630b31287f14d6"
+    }
+  ],
+  "cleanup": "Disposable checkout retained until comparisons are reviewed.",
+  "disposableWorktree": "/tmp/atlas-v2-lighting-motion-generation-IX1TX6",
+  "snapshotAt": "2026-09-12T19:02:59.932Z",
+  "candidateInventory": [
+    {
+      "path": "public/assets/scenes/detail-cnesdata.glb",
+      "bytes": 58936,
+      "sha256": "3500b7a9e4dc14c191b2fdb15fe5870564413afd4d05b65839215ebe1438c5c2",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "public/assets/scenes/detail-infrastructure.glb",
+      "bytes": 22112,
+      "sha256": "7714fcd9a43e82f86843ba9c4f7f148a9ad461f79fdd2846518921fa5c6f5894",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "public/assets/scenes/district-cnesdata.glb",
+      "bytes": 151148,
+      "sha256": "21bcf2fcde9120bc235f93b551c738036ee19dca4c65febbd030f2c2d6da0469",
+      "unchangedFromBaseline": false
+    },
+    {
+      "path": "public/assets/scenes/district-infrastructure.glb",
+      "bytes": 159600,
+      "sha256": "eca0954840d061acb9afc1e92f6b97398ea36432deeabdf1a49375ff5227966d",
+      "unchangedFromBaseline": false
+    },
+    {
+      "path": "public/assets/scenes/district-limnopulse.glb",
+      "bytes": 167976,
+      "sha256": "c24923b64083d9ee1a2301c7dd98c07c7fd87ab5b3e0fe030177a8543e4604cf",
+      "unchangedFromBaseline": false
+    },
+    {
+      "path": "public/assets/scenes/hub.glb",
+      "bytes": 7000,
+      "sha256": "bb0a93d00722956cf23f53d287086d6e3e109c83301a1f245187f6fad489c73e",
+      "unchangedFromBaseline": false
+    },
+    {
+      "path": "public/assets/posters/detail-cnesdata-desktop.webp",
+      "bytes": 40252,
+      "sha256": "e12199afdde0a0cf277d42bbfabbbcab9f12a939f47c1d91968dba1887674d4d",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "public/assets/posters/detail-cnesdata-mobile.webp",
+      "bytes": 21088,
+      "sha256": "815765c103e181e0bfe79472cbec72dcf26f1f33572426eaf37b76a1808f4a22",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "public/assets/posters/detail-infrastructure-desktop.webp",
+      "bytes": 26528,
+      "sha256": "f8141536f1246cff03056f50843437bea5d091c83737550eb6979d527d4a21bf",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "public/assets/posters/detail-infrastructure-failed-desktop.webp",
+      "bytes": 25812,
+      "sha256": "9d27a734e97cb84b0687533915e8319122a79946c4312630a91c8d7b45bb9841",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "public/assets/posters/detail-infrastructure-failed-mobile.webp",
+      "bytes": 17456,
+      "sha256": "47c5ca5436a977ae0510755d847ccf044ee8aa0da45678ba2386dc43ba89b2ec",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "public/assets/posters/detail-infrastructure-mobile.webp",
+      "bytes": 17864,
+      "sha256": "57f6c40f09b172751e7944ed7103608d6236c2c2e5ac8f957b5b0b4c4858556e",
+      "unchangedFromBaseline": true
+    },
+    {
+      "path": "public/assets/posters/district-cnesdata-desktop.webp",
+      "bytes": 38320,
+      "sha256": "8b7ef44dec358c730443b501af0a07fb36a55727aae810b3da8568bc483b5334",
+      "unchangedFromBaseline": false
+    },
+    {
+      "path": "public/assets/posters/district-cnesdata-mobile.webp",
+      "bytes": 22012,
+      "sha256": "817a4f88434ef048cbd579dc6027c575aba4d874d63e7192d2b2fb2af0a31192",
+      "unchangedFromBaseline": false
+    },
+    {
+      "path": "public/assets/posters/district-infrastructure-desktop.webp",
+      "bytes": 45094,
+      "sha256": "66cce42c4ec2735d74e94a70fab407af5db2e0a2f58e14f101c4da8c6686fd01",
+      "unchangedFromBaseline": false
+    },
+    {
+      "path": "public/assets/posters/district-infrastructure-mobile.webp",
+      "bytes": 24940,
+      "sha256": "4bffdb67665dd9766b3b6c6f606fea704ef4e5944c72d01d023c3c33d9721427",
+      "unchangedFromBaseline": false
+    },
+    {
+      "path": "public/assets/posters/district-limnopulse-desktop.webp",
+      "bytes": 26760,
+      "sha256": "f2d02d5c850ef0b158b0ee7f88224c1472bc02516b2e8c3ac9eb697cee6c9f2d",
+      "unchangedFromBaseline": false
+    },
+    {
+      "path": "public/assets/posters/district-limnopulse-mobile.webp",
+      "bytes": 14492,
+      "sha256": "4cc1d4835774e5b7e1a946eb6667ec0c1602a55723627aba6ff304ee99d95abb",
+      "unchangedFromBaseline": false
+    },
+    {
+      "path": "public/assets/posters/hub-desktop.webp",
+      "bytes": 12024,
+      "sha256": "1160233682dfe2256afe7904ae8c358f7545eb8c5d5e7bdea2ce137f72f7975a",
+      "unchangedFromBaseline": false
+    },
+    {
+      "path": "public/assets/posters/hub-mobile.webp",
+      "bytes": 7120,
+      "sha256": "31a92925b760d5961c22267aaed8256b925bd661791f9628c6de2ae9d63a7cc2",
+      "unchangedFromBaseline": false
+    },
+    {
+      "path": "public/assets/posters/overview-desktop.webp",
+      "bytes": 70534,
+      "sha256": "cd45dcc91b95b155ff27af050ef5f4d522698280941c8d2fc6e39b0898ea9d5e",
+      "unchangedFromBaseline": false
+    },
+    {
+      "path": "public/assets/posters/overview-mobile.webp",
+      "bytes": 58790,
+      "sha256": "fbd625bf87517680ef2519d05989b7db1e75515e5b59f121e704a77aa82739f8",
+      "unchangedFromBaseline": false
+    }
+  ],
+  "candidateDetailMetadataAgainstBaseline": [
+    {
+      "id": "detail-cnesdata",
+      "equal": true,
+      "differences": []
+    },
+    {
+      "id": "detail-infrastructure",
+      "equal": true,
+      "differences": []
+    },
+    {
+      "id": "detail-infrastructure-failed",
+      "equal": true,
+      "differences": []
+    }
+  ],
+  "initialInventory": {
+    "metadataIds": [
+      "detail-cnesdata",
+      "detail-infrastructure",
+      "detail-infrastructure-failed",
+      "district-cnesdata",
+      "district-infrastructure",
+      "district-limnopulse",
+      "hub",
+      "overview"
+    ],
+    "models": [
+      "detail-cnesdata.glb",
+      "detail-infrastructure.glb",
+      "district-cnesdata.glb",
+      "district-infrastructure.glb",
+      "district-limnopulse.glb",
+      "hub.glb"
+    ],
+    "posters": [
+      "detail-cnesdata-desktop.webp",
+      "detail-cnesdata-mobile.webp",
+      "detail-infrastructure-desktop.webp",
+      "detail-infrastructure-failed-desktop.webp",
+      "detail-infrastructure-failed-mobile.webp",
+      "detail-infrastructure-mobile.webp",
+      "district-cnesdata-desktop.webp",
+      "district-cnesdata-mobile.webp",
+      "district-infrastructure-desktop.webp",
+      "district-infrastructure-mobile.webp",
+      "district-limnopulse-desktop.webp",
+      "district-limnopulse-mobile.webp",
+      "hub-desktop.webp",
+      "hub-mobile.webp",
+      "overview-desktop.webp",
+      "overview-mobile.webp"
+    ],
+    "placements": {
+      "desktop": [
+        "cnesdata",
+        "infrastructure",
+        "limnopulse"
+      ],
+      "mobile": [
+        "cnesdata",
+        "infrastructure",
+        "limnopulse"
+      ]
+    },
+    "exactMetadata": true,
+    "exactModels": true,
+    "exactPosters": true,
+    "exactPlacements": true
+  },
+  "fullInventory": {
+    "metadataIds": [
+      "detail-cnesdata",
+      "detail-infrastructure",
+      "detail-infrastructure-failed",
+      "district-cnesdata",
+      "district-infrastructure",
+      "district-limnopulse",
+      "hub",
+      "overview"
+    ],
+    "models": [
+      "detail-cnesdata.glb",
+      "detail-infrastructure.glb",
+      "district-cnesdata.glb",
+      "district-infrastructure.glb",
+      "district-limnopulse.glb",
+      "hub.glb"
+    ],
+    "posters": [
+      "detail-cnesdata-desktop.webp",
+      "detail-cnesdata-mobile.webp",
+      "detail-infrastructure-desktop.webp",
+      "detail-infrastructure-failed-desktop.webp",
+      "detail-infrastructure-failed-mobile.webp",
+      "detail-infrastructure-mobile.webp",
+      "district-cnesdata-desktop.webp",
+      "district-cnesdata-mobile.webp",
+      "district-infrastructure-desktop.webp",
+      "district-infrastructure-mobile.webp",
+      "district-limnopulse-desktop.webp",
+      "district-limnopulse-mobile.webp",
+      "hub-desktop.webp",
+      "hub-mobile.webp",
+      "overview-desktop.webp",
+      "overview-mobile.webp"
+    ],
+    "placements": {
+      "desktop": [
+        "cnesdata",
+        "infrastructure",
+        "limnopulse"
+      ],
+      "mobile": [
+        "cnesdata",
+        "infrastructure",
+        "limnopulse"
+      ]
+    },
+    "exactMetadata": true,
+    "exactModels": true,
+    "exactPosters": true,
+    "exactPlacements": true
+  },
+  "fullMetadataAgainstCandidate": [],
+  "fullDetailMetadataAgainstBaseline": [
+    {
+      "id": "detail-cnesdata",
+      "equal": true,
+      "differences": []
+    },
+    {
+      "id": "detail-infrastructure",
+      "equal": true,
+      "differences": []
+    },
+    {
+      "id": "detail-infrastructure-failed",
+      "equal": true,
+      "differences": []
+    }
+  ],
+  "fullAssets": [
+    {
+      "path": "public/assets/scenes/detail-cnesdata.glb",
+      "candidateBytes": 58936,
+      "fullBytes": 58936,
+      "candidateSha256": "3500b7a9e4dc14c191b2fdb15fe5870564413afd4d05b65839215ebe1438c5c2",
+      "fullSha256": "3500b7a9e4dc14c191b2fdb15fe5870564413afd4d05b65839215ebe1438c5c2",
+      "equalToCandidate": true,
+      "baselineSha256": "3500b7a9e4dc14c191b2fdb15fe5870564413afd4d05b65839215ebe1438c5c2",
+      "equalToBaseline": true
+    },
+    {
+      "path": "public/assets/scenes/detail-infrastructure.glb",
+      "candidateBytes": 22112,
+      "fullBytes": 22112,
+      "candidateSha256": "7714fcd9a43e82f86843ba9c4f7f148a9ad461f79fdd2846518921fa5c6f5894",
+      "fullSha256": "7714fcd9a43e82f86843ba9c4f7f148a9ad461f79fdd2846518921fa5c6f5894",
+      "equalToCandidate": true,
+      "baselineSha256": "7714fcd9a43e82f86843ba9c4f7f148a9ad461f79fdd2846518921fa5c6f5894",
+      "equalToBaseline": true
+    },
+    {
+      "path": "public/assets/scenes/district-cnesdata.glb",
+      "candidateBytes": 151148,
+      "fullBytes": 151148,
+      "candidateSha256": "21bcf2fcde9120bc235f93b551c738036ee19dca4c65febbd030f2c2d6da0469",
+      "fullSha256": "21bcf2fcde9120bc235f93b551c738036ee19dca4c65febbd030f2c2d6da0469",
+      "equalToCandidate": true,
+      "baselineSha256": "ec6a2ec66b6e08db19f55e62bb8860fc7f187233b80ea26f0302d7eedcf6d67f",
+      "equalToBaseline": false
+    },
+    {
+      "path": "public/assets/scenes/district-infrastructure.glb",
+      "candidateBytes": 159600,
+      "fullBytes": 159600,
+      "candidateSha256": "eca0954840d061acb9afc1e92f6b97398ea36432deeabdf1a49375ff5227966d",
+      "fullSha256": "eca0954840d061acb9afc1e92f6b97398ea36432deeabdf1a49375ff5227966d",
+      "equalToCandidate": true,
+      "baselineSha256": "483150e63811e1cb66eb01b31daa0c2e55ea65677366ee34b2d41a29ab2aed66",
+      "equalToBaseline": false
+    },
+    {
+      "path": "public/assets/scenes/district-limnopulse.glb",
+      "candidateBytes": 167976,
+      "fullBytes": 167976,
+      "candidateSha256": "c24923b64083d9ee1a2301c7dd98c07c7fd87ab5b3e0fe030177a8543e4604cf",
+      "fullSha256": "c24923b64083d9ee1a2301c7dd98c07c7fd87ab5b3e0fe030177a8543e4604cf",
+      "equalToCandidate": true,
+      "baselineSha256": "254b37f655954f9190ab052c704c64eb7054c6d1a24a0fce836ea65774cda812",
+      "equalToBaseline": false
+    },
+    {
+      "path": "public/assets/scenes/hub.glb",
+      "candidateBytes": 7000,
+      "fullBytes": 7000,
+      "candidateSha256": "bb0a93d00722956cf23f53d287086d6e3e109c83301a1f245187f6fad489c73e",
+      "fullSha256": "bb0a93d00722956cf23f53d287086d6e3e109c83301a1f245187f6fad489c73e",
+      "equalToCandidate": true,
+      "baselineSha256": "c53ea4e5f87e3a991184fa5af400bff80d858674228ae9c8925208cac3bd0837",
+      "equalToBaseline": false
+    },
+    {
+      "path": "public/assets/posters/detail-cnesdata-desktop.webp",
+      "candidateBytes": 40252,
+      "fullBytes": 40252,
+      "candidateSha256": "e12199afdde0a0cf277d42bbfabbbcab9f12a939f47c1d91968dba1887674d4d",
+      "fullSha256": "e12199afdde0a0cf277d42bbfabbbcab9f12a939f47c1d91968dba1887674d4d",
+      "equalToCandidate": true,
+      "baselineSha256": "e12199afdde0a0cf277d42bbfabbbcab9f12a939f47c1d91968dba1887674d4d",
+      "equalToBaseline": true
+    },
+    {
+      "path": "public/assets/posters/detail-cnesdata-mobile.webp",
+      "candidateBytes": 21088,
+      "fullBytes": 21088,
+      "candidateSha256": "815765c103e181e0bfe79472cbec72dcf26f1f33572426eaf37b76a1808f4a22",
+      "fullSha256": "815765c103e181e0bfe79472cbec72dcf26f1f33572426eaf37b76a1808f4a22",
+      "equalToCandidate": true,
+      "baselineSha256": "815765c103e181e0bfe79472cbec72dcf26f1f33572426eaf37b76a1808f4a22",
+      "equalToBaseline": true
+    },
+    {
+      "path": "public/assets/posters/detail-infrastructure-desktop.webp",
+      "candidateBytes": 26528,
+      "fullBytes": 26528,
+      "candidateSha256": "f8141536f1246cff03056f50843437bea5d091c83737550eb6979d527d4a21bf",
+      "fullSha256": "f8141536f1246cff03056f50843437bea5d091c83737550eb6979d527d4a21bf",
+      "equalToCandidate": true,
+      "baselineSha256": "f8141536f1246cff03056f50843437bea5d091c83737550eb6979d527d4a21bf",
+      "equalToBaseline": true
+    },
+    {
+      "path": "public/assets/posters/detail-infrastructure-failed-desktop.webp",
+      "candidateBytes": 25812,
+      "fullBytes": 25812,
+      "candidateSha256": "9d27a734e97cb84b0687533915e8319122a79946c4312630a91c8d7b45bb9841",
+      "fullSha256": "9d27a734e97cb84b0687533915e8319122a79946c4312630a91c8d7b45bb9841",
+      "equalToCandidate": true,
+      "baselineSha256": "9d27a734e97cb84b0687533915e8319122a79946c4312630a91c8d7b45bb9841",
+      "equalToBaseline": true
+    },
+    {
+      "path": "public/assets/posters/detail-infrastructure-failed-mobile.webp",
+      "candidateBytes": 17456,
+      "fullBytes": 17456,
+      "candidateSha256": "47c5ca5436a977ae0510755d847ccf044ee8aa0da45678ba2386dc43ba89b2ec",
+      "fullSha256": "47c5ca5436a977ae0510755d847ccf044ee8aa0da45678ba2386dc43ba89b2ec",
+      "equalToCandidate": true,
+      "baselineSha256": "47c5ca5436a977ae0510755d847ccf044ee8aa0da45678ba2386dc43ba89b2ec",
+      "equalToBaseline": true
+    },
+    {
+      "path": "public/assets/posters/detail-infrastructure-mobile.webp",
+      "candidateBytes": 17864,
+      "fullBytes": 17864,
+      "candidateSha256": "57f6c40f09b172751e7944ed7103608d6236c2c2e5ac8f957b5b0b4c4858556e",
+      "fullSha256": "57f6c40f09b172751e7944ed7103608d6236c2c2e5ac8f957b5b0b4c4858556e",
+      "equalToCandidate": true,
+      "baselineSha256": "57f6c40f09b172751e7944ed7103608d6236c2c2e5ac8f957b5b0b4c4858556e",
+      "equalToBaseline": true
+    },
+    {
+      "path": "public/assets/posters/district-cnesdata-desktop.webp",
+      "candidateBytes": 38320,
+      "fullBytes": 38320,
+      "candidateSha256": "8b7ef44dec358c730443b501af0a07fb36a55727aae810b3da8568bc483b5334",
+      "fullSha256": "8b7ef44dec358c730443b501af0a07fb36a55727aae810b3da8568bc483b5334",
+      "equalToCandidate": true,
+      "baselineSha256": "9f28d8011a3d63b31e3f81cbd5df45ea5e68d01e879a62ab0c75fae1ccda27b9",
+      "equalToBaseline": false
+    },
+    {
+      "path": "public/assets/posters/district-cnesdata-mobile.webp",
+      "candidateBytes": 22012,
+      "fullBytes": 22012,
+      "candidateSha256": "817a4f88434ef048cbd579dc6027c575aba4d874d63e7192d2b2fb2af0a31192",
+      "fullSha256": "817a4f88434ef048cbd579dc6027c575aba4d874d63e7192d2b2fb2af0a31192",
+      "equalToCandidate": true,
+      "baselineSha256": "0db0cc3301afc4cf2816030b8856bfa8dafc078e6d2b7eaf3b3678fcf4a66a47",
+      "equalToBaseline": false
+    },
+    {
+      "path": "public/assets/posters/district-infrastructure-desktop.webp",
+      "candidateBytes": 45094,
+      "fullBytes": 45094,
+      "candidateSha256": "66cce42c4ec2735d74e94a70fab407af5db2e0a2f58e14f101c4da8c6686fd01",
+      "fullSha256": "66cce42c4ec2735d74e94a70fab407af5db2e0a2f58e14f101c4da8c6686fd01",
+      "equalToCandidate": true,
+      "baselineSha256": "91d2703757cd81f8a77f2a2b564a94b79b0127b74be63e50e430c5e65cfda609",
+      "equalToBaseline": false
+    },
+    {
+      "path": "public/assets/posters/district-infrastructure-mobile.webp",
+      "candidateBytes": 24940,
+      "fullBytes": 24940,
+      "candidateSha256": "4bffdb67665dd9766b3b6c6f606fea704ef4e5944c72d01d023c3c33d9721427",
+      "fullSha256": "4bffdb67665dd9766b3b6c6f606fea704ef4e5944c72d01d023c3c33d9721427",
+      "equalToCandidate": true,
+      "baselineSha256": "a1fb0668abf0931ef08ef4b1a91426820f0fbb832b224808d71ff0e818db5319",
+      "equalToBaseline": false
+    },
+    {
+      "path": "public/assets/posters/district-limnopulse-desktop.webp",
+      "candidateBytes": 26760,
+      "fullBytes": 26760,
+      "candidateSha256": "f2d02d5c850ef0b158b0ee7f88224c1472bc02516b2e8c3ac9eb697cee6c9f2d",
+      "fullSha256": "f2d02d5c850ef0b158b0ee7f88224c1472bc02516b2e8c3ac9eb697cee6c9f2d",
+      "equalToCandidate": true,
+      "baselineSha256": "bd1231a19bca7d92fd78d0c0754d9dc11ca179949d6e6433c8c0fe4d4056e656",
+      "equalToBaseline": false
+    },
+    {
+      "path": "public/assets/posters/district-limnopulse-mobile.webp",
+      "candidateBytes": 14492,
+      "fullBytes": 14492,
+      "candidateSha256": "4cc1d4835774e5b7e1a946eb6667ec0c1602a55723627aba6ff304ee99d95abb",
+      "fullSha256": "4cc1d4835774e5b7e1a946eb6667ec0c1602a55723627aba6ff304ee99d95abb",
+      "equalToCandidate": true,
+      "baselineSha256": "f7b90a88a7b2c1f7aed9b923e4ce457fc9240828fb69e2540f889de8752c0b42",
+      "equalToBaseline": false
+    },
+    {
+      "path": "public/assets/posters/hub-desktop.webp",
+      "candidateBytes": 12024,
+      "fullBytes": 12024,
+      "candidateSha256": "1160233682dfe2256afe7904ae8c358f7545eb8c5d5e7bdea2ce137f72f7975a",
+      "fullSha256": "1160233682dfe2256afe7904ae8c358f7545eb8c5d5e7bdea2ce137f72f7975a",
+      "equalToCandidate": true,
+      "baselineSha256": "6a426ef7de7fac26491e0f1d96364f6a67a85cb799e6cd36ffcaa1dcab5686e0",
+      "equalToBaseline": false
+    },
+    {
+      "path": "public/assets/posters/hub-mobile.webp",
+      "candidateBytes": 7120,
+      "fullBytes": 7120,
+      "candidateSha256": "31a92925b760d5961c22267aaed8256b925bd661791f9628c6de2ae9d63a7cc2",
+      "fullSha256": "31a92925b760d5961c22267aaed8256b925bd661791f9628c6de2ae9d63a7cc2",
+      "equalToCandidate": true,
+      "baselineSha256": "90298d014d7871e7d2f6e0abd191fd7b18f6b098c24298ae348659b6160a88d1",
+      "equalToBaseline": false
+    },
+    {
+      "path": "public/assets/posters/overview-desktop.webp",
+      "candidateBytes": 70534,
+      "fullBytes": 70534,
+      "candidateSha256": "cd45dcc91b95b155ff27af050ef5f4d522698280941c8d2fc6e39b0898ea9d5e",
+      "fullSha256": "cd45dcc91b95b155ff27af050ef5f4d522698280941c8d2fc6e39b0898ea9d5e",
+      "equalToCandidate": true,
+      "baselineSha256": "25c2c77d6939824c527d5e0e9b20b81a9ed502d30e85dfd7368b0d2d7e05b90d",
+      "equalToBaseline": false
+    },
+    {
+      "path": "public/assets/posters/overview-mobile.webp",
+      "candidateBytes": 58790,
+      "fullBytes": 58790,
+      "candidateSha256": "fbd625bf87517680ef2519d05989b7db1e75515e5b59f121e704a77aa82739f8",
+      "fullSha256": "fbd625bf87517680ef2519d05989b7db1e75515e5b59f121e704a77aa82739f8",
+      "equalToCandidate": true,
+      "baselineSha256": "0effb65ae23b2074e9b4a2132092e37bd1c96615247a0d0ab2feee5c13790158",
+      "equalToBaseline": false
+    }
+  ],
+  "partialInventory": {
+    "metadataIds": [
+      "detail-cnesdata",
+      "detail-infrastructure",
+      "detail-infrastructure-failed",
+      "district-cnesdata",
+      "district-infrastructure",
+      "district-limnopulse",
+      "hub",
+      "overview"
+    ],
+    "models": [
+      "detail-cnesdata.glb",
+      "detail-infrastructure.glb",
+      "district-cnesdata.glb",
+      "district-infrastructure.glb",
+      "district-limnopulse.glb",
+      "hub.glb"
+    ],
+    "posters": [
+      "detail-cnesdata-desktop.webp",
+      "detail-cnesdata-mobile.webp",
+      "detail-infrastructure-desktop.webp",
+      "detail-infrastructure-failed-desktop.webp",
+      "detail-infrastructure-failed-mobile.webp",
+      "detail-infrastructure-mobile.webp",
+      "district-cnesdata-desktop.webp",
+      "district-cnesdata-mobile.webp",
+      "district-infrastructure-desktop.webp",
+      "district-infrastructure-mobile.webp",
+      "district-limnopulse-desktop.webp",
+      "district-limnopulse-mobile.webp",
+      "hub-desktop.webp",
+      "hub-mobile.webp",
+      "overview-desktop.webp",
+      "overview-mobile.webp"
+    ],
+    "placements": {
+      "desktop": [
+        "cnesdata",
+        "infrastructure",
+        "limnopulse"
+      ],
+      "mobile": [
+        "cnesdata",
+        "infrastructure",
+        "limnopulse"
+      ]
+    },
+    "exactMetadata": true,
+    "exactModels": true,
+    "exactPosters": true,
+    "exactPlacements": true
+  },
+  "partialUnrequestedMetadata": [
+    {
+      "id": "district-cnesdata",
+      "equal": true,
+      "differences": []
+    },
+    {
+      "id": "district-infrastructure",
+      "equal": true,
+      "differences": []
+    },
+    {
+      "id": "district-limnopulse",
+      "equal": true,
+      "differences": []
+    },
+    {
+      "id": "detail-cnesdata",
+      "equal": true,
+      "differences": []
+    },
+    {
+      "id": "detail-infrastructure",
+      "equal": true,
+      "differences": []
+    },
+    {
+      "id": "overview",
+      "equal": true,
+      "differences": []
+    },
+    {
+      "id": "detail-infrastructure-failed",
+      "equal": true,
+      "differences": []
+    }
+  ],
+  "partialDetailMetadataAgainstBaseline": [
+    {
+      "id": "detail-cnesdata",
+      "equal": true,
+      "differences": []
+    },
+    {
+      "id": "detail-infrastructure",
+      "equal": true,
+      "differences": []
+    },
+    {
+      "id": "detail-infrastructure-failed",
+      "equal": true,
+      "differences": []
+    }
+  ],
+  "partialUnrequestedAssets": [
+    {
+      "path": "public/assets/scenes/detail-cnesdata.glb",
+      "fullBytes": 58936,
+      "partialBytes": 58936,
+      "fullSha256": "3500b7a9e4dc14c191b2fdb15fe5870564413afd4d05b65839215ebe1438c5c2",
+      "partialSha256": "3500b7a9e4dc14c191b2fdb15fe5870564413afd4d05b65839215ebe1438c5c2",
+      "equal": true
+    },
+    {
+      "path": "public/assets/scenes/detail-infrastructure.glb",
+      "fullBytes": 22112,
+      "partialBytes": 22112,
+      "fullSha256": "7714fcd9a43e82f86843ba9c4f7f148a9ad461f79fdd2846518921fa5c6f5894",
+      "partialSha256": "7714fcd9a43e82f86843ba9c4f7f148a9ad461f79fdd2846518921fa5c6f5894",
+      "equal": true
+    },
+    {
+      "path": "public/assets/scenes/district-cnesdata.glb",
+      "fullBytes": 151148,
+      "partialBytes": 151148,
+      "fullSha256": "21bcf2fcde9120bc235f93b551c738036ee19dca4c65febbd030f2c2d6da0469",
+      "partialSha256": "21bcf2fcde9120bc235f93b551c738036ee19dca4c65febbd030f2c2d6da0469",
+      "equal": true
+    },
+    {
+      "path": "public/assets/scenes/district-infrastructure.glb",
+      "fullBytes": 159600,
+      "partialBytes": 159600,
+      "fullSha256": "eca0954840d061acb9afc1e92f6b97398ea36432deeabdf1a49375ff5227966d",
+      "partialSha256": "eca0954840d061acb9afc1e92f6b97398ea36432deeabdf1a49375ff5227966d",
+      "equal": true
+    },
+    {
+      "path": "public/assets/scenes/district-limnopulse.glb",
+      "fullBytes": 167976,
+      "partialBytes": 167976,
+      "fullSha256": "c24923b64083d9ee1a2301c7dd98c07c7fd87ab5b3e0fe030177a8543e4604cf",
+      "partialSha256": "c24923b64083d9ee1a2301c7dd98c07c7fd87ab5b3e0fe030177a8543e4604cf",
+      "equal": true
+    },
+    {
+      "path": "public/assets/posters/detail-cnesdata-desktop.webp",
+      "fullBytes": 40252,
+      "partialBytes": 40252,
+      "fullSha256": "e12199afdde0a0cf277d42bbfabbbcab9f12a939f47c1d91968dba1887674d4d",
+      "partialSha256": "e12199afdde0a0cf277d42bbfabbbcab9f12a939f47c1d91968dba1887674d4d",
+      "equal": true
+    },
+    {
+      "path": "public/assets/posters/detail-cnesdata-mobile.webp",
+      "fullBytes": 21088,
+      "partialBytes": 21088,
+      "fullSha256": "815765c103e181e0bfe79472cbec72dcf26f1f33572426eaf37b76a1808f4a22",
+      "partialSha256": "815765c103e181e0bfe79472cbec72dcf26f1f33572426eaf37b76a1808f4a22",
+      "equal": true
+    },
+    {
+      "path": "public/assets/posters/detail-infrastructure-desktop.webp",
+      "fullBytes": 26528,
+      "partialBytes": 26528,
+      "fullSha256": "f8141536f1246cff03056f50843437bea5d091c83737550eb6979d527d4a21bf",
+      "partialSha256": "f8141536f1246cff03056f50843437bea5d091c83737550eb6979d527d4a21bf",
+      "equal": true
+    },
+    {
+      "path": "public/assets/posters/detail-infrastructure-failed-desktop.webp",
+      "fullBytes": 25812,
+      "partialBytes": 25812,
+      "fullSha256": "9d27a734e97cb84b0687533915e8319122a79946c4312630a91c8d7b45bb9841",
+      "partialSha256": "9d27a734e97cb84b0687533915e8319122a79946c4312630a91c8d7b45bb9841",
+      "equal": true
+    },
+    {
+      "path": "public/assets/posters/detail-infrastructure-failed-mobile.webp",
+      "fullBytes": 17456,
+      "partialBytes": 17456,
+      "fullSha256": "47c5ca5436a977ae0510755d847ccf044ee8aa0da45678ba2386dc43ba89b2ec",
+      "partialSha256": "47c5ca5436a977ae0510755d847ccf044ee8aa0da45678ba2386dc43ba89b2ec",
+      "equal": true
+    },
+    {
+      "path": "public/assets/posters/detail-infrastructure-mobile.webp",
+      "fullBytes": 17864,
+      "partialBytes": 17864,
+      "fullSha256": "57f6c40f09b172751e7944ed7103608d6236c2c2e5ac8f957b5b0b4c4858556e",
+      "partialSha256": "57f6c40f09b172751e7944ed7103608d6236c2c2e5ac8f957b5b0b4c4858556e",
+      "equal": true
+    },
+    {
+      "path": "public/assets/posters/district-cnesdata-desktop.webp",
+      "fullBytes": 38320,
+      "partialBytes": 38320,
+      "fullSha256": "8b7ef44dec358c730443b501af0a07fb36a55727aae810b3da8568bc483b5334",
+      "partialSha256": "8b7ef44dec358c730443b501af0a07fb36a55727aae810b3da8568bc483b5334",
+      "equal": true
+    },
+    {
+      "path": "public/assets/posters/district-cnesdata-mobile.webp",
+      "fullBytes": 22012,
+      "partialBytes": 22012,
+      "fullSha256": "817a4f88434ef048cbd579dc6027c575aba4d874d63e7192d2b2fb2af0a31192",
+      "partialSha256": "817a4f88434ef048cbd579dc6027c575aba4d874d63e7192d2b2fb2af0a31192",
+      "equal": true
+    },
+    {
+      "path": "public/assets/posters/district-infrastructure-desktop.webp",
+      "fullBytes": 45094,
+      "partialBytes": 45094,
+      "fullSha256": "66cce42c4ec2735d74e94a70fab407af5db2e0a2f58e14f101c4da8c6686fd01",
+      "partialSha256": "66cce42c4ec2735d74e94a70fab407af5db2e0a2f58e14f101c4da8c6686fd01",
+      "equal": true
+    },
+    {
+      "path": "public/assets/posters/district-infrastructure-mobile.webp",
+      "fullBytes": 24940,
+      "partialBytes": 24940,
+      "fullSha256": "4bffdb67665dd9766b3b6c6f606fea704ef4e5944c72d01d023c3c33d9721427",
+      "partialSha256": "4bffdb67665dd9766b3b6c6f606fea704ef4e5944c72d01d023c3c33d9721427",
+      "equal": true
+    },
+    {
+      "path": "public/assets/posters/district-limnopulse-desktop.webp",
+      "fullBytes": 26760,
+      "partialBytes": 26760,
+      "fullSha256": "f2d02d5c850ef0b158b0ee7f88224c1472bc02516b2e8c3ac9eb697cee6c9f2d",
+      "partialSha256": "f2d02d5c850ef0b158b0ee7f88224c1472bc02516b2e8c3ac9eb697cee6c9f2d",
+      "equal": true
+    },
+    {
+      "path": "public/assets/posters/district-limnopulse-mobile.webp",
+      "fullBytes": 14492,
+      "partialBytes": 14492,
+      "fullSha256": "4cc1d4835774e5b7e1a946eb6667ec0c1602a55723627aba6ff304ee99d95abb",
+      "partialSha256": "4cc1d4835774e5b7e1a946eb6667ec0c1602a55723627aba6ff304ee99d95abb",
+      "equal": true
+    },
+    {
+      "path": "public/assets/posters/overview-desktop.webp",
+      "fullBytes": 70534,
+      "partialBytes": 70534,
+      "fullSha256": "cd45dcc91b95b155ff27af050ef5f4d522698280941c8d2fc6e39b0898ea9d5e",
+      "partialSha256": "cd45dcc91b95b155ff27af050ef5f4d522698280941c8d2fc6e39b0898ea9d5e",
+      "equal": true
+    },
+    {
+      "path": "public/assets/posters/overview-mobile.webp",
+      "fullBytes": 58790,
+      "partialBytes": 58790,
+      "fullSha256": "fbd625bf87517680ef2519d05989b7db1e75515e5b59f121e704a77aa82739f8",
+      "partialSha256": "fbd625bf87517680ef2519d05989b7db1e75515e5b59f121e704a77aa82739f8",
+      "equal": true
+    }
+  ],
+  "passed": true,
+  "interpretation": "Full generation reproduced candidate assets and metadata exactly; detail assets match baseline and partial generation preserves unrequested metadata and asset bytes.",
+  "finishedAt": "2026-09-12T19:03:11.861Z"
+}

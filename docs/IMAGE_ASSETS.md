@@ -4,7 +4,9 @@ Professional portrait and sharing assets live in `public/assets/images/`; their 
 
 Systems Atlas uses `src/content/scenes/index.ts` and `generated.json` for responsive posters and models. The active kit contains three districts (CnesData, LimnoPulse, Infrastructure), the hub, overview, CnesData/Infrastructure details and the Infrastructure failure poster. HTML/SVG supplies project structure; posters remain usable without JavaScript or WebGL. Optional Home, Atlas and Infrastructure renderers progressively enhance that baseline.
 
-Run `rtk npm run assets:generate` for the full authored kit, or append `-- overview` for partial generation. The generator rejects retired district IDs and normalizes obsolete metadata on partial runs. GPU differences can change raster pixels; inspect changes and avoid committing incidental regeneration.
+Run `rtk npm run assets:generate` for the full authored kit, or append `-- overview` for partial generation. An overview request first regenerates the three district models and hub (including their posters and metadata), then reloads those GLBs to render both overview posters. Detail assets and their metadata remain untouched. Other partial requests generate only the named scenes. The generator rejects retired district IDs and normalizes obsolete metadata on partial runs. GPU differences can change raster pixels; inspect changes and avoid committing incidental regeneration.
+
+With Playwright Chromium installed, run `rtk proxy node --experimental-strip-types --test tests/overview-generation.integration.mjs` to verify source edits propagate through GLB export/reload into overview posters while preserving unrequested assets. The test uses a temporary copy and also runs in CI.
 
 Run `rtk npm run gallery` for local inspection and `rtk npm run gallery:verify` for responsive images and model fallback checks. See [gallery instructions](../scripts/gallery/README.md).
 
