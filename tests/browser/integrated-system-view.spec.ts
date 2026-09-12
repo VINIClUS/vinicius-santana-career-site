@@ -74,17 +74,18 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
               .map(node => node.dataset.graphNode);
             const unrelatedNodes = nodes.filter(node => ![from, to].includes(node.dataset.graphNode ?? null));
             const length = path.getTotalLength();
+            const pathSamples = Array.from({ length: 99 }, (_, index) => path.getPointAtLength(length * (index + 1) / 100))
+              .map(point => new DOMPoint(point.x, point.y).matrixTransform(matrix));
             const crossedNodes = unrelatedNodes
               .filter(node => {
                 const box = node.getBoundingClientRect();
-                return Array.from({ length: 99 }, (_, index) => path.getPointAtLength(length * (index + 1) / 100))
-                  .map(point => new DOMPoint(point.x, point.y).matrixTransform(matrix))
-                  .some(point => point.x > box.left && point.x < box.right && point.y > box.top && point.y < box.bottom);
+                return pathSamples.some(point => point.x > box.left && point.x < box.right && point.y > box.top && point.y < box.bottom);
               })
               .map(node => node.dataset.graphNode);
-            return { overlappingLabels, crossedNodes };
+            const pathMissesLabel = !pathSamples.some(point => point.x >= label.left && point.x <= label.right && point.y >= label.top && point.y <= label.bottom);
+            return { overlappingLabels, crossedNodes, pathMissesLabel };
           });
-          expect(obstructions, `${project}: ${relation.from} → ${relation.to}`).toEqual({ overlappingLabels: [], crossedNodes: [] });
+          expect(obstructions, `${project}: ${relation.from} → ${relation.to}`).toEqual({ overlappingLabels: [], crossedNodes: [], pathMissesLabel: false });
         }
         if (project === 'limnopulse') {
           const forward = view.locator('[data-connector-from="alert-rules"][data-connector-to="evaluator"]');
@@ -136,6 +137,33 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
         await expect(view.getByText('Relationships', { exact: true })).toHaveCount(0);
         await expect(view.locator('[data-component-detail] a')).toHaveCount(0);
         expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+
+        if (javaScriptEnabled) {
+          for (const link of await view.locator('[data-component-link]').all()) {
+            await link.click();
+            const selectedContent = await link.evaluate(element => {
+              const container = element.getBoundingClientRect();
+              const children = [...element.children].filter(child => getComputedStyle(child).display !== 'none');
+              const overflowingChildren = children
+                .filter(child => {
+                  const box = child.getBoundingClientRect();
+                  return box.left < container.left || box.right > container.right || box.top < container.top || box.bottom > container.bottom;
+                })
+                .map(child => child.textContent?.trim());
+              const overlappingChildren = children.flatMap((child, index) => {
+                const box = child.getBoundingClientRect();
+                return children.slice(index + 1)
+                  .filter(candidate => {
+                    const candidateBox = candidate.getBoundingClientRect();
+                    return !(box.right <= candidateBox.left || candidateBox.right <= box.left || box.bottom <= candidateBox.top || candidateBox.bottom <= box.top);
+                  })
+                  .map(candidate => `${child.textContent?.trim()} / ${candidate.textContent?.trim()}`);
+              });
+              return { overflowingChildren, overlappingChildren };
+            });
+            expect(selectedContent, `${project}: selected ${await link.getAttribute('data-component-link')}`).toEqual({ overflowingChildren: [], overlappingChildren: [] });
+          }
+        }
 
         const firstNode = view.locator('[data-component-link]').first();
         const target = await firstNode.getAttribute('href');

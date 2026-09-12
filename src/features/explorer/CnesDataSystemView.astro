@@ -16,13 +16,13 @@ const graphNodes = [
   { id: 'tenant-isolation', x: 84, y: 26 }, { id: 'parquet-to-gold', x: 84, y: 55 }, { id: 'kubernetes', x: 84, y: 82 },
 ];
 const routes = {
-  'canonical-contracts→edge-agent': { label: { x: 16, y: 31 } },
-  'canonical-contracts→central-api': { label: { x: 50, y: 20 } },
-  'edge-agent→central-api': { label: { x: 50, y: 32 } },
-  'central-api→tenant-isolation': { label: { x: 50, y: 8 } },
-  'web-dashboard→central-api': { label: { x: 16, y: 62 } },
-  'central-api→parquet-to-gold': { label: { x: 50, y: 69 } },
-  'kubernetes→central-api': { label: { x: 50, y: 91 } },
+  'canonical-contracts→edge-agent': { via: [{ x: 16, y: 31 }], label: { x: 16, y: 31 } },
+  'canonical-contracts→central-api': { via: [{ x: 50, y: 20 }], label: { x: 50, y: 20 } },
+  'edge-agent→central-api': { via: [{ x: 50, y: 32 }], label: { x: 50, y: 32 } },
+  'central-api→tenant-isolation': { via: [{ x: 50, y: 8 }], label: { x: 50, y: 8 } },
+  'web-dashboard→central-api': { via: [{ x: 16, y: 62 }], label: { x: 16, y: 62 } },
+  'central-api→parquet-to-gold': { via: [{ x: 50, y: 69 }], label: { x: 50, y: 69 } },
+  'kubernetes→central-api': { via: [{ x: 50, y: 91 }], label: { x: 50, y: 91 } },
 };
 ---
 <div class="integrated-system-view cnesdata-system-view" data-integrated-system-view>
