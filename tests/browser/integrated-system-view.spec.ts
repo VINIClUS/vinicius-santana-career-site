@@ -59,6 +59,32 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
           expect(endpointDistances[2]).toBeLessThanOrEqual(5);
           expect(endpointDistances[3]).toBeLessThanOrEqual(5);
           expect(endpointDistances[4]).toBeGreaterThan(3);
+          const obstructions = await connector.evaluate(element => {
+            const label = element.querySelector('[data-graph-edge-label]')!.getBoundingClientRect();
+            const path = element.querySelector('svg > path')!;
+            const matrix = path.ownerSVGElement!.getScreenCTM()!;
+            const from = element.getAttribute('data-connector-from');
+            const to = element.getAttribute('data-connector-to');
+            const nodes = [...document.querySelectorAll<HTMLElement>('[data-graph-node]')];
+            const overlappingLabels = nodes
+              .filter(node => {
+                const box = node.getBoundingClientRect();
+                return !(label.right <= box.left || box.right <= label.left || label.bottom <= box.top || box.bottom <= label.top);
+              })
+              .map(node => node.dataset.graphNode);
+            const unrelatedNodes = nodes.filter(node => ![from, to].includes(node.dataset.graphNode ?? null));
+            const length = path.getTotalLength();
+            const crossedNodes = unrelatedNodes
+              .filter(node => {
+                const box = node.getBoundingClientRect();
+                return Array.from({ length: 99 }, (_, index) => path.getPointAtLength(length * (index + 1) / 100))
+                  .map(point => new DOMPoint(point.x, point.y).matrixTransform(matrix))
+                  .some(point => point.x > box.left && point.x < box.right && point.y > box.top && point.y < box.bottom);
+              })
+              .map(node => node.dataset.graphNode);
+            return { overlappingLabels, crossedNodes };
+          });
+          expect(obstructions, `${project}: ${relation.from} → ${relation.to}`).toEqual({ overlappingLabels: [], crossedNodes: [] });
         }
         if (project === 'limnopulse') {
           const forward = view.locator('[data-connector-from="alert-rules"][data-connector-to="evaluator"]');

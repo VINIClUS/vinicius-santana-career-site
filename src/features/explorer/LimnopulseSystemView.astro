@@ -20,7 +20,12 @@ const graphNodes = [
   { id: 'alert-rules', x: 82, y: 55 }, { id: 'notifications', x: 82, y: 82 },
 ];
 const routes = {
-  'cloud-infrastructure→evaluator': { via: [{ x: 34, y: 32 }, { x: 34, y: 82 }], label: { x: 50, y: 12 }, labelWidth: 22 },
+  'mqtt-ingestion→telemetry-api': { label: { x: 18, y: 34 } },
+  'alert-rules→evaluator': { label: { x: 50, y: 68.5 } },
+  'evaluator→mqtt-ingestion': { label: { x: 34, y: 68.5 } },
+  'evaluator→alert-rules': { via: [{ x: 66, y: 97 }, { x: 98, y: 97 }, { x: 98, y: 68 }], label: { x: 82, y: 97 } },
+  'alert-rules→notifications': { label: { x: 82, y: 68.5 } },
+  'cloud-infrastructure→evaluator': { via: [{ x: 34, y: 32 }, { x: 34, y: 82 }], label: { x: 50, y: 12 } },
   'production-device-layer→mqtt-ingestion': { via: [{ x: 76, y: 32 }, { x: 18, y: 32 }], label: { x: 50, y: 32 } },
 };
 ---

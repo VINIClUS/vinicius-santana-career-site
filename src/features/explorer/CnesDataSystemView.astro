@@ -15,6 +15,15 @@ const graphNodes = [
   { id: 'central-api', x: 50, y: 50 },
   { id: 'tenant-isolation', x: 84, y: 26 }, { id: 'parquet-to-gold', x: 84, y: 55 }, { id: 'kubernetes', x: 84, y: 82 },
 ];
+const routes = {
+  'canonical-contracts→edge-agent': { label: { x: 16, y: 31 } },
+  'canonical-contracts→central-api': { label: { x: 50, y: 20 } },
+  'edge-agent→central-api': { label: { x: 50, y: 32 } },
+  'central-api→tenant-isolation': { label: { x: 50, y: 8 } },
+  'web-dashboard→central-api': { label: { x: 16, y: 62 } },
+  'central-api→parquet-to-gold': { label: { x: 50, y: 69 } },
+  'kubernetes→central-api': { label: { x: 50, y: 91 } },
+};
 ---
 <div class="integrated-system-view cnesdata-system-view" data-integrated-system-view>
   <p class="explorer-note">Conceptual architecture map for public discussion. Connections describe system responsibilities rather than a live deployment; processing and deployment boundaries remain illustrative.</p>
@@ -23,7 +32,7 @@ const graphNodes = [
       <section class="system-graph cnesdata-graph" data-system-graph aria-labelledby="system-map-title">
         <div class="graph-heading"><h3 id="system-map-title">System map</h3><p>Central API is the branching hub between contracts, clients, and downstream boundaries.</p></div>
         <div class="graph-stage">
-          <SystemGraphConnectors components={caseStudy.architecture} nodes={graphNodes} relations={relations} nodeHalfWidth={14.5} nodeHalfHeight={10.91} />
+          <SystemGraphConnectors components={caseStudy.architecture} nodes={graphNodes} relations={relations} nodeHalfWidth={14.5} nodeHalfHeight={10.91} {routes} />
           <ol class="graph-nodes" aria-label="CnesData system components">
           {graphNodes.map(node => { const component = componentFor(node.id); return <li id={`graph-node-${node.id}`} data-graph-node={node.id} class={node.id === 'central-api' ? 'graph-node graph-node-hub' : 'graph-node'} style={`--node-x: ${node.x}%; --node-y: ${node.y}%`}>
             <a href={`#component-${node.id}`} data-component-link={node.id}>

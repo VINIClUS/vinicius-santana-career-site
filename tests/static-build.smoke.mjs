@@ -4,7 +4,6 @@ import { readFile, readdir, stat } from 'node:fs/promises';
 import path from 'node:path';
 import yaml from 'js-yaml';
 import { projectDefinitions } from '../src/features/explorer/projects.ts';
-import { graphLabel } from '../src/features/explorer/system-view.ts';
 
 const root = new URL('../', import.meta.url);
 const fromRoot = (...segments) => new URL(segments.join('/'), root);
@@ -96,7 +95,7 @@ function assertIntegratedSystemView(html, study, projectId) {
     assert.ok(connector, `${projectId} renders ${relation.from} → ${relation.to} as a node-anchored graph connector`);
     assert.match(connector, /aria-label="Connection from [^"]+ to [^"]+:/, `${projectId} connector names both endpoints`);
     assert.match(connector, /<path[^>]*d="M /, `${projectId} connector draws a path instead of a detached list item`);
-    assert.ok(connector.includes(escapeHtml(graphLabel(relation))), `${projectId} connector keeps its label`);
+    assert.ok(connector.includes(escapeHtml(relation.shortLabel)), `${projectId} connector keeps its short label`);
   }
 }
 
