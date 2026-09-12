@@ -651,6 +651,11 @@ h3 {
   top: calc(var(--header-height) + 24px);
 }
 
+.experience-roles {
+  display: grid;
+  gap: 18px;
+}
+
 .timeline-card {
   position: relative;
   padding: clamp(24px, 4vw, 36px);
