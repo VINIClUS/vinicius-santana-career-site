@@ -88,8 +88,10 @@
     {
       "file": "performance-disposition.md",
       "archivedSource": "lighting-motion/performance-disposition.md",
-      "bytes": 14063,
-      "sha256": "a9fb9c7b857e6351f58ae6449c70b24615fecedc9c8958be783f68625ad03834"
+      "bytes": 14062,
+      "sha256": "306aa9f16a1e749c91b214e1ff8e19d400c4081f425ca81e4ffd63e04aaf6337",
+      "archivedSourceSha256": "a9fb9c7b857e6351f58ae6449c70b24615fecedc9c8958be783f68625ad03834",
+      "normalization": "Removed the extra blank line at EOF; review wording and measured records are unchanged."
     },
     {
       "file": "measure.mjs",
