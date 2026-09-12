@@ -9,7 +9,6 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     await page.goto('/');
     await expect(page.locator('h1')).toHaveText('ViniciusSantana');
     await expect(page.locator('.header-resume')).toBeVisible();
-    await expect(page.locator('canvas, astro-island')).toHaveCount(0);
     for (const id of ['about', 'experience', 'projects', 'stack', 'contact', 'case-cnesdata', 'case-aquafarm', 'case-esus-pec-bootstrap', 'case-infra-ansible', 'case-packer-proxmox-templates']) {
       await expect(page.locator(`#${id}`)).toHaveCount(1);
     }
@@ -25,7 +24,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       await page.screenshot({ path: `test-results/so-10/${name}-${viewport.width}.png`, fullPage: true });
     }
     await capture('home');
-    expect(requests.filter(url => /\.(glb|gltf|ktx2)(?:\?|$)|three|react-dom/i.test(url))).toEqual([]);
+    expect(requests.filter(url => /renderer\.[^/]+\.js(?:\?|$)|detail-[^/]+\.glb(?:\?|$)/i.test(url))).toEqual([]);
     if (viewport.width < 820) {
       const toggle = page.locator('[data-menu-toggle]');
       await toggle.focus();
@@ -36,8 +35,10 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       await expect(toggle).toBeFocused();
       await expect(toggle).toHaveAttribute('aria-expanded', 'false');
     }
-    await page.locator('.hero-actions a[href="/work/"]').focus();
+    await page.getByRole('link', { name: 'Explore my work', exact: true }).focus();
     await page.keyboard.press('Enter');
+    await expect(page).toHaveURL(/\/explore\/$/);
+    await page.goto('/work/');
     await expect(page).toHaveURL(/\/work\/$/);
     await expect(page.locator('.visual-work-card')).toHaveCount(4);
     const columns = await page.locator('.work-grid').evaluate(el => getComputedStyle(el).gridTemplateColumns.split(' ').length);
@@ -88,7 +89,7 @@ test('detail transcripts and destinations survive without JavaScript', async ({ 
   const page = await context.newPage();
   await page.goto('/');
   await expect(page.locator('.header-resume')).toBeVisible();
-  await page.locator('.hero-actions a[href="/work/"]').click();
+  await page.goto('/work/');
   await page.locator('.project-actions a[href="/work/cnesdata/"]').click();
   await page.locator('.section-nav a[href="#simulation"]').click();
   for (const id of ['raw-first-write', 'raw-identical-replay', 'raw-content-conflict']) {

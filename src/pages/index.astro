@@ -1,23 +1,13 @@
 ---
-import { getCollection } from 'astro:content';
 import ExternalLink from '../components/ExternalLink.astro';
 import PracticeCards from '../components/PracticeCards.astro';
-import SelectedWorkCard from '../components/SelectedWorkCard.astro';
 import ResponsivePoster from '../components/ResponsivePoster.astro';
-import { homeVisual } from '../content/scenes';
+import { overview } from '../content/scenes';
 import StackGrid from '../components/StackGrid.astro';
 import { experience, profile } from '../data/content.js';
 import EditorialLayout from '../layouts/EditorialLayout.astro';
 
-const caseStudies = (await getCollection('caseStudies')).sort((left, right) => left.data.order - right.data.order);
-const legacyAnchors: Record<string, { primary: string; aliases: string[] }> = {
-  cnesdata: { primary: 'case-cnesdata', aliases: [] },
-  limnopulse: { primary: 'case-aquafarm', aliases: [] },
-  infrastructure: {
-    primary: 'case-esus-pec-bootstrap',
-    aliases: ['case-infra-ansible', 'case-packer-proxmox-templates']
-  }
-};
+const legacyAnchors = ['case-cnesdata', 'case-aquafarm', 'case-esus-pec-bootstrap', 'case-infra-ansible', 'case-packer-proxmox-templates'];
 ---
 
 <EditorialLayout currentPath="/" observatory>
@@ -34,32 +24,24 @@ const legacyAnchors: Record<string, { primary: string; aliases: string[] }> = {
           <li><span aria-hidden="true">▤</span>Backend Engineering</li>
           <li><span aria-hidden="true">♧</span>Public Health</li>
         </ul>
-        <div class="hero-actions" aria-label="Primary actions">
-          <a class="button" href="/work/">View selected work <span aria-hidden="true">→</span></a>
-          <a class="button button-secondary" href="/explore/">Explore systems <span aria-hidden="true">→</span></a>
+        <div id="projects" class="atlas-introduction" aria-labelledby="projects-title">
+          {legacyAnchors.map(id => <span id={id} class="atlas-legacy-anchor" aria-hidden="true"></span>)}
+          <p class="eyebrow" id="projects-title">Systems Atlas</p>
+          <p>Explore the systems, engineering decisions and evidence behind my work.</p>
+          <div class="hero-actions" aria-label="Primary actions">
+            <a class="button" href="/explore/">Explore my work <span aria-hidden="true">→</span></a>
+          </div>
         </div>
         <p class="hero-location">{profile.location} · Software, data &amp; operations</p>
       </div>
-      <figure class="globe-visual">
-        <ResponsivePoster poster={homeVisual} priority />
-        <figcaption>Connected systems. Grounded engineering.</figcaption>
+      <figure class="home-atlas-preview" data-home-preview data-preview-state="poster">
+        <div class="home-atlas-stage">
+          <ResponsivePoster poster={overview.poster} priority />
+          <div data-preview-host aria-hidden="true"></div>
+        </div>
+        <figcaption><strong>CnesData · LimnoPulse · Infrastructure</strong><br />
+          Three systems. A conceptual map of the work, not a live network.</figcaption>
       </figure>
-    </div>
-  </section>
-
-  <section class="section section-muted" id="projects" aria-labelledby="projects-title">
-    <div class="shell">
-      <div class="section-heading">
-        <p class="eyebrow">Selected work</p>
-        <h2 id="projects-title">From data to real-world impact.</h2>
-        <p>Each case study separates implemented work, documented direction and limitations.</p>
-      </div>
-      <div class="project-grid">
-        {caseStudies.map(({ data: caseStudy }) => (
-          <SelectedWorkCard caseStudy={caseStudy} legacyAnchors={legacyAnchors[caseStudy.id]} />
-        ))}
-      </div>
-      <p class="section-action"><a class="button button-secondary" href="/work/">Browse all selected work</a></p>
     </div>
   </section>
 
@@ -121,3 +103,27 @@ const legacyAnchors: Record<string, { primary: string; aliases: string[] }> = {
     </div>
   </section>
 </EditorialLayout>
+
+<script>
+  import '../features/explorer/home-preview-client';
+</script>
+
+<style>
+  .atlas-introduction { position: relative; scroll-margin-top: 100px; }
+  .atlas-introduction .eyebrow { margin-bottom: 8px; }
+  .atlas-introduction > p:not(.eyebrow) { color: var(--muted); max-width: 430px; font-size: .9rem; }
+  .atlas-legacy-anchor { position: absolute; top: 0; scroll-margin-top: 100px; }
+  .home-atlas-preview { margin: 0; min-width: 0; width: 100%; }
+  .home-atlas-stage { position: relative; aspect-ratio: 4 / 5; background: #050a11; overflow: hidden; border-radius: 8px; }
+  .home-atlas-stage :global(picture), .home-atlas-stage :global(img), [data-preview-host] {
+    position: absolute; inset: 0; display: block; width: 100%; height: 100%;
+  }
+  [data-preview-host] { pointer-events: none; }
+  [data-preview-host] :global(canvas) { display: block; width: 100%; height: 100%; pointer-events: none; }
+  .home-atlas-stage :global(picture) { z-index: 1; }
+  [data-preview-state="ready"] :global(picture) { visibility: hidden; }
+  .home-atlas-preview figcaption { color: var(--muted); font-size: .75rem; line-height: 1.6; margin-top: 14px; }
+  .home-atlas-preview figcaption strong { color: var(--text); font-weight: 500; }
+  @media (min-width: 780px) { .home-atlas-stage { aspect-ratio: 3 / 2; } }
+  @media (max-width: 779px) { .home-atlas-preview { max-width: 480px; justify-self: center; } }
+</style>

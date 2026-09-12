@@ -1,0 +1,600 @@
+{
+  "measuredUrl": "http://127.0.0.1:4325/",
+  "browser": {
+    "name": "Chromium",
+    "version": "153.0.8010.12"
+  },
+  "profile": {
+    "network": {
+      "downloadMbps": 10,
+      "uploadMbps": 1,
+      "latencyMs": 40,
+      "downloadThroughput": 1310720,
+      "uploadThroughput": 131072
+    },
+    "cpuSlowdownMultiplier": 4,
+    "coldCache": true
+  },
+  "runsPerViewport": 3,
+  "results": [
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "run": 1,
+      "startedAt": "2026-09-12T12:35:28.505Z",
+      "timingsMs": {
+        "domContentLoaded": 410.59999999962747,
+        "load": 411.7999999988824,
+        "firstContentfulPaint": 508,
+        "firstGlDraw": null,
+        "previewReady": null
+      },
+      "htmlAtDcl": {
+        "observedAt": 405.2999999988824,
+        "heroPresent": true,
+        "heroVisible": true,
+        "ctaPresent": true,
+        "ctaVisible": true
+      },
+      "poster": {
+        "currentSrc": "http://127.0.0.1:4325/assets/posters/home-globe-desktop.webp",
+        "complete": true,
+        "naturalWidth": 1200,
+        "naturalHeight": 800,
+        "renderedWidth": 618.109375,
+        "renderedHeight": 412.0625,
+        "loadObservedAt": 411.7999999988824,
+        "responseEnd": 174.5
+      },
+      "drawCalls": {
+        "total": 0,
+        "idleWindowStart": 3416.699999999255,
+        "idleWindowDuration": 2008.9000000003725,
+        "duringIdleWindow": 0,
+        "previewStateAtStart": null
+      },
+      "longTasks": {
+        "count": 1,
+        "totalDuration": 270,
+        "maxDuration": 270,
+        "entries": [
+          {
+            "startTime": 129.09999999962747,
+            "duration": 270
+          }
+        ]
+      },
+      "resources": {
+        "javascript": {
+          "requestCount": 0,
+          "transferSize": 0,
+          "encodedBodySize": 0,
+          "resources": []
+        },
+        "model": {
+          "requestCount": 0,
+          "transferSize": 0,
+          "encodedBodySize": 0,
+          "resources": []
+        },
+        "poster": {
+          "requestCount": 4,
+          "transferSize": 397324,
+          "encodedBodySize": 396124,
+          "resources": [
+            {
+              "name": "http://127.0.0.1:4325/assets/posters/home-globe-desktop.webp",
+              "initiatorType": "img",
+              "transferSize": 71884,
+              "encodedBodySize": 71584,
+              "responseEnd": 174.5
+            },
+            {
+              "name": "http://127.0.0.1:4325/assets/posters/work-cnesdata-desktop.webp",
+              "initiatorType": "img",
+              "transferSize": 117390,
+              "encodedBodySize": 117090,
+              "responseEnd": 689.9000000003725
+            },
+            {
+              "name": "http://127.0.0.1:4325/assets/posters/work-infrastructure-desktop.webp",
+              "initiatorType": "img",
+              "transferSize": 84074,
+              "encodedBodySize": 83774,
+              "responseEnd": 635.4000000003725
+            },
+            {
+              "name": "http://127.0.0.1:4325/assets/posters/work-limnopulse-desktop.webp",
+              "initiatorType": "img",
+              "transferSize": 123976,
+              "encodedBodySize": 123676,
+              "responseEnd": 697.5999999996275
+            }
+          ]
+        }
+      }
+    },
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "run": 2,
+      "startedAt": "2026-09-12T12:35:33.980Z",
+      "timingsMs": {
+        "domContentLoaded": 315.30000000074506,
+        "load": 341.5,
+        "firstContentfulPaint": 452,
+        "firstGlDraw": null,
+        "previewReady": null
+      },
+      "htmlAtDcl": {
+        "observedAt": 116.59999999962747,
+        "heroPresent": true,
+        "heroVisible": true,
+        "ctaPresent": true,
+        "ctaVisible": true
+      },
+      "poster": {
+        "currentSrc": "http://127.0.0.1:4325/assets/posters/home-globe-desktop.webp",
+        "complete": true,
+        "naturalWidth": 1200,
+        "naturalHeight": 800,
+        "renderedWidth": 618.109375,
+        "renderedHeight": 412.0625,
+        "loadObservedAt": 341.5,
+        "responseEnd": 159.59999999962747
+      },
+      "drawCalls": {
+        "total": 0,
+        "idleWindowStart": 3343.9000000003725,
+        "idleWindowDuration": 2008.2999999988824,
+        "duringIdleWindow": 0,
+        "previewStateAtStart": null
+      },
+      "longTasks": {
+        "count": 1,
+        "totalDuration": 201,
+        "maxDuration": 201,
+        "entries": [
+          {
+            "startTime": 114.30000000074506,
+            "duration": 201
+          }
+        ]
+      },
+      "resources": {
+        "javascript": {
+          "requestCount": 0,
+          "transferSize": 0,
+          "encodedBodySize": 0,
+          "resources": []
+        },
+        "model": {
+          "requestCount": 0,
+          "transferSize": 0,
+          "encodedBodySize": 0,
+          "resources": []
+        },
+        "poster": {
+          "requestCount": 4,
+          "transferSize": 397324,
+          "encodedBodySize": 396124,
+          "resources": [
+            {
+              "name": "http://127.0.0.1:4325/assets/posters/home-globe-desktop.webp",
+              "initiatorType": "img",
+              "transferSize": 71884,
+              "encodedBodySize": 71584,
+              "responseEnd": 159.59999999962747
+            },
+            {
+              "name": "http://127.0.0.1:4325/assets/posters/work-cnesdata-desktop.webp",
+              "initiatorType": "img",
+              "transferSize": 117390,
+              "encodedBodySize": 117090,
+              "responseEnd": 621.4000000003725
+            },
+            {
+              "name": "http://127.0.0.1:4325/assets/posters/work-limnopulse-desktop.webp",
+              "initiatorType": "img",
+              "transferSize": 123976,
+              "encodedBodySize": 123676,
+              "responseEnd": 629.3000000007451
+            },
+            {
+              "name": "http://127.0.0.1:4325/assets/posters/work-infrastructure-desktop.webp",
+              "initiatorType": "img",
+              "transferSize": 84074,
+              "encodedBodySize": 83774,
+              "responseEnd": 572.3000000007451
+            }
+          ]
+        }
+      }
+    },
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "run": 3,
+      "startedAt": "2026-09-12T12:35:39.376Z",
+      "timingsMs": {
+        "domContentLoaded": 291,
+        "load": 313.7000000011176,
+        "firstContentfulPaint": 396,
+        "firstGlDraw": null,
+        "previewReady": null
+      },
+      "htmlAtDcl": {
+        "observedAt": 118.5,
+        "heroPresent": true,
+        "heroVisible": true,
+        "ctaPresent": true,
+        "ctaVisible": true
+      },
+      "poster": {
+        "currentSrc": "http://127.0.0.1:4325/assets/posters/home-globe-desktop.webp",
+        "complete": true,
+        "naturalWidth": 1200,
+        "naturalHeight": 800,
+        "renderedWidth": 618.109375,
+        "renderedHeight": 412.0625,
+        "loadObservedAt": 313.7000000011176,
+        "responseEnd": 162.59999999962747
+      },
+      "drawCalls": {
+        "total": 0,
+        "idleWindowStart": 3317.2000000011176,
+        "idleWindowDuration": 2003.199999999255,
+        "duringIdleWindow": 0,
+        "previewStateAtStart": null
+      },
+      "longTasks": {
+        "count": 1,
+        "totalDuration": 174,
+        "maxDuration": 174,
+        "entries": [
+          {
+            "startTime": 116.09999999962747,
+            "duration": 174
+          }
+        ]
+      },
+      "resources": {
+        "javascript": {
+          "requestCount": 0,
+          "transferSize": 0,
+          "encodedBodySize": 0,
+          "resources": []
+        },
+        "model": {
+          "requestCount": 0,
+          "transferSize": 0,
+          "encodedBodySize": 0,
+          "resources": []
+        },
+        "poster": {
+          "requestCount": 4,
+          "transferSize": 397324,
+          "encodedBodySize": 396124,
+          "resources": [
+            {
+              "name": "http://127.0.0.1:4325/assets/posters/home-globe-desktop.webp",
+              "initiatorType": "img",
+              "transferSize": 71884,
+              "encodedBodySize": 71584,
+              "responseEnd": 162.59999999962747
+            },
+            {
+              "name": "http://127.0.0.1:4325/assets/posters/work-cnesdata-desktop.webp",
+              "initiatorType": "img",
+              "transferSize": 117390,
+              "encodedBodySize": 117090,
+              "responseEnd": 595.4000000003725
+            },
+            {
+              "name": "http://127.0.0.1:4325/assets/posters/work-limnopulse-desktop.webp",
+              "initiatorType": "img",
+              "transferSize": 123976,
+              "encodedBodySize": 123676,
+              "responseEnd": 600.8000000007451
+            },
+            {
+              "name": "http://127.0.0.1:4325/assets/posters/work-infrastructure-desktop.webp",
+              "initiatorType": "img",
+              "transferSize": 84074,
+              "encodedBodySize": 83774,
+              "responseEnd": 546.2000000011176
+            }
+          ]
+        }
+      }
+    },
+    {
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "run": 1,
+      "startedAt": "2026-09-12T12:35:44.738Z",
+      "timingsMs": {
+        "domContentLoaded": 323,
+        "load": 325.90000000037253,
+        "firstContentfulPaint": 352,
+        "firstGlDraw": null,
+        "previewReady": null
+      },
+      "htmlAtDcl": {
+        "observedAt": 322.90000000037253,
+        "heroPresent": true,
+        "heroVisible": true,
+        "ctaPresent": true,
+        "ctaVisible": true
+      },
+      "poster": {
+        "currentSrc": "http://127.0.0.1:4325/assets/posters/home-globe-mobile.webp",
+        "complete": true,
+        "naturalWidth": 600,
+        "naturalHeight": 600,
+        "renderedWidth": 362,
+        "renderedHeight": 362,
+        "loadObservedAt": 323.40000000037253,
+        "responseEnd": 134.59999999962747
+      },
+      "drawCalls": {
+        "total": 0,
+        "idleWindowStart": 3329,
+        "idleWindowDuration": 2005.5999999996275,
+        "duringIdleWindow": 0,
+        "previewStateAtStart": null
+      },
+      "longTasks": {
+        "count": 1,
+        "totalDuration": 204,
+        "maxDuration": 204,
+        "entries": [
+          {
+            "startTime": 111.5,
+            "duration": 204
+          }
+        ]
+      },
+      "resources": {
+        "javascript": {
+          "requestCount": 0,
+          "transferSize": 0,
+          "encodedBodySize": 0,
+          "resources": []
+        },
+        "model": {
+          "requestCount": 0,
+          "transferSize": 0,
+          "encodedBodySize": 0,
+          "resources": []
+        },
+        "poster": {
+          "requestCount": 3,
+          "transferSize": 168624,
+          "encodedBodySize": 167724,
+          "resources": [
+            {
+              "name": "http://127.0.0.1:4325/assets/posters/home-globe-mobile.webp",
+              "initiatorType": "img",
+              "transferSize": 41846,
+              "encodedBodySize": 41546,
+              "responseEnd": 134.59999999962747
+            },
+            {
+              "name": "http://127.0.0.1:4325/assets/posters/work-cnesdata-mobile.webp",
+              "initiatorType": "img",
+              "transferSize": 64864,
+              "encodedBodySize": 64564,
+              "responseEnd": 455.40000000037253
+            },
+            {
+              "name": "http://127.0.0.1:4325/assets/posters/work-limnopulse-mobile.webp",
+              "initiatorType": "img",
+              "transferSize": 61914,
+              "encodedBodySize": 61614,
+              "responseEnd": 453
+            }
+          ]
+        }
+      }
+    },
+    {
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "run": 2,
+      "startedAt": "2026-09-12T12:35:50.113Z",
+      "timingsMs": {
+        "domContentLoaded": 286.69999999925494,
+        "load": 309.59999999962747,
+        "firstContentfulPaint": 320,
+        "firstGlDraw": null,
+        "previewReady": null
+      },
+      "htmlAtDcl": {
+        "observedAt": 113.59999999962747,
+        "heroPresent": true,
+        "heroVisible": true,
+        "ctaPresent": true,
+        "ctaVisible": true
+      },
+      "poster": {
+        "currentSrc": "http://127.0.0.1:4325/assets/posters/home-globe-mobile.webp",
+        "complete": true,
+        "naturalWidth": 600,
+        "naturalHeight": 600,
+        "renderedWidth": 362,
+        "renderedHeight": 362,
+        "loadObservedAt": 309.59999999962747,
+        "responseEnd": 136
+      },
+      "drawCalls": {
+        "total": 0,
+        "idleWindowStart": 3312.39999999851,
+        "idleWindowDuration": 2006.800000000745,
+        "duringIdleWindow": 0,
+        "previewStateAtStart": null
+      },
+      "longTasks": {
+        "count": 1,
+        "totalDuration": 176,
+        "maxDuration": 176,
+        "entries": [
+          {
+            "startTime": 111.39999999850988,
+            "duration": 176
+          }
+        ]
+      },
+      "resources": {
+        "javascript": {
+          "requestCount": 0,
+          "transferSize": 0,
+          "encodedBodySize": 0,
+          "resources": []
+        },
+        "model": {
+          "requestCount": 0,
+          "transferSize": 0,
+          "encodedBodySize": 0,
+          "resources": []
+        },
+        "poster": {
+          "requestCount": 3,
+          "transferSize": 168624,
+          "encodedBodySize": 167724,
+          "resources": [
+            {
+              "name": "http://127.0.0.1:4325/assets/posters/home-globe-mobile.webp",
+              "initiatorType": "img",
+              "transferSize": 41846,
+              "encodedBodySize": 41546,
+              "responseEnd": 136
+            },
+            {
+              "name": "http://127.0.0.1:4325/assets/posters/work-cnesdata-mobile.webp",
+              "initiatorType": "img",
+              "transferSize": 64864,
+              "encodedBodySize": 64564,
+              "responseEnd": 442.5
+            },
+            {
+              "name": "http://127.0.0.1:4325/assets/posters/work-limnopulse-mobile.webp",
+              "initiatorType": "img",
+              "transferSize": 61914,
+              "encodedBodySize": 61614,
+              "responseEnd": 443.69999999925494
+            }
+          ]
+        }
+      }
+    },
+    {
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "run": 3,
+      "startedAt": "2026-09-12T12:35:55.475Z",
+      "timingsMs": {
+        "domContentLoaded": 282.80000000074506,
+        "load": 302.5,
+        "firstContentfulPaint": 320,
+        "firstGlDraw": null,
+        "previewReady": null
+      },
+      "htmlAtDcl": {
+        "observedAt": 114.70000000111759,
+        "heroPresent": true,
+        "heroVisible": true,
+        "ctaPresent": true,
+        "ctaVisible": true
+      },
+      "poster": {
+        "currentSrc": "http://127.0.0.1:4325/assets/posters/home-globe-mobile.webp",
+        "complete": true,
+        "naturalWidth": 600,
+        "naturalHeight": 600,
+        "renderedWidth": 362,
+        "renderedHeight": 362,
+        "loadObservedAt": 302.40000000037253,
+        "responseEnd": 136.09999999962747
+      },
+      "drawCalls": {
+        "total": 0,
+        "idleWindowStart": 3306,
+        "idleWindowDuration": 2007.5,
+        "duringIdleWindow": 0,
+        "previewStateAtStart": null
+      },
+      "longTasks": {
+        "count": 1,
+        "totalDuration": 169,
+        "maxDuration": 169,
+        "entries": [
+          {
+            "startTime": 113.09999999962747,
+            "duration": 169
+          }
+        ]
+      },
+      "resources": {
+        "javascript": {
+          "requestCount": 0,
+          "transferSize": 0,
+          "encodedBodySize": 0,
+          "resources": []
+        },
+        "model": {
+          "requestCount": 0,
+          "transferSize": 0,
+          "encodedBodySize": 0,
+          "resources": []
+        },
+        "poster": {
+          "requestCount": 3,
+          "transferSize": 168624,
+          "encodedBodySize": 167724,
+          "resources": [
+            {
+              "name": "http://127.0.0.1:4325/assets/posters/home-globe-mobile.webp",
+              "initiatorType": "img",
+              "transferSize": 41846,
+              "encodedBodySize": 41546,
+              "responseEnd": 136.09999999962747
+            },
+            {
+              "name": "http://127.0.0.1:4325/assets/posters/work-cnesdata-mobile.webp",
+              "initiatorType": "img",
+              "transferSize": 64864,
+              "encodedBodySize": 64564,
+              "responseEnd": 438.59999999962747
+            },
+            {
+              "name": "http://127.0.0.1:4325/assets/posters/work-limnopulse-mobile.webp",
+              "initiatorType": "img",
+              "transferSize": 61914,
+              "encodedBodySize": 61614,
+              "responseEnd": 436.2000000011176
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

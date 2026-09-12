@@ -20,7 +20,7 @@ Public Health appears as secondary domain context with `/#experience`; Observabi
 
 The desktop layout is a broad triangle; mobile uses a taller triangular arrangement. Both are authored with paired camera/placement metadata. Labels project from those same positions in the poster and renderer. The hub and connections organize the portfolio conceptually and do not claim a deployed integration.
 
-Only `/explore/` loads the renderer. Save-Data or unavailable WebGL 2 retains 2D without downloading React Three Fiber, Three.js or models. A single 15-second deadline starts at activation and includes the dynamic import, all four essential GLBs (hub plus three projects), scene initialization and first valid frame. The poster remains visible until that complete composition renders. Import, model, initialization, timeout or context-loss failures return to 2D. Late completions are ignored; teardown cancels essential downloads and disposes resources.
+Only `/explore/` loads the interactive Atlas renderer. Home has a separate decorative entry described below. Save-Data or unavailable WebGL 2 retains 2D without downloading React Three Fiber, Three.js or models. A single 15-second deadline starts at activation and includes the dynamic import, all four essential GLBs (hub plus three projects), scene initialization and first valid frame. The poster remains visible until that complete composition renders. Import, model, initialization, timeout or context-loss failures return to 2D. Late completions are ignored; teardown cancels essential downloads and disposes resources.
 
 **View 2D** is available throughout loading. Zoom and reset enable only after readiness. Fallback restores original label positions and preserves selection; it restores selector focus only when the focused canvas/control disappears. Surviving HTML focus remains unchanged. The 2D choice lasts for the visit and is not persisted.
 
@@ -36,12 +36,42 @@ The pure engine in `simulation/infrastructure.ts` starts with three online nodes
 
 The panel presents the state in text and responsive posters, with a polite announcement and a static scenario transcript. Controls start disabled and activate only after initialization. There are no timestamps, uptime or recovery metrics, backend calls or operational data. The failure posters are generated from the transitioned state via `simulationId` anchors; the original GLB stays unchanged.
 
-**Explore** is part of the primary navigation. The shared Home, Work, About and
-Resume shell remains ordinary HTML and does not load the Observatory renderer
-or GLBs. The 3D view is a current progressive enhancement of `/explore/`, not
-required for navigation or comprehension: the initial poster/HTML map is
-immediately available and is the retained fallback for capability gates,
-runtime failures and **View 2D**.
+**Explore** remains in the primary navigation until SA-06. The shared shell is
+ordinary HTML; graphics are route-specific progressive enhancements.
+
+## Home preview (SA-05)
+
+Home contains one **Explore my work** action to `/explore/`, with no separate
+project catalog. The immediate approved overview poster reserves 3:2 on desktop
+and 4:5 below 780px. Picture selection, preview CSS and the fixed camera share
+that breakpoint. The three names and conceptual-map description remain HTML.
+
+`home-preview-client.ts` has no executable React, Three.js or model imports.
+It requires page load, real viewport intersection, a visible document and an
+idle callback, rechecking eligibility when that callback runs. Without idle
+scheduling it uses a 200ms timer after load under the same gates. Save-Data,
+unavailable WebGL or unobservable visibility retains the poster. There is one
+attempt per document and one 15-second deadline from activation, including
+import, all models, initialization and the first successful complete draw.
+Import completion and first-frame readiness also check elapsed monotonic time,
+so a busy main thread cannot hide the poster after delaying the timeout callback.
+JavaScript module imports cannot be canceled by the browser API; late imports
+are ignored. Model fetches are aborted and late parses are disposed.
+
+`scene/preview.ts` shares only composition, cameras and resource ownership with
+the Atlas renderer. It has no selection, controls, project details, simulations
+or event capture. Draws occur only while visible and dirty, with DPR capped at
+1.5; the fixed camera also applies with reduced motion. The poster hides only
+after a valid draw of all four models and returns on failure/context loss.
+Page exit cancels scheduling and disposes owned resources. A history-cache
+return retains the poster without restarting graphics.
+
+`#projects` targets the introduction beside the CTA. The five historical
+`#case-*` fragments use fixed `location.replace` destinations: CnesData,
+Aquafarm → LimnoPulse, and all three infrastructure aliases → Infrastructure.
+Without JavaScript those anchors land in the same visible work introduction;
+`#about`, `#experience`, `#stack` and `#contact` retain their content.
+See [SA-05 validation](design/sa-05/validation.md) for measurements and checks.
 
 ## Canonical CnesData project (SA-02)
 

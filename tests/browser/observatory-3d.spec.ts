@@ -302,15 +302,6 @@ for (const failure of ['import', 'initialization', 'overview', 'context']) {
   });
 }
 
-test('Home downloads no Observatory renderer or GLBs', async ({ page }) => {
-  const assets: string[] = [];
-  page.on('request', request => { if (/renderer\.|\.glb(?:$|\?)/.test(request.url())) assets.push(request.url()); });
-  await page.goto('/');
-  await page.getByRole('link', { name: 'Explore systems', exact: true }).waitFor();
-  await frames(page);
-  expect(assets).toEqual([]);
-});
-
 for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
   test(`camera, resize and touch-scroll contracts work at ${viewport.width}px`, async ({ page }, testInfo) => {
     await page.setViewportSize(viewport);
