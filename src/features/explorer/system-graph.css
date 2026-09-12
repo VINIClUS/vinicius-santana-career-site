@@ -13,8 +13,10 @@
 .graph-node a[aria-current="true"] { border: 2px solid var(--graph-accent); }
 .graph-node a[aria-current="true"] .selection-marker { display: block; }
 .integrated-system-view a:focus-visible { outline: 3px solid var(--graph-accent); outline-offset: 4px; }
-@media (max-width: 760px) {
+@media (max-width: 1100px) {
   .system-view-layout { grid-template-columns: 1fr; }
+}
+@media (max-width: 760px) {
   .graph-node a { gap: 2px; padding: 6px; }
   .graph-node-kicker { font-size: .45rem; }
   .graph-node strong { font-size: .62rem; line-height: 1.1; }

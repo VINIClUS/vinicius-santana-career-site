@@ -46,6 +46,16 @@ for (const project of projects) {
   });
 }
 
+test('Limnopulse stacks before the parent chapter narrows its graph column', async ({ page }) => {
+  await page.setViewportSize({ width: 901, height: 900 });
+  await page.goto('/explore/limnopulse/#component-production-device-layer');
+  const diagram = await page.locator('[data-system-graph]').boundingBox();
+  const detail = await page.locator('[data-component-cards]').boundingBox();
+  expect(diagram!.y + diagram!.height).toBeLessThan(detail!.y);
+  const selectedNode = page.locator('[data-component-link="production-device-layer"]');
+  expect(await selectedNode.evaluate(node => node.scrollHeight <= node.clientHeight)).toBe(true);
+});
+
 test('Infrastructure renders three parallel inputs directed only to reference topology', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/explore/infrastructure/#system');
