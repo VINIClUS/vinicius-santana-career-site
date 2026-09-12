@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { readFile, stat } from 'node:fs/promises';
+import { readFile, readdir, stat } from 'node:fs/promises';
 import path from 'node:path';
 import yaml from 'js-yaml';
 
@@ -85,7 +85,6 @@ const homeSectionOrder = ['hero-title', 'projects', 'contact', 'about', 'experie
 assert.deepEqual(homeSectionOrder, [...homeSectionOrder].sort((left, right) => left - right), 'home must use recruiter-first section order');
 
 const editorialPages = {
-  work: await readBuiltPage('dist/work/index.html'),
   about: await readBuiltPage('dist/about/index.html'),
   resume: await readBuiltPage('dist/resume/index.html'),
   privacy: await readBuiltPage('dist/privacy/index.html'),
@@ -96,7 +95,6 @@ const publicCname = await readFile(fromRoot('public/CNAME'));
 const origin = `https://${publicCname.toString().trim()}`;
 const routePages = new Map([
   ['/', html],
-  ['/work/', editorialPages.work],
   ['/about/', editorialPages.about],
   ['/resume/', editorialPages.resume],
   ['/privacy/', editorialPages.privacy],
@@ -112,23 +110,12 @@ for (const [pageName, pageHtml] of Object.entries(editorialPages)) {
   assert.match(pageHtml, new RegExp(`<title>[^<]+ — Vinicius Santana<\\/title>`, 'i'), `${pageName} must have a specific title`);
 }
 
-assert.match(editorialPages.work, /<a[^>]*aria-current="page"[^>]*>Work<\/a>/i, 'Work navigation must expose the active page');
-assert.equal((editorialPages.work.match(/<article class="project-card visual-work-card"/g) || []).length, 4);
-assert.match(editorialPages.work, /Health Systems/);
-assert.match(editorialPages.work, /href="\/#experience"[^>]*>View experience/);
 assert.match(editorialPages.about, /alt="Professional portrait of Vinicius Santana"/);
 assert.match(
   editorialPages.about,
   /<img[^>]*src="\/assets\/images\/vinicius-about\.jpg"[^>]*width="900"[^>]*height="1125"/i,
   'About portrait dimensions must match the approved asset set'
 );
-const workCardOffsets = ['CnesData', 'Limnopulse', 'Infrastructure &amp; Operations'].map((title) => editorialPages.work.indexOf(title));
-assert.ok(workCardOffsets.every((offset) => offset >= 0), 'Work must list all three selected case studies');
-assert.deepEqual(workCardOffsets, [...workCardOffsets].sort((left, right) => left - right), 'Work must follow collection order');
-for (const slug of ['cnesdata', 'limnopulse', 'infrastructure']) {
-  assert.match(editorialPages.work, new RegExp(`href="/work/${slug}/"`, 'i'), `Work must link to ${slug}`);
-}
-
 assert.match(editorialPages.about, /aria-current="page"[^>]*>About</i, 'About navigation must expose the active page');
 assert.match(editorialPages.resume, /aria-current="page"[^>]*>Resume</i, 'Resume navigation must expose the active page');
 assert.match(editorialPages.resume, /href="\/assets\/vinicius-santana-resume\.pdf"[^>]*target="_blank"/i, 'Resume must offer an open action');
@@ -175,14 +162,15 @@ const caseStudies = [
 ];
 
 for (const caseStudy of caseStudies) {
-  const caseHtml = await readFile(fromRoot(`dist/work/${caseStudy.slug}/index.html`), 'utf8');
+  const caseHtml = await readFile(fromRoot(`dist/explore/${caseStudy.slug}/index.html`), 'utf8');
 
   for (const anchor of ['overview', 'architecture', 'engineering', 'results']) {
     assert.match(caseHtml, new RegExp(`href="#${anchor}"`));
     assert.match(caseHtml, new RegExp(`id="${anchor}"`));
   }
-  assert.match(caseHtml, /<picture/);
-  assertMetadata(caseHtml, `/work/${caseStudy.slug}/`, origin);
+  assert.match(caseHtml, /id="architecture-title"/);
+  assert.match(caseHtml, /id="limitations"/);
+  assertMetadata(caseHtml, `/explore/${caseStudy.slug}/`, origin);
 
   assert.match(caseHtml, new RegExp(`<title>${caseStudy.title} — Vinicius Santana<\\/title>`, 'i'));
   assert.match(caseHtml, /<main\b[^>]*id="main"/i, `${caseStudy.slug} must render a semantic main landmark`);
@@ -192,11 +180,9 @@ for (const caseStudy of caseStudies) {
     'Problem',
     'Context',
     'Contribution',
-    'Architecture',
     'Decisions',
     'Reliability',
     'Outcomes',
-    'Limitations',
     'Public evidence'
   ]) {
     assert.match(caseHtml, new RegExp(`<h[23][^>]*>${heading}<\\/h[23]>`, 'i'), `${caseStudy.slug} must include ${heading}`);
@@ -224,9 +210,9 @@ for (const caseStudy of caseStudies) {
 }
 
 const [cnesDataHtml, limnopulseHtml, infrastructureHtml] = await Promise.all([
-  readFile(fromRoot('dist/work/cnesdata/index.html'), 'utf8'),
-  readFile(fromRoot('dist/work/limnopulse/index.html'), 'utf8'),
-  readFile(fromRoot('dist/work/infrastructure/index.html'), 'utf8')
+  readFile(fromRoot('dist/explore/cnesdata/index.html'), 'utf8'),
+  readFile(fromRoot('dist/explore/limnopulse/index.html'), 'utf8'),
+  readFile(fromRoot('dist/explore/infrastructure/index.html'), 'utf8')
 ]);
 
 assert.doesNotMatch(cnesDataHtml, /BigQuery/i, 'CnesData must omit BigQuery');
@@ -246,8 +232,7 @@ assert.doesNotMatch(
   'Infrastructure must not expose private repository names or real network addresses'
 );
 
-assert.match(html, /href="\/work\/"/i, 'home must link to Work');
-assert.match(editorialPages.work, /href="\/work\/cnesdata\/"/i, 'Work must link to CnesData');
+assert.match(html, /href="\/explore\/"/i, 'home must link to Work');
 assert.match(editorialPages.resume, /href="mailto:[^"]+"/i, 'Resume must provide a direct contact link');
 
 const [builtCname, publicResume, builtResume, robots, sitemapIndex, sitemap] = await Promise.all([
@@ -268,9 +253,10 @@ assert.match(robots, /^Allow: \/$/m, 'robots.txt must allow the site');
 assert.match(robots, new RegExp(`^Sitemap: ${escapeRegExp(new URL('/sitemap-index.xml', origin).href)}$`, 'm'), 'robots.txt must reference the generated sitemap index');
 assert.match(sitemapIndex, new RegExp(`<loc>${escapeRegExp(new URL('/sitemap-0.xml', origin).href)}</loc>`), 'sitemap index must reference the generated page sitemap');
 
-const indexableRoutes = ['/explore/', '/explore/cnesdata/', '/explore/limnopulse/', '/explore/infrastructure/', '/', '/about/', '/privacy/', '/resume/', '/work/', '/work/cnesdata/', '/work/infrastructure/', '/work/limnopulse/'];
+const indexableRoutes = ['/explore/', '/explore/cnesdata/', '/explore/limnopulse/', '/explore/infrastructure/', '/', '/about/', '/privacy/', '/resume/'];
 const sitemapLocations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]).sort();
-assert.deepEqual(sitemapLocations, indexableRoutes.map((route) => new URL(route, origin).href).sort(), 'sitemap must contain exactly the twelve M1 and explorer indexable routes');
+assert.deepEqual(sitemapLocations, indexableRoutes.map((route) => new URL(route, origin).href).sort(), 'sitemap must contain exactly the eight canonical indexable routes');
+assert.doesNotMatch(sitemap, /\/work(?:\/|<)/i, 'sitemap must exclude compatibility routes');
 assert.doesNotMatch(sitemap, /\/404(?:\.html|\/)?<\/loc>/i, 'sitemap must exclude the 404 page');
 
 await Promise.all(
@@ -368,8 +354,8 @@ function primaryNavigation(html, pageName) {
   return navigation;
 }
 
-assert.match(primaryNavigation(html, 'home'), /<a[^>]*href="\/explore\/"[^>]*>Explore<\/a>/i, 'primary navigation must expose Explore from Home');
-assert.match(primaryNavigation(overview, 'Explore'), /<a[^>]*href="\/explore\/"[^>]*aria-current="page"[^>]*>Explore<\/a>/i, 'Explore navigation must expose the active page');
+assert.match(primaryNavigation(html, 'home'), /<a[^>]*href="\/explore\/"[^>]*>Work<\/a>/i, 'primary navigation must expose Work from Home');
+assert.match(primaryNavigation(overview, 'Explore'), /<a[^>]*href="\/explore\/"[^>]*aria-current="page"[^>]*>Work<\/a>/i, 'Explore navigation must expose the active page');
 assert.match(primaryNavigation(editorialPages.resume, 'Resume'), /<a[^>]*href="\/resume\/"[^>]*aria-current="page"[^>]*>Resume<\/a>/i, 'Resume navigation must retain the active page');
 
 for (const [pageName, pageHtml] of Object.entries({ about: editorialPages.about, resume: editorialPages.resume })) {
@@ -499,3 +485,35 @@ for (const [relation, from, to] of limnoRelations) {
   assert.match(relation, /visually-hidden[^>]*>to</);
 }
 console.log('Canonical Limnopulse content and relationship checks passed.');
+
+// SA-06: compatibility documents own no project content or graphics runtime.
+const compatibilityRoutes = {
+  '/work/': '/explore/',
+  '/work/cnesdata/': '/explore/cnesdata/',
+  '/work/limnopulse/': '/explore/limnopulse/',
+  '/work/infrastructure/': '/explore/infrastructure/'
+};
+const compatibilityFiles = (await readdir(fromRoot('dist/work'), { recursive: true })).filter(file => file.endsWith('.html')).sort();
+assert.deepEqual(compatibilityFiles, ['cnesdata/index.html', 'index.html', 'infrastructure/index.html', 'limnopulse/index.html']);
+for (const [source, destination] of Object.entries(compatibilityRoutes)) {
+  const page = await readBuiltPage(`dist${source}index.html`);
+  assertMetadata(page, destination, origin);
+  assert.match(page, /<meta name="robots" content="noindex,nofollow">/);
+  assert.match(page, new RegExp(`<a[^>]*href="${destination}"[^>]*data-compatibility-link[^>]*>[^<]+</a>`));
+  assert.doesNotMatch(page, /<canvas|<astro-island|<picture|<img|data-explorer|project-grid|id="architecture"/);
+  const scripts = [...page.matchAll(/<script type="module"(?: src="([^"]+)")?>([\s\S]*?)<\/script>/g)];
+  assert.equal(scripts.length, 1, 'compatibility loads only its redirect module');
+  const script = scripts[0][1] ? await readFile(fromRoot(`dist${scripts[0][1]}`), 'utf8') : scripts[0][2];
+  assert.match(script, /location\.replace\(/);
+  assert.doesNotMatch(script, /import\s*\(|WebGL|renderer|\.glb/);
+}
+for (const route of indexableRoutes) {
+  const page = await readBuiltPage(`dist${route}index.html`);
+  assert.doesNotMatch(page, /href="\/work(?:\/|["?#])/i, `${route} must not link alternate Work pages`);
+  const nav = page.match(/<nav[^>]*aria-label="Primary navigation"[\s\S]*?<\/nav>/)[0];
+  assert.equal([...nav.matchAll(/href="\/explore\/"/g)].length, 1);
+  assert.match(nav, /href="\/explore\/"[^>]*>Work<\/a>/);
+  assert.doesNotMatch(nav, />Explore<\/a>/);
+  if (route.startsWith('/explore/')) assert.match(nav, /href="\/explore\/"[^>]*aria-current="page"[^>]*>Work<\/a>/);
+}
+console.log('SA-06 compatibility, canonical navigation and sitemap contracts passed.');

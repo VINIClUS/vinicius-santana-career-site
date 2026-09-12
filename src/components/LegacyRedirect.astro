@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import type { legacyRoutes } from '../features/navigation/legacy-routes.ts';
+
+interface Props {
+  destination: (typeof legacyRoutes)[keyof typeof legacyRoutes];
+}
+const { destination } = Astro.props;
+---
+
+<BaseLayout title="Work has moved — Vinicius Santana" description="Continue to the Systems Atlas and its project pages." canonicalPath={destination} noIndex>
+  <main class="shell section" id="main">
+    <h1>Work has moved</h1>
+    <p>Find this work in the Systems Atlas.</p>
+    <a class="button" href={destination} data-compatibility-link>Continue to {destination === '/explore/' ? 'the Systems Atlas' : 'the project'}</a>
+  </main>
+<script>
+  import { resolveLegacyDestination } from '../features/navigation/legacy-routes.ts';
+
+  const destination = resolveLegacyDestination(new URL(window.location.href));
+  if (destination) window.location.replace(destination);
+</script>
+
+</BaseLayout>

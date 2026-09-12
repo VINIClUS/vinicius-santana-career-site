@@ -38,7 +38,7 @@ for (const viewport of viewports) {
       await menu.focus();
       await page.keyboard.press('Enter');
       await expect(menu).toHaveAttribute('aria-expanded', 'true');
-      await expect(page.getByRole('link', { name: 'Explore', exact: true })).toBeVisible();
+      await expect(page.getByRole('link', { name: 'Work', exact: true })).toBeVisible();
       await page.keyboard.press('Escape');
       await expect(menu).toBeFocused();
       await expect(menu).toHaveAttribute('aria-expanded', 'false');
@@ -47,20 +47,19 @@ for (const viewport of viewports) {
     await page.getByRole('link', { name: 'Explore my work', exact: true }).focus();
     await page.keyboard.press('Enter');
     await expect(page).toHaveURL(/\/explore\/$/);
-    // SA-06 owns retiring Work; retain its legacy route coverage during SA-05.
-    await page.goto('/work/');
-    await expect(page).toHaveURL(/\/work\/$/);
-    await expectLoadedImagesAndNoHorizontalOverflow(page);
-
     for (const slug of ['cnesdata', 'limnopulse', 'infrastructure']) {
-      const project = page.locator(`.visual-work-card a[href="/work/${slug}/"]`);
+      const project = page.locator(`[data-district-link="${slug}"]`);
       await project.focus();
       await page.keyboard.press('Enter');
-      await expect(page).toHaveURL(new RegExp(`/work/${slug}/$`));
-      await expect(page.locator('.visual-stage img')).toBeVisible();
+      await expect(project).toHaveAttribute('aria-current', 'true');
+      await expect(page.locator(`#district-${slug}`)).toBeFocused();
+      const projectLink = page.locator(`#district-${slug} a[href="/explore/${slug}/"]`);
+      await projectLink.focus();
+      await page.keyboard.press('Enter');
+      await expect(page).toHaveURL(new RegExp(`/explore/${slug}/$`));
       await expectLoadedImagesAndNoHorizontalOverflow(page);
-      await page.locator('.case-footer a[href="/work/"]').click();
-      await expect(page).toHaveURL(/\/work\/$/);
+      await page.getByRole('navigation', { name: 'Case study navigation' }).getByRole('link', { name: /Back to Atlas/ }).click();
+      await expect(page).toHaveURL(/\/explore\/$/);
     }
 
     await activatePrimaryNavigation(page, '/explore/', viewport.width < 820);

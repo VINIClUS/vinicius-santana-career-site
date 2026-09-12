@@ -37,7 +37,6 @@ const statusLabel = (status: string) => status[0].toUpperCase() + status.slice(1
       <p class="eyebrow">Systems Observatory / {definition.area}</p>
       <h1>{project.title}</h1>
       <p>{project.summary}</p>
-      <a class="text-link" href={`/work/${project.id}/`}>Read the {project.title} case study</a>
     </header>
     <p class="explorer-note">Illustrative architecture map. Component statuses describe the public work; connections summarize relationships, not a live deployment.</p>
     {project.id === 'infrastructure' && <p class="explorer-note">A sanitized, illustrative reference topology, not a production inventory or a map of any real environment.</p>}

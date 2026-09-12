@@ -83,7 +83,8 @@ the synthetic engine and generated transcripts for the SO-06 explorer.
 │   ├── data/content.js
 │   ├── layouts/
 │   ├── pages/
-│   │   ├── work/
+│   │   ├── explore/     # Canonical Atlas and project pages
+│   │   ├── work/        # Four static compatibility pages
 │   │   ├── 404.astro
 │   │   └── index.astro
 │   └── styles/global.css
@@ -224,3 +225,16 @@ See [SA-05 validation](docs/design/sa-05/validation.md) for loading and performa
 See [the explorer contract](docs/explorer.md) for interaction and fallback
 details, and [the SA-01 evidence](docs/design/sa-01/README.md) for the
 release evidence.
+
+## Canonical work navigation
+
+The primary Work link opens `/explore/` (Systems Atlas). Project narratives,
+System Views, simulations and evidence live at `/explore/cnesdata/`,
+`/explore/limnopulse/` and `/explore/infrastructure/`.
+
+The four former `/work/` routes are static compatibility documents with a
+canonical destination, `noindex`, a normal HTML link and `location.replace`.
+The explicit route map preserves query strings and fragments, including
+`#architecture`; query parameters never select a redirect destination. Without
+JavaScript, the HTML link opens the canonical page. These are not HTTP 301/308
+responses. The sitemap contains only the eight canonical pages.
