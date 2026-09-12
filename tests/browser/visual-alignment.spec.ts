@@ -2,6 +2,56 @@ import { test, expect } from '@playwright/test';
 import { mkdir } from 'node:fs/promises';
 
 for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+  test(`Experience timeline connects both role markers at ${viewport.width}`, async ({ page }) => {
+    await page.setViewportSize(viewport);
+    await page.goto('/#experience');
+
+    const card = page.locator('.timeline-card');
+    await expect(card.locator('h3')).toHaveText('Prefeitura de Presidente Epitácio');
+    await expect(card.locator('.timeline-role')).toHaveCount(2);
+
+    const geometry = await card.evaluate((article) => {
+      const roles = [...article.querySelectorAll<HTMLElement>('.timeline-role')];
+      const markerCenter = (role: HTMLElement) => {
+        const box = role.getBoundingClientRect();
+        const marker = getComputedStyle(role, '::before');
+        return {
+          x: box.left + Number.parseFloat(marker.left) + Number.parseFloat(marker.width) / 2,
+          y: box.top + Number.parseFloat(marker.top) + Number.parseFloat(marker.height) / 2
+        };
+      };
+      const connector = getComputedStyle(roles[0], '::after');
+      const firstBox = roles[0].getBoundingClientRect();
+      const connectorTop = firstBox.top + Number.parseFloat(connector.top);
+      const connectorBottom = firstBox.bottom - Number.parseFloat(connector.bottom);
+      const headings = roles.map((role) => role.querySelector('h4')!.getBoundingClientRect());
+      const periods = roles.map((role) => role.querySelector('.role-period')!.getBoundingClientRect());
+
+      return {
+        markers: roles.map(markerCenter),
+        connector: {
+          content: connector.content,
+          x: firstBox.left + Number.parseFloat(connector.left) + Number.parseFloat(connector.width) / 2,
+          top: connectorTop,
+          bottom: connectorBottom
+        },
+        metadataDoesNotOverlap: headings.every((heading, index) =>
+          heading.right <= periods[index].left || heading.bottom <= periods[index].top
+        ),
+        noHorizontalOverflow: document.documentElement.scrollWidth <= innerWidth
+      };
+    });
+
+    expect(geometry.connector.content).not.toBe('none');
+    expect(Math.abs(geometry.connector.x - geometry.markers[0].x)).toBeLessThanOrEqual(1);
+    expect(Math.abs(geometry.connector.top - geometry.markers[0].y)).toBeLessThanOrEqual(1);
+    expect(Math.abs(geometry.connector.bottom - geometry.markers[1].y)).toBeLessThanOrEqual(1);
+    expect(geometry.metadataDoesNotOverlap).toBe(true);
+    expect(geometry.noHorizontalOverflow).toBe(true);
+  });
+}
+
+for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
   test(`SO-10 route and visual contracts at ${viewport.width}`, async ({ page }) => {
     await page.setViewportSize(viewport);
     const requests: string[] = [];

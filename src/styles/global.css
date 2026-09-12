@@ -701,16 +701,6 @@ h3 {
   list-style: none;
 }
 
-.role-timeline::before {
-  position: absolute;
-  top: 31px;
-  bottom: 31px;
-  left: 7px;
-  width: 2px;
-  background: rgba(132, 244, 230, 0.48);
-  content: "";
-}
-
 .timeline-role {
   position: relative;
   padding-block: 26px;
@@ -782,6 +772,16 @@ h3 {
   box-shadow: 0 0 0 6px rgba(132, 244, 230, 0.08);
   content: "";
   transform: translateY(-50%);
+}
+
+.timeline-role:not(:last-child)::after {
+  position: absolute;
+  top: 38px;
+  bottom: -38px;
+  left: -21px;
+  width: 2px;
+  background: rgba(132, 244, 230, 0.48);
+  content: "";
 }
 
 .check-list.compact {
@@ -1100,6 +1100,10 @@ h3 {
 
   .timeline-role::before {
     left: -21px;
+  }
+
+  .timeline-role:not(:last-child)::after {
+    left: -15px;
   }
 
   .role-heading {
