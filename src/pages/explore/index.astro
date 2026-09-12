@@ -17,19 +17,31 @@ const positionStyle = (desktop: { x: number; y: number }, mobile: { x: number; y
       <p class="eyebrow">Systems Atlas</p>
       <h1>Systems Atlas.</h1>
       <p>Three projects. From data contracts to environmental telemetry and repeatable infrastructure. Choose a project to explore its architecture.</p>
-      <p class="explorer-note">The hub and connections organize this portfolio conceptually; they do not represent deployed integrations.</p>
+      <p class="explorer-note">Conceptual portfolio map — not a deployed network.</p>
     </header>
     <nav class="observatory-map" aria-label="Select a project">
       <picture>
         <source media="(max-width: 700px)" srcset={poster.mobile.src} width={poster.mobile.width} height={poster.mobile.height} />
         <img src={poster.desktop.src} alt={poster.desktop.alt} width={poster.desktop.width} height={poster.desktop.height} fetchpriority="high" />
       </picture>
-      <span class="observatory-hub" style={positionStyle(projectToPoster(layouts.desktop.hubPosition, layouts.desktop.camera), projectToPoster(layouts.mobile.hubPosition, layouts.mobile.camera))}>Portfolio hub</span>
+      {(['desktop', 'mobile'] as const).map(name => <svg class={`observatory-regions region-layout-${name}`} data-region-layout={name} viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+        {districtIds.map(id => {
+          const points = layouts[name].regionOutlines[id].map(point => {
+            const { x, y } = projectToPoster(point, layouts[name].camera);
+            return `${x * 10},${y * 10}`;
+          }).join(' ');
+          return <g data-region={id}>
+            <polygon class="region-selection" points={points} data-region-points={id} vector-effect="non-scaling-stroke" />
+            <polygon class="region-highlight" points={points} data-region-points={id} vector-effect="non-scaling-stroke" />
+          </g>;
+        })}
+      </svg>)}
+      <span class="observatory-hub" aria-hidden="true" style={positionStyle(projectToPoster(layouts.desktop.hubPosition, layouts.desktop.camera), projectToPoster(layouts.mobile.hubPosition, layouts.mobile.camera))}>00</span>
       {districtIds.map((id, index) => <a
         class={`district-link district-link-${id}`}
         href={`#district-${id}`}
         data-district-link={id}
-        style={positionStyle(projectToPoster(layouts.desktop.placements[id], layouts.desktop.camera), projectToPoster(layouts.mobile.placements[id], layouts.mobile.camera))}
+        style={positionStyle(projectToPoster(layouts.desktop.labelPositions[id], layouts.desktop.camera), projectToPoster(layouts.mobile.labelPositions[id], layouts.mobile.camera))}
       ><span class="district-number" aria-hidden="true">0{index + 1}</span><span>{districtRegistry[id].label}</span></a>)}
     </nav>
     <div class="observatory-controls" data-scene-controls hidden aria-label="3D view controls" role="group">

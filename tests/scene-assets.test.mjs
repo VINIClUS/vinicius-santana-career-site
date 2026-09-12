@@ -2,11 +2,15 @@ import assert from 'node:assert/strict';
 import { readFile, readdir } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
 import test from 'node:test';
-import { Box3 } from 'three';
+import { Box3, Group, OrthographicCamera, Vector3 } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { allPosters, details, districtIds, districts, sceneAssets, overview } from '../src/content/scenes/index.ts';
 import { projectDefinitions, projectIds } from '../src/features/explorer/projects.ts';
 import { makeScene, normalizeGeneratedMetadata } from '../scripts/assets/scenes.mjs';
+import visual from '../src/content/scenes/atlas-authoring.json' with { type: 'json' };
+import { applyAtlasCamera, createAtlasWorld } from '../src/features/explorer/scene/atlas-world.mjs';
+import { projectToPoster } from '../src/features/explorer/observatory-projection.ts';
+import { disposeObjects } from '../src/features/explorer/scene/resources.ts';
 
 const publicRoot = new URL('../public/', import.meta.url);
 const assetFile = src => {
@@ -107,6 +111,62 @@ test('scene authoring rejects unknown and retired district identities', () => {
   for (const id of ['district-public-health', 'district-observability', 'unknown', '__proto__']) {
     assert.throws(() => makeScene(id), /Unknown scene/);
   }
+});
+
+test('the cartographic origin is low, decorative and has no project identity', () => {
+  const origin = makeScene('hub');
+  assert.ok(new Box3().setFromObject(origin).max.y <= 0.3, 'Origin must not read as a fourth landmark');
+  origin.traverse(object => {
+    assert.equal(object.userData.districtId, undefined);
+    assert.equal(object.userData.componentId, undefined);
+    assert.equal(object.userData.simulationId, undefined);
+  });
+});
+
+test('label anchors include placement rotation, scale and translation', () => {
+  const authored = structuredClone(visual);
+  authored.regions.cnesdata.labelAnchor = [1, 2, 3];
+  const models = Object.fromEntries([...districtIds, 'hub'].map(id => [id, new Group()]));
+  const composition = createAtlasWorld({ models, visual: authored });
+  const layout = structuredClone(overview.layouts.desktop);
+  layout.placements.cnesdata = [10, 20, 30];
+  layout.rotations.cnesdata = [0, Math.PI / 2, 0];
+  layout.districtScale = 2;
+  composition.applyLayout(layout);
+  const actual = composition.labelPosition('cnesdata', new Vector3()).toArray();
+  // Local [1,2,3] -> scale [2,4,6] -> yaw [6,4,-2] -> translation.
+  actual.forEach((value, axis) => assert.ok(Math.abs(value - [16, 24, 28][axis]) < 1e-10));
+  disposeObjects([composition.world]);
+});
+
+test('exported overview GLBs reproduce the generated HTML anchors in both layouts', async () => {
+  const models = Object.fromEntries(await Promise.all([...districtIds, 'hub'].map(async id => {
+    const bytes = await readFile(new URL(`assets/scenes/${id === 'hub' ? id : `district-${id}`}.glb`, publicRoot));
+    const gltf = await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength), '');
+    return [id, gltf.scene];
+  })));
+  const composition = createAtlasWorld({ models, visual });
+  const camera = new OrthographicCamera();
+  for (const layout of Object.values(overview.layouts)) {
+    composition.applyLayout(layout);
+    applyAtlasCamera(camera, layout.camera);
+    for (const id of districtIds) {
+      const runtime = composition.labelPosition(id, new Vector3()).project(camera);
+      const html = projectToPoster(layout.labelPositions[id], layout.camera);
+      assert.ok(Math.abs((runtime.x + 1) * 50 - html.x) < 0.01, `${id}: horizontal parity`);
+      assert.ok(Math.abs((1 - runtime.y) * 50 - html.y) < 0.01, `${id}: vertical parity`);
+      assert.ok(html.x > 15 && html.x < 90 && html.y > 5 && html.y < 90, `${id}: label reserved inside useful frame`);
+    }
+  }
+  // Returning to a prior breakpoint reuses its environment; both remain owned for teardown.
+  const resources = new Set();
+  composition.world.traverse(object => { if (object.geometry) resources.add(object.geometry); });
+  composition.applyLayout(overview.layouts.desktop);
+  composition.world.traverse(object => { if (object.geometry) assert.ok(resources.has(object.geometry)); });
+  const releases = new Map([...resources].map(resource => [resource, 0]));
+  for (const resource of resources) resource.addEventListener('dispose', () => releases.set(resource, releases.get(resource) + 1));
+  disposeObjects([composition.world, ...Object.values(models)]);
+  assert.ok([...releases.values()].every(count => count === 1), 'Each cached geometry releases exactly once');
 });
 
 test('asset generator rejects obsolete and unknown scene IDs before launching Chromium', () => {

@@ -1,15 +1,17 @@
-import { Component, useLayoutEffect, useSyncExternalStore, type ReactNode } from 'react';
+import { Component, type ReactNode } from 'react';
 import { createRoot, events, useFrame, type RootState, type ThreeEvent } from '@react-three/fiber';
 import {
-  ACESFilmicToneMapping, Color, Group, Mesh, MeshBasicMaterial, Object3D,
-  OrthographicCamera, RingGeometry, Scene, Vector3, WebGLRenderer,
+  Color, DoubleSide, Group, Mesh, MeshBasicMaterial, MeshStandardMaterial, Object3D,
+  OrthographicCamera, Scene, Shape, ShapeGeometry, Vector3, WebGLRenderer,
 } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { overview, type OverviewLayout } from '../../../content/scenes/index.ts';
 import { districtIds, type DistrictId } from '../districts.ts';
 import type { ObservatoryController } from '../observatory-controller.ts';
 import { createModelCache } from './resources.ts';
-import { applyOverviewCamera, createOverviewComposition } from './composition.ts';
+import { applyOverviewCamera, atlasVisual, configureOverviewRenderer, createOverviewComposition } from './composition.ts';
+import { regionPoints } from './atlas-world.mjs';
+import { createMotionPlayback } from './motion-playback.ts';
 
 export interface ObservatoryScene { dispose(): void; zoom(direction: 1 | -1): void; reset(): void; }
 interface Options {
@@ -27,27 +29,33 @@ class SceneBoundary extends Component<{ children: ReactNode; onFailure(): void }
   render() { return this.state.failed ? null : this.props.children; }
 }
 
-function DistrictScene({ world, options, select, draw }: {
-  world: Group; options: Options; select(id: DistrictId | null): void; draw(state: RootState): void;
+function DistrictScene({ world, options, hover, draw, wasDraggedGesture }: {
+  world: Group; options: Options; hover(id: DistrictId | null): void; draw(state: RootState): void;
+  wasDraggedGesture(): boolean;
 }) {
-  const selected = useSyncExternalStore(options.controller.subscribe, () => options.controller.getState().selectedDistrictId);
-  useLayoutEffect(() => { select(selected); }, [selected, select]);
   // Render on demand, then announce readiness only after WebGL has drawn the loaded maquettes.
   useFrame(draw, 1);
-  const click = (event: ThreeEvent<MouseEvent>) => {
-    if (event.delta > 4) return;
+  const district = (event: ThreeEvent<MouseEvent | PointerEvent>) => {
     let object: Object3D | null = event.object;
     while (object) {
       const id = object.userData.districtId as DistrictId | undefined;
       if (id && districtIds.includes(id)) {
         event.stopPropagation();
-        options.onSelect(id);
-        return;
+        return id;
       }
       object = object.parent;
     }
+    return null;
   };
-  return <primitive object={world} dispose={null} onClick={click} />;
+  return <primitive object={world} dispose={null}
+    onClick={(event: ThreeEvent<MouseEvent>) => {
+      if (wasDraggedGesture() || event.delta > 4) return;
+      const id = district(event);
+      if (id) options.onSelect(id);
+    }}
+    onPointerMove={(event: ThreeEvent<PointerEvent>) => { if (event.pointerType !== 'touch') hover(district(event)); }}
+    onPointerOut={() => hover(null)}
+  />;
 }
 
 export function mountObservatoryScene(options: Options): ObservatoryScene {
@@ -62,7 +70,7 @@ export function mountObservatoryScene(options: Options): ObservatoryScene {
   const world = new Group();
   world.name = 'systems-observatory';
   const scene = new Scene();
-  scene.background = new Color('#050a11');
+  scene.background = new Color(atlasVisual.palette.background);
   const camera = new OrthographicCamera();
   const mobile = window.matchMedia('(max-width: 700px)');
   let layout = mobile.matches ? overview.layouts.mobile : overview.layouts.desktop;
@@ -73,12 +81,19 @@ export function mountObservatoryScene(options: Options): ObservatoryScene {
   let gl: WebGLRenderer | undefined;
   let controls: OrbitControls | undefined;
   let observer: ResizeObserver | undefined;
-  const selectedRing = new Mesh(new RingGeometry(3.02, 3.1, 64), new MeshBasicMaterial({ color: '#74d7f0', transparent: true, opacity: 0.6, depthWrite: false }));
-  selectedRing.rotation.x = -Math.PI / 2;
-  selectedRing.visible = false;
-  world.add(selectedRing);
+  let intersection: IntersectionObserver | undefined;
+  let motion: ReturnType<typeof createMotionPlayback> | undefined;
+  let inViewport = true;
+  let pointerGesture: { id: number; x: number; y: number; dragged: boolean } | undefined;
+  let draggedGesture = false;
+  const active = () => inViewport && document.visibilityState === 'visible';
   const composition = createOverviewComposition(world);
   const labels = districtIds.map(id => ({ element: host.querySelector<HTMLElement>(`[data-district-link="${id}"]`)!, id }));
+  const regions = [...host.querySelectorAll<SVGGElement>('[data-region]')];
+  const polygons = [...host.querySelectorAll<SVGPolygonElement>('[data-region-points]')];
+  let hovered: DistrictId | null = null;
+  let focused: DistrictId | null = null;
+  const materials = new Map<DistrictId, { material: MeshStandardMaterial; emissive: Color; intensity: number }[]>();
   const hubLabel = host.querySelector<HTMLElement>('.observatory-hub')!;
   const projection = new Vector3();
   const projectLabels = () => {
@@ -88,14 +103,71 @@ export function mountObservatoryScene(options: Options): ObservatoryScene {
       element.style.left = `${(projection.x + 1) * 50}%`;
       element.style.top = `${(1 - projection.y) * 50}%`;
     };
-    for (const { element, id } of labels) place(element, layout.placements[id]);
+    for (const { element, id } of labels) {
+      const anchor = composition.labelPosition(id, projection);
+      if (anchor) place(element, anchor.toArray());
+      const points = composition.regionOutline(id)?.map(point => {
+        point.project(camera);
+        return `${(point.x + 1) * 500},${(1 - point.y) * 500}`;
+      }).join(' ');
+      for (const polygon of polygons) {
+        if (polygon.dataset.regionPoints === id && points) polygon.setAttribute('points', points);
+      }
+    }
     place(hubLabel, layout.hubPosition);
   };
   const invalidate = () => {
     if (disposed) return;
     projectLabels();
-    state?.invalidate();
+    if (!ready || active()) state?.invalidate();
   };
+  // Instant, finite highlights. Persistent selection lives in the controller/HTML overlay.
+  const highlight = () => {
+    for (const region of regions) region.dataset.hovered = String(region.dataset.region === hovered);
+    for (const { element, id } of labels) element.dataset.hovered = String(id === hovered);
+    canvas.style.cursor = hovered ? 'pointer' : '';
+    for (const [id, entries] of materials) for (const { material, emissive, intensity } of entries) {
+      material.emissive.copy(emissive);
+      material.emissiveIntensity = intensity;
+      if (id === hovered || id === focused) {
+        material.emissive.set(atlasVisual.palette[id]);
+        material.emissiveIntensity = 0.12;
+      }
+    }
+    invalidate();
+  };
+  const hover = (id: DistrictId | null) => {
+    if (disposed || hovered === id) return;
+    hovered = id;
+    highlight();
+  };
+  for (const { element, id } of labels) {
+    element.addEventListener('pointerenter', event => { if (event.pointerType !== 'touch') hover(id); }, { signal: lifetime.signal });
+    element.addEventListener('pointerleave', () => hover(null), { signal: lifetime.signal });
+    element.addEventListener('focus', () => { focused = id; highlight(); }, { signal: lifetime.signal });
+    element.addEventListener('blur', () => { focused = null; highlight(); }, { signal: lifetime.signal });
+  }
+  canvas.addEventListener('pointerleave', () => hover(null), { signal: lifetime.signal });
+  canvas.addEventListener('pointerdown', event => {
+    if (!event.isPrimary) return;
+    draggedGesture = false;
+    pointerGesture = { id: event.pointerId, x: event.clientX, y: event.clientY, dragged: false };
+  }, { signal: lifetime.signal });
+  canvas.addEventListener('pointermove', event => {
+    if (!pointerGesture || event.pointerId !== pointerGesture.id) return;
+    if (Math.hypot(event.clientX - pointerGesture.x, event.clientY - pointerGesture.y) > 4) pointerGesture.dragged = true;
+  }, { signal: lifetime.signal });
+  canvas.addEventListener('pointerup', event => {
+    if (!pointerGesture || event.pointerId !== pointerGesture.id) return;
+    draggedGesture = pointerGesture.dragged;
+    pointerGesture = undefined;
+  }, { signal: lifetime.signal });
+  canvas.addEventListener('pointercancel', event => {
+    if (!pointerGesture || event.pointerId !== pointerGesture.id) return;
+    pointerGesture = undefined;
+    draggedGesture = false;
+  }, { signal: lifetime.signal });
+  const wasDraggedGesture = () => draggedGesture;
   const resetCamera = () => {
     const preset = layout.camera;
     applyOverviewCamera(camera, layout);
@@ -108,12 +180,12 @@ export function mountObservatoryScene(options: Options): ObservatoryScene {
       controls.maxPolarAngle = Math.PI;
       controls.update();
       const azimuth = controls.getAzimuthalAngle(), polar = controls.getPolarAngle();
-      controls.minAzimuthAngle = azimuth - Math.PI / 12;
-      controls.maxAzimuthAngle = azimuth + Math.PI / 12;
-      controls.minPolarAngle = polar - Math.PI / 36;
-      controls.maxPolarAngle = polar + Math.PI / 36;
-      controls.minZoom = preset.zoom * 0.9;
-      controls.maxZoom = preset.zoom * 1.2;
+      controls.minAzimuthAngle = azimuth - layout.interaction.horizontalDegrees * Math.PI / 180;
+      controls.maxAzimuthAngle = azimuth + layout.interaction.horizontalDegrees * Math.PI / 180;
+      controls.minPolarAngle = polar - layout.interaction.verticalDegrees * Math.PI / 180;
+      controls.maxPolarAngle = polar + layout.interaction.verticalDegrees * Math.PI / 180;
+      controls.minZoom = preset.zoom * layout.interaction.minZoom;
+      controls.maxZoom = preset.zoom * layout.interaction.maxZoom;
       controls.saveState();
     }
     invalidate();
@@ -121,20 +193,16 @@ export function mountObservatoryScene(options: Options): ObservatoryScene {
   const applyLayout = (next: OverviewLayout) => {
     layout = next;
     composition.applyLayout(layout);
-    const selected = options.controller.getState().selectedDistrictId;
-    if (selected) selectedRing.position.set(layout.placements[selected][0], 0.04, layout.placements[selected][2]);
     resetCamera();
-  };
-  const select = (id: DistrictId | null) => {
-    selectedRing.visible = id !== null;
-    if (id) selectedRing.position.set(layout.placements[id][0], 0.04, layout.placements[id][2]);
-    invalidate();
   };
   const dispose = () => {
     if (disposed) return;
     disposed = true;
     lifetime.abort();
+    motion?.dispose();
     observer?.disconnect();
+    intersection?.disconnect();
+    for (const element of [...regions, ...labels.map(label => label.element)]) delete element.dataset.hovered;
     controls?.removeEventListener('change', invalidate);
     controls?.dispose();
     // Stop R3F scheduling before releasing GPU resources. Its unmount also disconnects events.
@@ -153,9 +221,32 @@ export function mountObservatoryScene(options: Options): ObservatoryScene {
   const initialize = async () => {
     await composition.load(cache, lifetime.signal);
     if (disposed) return;
+    const hitMaterial = new MeshBasicMaterial({ side: DoubleSide, visible: false });
+    for (const [id, group] of composition.groups!) {
+      const unique = new Set<MeshStandardMaterial>();
+      group.traverse(object => {
+        // Only explicit structural surfaces and the authored footprint take hits.
+        if (!object.userData.atlasPickable) object.raycast = () => {};
+        if (object instanceof Mesh && object.userData.atlasPickable) {
+          for (const material of Array.isArray(object.material) ? object.material : [object.material]) {
+            if (material instanceof MeshStandardMaterial) unique.add(material);
+          }
+        }
+      });
+      materials.set(id, [...unique].map(material => ({ material, emissive: material.emissive.clone(), intensity: material.emissiveIntensity })));
+      const points = regionPoints(atlasVisual.regions[id].outline, id === 'infrastructure');
+      const shape = new Shape();
+      points.forEach((point, i) => i ? shape.lineTo(point.x, -point.z) : shape.moveTo(point.x, -point.z));
+      shape.closePath();
+      const geometry = new ShapeGeometry(shape);
+      geometry.rotateX(-Math.PI / 2);
+      const hit = new Mesh(geometry, hitMaterial);
+      hit.name = `region-hit-${id}`;
+      hit.position.y = 0.16;
+      group.add(hit);
+    }
     gl = new WebGLRenderer({ canvas, antialias: true, powerPreference: 'low-power' });
-    gl.toneMapping = ACESFilmicToneMapping;
-    gl.toneMappingExposure = 0.85;
+    configureOverviewRenderer(gl);
     controls = new OrbitControls(camera, canvas);
     // OrbitControls connects with touch-action:none. Restore native vertical scrolling
     // after connection; horizontal gestures still orbit and taps still reach picking.
@@ -182,24 +273,64 @@ export function mountObservatoryScene(options: Options): ObservatoryScene {
     observer = new ResizeObserver(resize);
     observer.observe(host);
     mobile.addEventListener('change', resize, { signal: lifetime.signal });
+    const updateViewport = (value: boolean) => {
+      const changed = inViewport !== value;
+      inViewport = value;
+      motion?.update();
+      if (active()) {
+        if (changed) invalidate();
+      } else hover(null);
+    };
+    if (typeof IntersectionObserver === 'function') {
+      intersection = new IntersectionObserver(entries => updateViewport(entries[0]?.isIntersecting ?? false));
+      intersection.observe(host);
+    } else {
+      const updateViewportFromBounds = () => {
+        const bounds = host.getBoundingClientRect();
+        updateViewport(bounds.width > 0 && bounds.height > 0 && bounds.bottom > 0 && bounds.right > 0
+          && bounds.top < window.innerHeight && bounds.left < window.innerWidth);
+      };
+      updateViewportFromBounds();
+      window.addEventListener('scroll', updateViewportFromBounds, { passive: true, signal: lifetime.signal });
+      window.addEventListener('resize', updateViewportFromBounds, { signal: lifetime.signal });
+    }
+    document.addEventListener('visibilitychange', () => {
+      motion?.update();
+      if (active()) invalidate();
+      else hover(null);
+    }, { signal: lifetime.signal });
     const draw = (value: RootState) => {
-      if (disposed) return;
+      // The initial complete frame may load offscreen; later updates resume only on view.
+      if (disposed || (ready && !active())) return;
       try {
         value.gl.render(value.scene, value.camera);
         if (!ready && !value.gl.getContext().isContextLost() && value.gl.info.render.calls > 0) {
           ready = true;
           options.onReady();
+          if (!disposed) motion = createMotionPlayback({
+            world,
+            controlHost: host.closest('[data-observatory]')!.querySelector<HTMLElement>('[data-scene-controls]')!,
+            active,
+            // Ambient frames don't project HTML labels, resize GL or touch controller state.
+            render() {
+              if (disposed || !active()) return;
+              try { value.gl.render(value.scene, value.camera); }
+              catch { options.onFailure(); }
+            },
+          });
         }
       } catch { options.onFailure(); }
     };
-    root.render(<SceneBoundary onFailure={options.onFailure}><DistrictScene world={world} options={options} select={select} draw={draw} /></SceneBoundary>);
+    focused = labels.find(label => label.element === document.activeElement)?.id ?? null;
+    highlight();
+    root.render(<SceneBoundary onFailure={options.onFailure}><DistrictScene world={world} options={options} hover={hover} draw={draw} wasDraggedGesture={wasDraggedGesture} /></SceneBoundary>);
   };
   void initialize().catch(() => { if (!disposed) options.onFailure(); });
   return {
     dispose,
     zoom(direction) {
       if (disposed) return;
-      camera.zoom = Math.max(layout.camera.zoom * 0.9, Math.min(layout.camera.zoom * 1.2, camera.zoom + direction * 0.1 * layout.camera.zoom));
+      camera.zoom = Math.max(layout.camera.zoom * layout.interaction.minZoom, Math.min(layout.camera.zoom * layout.interaction.maxZoom, camera.zoom + direction * 0.1 * layout.camera.zoom));
       camera.updateProjectionMatrix();
       controls?.update();
       invalidate();

@@ -1,0 +1,80 @@
+[
+  {
+    "presentation": "Atlas",
+    "running": {
+      "events": [],
+      "firstPose": "[{\"name\":\"roof-fan-01\",\"position\":[-1.44,2.068,-0.6],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"roof-fan-02\",\"position\":[-1.06,2.068,-0.6],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"buoy-01\",\"position\":[-0.9,0.22,-1],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-1\",\"position\":[-0.9,0.226,-1],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"buoy-02\",\"position\":[1.5,0.22,0.05],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-2\",\"position\":[1.5,0.226,0.05],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"buoy-03\",\"position\":[0.2,0.22,1.45],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-3\",\"position\":[0.2,0.226,1.45],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]}]",
+      "pose": "[{\"name\":\"roof-fan-01\",\"position\":[-1.44,2.068,-0.6],\"rotation\":[0,10.586560000002386,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"roof-fan-02\",\"position\":[-1.06,2.068,-0.6],\"rotation\":[0,-8.932410000002013,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"buoy-01\",\"position\":[-0.9,0.2101661597351997,-1],\"rotation\":[0,0,-0.0042145029706287,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-1\",\"position\":[-0.9,0.226,-1],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1.0279284523240293,1,1.0279284523240293]},{\"name\":\"buoy-02\",\"position\":[1.5,0.21624071628879563,0.05],\"rotation\":[0,0,-0.0016111215905161662,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-2\",\"position\":[1.5,0.226,0.05],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1.0001764121254484,1,1.0001764121254484]},{\"name\":\"buoy-03\",\"position\":[0.2,0.2240833227121993,1.45],\"rotation\":[0,0,0.0017499954480854117,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-3\",\"position\":[0.2,0.226,1.45],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[0.9723414025477534,1,0.9723414025477534]}]",
+      "frames": 53,
+      "requests": 55,
+      "control": {
+        "text": "Pause motion",
+        "state": "running",
+        "disabled": false
+      }
+    },
+    "reducedStart": {
+      "events": [],
+      "firstPose": "[{\"name\":\"roof-fan-01\",\"position\":[-1.44,2.068,-0.6],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"roof-fan-02\",\"position\":[-1.06,2.068,-0.6],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"buoy-01\",\"position\":[-0.9,0.22,-1],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-1\",\"position\":[-0.9,0.226,-1],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"buoy-02\",\"position\":[1.5,0.22,0.05],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-2\",\"position\":[1.5,0.226,0.05],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"buoy-03\",\"position\":[0.2,0.22,1.45],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-3\",\"position\":[0.2,0.226,1.45],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]}]",
+      "pose": "[{\"name\":\"roof-fan-01\",\"position\":[-1.44,2.068,-0.6],\"rotation\":[0,10.909439999997618,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"roof-fan-02\",\"position\":[-1.06,2.068,-0.6],\"rotation\":[0,-9.20483999999799,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"buoy-01\",\"position\":[-0.9,0.2158470248902341,-1],\"rotation\":[0,0,-0.0017798464756139515,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-1\",\"position\":[-0.9,0.226,-1],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1.0390001611142246,1,1.0390001611142246]},{\"name\":\"buoy-02\",\"position\":[1.5,0.21876077598895297,0.05],\"rotation\":[0,0,-0.0005310960047344404,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-2\",\"position\":[1.5,0.226,0.05],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[0.9933545933094462,1,0.9933545933094462]},{\"name\":\"buoy-03\",\"position\":[0.2,0.22225735350347656,1.45],\"rotation\":[0,0,0.0009674372157756655,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-3\",\"position\":[0.2,0.226,1.45],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[0.9508344641085793,1,0.9508344641085793]}]",
+      "frames": 54,
+      "requests": 56,
+      "control": {
+        "text": "Pause motion",
+        "state": "running",
+        "disabled": false
+      }
+    },
+    "reducedEnd": {
+      "events": [],
+      "firstPose": "[{\"name\":\"roof-fan-01\",\"position\":[-1.44,2.068,-0.6],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"roof-fan-02\",\"position\":[-1.06,2.068,-0.6],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"buoy-01\",\"position\":[-0.9,0.22,-1],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-1\",\"position\":[-0.9,0.226,-1],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"buoy-02\",\"position\":[1.5,0.22,0.05],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-2\",\"position\":[1.5,0.226,0.05],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"buoy-03\",\"position\":[0.2,0.22,1.45],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-3\",\"position\":[0.2,0.226,1.45],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]}]",
+      "pose": "[{\"name\":\"roof-fan-01\",\"position\":[-1.44,2.068,-0.6],\"rotation\":[0,10.909439999997618,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"roof-fan-02\",\"position\":[-1.06,2.068,-0.6],\"rotation\":[0,-9.20483999999799,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"buoy-01\",\"position\":[-0.9,0.2158470248902341,-1],\"rotation\":[0,0,-0.0017798464756139515,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-1\",\"position\":[-0.9,0.226,-1],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1.0390001611142246,1,1.0390001611142246]},{\"name\":\"buoy-02\",\"position\":[1.5,0.21876077598895297,0.05],\"rotation\":[0,0,-0.0005310960047344404,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-2\",\"position\":[1.5,0.226,0.05],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[0.9933545933094462,1,0.9933545933094462]},{\"name\":\"buoy-03\",\"position\":[0.2,0.22225735350347656,1.45],\"rotation\":[0,0,0.0009674372157756655,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-3\",\"position\":[0.2,0.226,1.45],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[0.9508344641085793,1,0.9508344641085793]}]",
+      "frames": 54,
+      "requests": 56,
+      "control": {
+        "text": "Pause motion",
+        "state": "running",
+        "disabled": false
+      }
+    }
+  },
+  {
+    "presentation": "Home",
+    "running": {
+      "events": [],
+      "firstPose": "[{\"name\":\"roof-fan-01\",\"position\":[-1.44,2.068,-0.6],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"roof-fan-02\",\"position\":[-1.06,2.068,-0.6],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"buoy-01\",\"position\":[-0.9,0.22,-1],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-1\",\"position\":[-0.9,0.226,-1],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"buoy-02\",\"position\":[1.5,0.22,0.05],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-2\",\"position\":[1.5,0.226,0.05],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"buoy-03\",\"position\":[0.2,0.22,1.45],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-3\",\"position\":[0.2,0.226,1.45],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]}]",
+      "pose": "[{\"name\":\"roof-fan-01\",\"position\":[-1.44,2.068,-0.6],\"rotation\":[0,9.686400000000003,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"roof-fan-02\",\"position\":[-1.06,2.068,-0.6],\"rotation\":[0,-8.172900000000002,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"buoy-01\",\"position\":[-0.9,0.19275610265443052,-1],\"rotation\":[0,0,-0.011675956005244058,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-1\",\"position\":[-0.9,0.226,-1],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[0.9752213242663051,1,0.9752213242663051]},{\"name\":\"buoy-02\",\"position\":[1.5,0.2042610699681302,0.05],\"rotation\":[0,0,-0.0067452557279442035,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-2\",\"position\":[1.5,0.226,0.05],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[0.9916303940704183,1,0.9916303940704183]},{\"name\":\"buoy-03\",\"position\":[0.2,0.22316830200338378,1.45],\"rotation\":[0,0,0.0013578437157359103,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-3\",\"position\":[0.2,0.226,1.45],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1.011975820321914,1,1.011975820321914]}]",
+      "frames": 71,
+      "requests": 72,
+      "control": {
+        "text": "Pause motion",
+        "state": "running",
+        "disabled": false
+      }
+    },
+    "reducedStart": {
+      "events": [],
+      "firstPose": "[{\"name\":\"roof-fan-01\",\"position\":[-1.44,2.068,-0.6],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"roof-fan-02\",\"position\":[-1.06,2.068,-0.6],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"buoy-01\",\"position\":[-0.9,0.22,-1],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-1\",\"position\":[-0.9,0.226,-1],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"buoy-02\",\"position\":[1.5,0.22,0.05],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-2\",\"position\":[1.5,0.226,0.05],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"buoy-03\",\"position\":[0.2,0.22,1.45],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-3\",\"position\":[0.2,0.226,1.45],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]}]",
+      "pose": "[{\"name\":\"roof-fan-01\",\"position\":[-1.44,2.068,-0.6],\"rotation\":[0,9.686400000000003,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"roof-fan-02\",\"position\":[-1.06,2.068,-0.6],\"rotation\":[0,-8.172900000000002,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"buoy-01\",\"position\":[-0.9,0.19275610265443052,-1],\"rotation\":[0,0,-0.011675956005244058,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-1\",\"position\":[-0.9,0.226,-1],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[0.9752213242663051,1,0.9752213242663051]},{\"name\":\"buoy-02\",\"position\":[1.5,0.2042610699681302,0.05],\"rotation\":[0,0,-0.0067452557279442035,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-2\",\"position\":[1.5,0.226,0.05],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[0.9916303940704183,1,0.9916303940704183]},{\"name\":\"buoy-03\",\"position\":[0.2,0.22316830200338378,1.45],\"rotation\":[0,0,0.0013578437157359103,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-3\",\"position\":[0.2,0.226,1.45],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1.011975820321914,1,1.011975820321914]}]",
+      "frames": 71,
+      "requests": 73,
+      "control": {
+        "text": "Pause motion",
+        "state": "running",
+        "disabled": false
+      }
+    },
+    "reducedEnd": {
+      "events": [],
+      "firstPose": "[{\"name\":\"roof-fan-01\",\"position\":[-1.44,2.068,-0.6],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"roof-fan-02\",\"position\":[-1.06,2.068,-0.6],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"buoy-01\",\"position\":[-0.9,0.22,-1],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-1\",\"position\":[-0.9,0.226,-1],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"buoy-02\",\"position\":[1.5,0.22,0.05],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-2\",\"position\":[1.5,0.226,0.05],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"buoy-03\",\"position\":[0.2,0.22,1.45],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-3\",\"position\":[0.2,0.226,1.45],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1,1,1]}]",
+      "pose": "[{\"name\":\"roof-fan-01\",\"position\":[-1.44,2.068,-0.6],\"rotation\":[0,9.686400000000003,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"roof-fan-02\",\"position\":[-1.06,2.068,-0.6],\"rotation\":[0,-8.172900000000002,0,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"buoy-01\",\"position\":[-0.9,0.19275610265443052,-1],\"rotation\":[0,0,-0.011675956005244058,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-1\",\"position\":[-0.9,0.226,-1],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[0.9752213242663051,1,0.9752213242663051]},{\"name\":\"buoy-02\",\"position\":[1.5,0.2042610699681302,0.05],\"rotation\":[0,0,-0.0067452557279442035,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-2\",\"position\":[1.5,0.226,0.05],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[0.9916303940704183,1,0.9916303940704183]},{\"name\":\"buoy-03\",\"position\":[0.2,0.22316830200338378,1.45],\"rotation\":[0,0,0.0013578437157359103,\"XYZ\"],\"scale\":[1,1,1]},{\"name\":\"water-ripple-3\",\"position\":[0.2,0.226,1.45],\"rotation\":[0,0,0,\"XYZ\"],\"scale\":[1.011975820321914,1,1.011975820321914]}]",
+      "frames": 71,
+      "requests": 73,
+      "control": {
+        "text": "Pause motion",
+        "state": "running",
+        "disabled": false
+      }
+    }
+  }
+]

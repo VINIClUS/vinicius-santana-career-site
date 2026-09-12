@@ -15,14 +15,20 @@ if (
 ) {
   throw new Error(`Generated district IDs must match projectIds: ${projectIds.join(", ")}`);
 }
-const requestedIds = process.argv.slice(2);
+const requestedIds = new Set(process.argv.slice(2));
 for (const id of requestedIds) {
   if (!generatedSceneIds.includes(id)) throw new Error(`Unknown scene ${id}`);
+}
+// Overview reloads published GLBs, so refresh its models from source first.
+if (requestedIds.has("overview")) {
+  for (const id of districtIds) requestedIds.add(`district-${id}`);
+  requestedIds.add("hub");
 }
 const mime = {
   ".mjs": "text/javascript",
   ".js": "text/javascript",
   ".html": "text/html",
+  ".json": "application/json",
 };
 const server = createServer(async (req, res) => {
   try {
@@ -66,7 +72,8 @@ try {
     );
   } catch {}
   metadata = normalizeGeneratedMetadata(metadata);
-  for (const id of requestedIds.length ? requestedIds : generatedSceneIds) {
+  // Canonical dependency order: district exports and origin always precede overview posters.
+  for (const id of generatedSceneIds.filter(id => !requestedIds.size || requestedIds.has(id))) {
     const failure = id === "detail-infrastructure-failed";
     const entry = { posters: {}, cameras: {} };
     for (const [variant, width, height] of [
@@ -83,13 +90,16 @@ try {
       await writeFile(resolve(root, `public${src}`), buffer);
       entry.posters[variant] = { src, width, height, bytes: buffer.length };
       entry.cameras[variant] = result.camera;
+      if (result.layout) {
+        entry.layouts ??= {};
+        entry.layouts[variant] = result.layout;
+        if (variant === "desktop") {
+          entry.districtPositions = result.layout.districtPositions;
+          entry.districtScale = result.layout.districtScale;
+        }
+      }
       if (variant === "desktop") {
         entry.camera = result.camera;
-        if (result.districtPositions) {
-          entry.layouts = result.layouts;
-          entry.districtPositions = result.districtPositions;
-          entry.districtScale = result.districtScale;
-        }
         if (id !== "overview" && !failure) {
           const src = `/assets/scenes/${id}.glb`;
           const buffer = Buffer.from(result.glb, "base64");
