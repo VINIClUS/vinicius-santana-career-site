@@ -20,3 +20,9 @@ export const infrastructurePresentation = {
   id: 'infrastructure', visualMode: 'cluster', systemHeading: 'System View',
   simulation: 'infrastructure-failover', simulationPlacement: 'system-view',
 } as const satisfies ProjectPresentation;
+
+export const limnopulsePresentation = {
+  id: 'limnopulse',
+  visualMode: 'telemetry',
+  systemHeading: 'System View',
+} as const satisfies ProjectPresentation;

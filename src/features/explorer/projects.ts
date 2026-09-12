@@ -21,12 +21,13 @@ export const projectDefinitions: Readonly<Record<ProjectId, ProjectDefinition>> 
     area: 'Water telemetry',
     componentIds: ['telemetry-api', 'alert-rules', 'evaluator', 'notifications', 'mqtt-ingestion', 'cloud-infrastructure', 'production-device-layer'],
     relations: [
-      { from: 'mqtt-ingestion', to: 'telemetry-api', label: 'Supplies local development readings' },
-      { from: 'telemetry-api', to: 'alert-rules', label: 'Provides authorized telemetry' },
-      { from: 'alert-rules', to: 'evaluator', label: 'Defines evaluation work' },
-      { from: 'evaluator', to: 'notifications', label: 'Emits durable delivery work' },
-      { from: 'cloud-infrastructure', to: 'evaluator', label: 'Documents evaluator resources' },
-      { from: 'production-device-layer', to: 'mqtt-ingestion', label: 'Marks the planned production boundary' }
+      { from: 'mqtt-ingestion', to: 'telemetry-api', label: 'Makes local readings available through InfluxDB for authorized API queries' },
+      { from: 'alert-rules', to: 'evaluator', label: 'Defines versioned rules for one-shot evaluation' },
+      { from: 'evaluator', to: 'mqtt-ingestion', label: 'Queries reading windows in InfluxDB populated by the local ingestion scaffold' },
+      { from: 'evaluator', to: 'alert-rules', label: 'Persists durable alert events and outboxes in DynamoDB' },
+      { from: 'alert-rules', to: 'notifications', label: 'An outbox relay publishes per-channel notification work to SQS' },
+      { from: 'cloud-infrastructure', to: 'evaluator', label: 'Documents managed resources and external scheduling prerequisites' },
+      { from: 'production-device-layer', to: 'mqtt-ingestion', label: 'Marks a planned production boundary beyond the local scaffold' }
     ]
   },
   infrastructure: {

@@ -20,12 +20,12 @@ The first valid frame reads the latest controller snapshot. One 15-second deadli
 
 ## Loading comparison
 
-Same local Python static server, Chromium, cold browser context/cache disabled, DPR 1, reduced motion, viewport 1440×900 / 390×900, 40 ms latency, 1,250,000 bytes/s down and 625,000 bytes/s up. One sample per viewport/build; these are diagnostic resource measurements, not performance claims or production recovery metrics. Transfer bytes include resource response overhead and exclude the HTML document. Raw output and routine screenshots live under `test-results/sa-04/`.
+Final candidate including the integrated SA-03 changes versus the original `8b1a30e` base. Same local Python static server, Chromium, cold browser context/cache disabled, DPR 1, reduced motion, viewport 1440×900 / 390×900, 40 ms latency, 1,250,000 bytes/s down and 625,000 bytes/s up. One sample per viewport/build; these are diagnostic resource measurements, not performance claims or production recovery metrics. Transfer bytes include resource response overhead and exclude the HTML document. Raw output and routine screenshots live under `test-results/sa-04/`.
 
 | Viewport | Base initial resources | SA-04 initial resources | Additional graphics after visibility |
 | --- | ---: | ---: | ---: |
-| 1440 | 67,505 B | 74,247 B | 624,450 B |
-| 390 | 58,841 B | 65,583 B | 624,450 B |
+| 1440 | 67,505 B | 78,062 B | 624,450 B |
+| 390 | 58,841 B | 69,398 B | 624,450 B |
 
 Both viewports request zero graphical JS/model resources before visibility. Activation requests the Infrastructure renderer (4,142 B), shared Three/GLTF resource chunk (597,896 B), and only `detail-infrastructure.glb` (22,412 B). No other project model downloads. The shared Three chunk still produces the existing build size warning; it is behind dynamic import. No dependency was added.
 
@@ -57,3 +57,9 @@ Browser binaries were isolated under `/tmp/sa04-browsers` after the Playwright C
 6. `rtk git diff --check`: passed.
 
 Independent local spec and integration reviews found no major issues. PR/CI/review/deploy links and reviewed/merged SHAs are recorded in the Issue #33 release comment after publication verification.
+
+## Concurrent SA-03 integration
+
+While the initial PR review was running, `main` advanced to `b36822c` (SA-03 / #40). The initial review confirmed no major issues for `b340a292032e293734b0a9d253e3df8a01b732a1`, but merge was correctly held because the branch had conflicts. The update preserves both canonical project branches, both presentation definitions, both content-equivalence suites, and the absence of alternate links for both projects. No Infrastructure controller/renderer logic changed. Full ordered validation and a new exact-HEAD review are required after this integration; the initial approval is not reused.
+
+Post-integration ordered rerun completed successfully: npm ci; npm test (37 passed, one build-only skip); build; smoke (13 asset checks plus all three canonical content suites); test:explorer (58 passed); git diff --check. Repeated loading capture under the same profile; table above reflects the final integrated candidate. Viewport initial/failure captures are `test-results/sa-04/sa04-{initial,failed}-{1440,390}.png`.

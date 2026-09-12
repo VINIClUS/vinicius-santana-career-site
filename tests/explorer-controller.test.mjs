@@ -93,3 +93,15 @@ test('Infrastructure dispatch is isolated, notifies changes, and selection prese
   infra.dispatch({ type: 'FAIL_NODE', nodeId: 'node-02' });
   assert.equal(notifications, 3);
 });
+
+
+test('Limnopulse relationships preserve the storage and outbox boundaries', () => {
+  const relations = projectDefinitions.limnopulse.relations;
+  assert.ok(relations.some(relation => relation.from === 'mqtt-ingestion' && relation.to === 'telemetry-api' && /InfluxDB/.test(relation.label)));
+  assert.ok(relations.some(relation => relation.from === 'evaluator' && relation.to === 'mqtt-ingestion' && /windows.*InfluxDB/i.test(relation.label)));
+  assert.ok(relations.some(relation => relation.from === 'alert-rules' && relation.to === 'evaluator'));
+  assert.ok(relations.some(relation => relation.from === 'evaluator' && relation.to === 'alert-rules' && /events.*outboxes/i.test(relation.label)));
+  assert.ok(relations.some(relation => relation.from === 'alert-rules' && relation.to === 'notifications' && /relay.*SQS/i.test(relation.label)));
+  assert.ok(!relations.some(relation => relation.from === 'telemetry-api' && ['alert-rules', 'evaluator'].includes(relation.to)));
+  assert.ok(!relations.some(relation => relation.from === 'evaluator' && relation.to === 'notifications'));
+});
