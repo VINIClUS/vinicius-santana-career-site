@@ -1,14 +1,15 @@
 ---
 import ExternalLink from '../components/ExternalLink.astro';
+import ExperienceCard from '../components/ExperienceCard.astro';
 import PracticeCards from '../components/PracticeCards.astro';
 import StackGrid from '../components/StackGrid.astro';
-import { experience, profile } from '../data/content.js';
+import { experience, familyBusinessExperience, profile } from '../data/content.js';
 import EditorialLayout from '../layouts/EditorialLayout.astro';
 ---
 
 <EditorialLayout
   title="About — Vinicius Santana"
-  description="About Vinicius Santana, a software and data engineer working across backend systems, data quality and operations."
+  description="About Vinicius Santana, a Python backend engineer building data-intensive APIs, validation services and automation for municipal public-health systems."
   canonicalPath="/about/"
   currentPath="/about/"
   observatory
@@ -16,10 +17,11 @@ import EditorialLayout from '../layouts/EditorialLayout.astro';
   <header class="page-hero shell about-hero">
     <div class="about-hero-copy">
       <p class="eyebrow">About</p>
-      <h1>Engineering grounded in operational reality.</h1>
+      <h1>Python backend engineering grounded in operational reality.</h1>
       <p class="summary">
-        I’m Vinicius Santana, a software and data engineer based in Brazil. I build systems that make data movement,
-        operational state and failure boundaries easier to understand and maintain.
+        I design and operate data-intensive APIs, validation services and automation for municipal public-health systems.
+        My work combines FastAPI, SQLAlchemy and PostgreSQL with tenant-aware authorization, automated tests and monitored
+        Linux deployments.
       </p>
     </div>
     <figure class="about-portrait">
@@ -36,14 +38,13 @@ import EditorialLayout from '../layouts/EditorialLayout.astro';
     <div class="shell experience-grid">
       <div class="section-heading">
         <p class="eyebrow">Experience</p>
-        <h2 id="experience-heading">Public-health data and software work.</h2>
+        <h2 id="experience-heading">Experience across software, data, infrastructure and operations.</h2>
         <p>{experience.summary}</p>
       </div>
-      <article class="timeline-card">
-        <div class="timeline-meta"><span>{experience.period}</span><span>{experience.organization}</span></div>
-        <h3>{experience.role}</h3>
-        <ul class="check-list">{experience.highlights.map((item) => <li>{item}</li>)}</ul>
-      </article>
+      <div class="experience-roles">
+        <ExperienceCard experience={experience} headingId="about-municipal-experience" />
+        <ExperienceCard experience={familyBusinessExperience} headingId="about-family-business-experience" />
+      </div>
     </div>
   </section>
 
@@ -51,10 +52,11 @@ import EditorialLayout from '../layouts/EditorialLayout.astro';
     <div class="shell">
       <div class="section-heading">
         <p class="eyebrow">How I work</p>
-        <h2 id="approach-heading">Make contracts explicit, keep claims attributable, document the boundary.</h2>
+        <h2 id="approach-heading">Make contracts explicit, protect boundaries and design for recovery.</h2>
         <p>
-          I prefer small, inspectable interfaces; tests around important contracts; and operational documentation close
-          to the code. When part of a system is planned, illustrative or unverified, I label it that way.
+          I work from the operational problem backward: define typed contracts and exception paths, protect tenant
+          boundaries, test deterministic rules, and keep deployment, observability, backup and rollback procedures close
+          to the code. The result is software that teams can inspect, recover and maintain.
         </p>
       </div>
       <PracticeCards />

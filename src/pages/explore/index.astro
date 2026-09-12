@@ -1,4 +1,5 @@
 ---
+import { getCollection } from 'astro:content';
 import EditorialLayout from '../../layouts/EditorialLayout.astro';
 import { districtIds, districtRegistry } from '../../features/explorer/districts.ts';
 import { overview } from '../../content/scenes/index.ts';
@@ -6,6 +7,7 @@ import { projectToPoster } from '../../features/explorer/observatory-projection.
 import '../../features/explorer/explorer.css';
 import '../../features/explorer/observatory.css';
 const { poster, layouts } = overview;
+const projectByDistrict = new Map((await getCollection('caseStudies')).map(({ data }) => [data.id, data]));
 const linkLabels = { cnesdata: 'Explore CnesData', infrastructure: 'Explore Infrastructure', limnopulse: 'Explore LimnoPulse' };
 const positionStyle = (desktop: { x: number; y: number }, mobile: { x: number; y: number }) => `--desktop-x:${desktop.x}%;--desktop-y:${desktop.y}%;--mobile-x:${mobile.x}%;--mobile-y:${mobile.y}%;`;
 ---
@@ -38,12 +40,18 @@ const positionStyle = (desktop: { x: number; y: number }, mobile: { x: number; y
     </div>
     <p class="observatory-instruction">Select a project on the map or browse the summaries below. Every project stays available in both 2D and 3D.</p>
     <div class="district-details">
-      {districtIds.map(id => <article id={`district-${id}`} class={`explorer-area area-${id}`} data-district-detail={id} data-selected="false" tabindex="-1" aria-labelledby={`district-title-${id}`}>
-        <p class="eyebrow">Project</p>
-        <h2 id={`district-title-${id}`}>{districtRegistry[id].label}</h2>
-        <p>{districtRegistry[id].description}</p>
-        <a class="button button-primary" href={districtRegistry[id].href}>{linkLabels[id]}</a>
-      </article>)}
+      {districtIds.map(id => {
+        const project = projectByDistrict.get(id)!;
+        return <article id={`district-${id}`} class={`explorer-area area-${id}`} data-district-detail={id} data-selected="false" tabindex="-1" aria-labelledby={`district-title-${id}`}>
+          <p class="eyebrow">Project</p>
+          <h2 id={`district-title-${id}`}>{districtRegistry[id].label}</h2>
+          <p>{districtRegistry[id].description}</p>
+          <ul class="technology-labels" aria-label={`Technologies used in ${project.title}`} role="list">
+            {project.technologies.map(technology => <li>{technology}</li>)}
+          </ul>
+          <a class="button button-primary" href={districtRegistry[id].href}>{linkLabels[id]}</a>
+        </article>;
+      })}
     </div>
     <aside class="atlas-context" aria-label="Context and capabilities">
       <p id="district-public-health"><strong>Public Health</strong> · Domain experience connecting services, information systems and their users. <a href="/#experience">View experience</a></p>

@@ -1,0 +1,70 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import CnesDataSystemView from './CnesDataSystemView.astro';
+import InfrastructureSystemView from './InfrastructureSystemView.astro';
+import LimnopulseSystemView from './LimnopulseSystemView.astro';
+import { projectDefinitions, projectIds, type ProjectDefinition } from './projects.ts';
+
+interface Props {
+  caseStudy: CollectionEntry<'caseStudies'>['data'];
+  definition: ProjectDefinition;
+}
+
+const { caseStudy, definition } = Astro.props;
+const projectId = projectIds.find(id => projectDefinitions[id] === definition);
+if (!projectId) throw new Error('SystemView requires a canonical project definition.');
+---
+
+<div class="system-view" data-system-view data-primary-component-id={definition.primaryComponentId}>
+  {projectId === 'cnesdata' && <CnesDataSystemView {caseStudy} />}
+  {projectId === 'limnopulse' && <LimnopulseSystemView {caseStudy} />}
+  {projectId === 'infrastructure' && <InfrastructureSystemView {caseStudy} />}
+</div>
+
+<script is:inline>
+  for (const view of document.querySelectorAll('[data-system-view]')) {
+    if (view.dataset.enhanced === 'true') continue;
+    const primaryComponentId = view.dataset.primaryComponentId;
+    const controls = [...view.querySelectorAll('[data-system-graph] [data-component-link]')];
+    const details = [...view.querySelectorAll('[data-component-detail]')];
+    const componentIds = new Set(details.map(detail => detail.dataset.componentDetail));
+
+    const componentIdFromHash = () => {
+      const match = window.location.hash.match(/^#component-(.+)$/);
+      const componentId = match?.[1];
+      return componentIds.has(componentId) ? componentId : primaryComponentId;
+    };
+    const select = (componentId) => {
+      for (const link of controls) {
+        if (link.dataset.componentLink === componentId) link.setAttribute('aria-current', 'true');
+        else link.removeAttribute('aria-current');
+      }
+      for (const detail of details) detail.dataset.selected = String(detail.dataset.componentDetail === componentId);
+    };
+    const selectFromLocation = () => select(componentIdFromHash());
+
+    view.dataset.enhanced = 'true';
+    selectFromLocation();
+    for (const link of controls) {
+      link.addEventListener('click', () => select(link.dataset.componentLink));
+      link.addEventListener('keydown', (event) => {
+        if (!['ArrowDown', 'ArrowRight', 'ArrowUp', 'ArrowLeft', 'Home', 'End'].includes(event.key)) return;
+        event.preventDefault();
+        const currentIndex = controls.indexOf(link);
+        const nextIndex = event.key === 'Home' ? 0 : event.key === 'End' ? controls.length - 1 : (currentIndex + (event.key === 'ArrowDown' || event.key === 'ArrowRight' ? 1 : -1) + controls.length) % controls.length;
+        const next = controls[nextIndex];
+        const componentId = next.dataset.componentLink;
+        if (window.location.hash !== `#component-${componentId}`) window.history.pushState(null, '', `#component-${componentId}`);
+        select(componentId);
+        view.dispatchEvent(new CustomEvent('system-view-select', { bubbles: true, detail: { componentId } }));
+        next.focus();
+      });
+    }
+    window.addEventListener('hashchange', selectFromLocation);
+    window.addEventListener('popstate', selectFromLocation);
+  }
+</script>
+
+<style>
+  .system-view { min-width: 0; }
+</style>

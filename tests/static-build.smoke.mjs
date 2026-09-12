@@ -33,6 +33,28 @@ function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+function escapeHtmlText(value) {
+  return value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+}
+
+function assertTechnologyList(html, projectTitle, technologies) {
+  const list = html.match(
+    new RegExp(`<ul(?=[^>]*\\bclass="[^"]*\\btechnology-labels\\b[^"]*")(?=[^>]*\\baria-label="Technologies used in ${escapeRegExp(projectTitle)}")(?=[^>]*\\brole="list")[^>]*>[\\s\\S]*?</ul>`, 'i')
+  )?.[0];
+
+  assert.ok(list, `${projectTitle} must expose a specifically labelled technology list`);
+  assert.equal((list.match(/<li\b/g) || []).length, technologies.length, `${projectTitle} must render every technology exactly once`);
+
+  const offsets = technologies.map((technology) => {
+    const offset = list.indexOf(`>${escapeHtmlText(technology)}</li>`);
+    assert.notEqual(offset, -1, `${projectTitle} must render ${technology}`);
+    return offset;
+  });
+  assert.deepEqual(offsets, [...offsets].sort((left, right) => left - right), `${projectTitle} must preserve technology order`);
+
+  return list;
+}
+
 function assertMetadata(html, route, origin) {
   const canonicalUrl = new URL(route, origin).href;
   const expectedUrl = escapeRegExp(canonicalUrl);
@@ -116,12 +138,79 @@ const homeSectionOrder = ['hero-title', 'projects', 'contact', 'about', 'experie
 });
 assert.deepEqual(homeSectionOrder, [...homeSectionOrder].sort((left, right) => left - right), 'home must use recruiter-first section order');
 
+const homeAbout = html.match(/<section[^>]*id="about"[\s\S]*?<\/section>/i)?.[0];
+assert.ok(homeAbout, 'home must render the About section');
+assert.match(homeAbout, /I build backend systems for data-heavy, operational work\./);
+assert.match(
+  homeAbout,
+  /I’m Vinicius Santana, a Python backend engineer in Brazil\. I build FastAPI and PostgreSQL services, validation workflows and automation for municipal public-health operations—work that validates 21,000\+ records each month and reduced a municipality-wide reconciliation cycle from 240\+ person-hours to about four\./
+);
+assert.equal((homeAbout.match(/class="role-card"/g) || []).length, 2, 'home About must render exactly two role cards');
+assert.doesNotMatch(homeAbout, /Platform \/ DevOps/, 'home About must not render the removed Platform / DevOps card');
+
 const editorialPages = {
   about: await readBuiltPage('dist/about/index.html'),
   resume: await readBuiltPage('dist/resume/index.html'),
   privacy: await readBuiltPage('dist/privacy/index.html'),
   notFound: await readBuiltPage('dist/404.html')
 };
+
+function assertExperienceSection(pageHtml, pageName, headingId) {
+  const section = pageHtml.match(new RegExp(`<section[^>]*aria-labelledby="${headingId}"[^>]*>[\\s\\S]*?</section>`))?.[0];
+  assert.ok(section, `${pageName} must render its experience section`);
+  const articles = section.match(/<article class="timeline-card"[\s\S]*?<\/article>/gi) || [];
+  assert.equal(articles.length, 2, `${pageName} must group experience into two organization articles`);
+
+  const municipalArticle = articles[0];
+  assert.equal(
+    (municipalArticle.match(/Prefeitura de Presidente Epitácio/g) || []).length,
+    1,
+    `${pageName} must name the municipality once within its article`
+  );
+  assert.match(municipalArticle, /<h3[^>]*>Prefeitura de Presidente Epitácio<\/h3>/i);
+  assert.match(municipalArticle, /Nov 2021 — Present/);
+
+  const municipalRoles = [
+    ['Health Informatics Analyst &amp; Data Engineer', 'Oct 2023 — Present'],
+    ['IT Infrastructure &amp; Systems Support · Internship', 'Nov 2021 — Oct 2023']
+  ];
+  for (const [title, period] of municipalRoles) {
+    assert.match(
+      municipalArticle,
+      new RegExp(`<h4[^>]*>${escapeRegExp(title)}<\\/h4>[\\s\\S]*?${escapeRegExp(period)}`, 'i'),
+      `${pageName} must associate ${title} with ${period}`
+    );
+  }
+
+  const municipalRoleOffsets = municipalRoles.map(([title]) => municipalArticle.indexOf(title));
+  assert.ok(municipalRoleOffsets.every((offset) => offset >= 0), `${pageName} must render both municipal roles`);
+  assert.deepEqual(
+    municipalRoleOffsets,
+    [...municipalRoleOffsets].sort((left, right) => left - right),
+    `${pageName} must render municipal roles in reverse chronological order`
+  );
+  assert.equal((municipalArticle.match(/<h4/g) || []).length, 2, `${pageName} must expose both municipal roles below the organization heading`);
+
+  const internshipMarkup = municipalArticle.slice(municipalRoleOffsets[1]);
+  assert.equal((internshipMarkup.match(/<li>/g) || []).length, 3, `${pageName} internship must expose exactly three highlights`);
+  assert.match(internshipMarkup, /Maintained rotating snapshots plus incremental and weekly full backups/);
+
+  assert.match(articles[1], /<h3[^>]*>Irmãos Santana<\/h3>/i);
+  assert.match(articles[1], /<h4[^>]*>Business Analyst &amp; Operations Manager<\/h4>/i);
+
+  for (const evidence of ['21,000+', '12%+', 'below 1%', '240+', 'about 4 hours', '10,000+', 'Proxmox/Linux', 'Ceph', '26%', '11%', 'Python', 'MQTT']) {
+    assert.ok(section.includes(evidence), `${pageName} experience must include ${evidence}`);
+  }
+  assert.match(section, /Java and Spring/, `${pageName} must identify Java and Spring as current-role technologies`);
+}
+
+assertExperienceSection(html, 'home', 'experience-title');
+assertExperienceSection(editorialPages.about, 'about', 'experience-heading');
+
+for (const pageHtml of [html, editorialPages.about]) {
+  for (const item of ['Java', 'Spring', 'AWS', 'Redis', 'Platform &amp; Reliability']) assert.ok(pageHtml.includes(item));
+  for (const retiredItem of ['Firebird', 'DevOps / Infra', 'Observability']) assert.doesNotMatch(pageHtml, new RegExp(`>${escapeRegExp(retiredItem)}<`));
+}
 
 const publicCname = await readFile(fromRoot('public/CNAME'));
 const origin = `https://${publicCname.toString().trim()}`;
@@ -143,6 +232,22 @@ for (const [pageName, pageHtml] of Object.entries(editorialPages)) {
 }
 
 assert.match(editorialPages.about, /alt="Professional portrait of Vinicius Santana"/);
+assert.match(editorialPages.about, /<h1[^>]*>Python backend engineering grounded in operational reality\.<\/h1>/i);
+assert.match(
+  editorialPages.about,
+  /I design and operate data-intensive APIs, validation services and automation for municipal public-health systems\. My work combines FastAPI, SQLAlchemy and PostgreSQL with tenant-aware authorization, automated tests and monitored Linux deployments\./
+);
+assert.match(editorialPages.about, /Make contracts explicit, protect boundaries and design for recovery\./);
+assert.match(
+  editorialPages.about,
+  /I work from the operational problem backward: define typed contracts and exception paths, protect tenant boundaries, test deterministic rules, and keep deployment, observability, backup and rollback procedures close to the code\. The result is software that teams can inspect, recover and maintain\./
+);
+assert.match(
+  editorialPages.about,
+  /<meta name="description" content="About Vinicius Santana, a Python backend engineer building data-intensive APIs, validation services and automation for municipal public-health systems\.">/i
+);
+assert.equal((editorialPages.about.match(/class="role-card"/g) || []).length, 2, 'About must render exactly two role cards');
+assert.doesNotMatch(editorialPages.about, /Platform \/ DevOps/, 'About must not render the removed Platform / DevOps card');
 assert.match(
   editorialPages.about,
   /<img[^>]*src="\/assets\/images\/vinicius-about\.jpg"[^>]*width="900"[^>]*height="1125"/i,
@@ -196,11 +301,11 @@ const caseStudies = [
 for (const caseStudy of caseStudies) {
   const caseHtml = await readFile(fromRoot(`dist/explore/${caseStudy.slug}/index.html`), 'utf8');
 
-  for (const anchor of ['overview', 'architecture', 'engineering', 'results']) {
+  for (const anchor of ['overview', 'system', 'engineering', 'results']) {
     assert.match(caseHtml, new RegExp(`href="#${anchor}"`));
     assert.match(caseHtml, new RegExp(`id="${anchor}"`));
   }
-  assert.match(caseHtml, /id="architecture-title"/);
+  assert.match(caseHtml, /id="system-title"/);
   assert.match(caseHtml, /id="limitations"/);
   assertMetadata(caseHtml, `/explore/${caseStudy.slug}/`, origin);
 
@@ -318,12 +423,27 @@ const districtDestinations = {
   infrastructure: '/explore/infrastructure/',
   limnopulse: '/explore/limnopulse/',
 };
+const explorerProjects = yaml.load(await readFile(fromRoot('src/content/case-studies.yaml'), 'utf8'));
+const expectedTechnologies = {
+  cnesdata: ['Python', 'FastAPI', 'Go', 'PostgreSQL', 'Parquet', 'Docker', 'React'],
+  limnopulse: ['Python', 'FastAPI', 'Go', 'DynamoDB', 'InfluxDB', 'SQS', 'OpenTofu'],
+  infrastructure: ['Ansible', 'Packer', 'Proxmox VE', 'Python', 'PowerShell', 'Bash', 'Docker'],
+};
 assert.equal([...overview.matchAll(/<article\b[^>]*data-district-detail=/g)].length, 3, 'overview renders exactly three project articles');
 for (const [id, href] of Object.entries(districtDestinations)) {
   assert.match(overview, new RegExp(`href="#district-${id}"`));
   const article = overview.match(new RegExp(`<article[^>]*id="district-${id}"[^>]*>[\\s\\S]*?</article>`))?.[0];
   assert.ok(article, `${id} article is present without JavaScript`);
   assert.match(article, new RegExp(`href="${escapeRegExp(href)}"`));
+  const project = explorerProjects.find(entry => entry.id === id);
+  assert.deepEqual(project.technologies, expectedTechnologies[id], `${id} technology source must retain the approved stack and order`);
+  const technologyList = assertTechnologyList(article, escapeHtmlText(project.title), project.technologies);
+  const technologyOffset = article.indexOf(technologyList);
+  assert.ok(
+    (article.slice(0, technologyOffset).match(/<\/p>/g) || []).length === 2
+      && technologyOffset < article.indexOf('<a class="button'),
+    `${project.title} overview technologies must sit between the description and button`
+  );
 }
 assert.equal([...overview.matchAll(/data-district-link=/g)].length, 3);
 for (const [id, href] of [['public-health', '/#experience'], ['observability', '/#stack']]) {
@@ -331,6 +451,8 @@ for (const [id, href] of [['public-health', '/#experience'], ['observability', '
   assert.match(overview, new RegExp(`id="district-${id}"`));
   assert.ok(overview.includes(`href="${href}"`));
 }
+const atlasContext = overview.match(/<aside[^>]*class="atlas-context"[^>]*>[\s\S]*?<\/aside>/)?.[0];
+assert.doesNotMatch(atlasContext, /technology-labels/, 'domain context must not render project technology labels');
 assert.doesNotMatch(overview, /href="#district-hub"|data-district-(?:link|detail)="hub"/);
 assert.doesNotMatch(overview, /<canvas|<astro-island|\.(glb|gltf|ktx2)["']/i);
 for (const { slug, title } of caseStudies) {
@@ -339,6 +461,15 @@ for (const { slug, title } of caseStudies) {
   assertEditorialShell(explorer, slug + ' explorer', true);
   assertMetadata(explorer, `/explore/${slug}/`, origin);
   assert.match(explorer, new RegExp(`<h1[^>]*>${title}</h1>`));
+  const project = explorerProjects.find(entry => entry.id === slug);
+  const projectHeader = explorer.match(/<header[^>]*class="case-hero"[^>]*>[\s\S]*?<\/header>/)?.[0];
+  const technologyList = assertTechnologyList(projectHeader, title, project.technologies);
+  const technologyOffset = projectHeader.indexOf(technologyList);
+  assert.ok(
+    (projectHeader.slice(0, technologyOffset).match(/<\/p>/g) || []).length === 2
+      && technologyOffset < projectHeader.indexOf('<div class="hero-evidence"'),
+    `${project.title} technologies must sit between the summary and public evidence`
+  );
   assert.doesNotMatch(explorer, new RegExp(`href="/work/${slug}/"`));
   assert.match(explorer, /Component details/);
   assert.match(explorer, /Receives from/);
@@ -364,7 +495,7 @@ for (const { slug, title } of caseStudies) {
     assert.match(explorer, /data-fail-node[^>]*disabled/);
     assert.match(explorer, /data-infra-reset[^>]*disabled/);
     assert.match(explorer, /Scenario transcript/);
-    assert.match(explorer, /detail-infrastructure-desktop.webp/);
+    assert.doesNotMatch(explorer, /<picture|<img/, 'Infrastructure System View remains a semantic, non-visual document');
     assert.match(explorer, /data-infra-announcement[^>]*aria-live="polite"|aria-live="polite"[^>]*data-infra-announcement/);
     assert.doesNotMatch(explorer, /data-step|data-scenario|data-reset/);
   } else {
@@ -420,13 +551,13 @@ for (const [route, pageHtml] of publishedPages) {
 const canonicalCnes = await readBuiltPage('dist/explore/cnesdata/index.html');
 const cnes = yaml.load(await readFile(fromRoot('src/content/case-studies.yaml'), 'utf8')).find(entry => entry.id === 'cnesdata');
 const escapeHtml = value => value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
-for (const id of ['overview', 'architecture', 'engineering', 'simulation', 'results', 'evidence', 'limitations']) {
+for (const id of ['overview', 'system', 'engineering', 'simulation', 'results', 'evidence', 'limitations']) {
   assert.match(canonicalCnes, new RegExp(`id="${id}"`), `canonical CnesData preserves #${id}`);
   assert.match(canonicalCnes, new RegExp(`href="#${id}"`), `canonical navigation exposes #${id}`);
 }
 assert.match(canonicalCnes, /<title>CnesData — Vinicius Santana<\/title>/);
 assert.match(canonicalCnes, /System View/);
-assert.match(canonicalCnes, /id="architecture-title"/, 'legacy explorer System View fragment remains a target');
+assert.match(canonicalCnes, /id="system-title"/, 'canonical System View fragment remains a target');
 for (const text of [cnes.eyebrow, cnes.summary, cnes.problem, cnes.context, ...cnes.contribution, ...cnes.decisions, ...cnes.reliability, ...cnes.outcomes, ...cnes.limitations]) {
   assert.ok(canonicalCnes.includes(escapeHtml(text)), `canonical HTML retains: ${text}`);
 }
@@ -442,14 +573,13 @@ for (const evidence of cnes.evidence) {
   assert.ok(canonicalCnes.includes(escapeHtml(evidence.description)));
   assert.ok(canonicalCnes.includes(`aria-label="Open ${evidence.label} in a new tab"`));
 }
-assert.match(canonicalCnes, /detail-cnesdata-desktop\.webp/);
-assert.match(canonicalCnes, /detail-cnesdata-mobile\.webp/);
+assert.match(canonicalCnes, /<figure[^>]*class="system-poster"[\s\S]*?<picture[\s\S]*?<img/, 'CnesData retains its architecture poster below the graph');
 assert.equal([...canonicalCnes.matchAll(/id="([^" ]+)"/g)].length, new Set([...canonicalCnes.matchAll(/id="([^" ]+)"/g)].map(match => match[1])).size, 'canonical IDs must be unique');
 console.log('Canonical CnesData content equivalence passed.');
 
 const canonicalInfra = await readBuiltPage('dist/explore/infrastructure/index.html');
 const infra = yaml.load(await readFile(fromRoot('src/content/case-studies.yaml'), 'utf8')).find(entry => entry.id === 'infrastructure');
-for (const id of ['overview', 'architecture', 'architecture-title', 'engineering', 'simulation', 'results', 'evidence', 'limitations', 'infra-title', 'details-title']) {
+for (const id of ['overview', 'system', 'system-title', 'engineering', 'simulation', 'results', 'evidence', 'limitations', 'infra-title', 'details-title']) {
   assert.equal([...canonicalInfra.matchAll(new RegExp(`id="${id}"`, 'g'))].length, 1, `unique Infrastructure #${id}`);
 }
 for (const text of [infra.eyebrow, infra.summary, infra.problem, infra.context, ...infra.contribution, ...infra.decisions, ...infra.reliability, ...infra.outcomes, ...infra.limitations]) {
@@ -476,14 +606,15 @@ const canonicalLimno = await readBuiltPage('dist/explore/limnopulse/index.html')
 const limno = yaml.load(await readFile(fromRoot('src/content/case-studies.yaml'), 'utf8')).find(entry => entry.id === 'limnopulse');
 assert.match(canonicalLimno, /data-visual-mode="telemetry"/);
 assert.match(canonicalLimno, /<title>Limnopulse — Vinicius Santana<\/title>/);
-for (const id of ['overview', 'architecture', 'engineering', 'results', 'evidence', 'limitations']) {
+for (const id of ['overview', 'system', 'engineering', 'results', 'evidence', 'limitations']) {
   assert.ok(canonicalLimno.includes(`id="${id}"`));
   assert.ok(canonicalLimno.includes(`href="#${id}"`));
 }
-assert.match(canonicalLimno, /id="architecture-title"/);
-for (const heading of ['Observations', 'Telemetry', 'Events', 'Problem', 'Context', 'Contribution', 'Decisions', 'Reliability', 'Outcomes', 'Public evidence']) {
+assert.match(canonicalLimno, /id="system-title"/);
+for (const heading of ['Operational map', 'Component details', 'Problem', 'Context', 'Contribution', 'Decisions', 'Reliability', 'Outcomes', 'Public evidence']) {
   assert.match(canonicalLimno, new RegExp(`<h[234][^>]*>${heading}</h[234]>`));
 }
+assert.doesNotMatch(canonicalLimno, />Relationships</, 'Limnopulse has no standalone Relationships heading');
 for (const value of [limno.eyebrow, limno.summary, limno.problem, limno.context, ...limno.technologies, ...limno.contribution, ...limno.decisions, ...limno.reliability, ...limno.outcomes, ...limno.limitations]) {
   assert.ok(canonicalLimno.includes(escapeHtml(value)), `canonical Limnopulse retains: ${value}`);
 }

@@ -1,6 +1,5 @@
-import { initializeInfrastructureView } from './infrastructure-client.ts';
 import { createExplorerController } from './controller.ts';
-import { projectIds, type ProjectId } from './projects.ts';
+import { projectDefinitions, projectIds, type ProjectId } from './projects.ts';
 import { scenarios } from '../../content/scenarios/cnesdata.ts';
 
 export function initializeExplorer() {
@@ -36,11 +35,17 @@ export function initializeExplorer() {
       }
       root!.querySelector('[data-infra-workload]')!.textContent = `Workload: ${infra.workloadNodeId}`;
       const failed = infra.nodes['node-02'] === 'failed';
-      const poster = root!.querySelector<HTMLImageElement>('[data-infra-poster]')!;
-      const source = root!.querySelector<HTMLSourceElement>('[data-infra-poster-mobile]')!;
-      poster.src = (failed ? poster.dataset.failedSrc : poster.dataset.initialSrc)!;
-      poster.alt = (failed ? poster.dataset.failedAlt : poster.dataset.initialAlt)!;
-      source.srcset = (failed ? source.dataset.failedSrc : source.dataset.initialSrc)!;
+      const scheme = root!.querySelector<HTMLElement>('[data-infra-scheme]');
+      if (scheme) {
+        scheme.dataset.workloadNode = infra.workloadNodeId;
+        for (const node of scheme.querySelectorAll<HTMLElement>('[data-infra-scheme-node]')) {
+          const id = node.dataset.infraSchemeNode as keyof typeof infra.nodes;
+          node.dataset.status = infra.nodes[id];
+          node.querySelector('span')!.textContent = ` ${infra.nodes[id]}`;
+        }
+        scheme.querySelector('[data-infra-scheme-workload]')!.textContent = `Workload assigned to ${infra.workloadNodeId}`;
+        scheme.querySelector('[data-infra-scheme-shared]')!.textContent = `Shared layer: ${infra.sharedLayer}`;
+      }
       failNode.disabled = failed;
       if (infra !== renderedInfrastructure) {
         root!.querySelector('[data-infra-timeline]')!.replaceChildren(...infra.timeline.map(event => {
@@ -77,11 +82,16 @@ export function initializeExplorer() {
 
   const selectFragment = () => {
     const detail = Array.from(details).find(item => `#${item.id}` === window.location.hash);
-    controller.dispatch({ type: 'SELECT_COMPONENT', componentId: detail?.dataset.componentDetail ?? null });
+    controller.dispatch({ type: 'SELECT_COMPONENT', componentId: detail?.dataset.componentDetail ?? projectDefinitions[projectId as ProjectId].primaryComponentId });
     detail?.focus({ preventScroll: true });
   };
   controller.subscribe(render);
   window.addEventListener('hashchange', selectFragment);
+  window.addEventListener('popstate', selectFragment);
+  root.addEventListener('system-view-select', event => {
+    const { componentId } = (event as CustomEvent<{ componentId: string }>).detail;
+    controller.dispatch({ type: 'SELECT_COMPONENT', componentId });
+  });
   // Native fragment navigation handles history, scrolling and the no-JS path.
   root.addEventListener('click', event => {
     const target = event.target;
@@ -101,7 +111,6 @@ export function initializeExplorer() {
   }
   selectFragment();
   render();
-  initializeInfrastructureView(root, controller);
   if (scenario && reset) {
     scenario.disabled = false;
     reset.disabled = false;
