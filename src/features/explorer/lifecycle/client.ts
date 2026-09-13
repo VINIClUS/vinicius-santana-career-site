@@ -109,7 +109,7 @@ export async function initializeLifecycles() {
     renderRecords(settled?projection:previous);
     renderSamples(settled?state:previousState);
     renderRecipient(settled?projection:previous);
-    if(settled)get('announcement').textContent=describeOutcome(scenario.project,projection);
+    if(manual||playback.complete)get('announcement').textContent=describeOutcome(scenario.project,projection);
   }
   function renderRecords(p:Record<string,unknown>) {
     let records: string[];

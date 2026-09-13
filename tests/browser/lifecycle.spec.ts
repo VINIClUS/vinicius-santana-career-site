@@ -73,6 +73,29 @@ test('CnesData preview retains source captures until normalization finishes its 
   await noMotion(page);
 });
 
+test('autoplay stays silent until completion while manual actions announce', async ({ page }) => {
+  await page.clock.install();
+  await ready(page);
+  const announcement = control(page, 'announcement');
+  await expect(stage(page)).toHaveAttribute('data-playing', 'true');
+  await expect(announcement).toHaveText('');
+
+  await page.clock.runFor(1500);
+  await expect(stage(page)).toHaveAttribute('data-phase', 'settle');
+  await expect(control(page, 'progress')).toContainText('operation 1 /');
+  await expect(announcement).toHaveText('');
+
+  await page.clock.runFor(200_000);
+  await expect(control(page, 'progress')).toContainText('Complete');
+  await expect(announcement).toHaveText('Incident: recovered. Email: accepted; Telegram: accepted. User: recovery shown.');
+
+  await control(page, 'replay').click();
+  await announcement.evaluate(element => { element.textContent = ''; });
+  await root(page).getByText('Try a scenario', { exact: true }).click();
+  await root(page).getByRole('button', { name: 'Revoke membership' }).click();
+  await expect(announcement).toHaveText('Incident: none. Email: idle; Telegram: idle. User: idle.');
+});
+
 for (const [project, cycles] of [
   ['infrastructure', ['infra-exhaustion-recovery', 'infra-quorum-recovery', 'infra-provision-scale']],
   ['limnopulse', ['limnopulse-end-to-end']],
