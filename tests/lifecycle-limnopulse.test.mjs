@@ -2,11 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createLimnopulseState, reduceLimnopulse, projectLimnopulse } from '../src/features/explorer/lifecycle/limnopulse.ts';
+import * as lifecycleEngine from '../src/features/explorer/lifecycle/engine.ts';
 
 const fixture = JSON.parse(readFileSync(new URL('../docs/design/systems-atlas-lifecycles-v3/scenarios/limnopulse-end-to-end.json', import.meta.url)));
 const negatives = JSON.parse(readFileSync(new URL('../docs/design/systems-atlas-lifecycles-v3/scenarios/negative-cases.json', import.meta.url))).cases.filter(c => c.scenarioId === fixture.id);
+const dispatch = (state, command) => reduceLimnopulse(state, lifecycleEngine.normalizeLimnopulseCommand(state, command));
 function prefix(index) {
-  return fixture.checkpoints.slice(0, index + 1).reduce((state, c) => reduceLimnopulse(state, c.command).state, createLimnopulseState());
+  return fixture.checkpoints.slice(0, index + 1).reduce((state, c) => dispatch(state, c.command).state, createLimnopulseState());
 }
 for (const [index, checkpoint] of fixture.checkpoints.entries()) {
   test(`Limnopulse ${checkpoint.id}`, () => assert.deepEqual(projectLimnopulse(prefix(index)), checkpoint.expected));
@@ -15,7 +17,7 @@ for (const negative of negatives) {
   test(`Limnopulse ${negative.id}${negative.id === 'LP-N02' ? ' approved erratum: prefix -01' : ''}`, () => {
     const id = negative.id === 'LP-N02' ? 'limnopulse-end-to-end-01' : negative.fromCheckpoint;
     let state = prefix(fixture.checkpoints.findIndex(c => c.id === id));
-    for (const command of negative.commands) state = reduceLimnopulse(state, command).state;
+    for (const command of negative.commands) state = dispatch(state, command).state;
     const projection = projectLimnopulse(state);
     for (const [key, value] of Object.entries(negative.expectedSubset)) assert.deepEqual(projection[key], value, key);
   });
@@ -35,7 +37,8 @@ test('Attempt operation identity rejects a result from a previous attempt', () =
 });
 test('Permanent and ambiguous results cannot be retried or shown as accepted', () => {
   for (const resultType of ['permanent', 'unknown']) {
-    let state = reduceLimnopulse(prefix(10), { type: 'PROVIDER_RESULT', channel: 'telegram', kind: 'opening', result: resultType }).state;
+    let state = prefix(10);
+    state = reduceLimnopulse(state, { type: 'PROVIDER_RESULT', channel: 'telegram', kind: 'opening', result: resultType, operationId: state.deliveries['opening:telegram'].operationId }).state;
     state = reduceLimnopulse(state, { type: 'ADVANCE_CLOCK', ticks: 100 }).state;
     state = reduceLimnopulse(state, { type: 'ATTEMPT_DELIVERY', channel: 'telegram', kind: 'opening' }).state;
     assert.equal(state.deliveries['opening:telegram'].attempts, 1);
@@ -81,7 +84,7 @@ test('Transient failures retain Delivery ID and stop after three provider attemp
   let state = prefix(8);
   const id = state.deliveries['opening:email'].id;
   for (let i = 0; i < 3; i++) {
-    state = reduceLimnopulse(state, { type: 'PROVIDER_RESULT', channel: 'email', kind: 'opening', result: '5xx' }).state;
+    state = reduceLimnopulse(state, { type: 'PROVIDER_RESULT', channel: 'email', kind: 'opening', result: '5xx', operationId: state.deliveries['opening:email'].operationId }).state;
     state = reduceLimnopulse(state, { type: 'ADVANCE_CLOCK', ticks: 16 }).state;
     state = reduceLimnopulse(state, { type: 'ATTEMPT_DELIVERY', channel: 'email', kind: 'opening' }).state;
   }
@@ -96,4 +99,23 @@ test('Conflicting telemetry cannot replace immutable points or mutate the input 
   assert.equal(result.rejection, 'READING_CONFLICT');
   assert.deepEqual(result.state, before);
   assert.deepEqual(state, before);
+});
+test('Provider results require the delivery operation identity at the reducer boundary', () => {
+  const state = prefix(8);
+  const result = reduceLimnopulse(state, { type: 'PROVIDER_RESULT', channel: 'email', kind: 'opening', result: 'accepted' });
+  assert.equal(result.rejection, 'STALE_OPERATION');
+  assert.deepEqual(result.state, state);
+});
+test('Limnopulse normalization captures delivery identity and preserves a delayed callback', () => {
+  assert.equal(typeof lifecycleEngine.normalizeLimnopulseCommand, 'function');
+  let state = prefix(8);
+  const callback = lifecycleEngine.normalizeLimnopulseCommand(state, { type: 'PROVIDER_RESULT', channel: 'email', kind: 'opening', result: 'accepted' });
+  assert.equal(callback.operationId, state.deliveries['opening:email'].operationId);
+  state = reduceLimnopulse(state, { ...callback, result: '5xx' }).state;
+  state = reduceLimnopulse(state, { type: 'ADVANCE_CLOCK', ticks: 2 }).state;
+  state = reduceLimnopulse(state, { type: 'ATTEMPT_DELIVERY', channel: 'email', kind: 'opening' }).state;
+  assert.equal(lifecycleEngine.normalizeLimnopulseCommand(state, callback).operationId, callback.operationId);
+  assert.equal(reduceLimnopulse(state, callback).rejection, 'STALE_OPERATION');
+  const current = lifecycleEngine.normalizeLimnopulseCommand(state, { type: 'PROVIDER_RESULT', channel: 'email', kind: 'opening', result: 'accepted' });
+  assert.equal(reduceLimnopulse(state, current).state.deliveries['opening:email'].status, 'accepted');
 });

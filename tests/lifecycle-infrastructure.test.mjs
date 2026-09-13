@@ -4,15 +4,17 @@ import { readFileSync } from 'node:fs';
 import { createInfrastructureState, reduceInfrastructure, projectInfrastructure } from '../src/features/explorer/lifecycle/infrastructure.ts';
 import { createScalingState, reduceScaling, projectScaling } from '../src/features/explorer/lifecycle/scaling.ts';
 import * as scalingModule from '../src/features/explorer/lifecycle/scaling.ts';
+import * as lifecycleEngine from '../src/features/explorer/lifecycle/engine.ts';
 
 const read = name => JSON.parse(readFileSync(new URL(`../docs/design/systems-atlas-lifecycles-v3/scenarios/${name}.json`, import.meta.url)));
 const scenarios = ['infra-exhaustion-recovery', 'infra-quorum-recovery', 'infra-provision-scale'];
 function engine(id) { return id === scenarios[2] ? [createScalingState, reduceScaling, projectScaling] : [() => createInfrastructureState(id), reduceInfrastructure, projectInfrastructure]; }
 function commands(cp) { return cp.id === 'infra-quorum-recovery-07' ? [cp.command, { type: 'SET_STORAGE', ready: false }] : [cp.command]; }
-function prefix(id, checkpoint) { const [create, reduce] = engine(id); let state = create(); for (const cp of read(id).checkpoints) { for (const c of commands(cp)) state = reduce(state, c).state; if(cp.id === checkpoint) break; } return state; }
-for (const id of scenarios) test(`${id}: all checkpoints (quorum -07 explicit storage erratum)`, () => { const [create, reduce, project] = engine(id); let state = create(); for(const cp of read(id).checkpoints) { for(const c of commands(cp)) state = reduce(state, c).state; assert.deepEqual(project(state), cp.expected, cp.id); } });
+function dispatch(id,state,command) { const [,reduce] = engine(id); const normalized=id===scenarios[2]?scalingModule.normalizeScalingCommand(state,command):lifecycleEngine.normalizeInfrastructureCommand(state,command); return reduce(state,normalized); }
+function prefix(id, checkpoint) { const [create] = engine(id); let state = create(); for (const cp of read(id).checkpoints) { for (const c of commands(cp)) state = dispatch(id,state,c).state; if(cp.id === checkpoint) break; } return state; }
+for (const id of scenarios) test(`${id}: all checkpoints (quorum -07 explicit storage erratum)`, () => { const [create,,project] = engine(id); let state = create(); for(const cp of read(id).checkpoints) { for(const c of commands(cp)) state = dispatch(id,state,c).state; assert.deepEqual(project(state), cp.expected, cp.id); } });
 function subset(actual, expected) { for(const [key, value] of Object.entries(expected)) { if(value && typeof value === 'object' && !Array.isArray(value)) subset(actual[key], value); else assert.deepEqual(actual[key], value, key); } }
-for(const variant of read('negative-cases').cases.filter(c => c.id.startsWith('INF-'))) test(variant.id + ': ' + variant.reason, () => { const [, reduce, project] = engine(variant.scenarioId); let state = prefix(variant.scenarioId, variant.fromCheckpoint); for(const command of variant.commands) state = reduce(state, command).state; subset(project(state), variant.expectedSubset); });
+for(const variant of read('negative-cases').cases.filter(c => c.id.startsWith('INF-'))) test(variant.id + ': ' + variant.reason, () => { const [,,project] = engine(variant.scenarioId); let state = prefix(variant.scenarioId, variant.fromCheckpoint); for(const command of variant.commands) state = dispatch(variant.scenarioId,state,command).state; subset(project(state), variant.expectedSubset); });
 test('ready schedules autostart on logical clock, and stale health cannot revive failed start', () => {
  let state = prefix(scenarios[0], 'infra-exhaustion-recovery-13');
  assert.equal(state.workloadStatus, 'pending');
@@ -95,4 +97,27 @@ test('normalization captures identities before scheduling and preserves explicit
  const health=scalingModule.normalizeScalingCommand(replicas,{type:'REPLICAS_HEALTHY',ids:['replica-02']});
  assert.deepEqual(health.replicaGenerations,{'replica-02':1});
  assert.equal(reduceScaling(replicas,health).state.replicas['replica-02'],'ready');
+});
+test('node readiness requires the operation identity at the reducer boundary',()=>{
+ let state=createInfrastructureState(scenarios[0]);
+ state=reduceInfrastructure(state,{type:'FAIL_NODE',nodeId:'node-02'}).state;
+ state=reduceInfrastructure(state,{type:'RESTORE_NODE',nodeId:'node-02'}).state;
+ const result=reduceInfrastructure(state,{type:'NODE_READY',nodeId:'node-02'});
+ assert.equal(result.rejection,'STALE_NODE_READY');
+ assert.deepEqual(result.state,state);
+});
+test('infrastructure normalization captures node identity and preserves a delayed callback',()=>{
+ assert.equal(typeof lifecycleEngine.normalizeInfrastructureCommand,'function');
+ let state=createInfrastructureState(scenarios[0]);
+ state=reduceInfrastructure(state,{type:'FAIL_NODE',nodeId:'node-02'}).state;
+ state=reduceInfrastructure(state,{type:'RESTORE_NODE',nodeId:'node-02'}).state;
+ const callback=lifecycleEngine.normalizeInfrastructureCommand(state,{type:'NODE_READY',nodeId:'node-02'});
+ assert.equal(callback.operationId,state.nodeOperations['node-02']);
+ state=reduceInfrastructure(state,callback).state;
+ state=reduceInfrastructure(state,{type:'FAIL_NODE',nodeId:'node-02'}).state;
+ state=reduceInfrastructure(state,{type:'RESTORE_NODE',nodeId:'node-02'}).state;
+ assert.equal(lifecycleEngine.normalizeInfrastructureCommand(state,callback).operationId,callback.operationId);
+ assert.equal(reduceInfrastructure(state,callback).rejection,'STALE_NODE_READY');
+ const current=lifecycleEngine.normalizeInfrastructureCommand(state,{type:'NODE_READY',nodeId:'node-02'});
+ assert.equal(reduceInfrastructure(state,current).state.nodes['node-02'],'ready');
 });

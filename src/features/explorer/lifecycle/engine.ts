@@ -1,4 +1,18 @@
-import type { DomainAdapter } from './types.ts';
+import type { InfrastructureCommand, InfrastructureState } from './infrastructure.ts';
+import type { LimnopulseCommand, LimnopulseState } from './limnopulse.ts';
+import type { Command, DomainAdapter } from './types.ts';
+
+export function normalizeInfrastructureCommand(state: InfrastructureState, command: Command): InfrastructureCommand {
+  if (command.type !== 'NODE_READY' || Object.hasOwn(command, 'operationId')) return structuredClone(command) as InfrastructureCommand;
+  return { ...structuredClone(command), operationId: state.nodeOperations[String(command.nodeId)] ?? 0 } as InfrastructureCommand;
+}
+
+export function normalizeLimnopulseCommand(state: LimnopulseState, command: Command): LimnopulseCommand {
+  if (command.type !== 'PROVIDER_RESULT' || Object.hasOwn(command, 'operationId')) return structuredClone(command) as LimnopulseCommand;
+  const key = `${String(command.kind)}:${String(command.channel)}` as keyof LimnopulseState['deliveries'];
+  return { ...structuredClone(command), operationId: state.deliveries[key]?.operationId ?? '' } as LimnopulseCommand;
+}
+
 export async function loadEngine(scenarioId: string): Promise<DomainAdapter> {
   if (scenarioId === 'cnesdata-end-to-end') {
     const engine = await import('./cnesdata.ts');
@@ -39,14 +53,20 @@ export async function loadEngine(scenarioId: string): Promise<DomainAdapter> {
     const engine = await import('./infrastructure.ts');
     return {
       initialize: () => engine.createInfrastructureState(scenarioId),
-      dispatch: (state, command) => engine.reduceInfrastructure(state as ReturnType<typeof engine.createInfrastructureState>, command as Parameters<typeof engine.reduceInfrastructure>[1]),
+      dispatch: (state, command) => {
+        const current = state as ReturnType<typeof engine.createInfrastructureState>;
+        return engine.reduceInfrastructure(current, normalizeInfrastructureCommand(current, command));
+      },
       project: state => engine.projectInfrastructure(state as ReturnType<typeof engine.createInfrastructureState>),
     };
   }
   const engine = await import('./limnopulse.ts');
   return {
     initialize: engine.createLimnopulseState,
-    dispatch: (state, command) => engine.reduceLimnopulse(state as ReturnType<typeof engine.createLimnopulseState>, command as Parameters<typeof engine.reduceLimnopulse>[1]),
+    dispatch: (state, command) => {
+      const current = state as ReturnType<typeof engine.createLimnopulseState>;
+      return engine.reduceLimnopulse(current, normalizeLimnopulseCommand(current, command));
+    },
     project: state => engine.projectLimnopulse(state as ReturnType<typeof engine.createLimnopulseState>),
   };
 }

@@ -2,7 +2,7 @@
 export type InfrastructureCommand =
   | { type: 'INIT' | 'RECONCILE' }
   | { type: 'FAIL_NODE' | 'CONFIRM_FENCE' | 'RESTORE_NODE'; nodeId: string }
-  | { type: 'NODE_READY'; nodeId: string; operationId?: number }
+  | { type: 'NODE_READY'; nodeId: string; operationId: number }
   | { type: 'WORKLOAD_HEALTHY'; generation: number; operationId?: number }
   | { type: 'SET_STORAGE'; ready: boolean }
   | { type: 'SET_CONTROLLER'; available: boolean }
@@ -63,7 +63,7 @@ export function reduceInfrastructure(previous: InfrastructureState, command: Inf
       s.nodes[command.nodeId] = 'booting'; s.nodeOperations[command.nodeId] = (s.nodeOperations[command.nodeId] ?? 0) + 1;
       break;
     case 'NODE_READY':
-      if (s.nodes[command.nodeId] !== 'booting' || (command.operationId !== undefined && command.operationId !== s.nodeOperations[command.nodeId])) return reject('STALE_NODE_READY');
+      if (s.nodes[command.nodeId] !== 'booting' || command.operationId !== s.nodeOperations[command.nodeId]) return reject('STALE_NODE_READY');
       s.nodes[command.nodeId] = 'ready'; s.reconcileAt = s.logicalTick + 1;
       break;
     case 'RECONCILE': reconcile(); break;

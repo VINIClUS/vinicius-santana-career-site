@@ -10,7 +10,7 @@ export type LimnopulseCommand =
   | { type: 'EVALUATE' | 'EVALUATE_RECOVERY'; evaluationTick: number }
   | { type: 'RELAY'; kind: NotificationKind }
   | { type: 'ATTEMPT_DELIVERY' | 'SHOW_MESSAGE' | 'DUPLICATE_QUEUE_JOB'; channel: Channel; kind: NotificationKind }
-  | { type: 'PROVIDER_RESULT'; channel: Channel; kind: NotificationKind; result: 'accepted' | 'rate_limited' | 'transient_failure' | '5xx' | 'permanent' | 'permanent_failure' | 'unknown'; retryAfterTicks?: number; operationId?: string }
+  | { type: 'PROVIDER_RESULT'; channel: Channel; kind: NotificationKind; result: 'accepted' | 'rate_limited' | 'transient_failure' | '5xx' | 'permanent' | 'permanent_failure' | 'unknown'; retryAfterTicks?: number; operationId: string }
   | { type: 'OPEN_INCIDENT'; tenantId?: string; pondId?: string }
   | { type: 'ACKNOWLEDGE'; expectedVersion: number; authorized?: boolean }
   | { type: 'ADVANCE_CLOCK'; ticks: number }
@@ -150,7 +150,7 @@ export function reduceLimnopulse(previous: LimnopulseState, command: LimnopulseC
     }
     case 'PROVIDER_RESULT': {
       const d = s.deliveries[deliveryKey(command.kind, command.channel)];
-      if (!d || d.status !== 'attempting' || (command.operationId !== undefined && command.operationId !== d.operationId)) return reject('STALE_OPERATION');
+      if (!d || d.status !== 'attempting' || command.operationId !== d.operationId) return reject('STALE_OPERATION');
       if (command.result === 'accepted') { d.status = 'accepted'; d.providerAccepted = true; d.dueTick = null; }
       else if (command.result === 'unknown') { d.status = 'unknown'; d.dueTick = null; }
       else if (command.result === 'permanent' || command.result === 'permanent_failure' || d.attempts >= 3) { d.status = 'permanent_failure'; d.dueTick = null; if (!s.recipient.suppressed.includes(command.channel)) s.recipient.suppressed.push(command.channel); }
