@@ -1,10 +1,10 @@
-# Systems Atlas V3 — entrega local
+# Systems Atlas V3 — implementação e integração
 
 Os cinco ciclos estão integrados nas três páginas de projeto, com palco HTML/SVG 2.5D, seis capítulos por ciclo, comandos reais, apresentação cancelável e transcripts estáticos calculados pelo engine.
 
 ## Local e preservação
 
-Worktree: `/home/vinicius/code/vinicius-santana-career-site-v3`, branch `feat/atlas-lifecycles-v3`, baseada em `2249a56`. Sem publicação, PR ou serviços reais.
+Worktree: `/home/vinicius/code/vinicius-santana-career-site-v3`, branch `feat/atlas-lifecycles-v3`, baseada em `2249a56`. A implementação inicial foi entregue localmente. O usuário autorizou posteriormente o pull e a abertura do PR; nenhum serviço real ou deploy faz parte desta entrega.
 
 Outra sessão mudou o checkout compartilhado durante o trabalho. As alterações anteriores e V3 foram recuperadas do stash `12f45885d7091f64bf1e0c6a4c7381a4b71871cd` para este worktree isolado, sem conflitos. O checkout original e o stash permanecem intactos. O bloco de analytics preexistente foi restaurado de `07eaa98`, excluindo sua nova referência a favicon. A árvore contém alterações locais anteriores ao V3, que não devem ser atribuídas integralmente a esta entrega.
 
@@ -34,7 +34,7 @@ CnesData transforma os dados sintéticos do pacote e mostra três comparações:
 
 ## M3 — interação e revisão
 
-Lifecycle em `#simulation`, seguido de conteúdo editorial e disclosures técnicos. Seleção de componentes não altera URL/scroll; fragmentos `#component-*` abrem os detalhes. Funciona sem WebGL. Sem JavaScript, figuras/transcripts do build permanecem disponíveis, com controles desabilitados.
+Lifecycle em `#simulation`, seguido de conteúdo editorial e disclosure do System View. A pedido do usuário, todas as demonstrações antigas foram excluídas, incluindo a Synthetic demonstration de CnesData e a simulação avulsa de falhas dos nós de Infrastructure. Todos os cards de cada System View passaram a uma única coluna vertical, ao lado do diagrama no desktop e abaixo no mobile. Seleção de componentes não altera URL/scroll; fragmentos `#component-*` abrem os detalhes. Funciona sem WebGL. Sem JavaScript, figuras/transcripts do build permanecem disponíveis, com controles desabilitados.
 
 Autoplay de uma passagem respeita visibilidade, prontidão, fragmento, reduced-motion e Save-Data. Pause congela; ocultar a aba ou sair da tela pausa sem retomada automática. Previous/capítulos reconstroem o prefixo e pausam. Next conclui a tomada pendente antes de outra operação. Ações manuais preservam domínio e cancelam o roteiro; Replay reinicia. Geração e identidade invalidam callbacks antigos em reset, troca e descarte.
 
@@ -44,7 +44,7 @@ Revisão em 1440×1000, 390×844 e 320×740: [capturas dos cinco ciclos](capture
 
 Correções da revisão: quebra de labels longos no mobile; snapshot consistente da tabela CnesData; ida/retorno da autorização separados; canal/tipo/resultado corretos em ações manuais; destinatário sintético com View incident/ACK; callbacks antigos de provisionamento rejeitados; release de worker-02/03 em tomadas próprias, sem focar o worker sobrevivente.
 
-## Verificação
+## Verificação da entrega local anterior ao pull
 
 - `rtk npm ci`: concluído no worktree isolado.
 - `rtk npm test`: 197 aprovados, zero falhas; um teste de assets de build intencionalmente pulado nesta modalidade. Inclui typechecks, os 91 checkpoints e 27 negativos.
@@ -56,6 +56,25 @@ Correções da revisão: quebra de labels longos no mobile; snapshot consistente
 - `rtk proxy node scripts/lifecycle/measure.mjs`: aprovado; [medição reproduzível](bytes.json).
 - `rtk git diff --check`: aprovado.
 
-Domínio/player, somando todos os engines e helper: **19.238 bytes gzip**, abaixo de 81.920. HTML gzip: Infrastructure 15.906 bytes, Limnopulse 12.906, CnesData 13.364; os dados de tour já estão incluídos. Home/Atlas não referenciam os novos recursos. Testes de rede conferem ícones locais e testes de pausa conferem ausência de movimento residual.
+Domínio/player, somando todos os engines e helper: **19.238 bytes gzip**, abaixo de 81.920. HTML gzip por rota em [bytes.json](bytes.json); os dados de tour já estão incluídos. Home/Atlas não referenciam os novos recursos. Testes de rede conferem ícones locais e testes de pausa conferem ausência de movimento residual.
 
 As gravações são trechos representativos, não vídeos integrais. Os 91 passos completos são verificados executavelmente. A entrega demonstra sistemas sintéticos locais, sem comprovar implantação dos alvos documentados.
+
+## Integração com a main e correções de revisão
+
+Pull de `origin/main` (`abe1a14`) incorporado ao trabalho V3. Os conflitos foram resolvidos preservando o shell canônico, os System Views, o Atlas, a navegação e o SEO atuais. Alterações locais anteriores e auxiliares permanecem no stash `94be46d`, além do stash de recuperação original.
+
+A estrutura final usa o Lifecycle antes do conteúdo editorial; remove todas as demonstrações antigas e seus controles/transcripts de UI, incluindo a Synthetic demonstration de CnesData e a simulação avulsa de falhas dos nós de Infrastructure. As primitivas raw e de failover continuam cobertas por regressões de domínio. Todos os cards de cada System View são renderizados em uma coluna vertical, com seleção e links diretos preservados. Testes de regressão reproduziram as imprecisões antes das mudanças; a última remoção também teve um teste falhando pela presença do heading antigo de Infrastructure antes da correção.
+
+Também foi restaurado o uso do `analyticsSnippet` já existente no layout da main: as rotas de compatibilidade voltam a respeitar `analyticsPageView={false}`, evitando pageviews duplicados. O smoke agora valida a entrada pública `sitemap.xml` adicionada pela main e sua referência ao sitemap gerado. O briefing importado permanece inalterado; `.gitattributes` preserva seus espaços e quebras Markdown originais.
+
+Validação após integração: `npm ci`, `npm test` (226 aprovados e um skip intencional), build, smoke (15/15 assets), geração do overview, `gallery:verify`, validador do pacote, comparação dos 78 originais e `git diff --check` aprovados. Após a última remoção foram repetidos os testes unitários, build, smoke, validador, comparação do ZIP e medição de bytes, todos aprovados.
+
+Resultados de navegador efetivamente observados:
+
+- Antes da última remoção de Infrastructure: suíte completa com **162/162 aprovados em 8,3 minutos**.
+- Árvore final: `EXPLORER_BASE_URL=http://127.0.0.1:4323 npm run test:explorer -- --max-failures=3` registrou **129 testes aprovados**, incluindo os cinco vídeos e todos os testes de Lifecycle, antes do processo terminar por SIGTERM (exit 143). A causa do sinal não foi identificada; não houve falha de teste registrada e o preview continuou respondendo. Essa execução interrompida não é contada como uma suíte completa aprovada.
+- Os **30 casos restantes passaram em 1,3 minuto**, executando `observatory.spec.ts`, `release-integration.spec.ts`, `system-view-regressions.spec.ts` e `visual-alignment.spec.ts` com o mesmo build. Os 159 casos atuais têm resultado individual aprovado nas duas execuções.
+- A checagem final `lifecycle-replacement.spec.ts` foi repetida e passou em **6/6 testes**, cobrindo ausência das demonstrações antigas e a coluna vertical nas três páginas. As [nove capturas do System View](captures/system-view-vertical/) usam 1440×1000, 390×844 e 320×740; o recorte do componente omite apenas a navegação fixa durante a captura, sem alterar o layout do aplicativo.
+
+As cinco gravações e suas 38 capturas de operação foram atualizadas a partir da árvore final. Domínio/player permanece em **19.238 bytes gzip**; HTML gzip: Infrastructure 17.154, Limnopulse 15.738 e CnesData 14.969 bytes. Nenhum recurso novo de Lifecycle é requisitado pela Home ou pelo Atlas.

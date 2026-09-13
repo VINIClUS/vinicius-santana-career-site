@@ -1,0 +1,15 @@
+---
+import LegacyRedirect from '../../components/LegacyRedirect.astro';
+import { legacyRoutes } from '../../features/navigation/legacy-routes.ts';
+
+export function getStaticPaths() {
+  return Object.entries(legacyRoutes).map(([source, destination]) => ({
+    params: { path: source.slice('/work/'.length).replace(/\/$/, '') || undefined },
+    props: { destination }
+  }));
+}
+
+const { destination } = Astro.props;
+---
+
+<LegacyRedirect destination={destination} />

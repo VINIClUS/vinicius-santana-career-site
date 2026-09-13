@@ -1,43 +1,115 @@
-# Explorer and Observatory contracts
+# Systems Atlas and project explorer contracts
 
-Astro renders an Observatory overview and three project routes using the case-study collection. Architecture IDs live in `src/content/case-studies.yaml`; titles, descriptions and evidence statuses are reused from that collection. `src/features/explorer/projects.ts` supplies only project IDs, areas, component IDs and illustrative relationships. Scene nodes reuse those IDs, scoped to their project.
+Astro renders a Systems Atlas overview and three canonical project routes using the case-study collection. Architecture IDs live in `src/content/case-studies.yaml`; titles, descriptions and evidence statuses are reused from that collection. `src/features/explorer/projects.ts` supplies project IDs, areas, ordered diagram stages, primary component IDs and directed relationships with short labels.
 
 `createExplorerController(projectId)` exposes `getState()`, `dispatch(command)` and `subscribe(listener)`, which returns an unsubscribe function. State holds `projectId`, `selectedComponentId` and the corresponding optional `simulation` (CnesData) or `infrastructureSimulation`. `SELECT_COMPONENT` changes selection independently of simulation. `SELECT_SCENARIO` and `STEP` affect only CnesData; `FAIL_NODE` affects only Infrastructure. `RESET` resets the current project's simulation. LimnoPulse ignores simulation commands. Project switching uses ordinary route navigation and creates a fresh controller with default state, without persistence.
 
-The DOM is a projection of controller state. Component fragments support initial deep links, keyboard navigation and browser history. All detail articles remain in HTML; selection adds a visible label, border and focus. If JavaScript cannot initialize, component links and all three build-time transcripts remain usable, while simulation controls stay disabled. No React, canvas or renderer is involved.
+The DOM is a projection of controller state. `SystemView.astro` dispatches each project to a specialized semantic HTML graph. All component cards form one vertical column beside the diagram on desktop and below it on smaller screens. Each component appears once as a graph button (`data-component-diagram`) and once as a detail article (`data-component-detail`) with a selection button (`data-component-card`). Labeled connectors use the declared relation endpoints; the cards derive **Receives from** and **Sends to** blocks with related-component buttons from those same relations. Statuses remain in Results and evidence rather than the graph or component cards. CnesData branches through Central API; LimnoPulse groups components into observation, telemetry and event bands across operational boundaries; Infrastructure's three inputs converge on Reference topology.
 
-CnesData uses fictional keys/content only. Results are synthetic and illustrative; they do not demonstrate backend calls, authentication, conversion, Parquet generation, latency or the production status of architecture components. Infrastructure relationships are sanitized illustrative references.
+The primary component is selected without changing the URL; a valid initial `#component-{id}` fragment takes precedence. Graph, card and relationship buttons share `data-component-select` and dispatch `SELECT_COMPONENT` through `client.ts`. Mouse, Enter and Space update `aria-pressed` and `data-selected` consistently without changing the URL, hash, scroll position or transferring focus. Repeated selection keeps the component selected and preserves simulation progress. Fragment handling initializes selection and opens technical disclosures for direct component links; it does not programmatically focus a detail article. Every description, connector, relation block, evidence status and build-time transcript remains readable without JavaScript, while selection and simulation controls remain disabled. Canonical project pages load no canvases, GLBs or Three.js. The CnesData detail poster is removed; Atlas and Home retain their independent progressive graphics.
 
-## Five districts
+CnesData uses fictional inputs only. Its lifecycle models transformation and authorization guards locally; it does not call a backend, issue real credentials or establish production status for documented architecture components. Infrastructure relationships are sanitized illustrative references.
 
-`src/features/explorer/districts.ts` owns the labels, descriptions, kinds and destinations for all five `DistrictId` values. `ProjectId` still contains only CnesData, LimnoPulse and Infrastructure. Public Health Systems links to `/#experience`; Observability links to `/#stack`. They are portfolio domains, not additional project routes. Existing scene-manifest exports remain compatible.
+## Systems Atlas V3 lifecycles
 
-`createObservatoryController()` starts with no selection and accepts `SELECT_DISTRICT`. Invalid IDs are inert; `null` clears selection. Native `#district-<id>` navigation supports deep links and browser history, while the client synchronizes selection and article focus. Unrecognized fragments clear selection. Every district article and destination is rendered in the initial HTML; CSS `:target` preserves highlighting without JavaScript.
+The independent `lifecycle/` modules provide five command-driven tours: Infrastructure exhaustion, quorum and scaling, Limnopulse end-to-end, and CnesData end-to-end. Each has six chapters. Pure reducers own logical time and operation identity; presentation and renderer never determine domain success. The player invalidates old callbacks on replay, scenario replacement and disposal. Manual actions preserve domain state and cancel the remaining tour.
 
-The overview renders the existing desktop/mobile posters with link positions projected from each crop's scene camera and placements. All five articles and their normal links remain in the page throughout loading and interaction.
+Project pages lead with an HTML/SVG 2.5D lifecycle at `#simulation`. System Views and selection controls remain in native disclosures after the editorial context. All old standalone demonstration UIs have been removed, including CnesData's Synthetic demonstration and Infrastructure's node-failure demo. The lifecycle is the only simulation shown on each project page. Graph/card selection preserves URL, scroll, focus and lifecycle progress; component fragments open the appropriate disclosure. Without JavaScript, all lifecycle transcripts are calculated from engine commands during the build. Reduced-motion, Save-Data and technical fragments suppress autoplay; leaving the viewport or hiding the document pauses without automatic resumption.
 
-## Progressive 3D Observatory (SO-08)
+The CnesData lifecycle transforms fictional municipal/national samples, compares three rows and models publication and authorization guards. This remains a synthetic documented/planned target, with the old raw-write rules retained only as domain regression tests. No services, credentials or real records are involved. Production service artwork is vendored locally with hashes and licensing records.
 
-Only `/explore/` loads the scene renderer. The lightweight launcher checks Save-Data and WebGL before importing React Three Fiber and Three.js. The poster stays visible until the six overview GLBs (hub and five districts) have loaded and the first frame has rendered. Import, initialization, model-loading and context-loss failures return to the existing 2D presentation.
+See the [V3 implementation and validation report](design/lifecycle-reports/README.md), [immutable briefing](design/systems-atlas-lifecycles-v3/README.md) and [production asset registry](design/systems-atlas-production-assets.json). The integrated scenario tests execute 91 checkpoints and 27 negatives, including the two documented briefing errata.
 
-The renderer consumes `hub`, `districts`, `overview.layouts` and the five-entry `districtRegistry`. React subscribes to `createObservatoryController()`; the controller remains the source of selection. Canvas selection updates the fragment with `pushState` without scrolling. HTML fragment links retain their native navigation and article focus, including initial deep links and back/forward history.
+## Three project districts
 
-After controller initialization, state/ARIA attributes govern highlighting; `:target` styling serves only the no-JavaScript fallback. Native fragment navigation synchronizes through one `hashchange` listener so duplicate history notifications cannot steal focus from the next selector.
+`projectIds` in `src/features/explorer/projects.ts` is the identity source: `['cnesdata', 'limnopulse', 'infrastructure']`. `AtlasDistrictId = ProjectId`; `DistrictId` is a compatibility alias. `districtIds` derives from `projectIds`. The case-study collection supplies each panel's title, summary, first four technologies and matching `/explore/{id}/` destination. The initial HTML always includes all three selectors, panels and canonical links.
 
-Selecting CnesData or Infrastructure lazily loads its detail model into that district's footprint, retaining the hub and the other districts. Selecting another district restores the previous overview maquette. Loaded models are reused during the visit; a superseded download cannot overwrite a newer selection or force fallback if it fails. Failed loads leave the cache so selecting that district again can retry the download. A failure of the currently selected detail still returns to 2D. These models illustrate architecture and do not own or run the project simulations.
+Public Health and Observability are not Atlas districts. Their former district fragments have no compatibility redirects and behave like any other unknown fragment. The visual hub cannot be selected.
 
-The orthographic camera uses the paired desktop/mobile manifest at the 700px breakpoint. Orbit is limited to ±15° horizontally and ±5° vertically, zoom to 0.9–1.2 times the initial view, and pan is disabled. HTML controls provide zoom and reset; HTML label positions follow the current camera and viewport. Rendering is on demand with DPR capped at 1.5. There is no continuous camera movement; reduced motion keeps 3D available with immediate highlighting.
+`createObservatoryController()` starts with no selection and accepts `SELECT_DISTRICT` plus `ACTIVATE_DISTRICT`; activating the selected project again clears it. Invalid IDs are inert and `null` clears selection. Project fragments support deep links, keyboard navigation and browser history without modal focus behavior. Selection opens a non-modal panel over the right side of the desktop map or a scrollable bottom sheet capped at 60% of the map on mobile. While a panel is open, the selectors reflow into the unobscured desktop map area or a touch-accessible strip at the top of the mobile sheet. The X control, Escape and repeated activation close it: panels pushed from the fragment-free Atlas traverse back to that base entry so they do not leave duplicate history stops, while direct or external fragment entries remove the fragment with `replaceState`. Choosing a different project uses `pushState`. Unknown fragments clear selection. After initialization ARIA/state attributes own highlighting and expansion state; CSS `:target` covers the no-JavaScript fallback.
 
-After a successful mount, **View 2D** discards the renderer, restores the poster and original label positions, preserves the selected district and focuses its HTML selector (the first selector when none is selected). The choice lasts until leaving or reloading the page and is not stored. Teardown cancels pending downloads, guards late completion, unmounts React and releases controls, listeners and graphic resources.
+## Progressive 3D Atlas
 
-Automatic fallback also restores selector focus when a focused 3D control disappears. Focus on surviving HTML links or articles stays where the reader put it.
+The desktop layout is a broad triangle; mobile uses a vertical arrangement. Shared authoring and world factories provide terrain, maquettes, cameras, lighting and static contact treatment to posters and both runtime presentations. Labels project from local anchors through the complete district transforms. The low `00` origin is decorative, and the terrain contains no inter-project traffic connections.
 
-Home and individual project routes do not download the Observatory renderer or GLBs. JavaScript-disabled navigation and both existing synthetic simulations retain their contracts. See [SO-08 evidence](design/so-08/README.md) for browser scenarios and desktop/mobile captures.
+Only `/explore/` loads the interactive Atlas renderer. Home has a separate decorative entry described below. Save-Data or unavailable WebGL 2 retains 2D without downloading React Three Fiber, Three.js or models. A single 15-second deadline starts at activation and includes the dynamic import, all four essential GLBs (hub plus three projects), scene initialization and first valid frame. The poster remains visible until that complete composition renders. Import, model, initialization, timeout or context-loss failures return to 2D. Late completions are ignored; teardown cancels essential downloads and disposes resources.
 
-## Infrastructure scenario
+**View 2D** is available throughout loading. Zoom and reset enable only after readiness. Fallback restores original label positions and preserves selection; it restores selector focus only when the focused canvas/control disappears. Surviving HTML focus remains unchanged. The 2D choice lasts for the visit and is not persisted.
+
+Selecting a project updates persistent region and maquette highlighting plus shared controller state without changing scene geometry. Hover and keyboard focus are transient and do not replace selection. Canvas, label and fragment activation synchronize through one controller without moving focus into the non-modal panel; history traversal restores a visible selector only when it hides the panel containing focus. The Atlas never requests detail maquettes. Only the Infrastructure detail model remains available for generation and inspection; canonical project pages do not load it. Page exit cancels work; a back/forward-cache return reconnects navigation once and stays in 2D.
+
+The orthographic camera switches authored layouts at 700px. Desktop orbit is limited to ±10° horizontally and ±3° vertically, with zoom at 0.9–1.1 times the authored view; mobile uses ±5°, ±2.5° and 0.9–1.05. Pan is disabled. OrbitControls' inline touch action is reset to `pan-y` after connection so vertical touch scrolling remains native; taps still select. DPR is capped at 1.5. Visible ambient animation is capped at 24fps and has an accessible Pause/Resume control. Paused, hidden, offscreen and reduced-motion presentations stop scheduling after settling; reduced motion restores the authored poster pose. Explicit camera or selection changes still render on demand. See [Atlas V2 evidence and limits](design/atlas-v2/README.md).
+
+`assets:generate` validates authored district IDs against `projectIds`, rejects unknown scene requests before generation and removes obsolete district metadata even on partial runs. Regenerate the composition with `npm run assets:generate -- overview`: this refreshes all three district GLBs and the hub from source before rendering overview posters, preserving detail assets and metadata. Historical evidence is retained with supersession notices. Retired Home/Work illustrations and their optimizer are removed; the three districts, hub, overview, Infrastructure detail model and failure posters remain available for generation and inspection. See [SA-01 evidence](design/sa-01/README.md) for validation and loading comparison.
+
+## Legacy Infrastructure domain primitive
 
 The pure engine in `simulation/infrastructure.ts` starts with three online nodes, a workload on `node-02`, an available shared layer and an empty timeline. `FAIL_NODE(node-02)` fails only that node, moves the workload to `node-01`, and records failure, transfer and shared-layer availability in that order. Repeating the failure is inert. `RESET` restores the complete initial state; component selection preserves progress.
 
-The panel presents the state in text and responsive posters, with a polite announcement and a static scenario transcript. Controls start disabled and activate only after initialization. There are no timestamps, uptime or recovery metrics, backend calls or operational data. The failure posters are generated from the transitioned state via `simulationId` anchors; the original GLB stays unchanged.
+This primitive remains covered by domain regression tests. Its standalone UI, failure/reset controls, scheme and transcript disclosure have been removed. Infrastructure now exposes exhaustion, quorum and scaling only through the V3 lifecycle, with engine-generated transcripts for all three cycles. There are no backend calls or operational data.
 
-Home/Work, including the **Health Systems** Work card, were delivered by #21. SO-08 delivers #12's 3D renderer; final integration remains in #13. EPIC #4 stays open for that release work.
+**Work** opens the canonical Systems Atlas at `/explore/`. The shared shell is
+ordinary HTML; graphics are route-specific progressive enhancements.
+
+## Home preview (SA-05)
+
+Home contains one **Explore my work** action to `/explore/`, with no separate
+project catalog. The immediate approved overview poster reserves 3:2 on desktop
+and 4:5 below 780px. Picture selection, preview CSS and the fixed camera share
+that breakpoint. The three names and conceptual-map description remain HTML.
+
+`home-preview-client.ts` has no executable React, Three.js or model imports.
+It requires page load, real viewport intersection, a visible document and an
+idle callback, rechecking eligibility when that callback runs. Without idle
+scheduling it uses a 200ms timer after load under the same gates. Save-Data,
+unavailable WebGL or unobservable visibility retains the poster. There is one
+attempt per document and one 15-second deadline from activation, including
+import, all models, initialization and the first successful complete draw.
+Import completion and first-frame readiness also check elapsed monotonic time,
+so a busy main thread cannot hide the poster after delaying the timeout callback.
+JavaScript module imports cannot be canceled by the browser API; late imports
+are ignored. Model fetches are aborted and late parses are disposed.
+
+`scene/preview.ts` shares the authored world, cameras, resource ownership and
+pauseable ambient-motion scheduler with the Atlas renderer. It has no project
+selection, orbit controls, project details or simulations. Its Pause/Resume
+utility is independent of the single discovery CTA. Running animation draws
+only while visible, with DPR capped at 1.5; paused, reduced-motion, hidden and
+offscreen states stop scheduling after settling. Reduced motion uses the fixed
+camera and authored poster pose. The poster hides only
+after a valid draw of all four models and returns on failure/context loss.
+Page exit cancels scheduling and disposes owned resources. A history-cache
+return retains the poster without restarting graphics.
+
+`#projects` targets the introduction beside the CTA. The five historical
+`#case-*` fragments use fixed `location.replace` destinations: CnesData,
+Aquafarm → LimnoPulse, and all three infrastructure aliases → Infrastructure.
+Without JavaScript those anchors land in the same visible work introduction;
+`#about`, `#experience`, `#stack` and `#contact` retain their content.
+See [SA-05 validation](design/sa-05/validation.md) for measurements and checks.
+
+## Canonical project pages
+
+`/explore/cnesdata/`, `/explore/limnopulse/` and `/explore/infrastructure/`
+combine the complete case-study narrative with their shared System View.
+`ProjectDetail.astro` renders Hero → Lifecycle → Context and contribution → System View disclosure →
+Engineering → Results and evidence, using
+collection-backed content at build time. The case-study collection remains
+the authority for facts.
+
+CnesData uses the shared accessible HTML flow and initializes the explorer controller once. The lifecycle replaces every old standalone demonstration; raw write/replay/conflict and the original Infrastructure failover rules remain covered in domain tests. Each System View distributes all component cards in one vertical column, beside the graph on desktop and below it on mobile.
+
+The canonical routes expose `#overview`, `#system`, `#engineering`, `#results`,
+every `#component-*` fragment, and direct `#evidence` and `#limitations` sections.
+All three projects expose the lifecycle at `#simulation`. Complete lifecycle transcripts are built HTML; playback controls start disabled until the player is initialized.
+Full Parquet-to-Gold processing and Kubernetes deployment remain planned.
+
+The legacy `/work/cnesdata/` route is a small compatibility page; the canonical CnesData
+page contains the full narrative and evidence. Limnopulse and Infrastructure
+also use their canonical `/explore/` project pages.
+
+SA-06 established **Work → `/explore/`** the single primary work destination. All four
+`/work/*` compatibility pages use destination metadata, `noindex`, a static
+fallback link and restricted `location.replace`, preserving query and fragment
+data, except that the retired `#architecture` fragment migrates to `#system`.
+Other fragments pass through unchanged. They are excluded from the sitemap.

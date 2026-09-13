@@ -1,3 +1,4 @@
+import { openTechnicalDetails } from './support/technical-details';
 import { test, expect, type Page } from '@playwright/test';
 import { mkdir } from 'node:fs/promises';
 
@@ -26,6 +27,7 @@ for (const width of [1121, 1440]) {
   test(`About cards remain below the copy in two full-width columns at ${width}`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto('/');
+    await openTechnicalDetails(page);
     const homeLayout = await getAboutLayout(page);
     expect(homeLayout.columns).toBe(2);
     expect(homeLayout.cards.y - homeLayout.copy.bottom).toBeGreaterThanOrEqual(32);
@@ -34,6 +36,7 @@ for (const width of [1121, 1440]) {
     expect(Math.abs(homeLayout.cardBoxes[0].width - homeLayout.cardBoxes[1].width)).toBeLessThanOrEqual(1);
 
     await page.goto('/about/');
+    await openTechnicalDetails(page);
     const aboutCards = page.locator('.role-fit-cards');
     await expect(aboutCards.locator('.role-card')).toHaveCount(2);
     const aboutWidths = await aboutCards.locator('.role-card').evaluateAll((cards) => cards.map((card) => card.getBoundingClientRect().width));
@@ -45,6 +48,7 @@ for (const width of [1121, 1440]) {
 test('About cards stack in one column on mobile', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
+  await openTechnicalDetails(page);
   const layout = await getAboutLayout(page);
   expect(layout.columns).toBe(1);
   expect(layout.cardBoxes[1].y).toBeGreaterThan(layout.cardBoxes[0].y);
@@ -52,11 +56,16 @@ test('About cards stack in one column on mobile', async ({ page }) => {
 });
 
 for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
-  test(`Experience timeline connects both role markers at ${viewport.width}`, async ({ page }) => {
-    await page.setViewportSize(viewport);
-    await page.goto('/#experience');
+  for (const experiencePage of [
+    { name: 'Home', path: '/#experience', headingId: 'home-municipal-experience' },
+    { name: 'About', path: '/about/', headingId: 'about-municipal-experience' }
+  ]) {
+    test(`${experiencePage.name} experience timeline connects both role markers at ${viewport.width}`, async ({ page }) => {
+      await page.setViewportSize(viewport);
+      await page.goto(experiencePage.path);
+      await openTechnicalDetails(page);
 
-    const card = page.locator('.timeline-card');
+    const card = page.locator(`.timeline-card[aria-labelledby="${experiencePage.headingId}"]`);
     await expect(card.locator('h3')).toHaveText('Prefeitura de Presidente Epitácio');
     await expect(card.locator('.timeline-role')).toHaveCount(2);
 
@@ -65,9 +74,13 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       const markerCenter = (role: HTMLElement) => {
         const box = role.getBoundingClientRect();
         const marker = getComputedStyle(role, '::before');
+        const renderedWidth = Number.parseFloat(marker.width)
+          + (marker.boxSizing === 'border-box' ? 0 : Number.parseFloat(marker.borderLeftWidth) + Number.parseFloat(marker.borderRightWidth));
+        const renderedHeight = Number.parseFloat(marker.height)
+          + (marker.boxSizing === 'border-box' ? 0 : Number.parseFloat(marker.borderTopWidth) + Number.parseFloat(marker.borderBottomWidth));
         return {
-          x: box.left + Number.parseFloat(marker.left) + Number.parseFloat(marker.width) / 2,
-          y: box.top + Number.parseFloat(marker.top) + Number.parseFloat(marker.height) / 2
+          x: box.left + Number.parseFloat(marker.left) + renderedWidth / 2,
+          y: box.top + Number.parseFloat(marker.top) + renderedHeight / 2
         };
       };
       const connector = getComputedStyle(roles[0], '::after');
@@ -98,7 +111,8 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     expect(Math.abs(geometry.connector.bottom - geometry.markers[1].y)).toBeLessThanOrEqual(1);
     expect(geometry.metadataDoesNotOverlap).toBe(true);
     expect(geometry.noHorizontalOverflow).toBe(true);
-  });
+    });
+  }
 }
 
 for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
@@ -107,9 +121,9 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     const requests: string[] = [];
     page.on('request', request => requests.push(request.url()));
     await page.goto('/');
+    await openTechnicalDetails(page);
     await expect(page.locator('h1')).toHaveText('ViniciusSantana');
-    await expect(page.locator('.header-resume')).toBeVisible();
-    await expect(page.locator('canvas, astro-island')).toHaveCount(0);
+    await expect(page.locator('.header-social')).toBeVisible();
     for (const id of ['about', 'experience', 'projects', 'stack', 'contact', 'case-cnesdata', 'case-aquafarm', 'case-esus-pec-bootstrap', 'case-infra-ansible', 'case-packer-proxmox-templates']) {
       await expect(page.locator(`#${id}`)).toHaveCount(1);
     }
@@ -125,30 +139,28 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       await page.screenshot({ path: `test-results/so-10/${name}-${viewport.width}.png`, fullPage: true });
     }
     await capture('home');
-    expect(requests.filter(url => /\.(glb|gltf|ktx2)(?:\?|$)|three|react-dom/i.test(url))).toEqual([]);
+    expect(requests.filter(url => /renderer\.[^/]+\.js(?:\?|$)|detail-[^/]+\.glb(?:\?|$)/i.test(url))).toEqual([]);
     if (viewport.width < 820) {
       const toggle = page.locator('[data-menu-toggle]');
       await toggle.focus();
       await page.keyboard.press('Enter');
       await expect(toggle).toHaveAttribute('aria-expanded', 'true');
-      await expect(page.locator('nav[aria-label="Primary navigation"] a[href="/work/"]')).toBeVisible();
+      await expect(page.locator('nav[aria-label="Primary navigation"] a[href="/explore/"]')).toHaveText('Work');
       await page.keyboard.press('Escape');
       await expect(toggle).toBeFocused();
       await expect(toggle).toHaveAttribute('aria-expanded', 'false');
     }
-    await page.locator('.hero-actions a[href="/work/"]').focus();
+    await page.getByRole('link', { name: 'Explore my work', exact: true }).focus();
     await page.keyboard.press('Enter');
-    await expect(page).toHaveURL(/\/work\/$/);
-    await expect(page.locator('.visual-work-card')).toHaveCount(4);
-    const columns = await page.locator('.work-grid').evaluate(el => getComputedStyle(el).gridTemplateColumns.split(' ').length);
-    expect(columns).toBe(viewport.width > 1100 ? 4 : 1);
-    await expect(page.getByRole('link', { name: 'View experience' })).toHaveAttribute('href', '/#experience');
-    await capture('work');
+    await expect(page).toHaveURL(/\/explore\/$/);
+    await expect(page.locator('[data-district-link]')).toHaveCount(3);
+    await capture('atlas');
     for (const slug of ['cnesdata', 'limnopulse', 'infrastructure']) {
-      await page.locator(`.project-actions a[href="/work/${slug}/"]`).click();
-      await expect(page).toHaveURL(new RegExp(`/work/${slug}/$`));
-      await expect(page.locator('.header-resume')).toBeVisible();
-      for (const anchor of ['overview', 'architecture', 'engineering', 'results']) {
+      await page.goto(`/explore/${slug}/`);
+      await openTechnicalDetails(page);
+      await expect(page).toHaveURL(new RegExp(`/explore/${slug}/$`));
+      await expect(page.locator('.header-social')).toBeVisible();
+      for (const anchor of ['overview', 'system', 'engineering', 'results']) {
         const link = page.locator(`.section-nav a[href="#${anchor}"]`);
         await link.focus();
         await page.keyboard.press('Enter');
@@ -156,44 +168,45 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
         await expect(page.locator(`#${anchor}`)).toBeInViewport();
       }
       await capture(slug);
-      await page.locator('.case-footer a[href="/work/"]').click();
+      await page.getByRole('navigation', { name: 'Case study navigation' }).getByRole('link', { name: /Back to Atlas/ }).click();
+      await expect(page).toHaveURL(/\/explore\/$/);
     }
-    await page.locator('.header-resume').click();
-    await expect(page).toHaveURL(/\/resume\/$/);
-    await expect(page.locator('a[download]')).toHaveAttribute('href', '/assets/vinicius-santana-resume.pdf');
+    await page.goto('/');
+    await openTechnicalDetails(page);
+    const homeActions = page.locator('.contact-actions a');
+    await expect(homeActions).toHaveText(['me@vinisantana.com', 'Resume', 'LinkedIn', 'GitHub']);
+    await expect(homeActions.nth(1)).toHaveAttribute('href', '/assets/vinicius-santana-resume.pdf');
+    await expect(homeActions.nth(1)).toHaveAttribute('download', '');
   });
 }
 
-test('CnesData detail write, replay, conflict and reset', async ({ page }) => {
-  await page.goto('/work/cnesdata/#simulation');
-  const scenario = page.getByLabel('Scenario');
-  const step = page.getByRole('button', { name: 'Advance one attempt' });
-  for (const [id, result] of [['raw-first-write', 'stored'], ['raw-identical-replay', 'replayed'], ['raw-content-conflict', 'conflict']]) {
-    await scenario.selectOption(id);
-    await step.click();
-    if (id !== 'raw-first-write') await step.click();
-    await expect(page.locator('[data-result]')).toContainText(result);
-    await expect(page.locator('[data-objects] li')).toHaveCount(1);
-    await expect(page.locator('[data-objects]')).toContainText('synthetic-content-A');
-    await expect(page.locator('[data-objects]')).not.toContainText('synthetic-content-B');
-    await expect(step).toBeDisabled();
-    await page.getByRole('button', { name: 'Reset scenario' }).click();
-    await expect(page.locator('[data-progress]')).toContainText('ready');
-    await expect(page.locator('[data-objects]')).toHaveText('No objects stored.');
-  }
-});
-
-test('detail transcripts and destinations survive without JavaScript', async ({ browser, baseURL }) => {
+test('header socials, Home actions, and detail transcripts remain usable without JavaScript', async ({ browser, baseURL }) => {
   const context = await browser.newContext({ baseURL, javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
   const page = await context.newPage();
   await page.goto('/');
-  await expect(page.locator('.header-resume')).toBeVisible();
-  await page.locator('.hero-actions a[href="/work/"]').click();
-  await page.locator('.project-actions a[href="/work/cnesdata/"]').click();
-  await page.locator('.section-nav a[href="#simulation"]').click();
-  for (const id of ['raw-first-write', 'raw-identical-replay', 'raw-content-conflict']) {
-    await expect(page.locator(`#transcript-${id}`)).toContainText('synthetic-content-A');
+  await openTechnicalDetails(page);
+  const linkedIn = page.locator('.header-social');
+  const gitHub = page.locator('nav[aria-label="Primary navigation"] a[href="https://github.com/VINIClUS"]');
+  await expect(linkedIn).toBeVisible();
+  await expect(gitHub).toBeVisible();
+  for (const social of [linkedIn, gitHub]) {
+    await expect(social).toHaveAttribute('target', '_blank');
+    await expect(social).toHaveAttribute('rel', 'noopener noreferrer');
   }
-  await expect(page.getByRole('button', { name: 'Advance one attempt' })).toBeDisabled();
+  const homeActions = page.locator('.contact-actions a');
+  await expect(homeActions).toHaveText(['me@vinisantana.com', 'Resume', 'LinkedIn', 'GitHub']);
+  await expect(homeActions.nth(1)).toHaveAttribute('href', '/assets/vinicius-santana-resume.pdf');
+  await expect(homeActions.nth(1)).toHaveAttribute('download', '');
+  for (const social of [homeActions.nth(2), homeActions.nth(3)]) {
+    await expect(social).toHaveAttribute('target', '_blank');
+    await expect(social).toHaveAttribute('rel', 'noopener noreferrer');
+  }
+  await page.goto('/explore/cnesdata/');
+  await openTechnicalDetails(page);
+  await page.locator('.section-nav a[href="#simulation"]').click();
+  await page.locator('.life-transcripts > summary').click();
+  await expect(page.locator('.life-transcripts li')).toHaveCount(19);
+  await expect(page.locator('.life-transcripts li').last()).toBeVisible();
+  await expect(page.locator('[data-life-next]')).toBeDisabled();
   await context.close();
 });

@@ -1,0 +1,170 @@
+{
+  "capturedAt": "2026-09-12T10:18:21.894Z",
+  "label": "baseline",
+  "dist": "/tmp/sa-01-baseline-dist",
+  "browser": "Chromium 153.0.8010.12",
+  "conditions": {
+    "cache": "disabled through CDP; fresh context per viewport",
+    "host": "127.0.0.1:4330",
+    "rendering": "headless Chromium; container GPU availability may cause SwiftShader/software WebGL",
+    "timingMeaning": "wall-clock until network idle; useful only for same-host/profile comparisons, not user-facing latency"
+  },
+  "results": [
+    {
+      "profile": {
+        "name": "desktop-1440x900",
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "isMobile": false,
+        "hasTouch": false
+      },
+      "webgl": {
+        "vendor": "Google Inc. (Google)",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "initialSettledMs": 711,
+      "selectionSettledMs": 292,
+      "initialModels": {
+        "requestCount": 6,
+        "encodedBytes": 316722,
+        "requests": [
+          {
+            "url": "http://127.0.0.1:4330/assets/scenes/hub.glb",
+            "type": "Fetch",
+            "phase": "initial",
+            "encodedBytes": 34163,
+            "durationMs": 11
+          },
+          {
+            "url": "http://127.0.0.1:4330/assets/scenes/district-cnesdata.glb",
+            "type": "Fetch",
+            "phase": "initial",
+            "encodedBytes": 57047,
+            "durationMs": 12
+          },
+          {
+            "url": "http://127.0.0.1:4330/assets/scenes/district-public-health.glb",
+            "type": "Fetch",
+            "phase": "initial",
+            "encodedBytes": 54311,
+            "durationMs": 12
+          },
+          {
+            "url": "http://127.0.0.1:4330/assets/scenes/district-infrastructure.glb",
+            "type": "Fetch",
+            "phase": "initial",
+            "encodedBytes": 43095,
+            "durationMs": 12
+          },
+          {
+            "url": "http://127.0.0.1:4330/assets/scenes/district-observability.glb",
+            "type": "Fetch",
+            "phase": "initial",
+            "encodedBytes": 69131,
+            "durationMs": 12
+          },
+          {
+            "url": "http://127.0.0.1:4330/assets/scenes/district-limnopulse.glb",
+            "type": "Fetch",
+            "phase": "initial",
+            "encodedBytes": 58975,
+            "durationMs": 12
+          }
+        ]
+      },
+      "selectionModels": {
+        "requestCount": 1,
+        "encodedBytes": 59095,
+        "requests": [
+          {
+            "url": "http://127.0.0.1:4330/assets/scenes/detail-cnesdata.glb",
+            "type": "Fetch",
+            "phase": "selection-cnesdata",
+            "encodedBytes": 59095,
+            "durationMs": 2
+          }
+        ]
+      }
+    },
+    {
+      "profile": {
+        "name": "mobile-390x900",
+        "viewport": {
+          "width": 390,
+          "height": 900
+        },
+        "isMobile": true,
+        "hasTouch": true
+      },
+      "webgl": {
+        "vendor": "Google Inc. (Google)",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)"
+      },
+      "initialSettledMs": 645,
+      "selectionSettledMs": 291,
+      "initialModels": {
+        "requestCount": 6,
+        "encodedBytes": 316722,
+        "requests": [
+          {
+            "url": "http://127.0.0.1:4330/assets/scenes/hub.glb",
+            "type": "Fetch",
+            "phase": "initial",
+            "encodedBytes": 34163,
+            "durationMs": 3
+          },
+          {
+            "url": "http://127.0.0.1:4330/assets/scenes/district-cnesdata.glb",
+            "type": "Fetch",
+            "phase": "initial",
+            "encodedBytes": 57047,
+            "durationMs": 10
+          },
+          {
+            "url": "http://127.0.0.1:4330/assets/scenes/district-public-health.glb",
+            "type": "Fetch",
+            "phase": "initial",
+            "encodedBytes": 54311,
+            "durationMs": 10
+          },
+          {
+            "url": "http://127.0.0.1:4330/assets/scenes/district-infrastructure.glb",
+            "type": "Fetch",
+            "phase": "initial",
+            "encodedBytes": 43095,
+            "durationMs": 10
+          },
+          {
+            "url": "http://127.0.0.1:4330/assets/scenes/district-observability.glb",
+            "type": "Fetch",
+            "phase": "initial",
+            "encodedBytes": 69131,
+            "durationMs": 10
+          },
+          {
+            "url": "http://127.0.0.1:4330/assets/scenes/district-limnopulse.glb",
+            "type": "Fetch",
+            "phase": "initial",
+            "encodedBytes": 58975,
+            "durationMs": 10
+          }
+        ]
+      },
+      "selectionModels": {
+        "requestCount": 1,
+        "encodedBytes": 59095,
+        "requests": [
+          {
+            "url": "http://127.0.0.1:4330/assets/scenes/detail-cnesdata.glb",
+            "type": "Fetch",
+            "phase": "selection-cnesdata",
+            "encodedBytes": 59095,
+            "durationMs": 3
+          }
+        ]
+      }
+    }
+  ]
+}

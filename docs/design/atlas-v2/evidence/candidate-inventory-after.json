@@ -1,0 +1,1022 @@
+{
+  "capturedAt": "2026-09-12T19:04:59.066Z",
+  "sourceLabel": "lighting-motion-native-preference",
+  "sourceRoot": "/home/vinicius/code/vinicius-santana-career-site/.worktrees/atlas-v2",
+  "builtDirectory": "/home/vinicius/code/vinicius-santana-career-site/.worktrees/atlas-v2/dist",
+  "sourceMode": "working-tree-files",
+  "sourceHead": "16c7e96267799d1aa1bb18d2b38e160abdfc1840",
+  "sourceScope": "All tracked and nonignored untracked src/, public/, scripts/, .github/, package manifests, Astro/Vite/Vitest config and TypeScript config inputs. Evidence/docs/tests are excluded from this product manifest.",
+  "sourceManifestSha256": "9586cb654dbb715e353f2c44aa76b16546887eb60f1e792940606a9950a6fea7",
+  "builtManifestSha256": "907b9ba9ffce0932baf40a97f0e00c4f00171d10f0bf3d336dd9461a716f3519",
+  "productTrackedDiffSha256": "27499aff820739b0cd5977efaef20fb9fc28c6e183b174f72123978b59d9d5a6",
+  "sourceStatus": " M public/assets/posters/district-cnesdata-desktop.webp\n M public/assets/posters/district-cnesdata-mobile.webp\n M public/assets/posters/district-infrastructure-desktop.webp\n M public/assets/posters/district-infrastructure-mobile.webp\n M public/assets/posters/district-limnopulse-desktop.webp\n M public/assets/posters/district-limnopulse-mobile.webp\n M public/assets/posters/hub-desktop.webp\n M public/assets/posters/hub-mobile.webp\n M public/assets/posters/overview-desktop.webp\n M public/assets/posters/overview-mobile.webp\n M public/assets/scenes/district-cnesdata.glb\n M public/assets/scenes/district-infrastructure.glb\n M public/assets/scenes/district-limnopulse.glb\n M public/assets/scenes/hub.glb\n M scripts/assets/generate.mjs\n M scripts/assets/harness.html\n M scripts/assets/scenes.mjs\n M src/content/scenes/generated.json\n M src/content/scenes/index.ts\n M src/content/scenes/types.ts\n M src/features/explorer/observatory-client.ts\n M src/features/explorer/observatory.css\n M src/features/explorer/scene/composition.ts\n M src/features/explorer/scene/preview.ts\n M src/features/explorer/scene/renderer.tsx\n M src/pages/explore/index.astro\n M tsconfig.explorer.json\n?? scripts/assets/atlas-landmarks.mjs\n?? src/content/scenes/atlas-authoring.json\n?? src/features/explorer/scene/ambient-motion.ts\n?? src/features/explorer/scene/atlas-terrain.mjs\n?? src/features/explorer/scene/atlas-world.mjs\n?? src/features/explorer/scene/motion-playback.ts\n?? src/features/explorer/scene/motion.css\n",
+  "archiveVerification": null,
+  "scriptSha256": "8d0d3c814b5fdb49b1250ee34777a6057a6c16c4239dfb6a9e7ddd11b467b6eb",
+  "environment": {
+    "node": "v24.18.0",
+    "platform": "linux",
+    "release": "7.0.0-31-generic",
+    "arch": "x64",
+    "cpu": "Intel(R) Core(TM) i7-7700 CPU @ 3.60GHz",
+    "cpuCount": 8
+  },
+  "source": [
+    {
+      "path": ".github/workflows/deploy-site.yml",
+      "bytes": 1655,
+      "sha256": "6cc4d70ff9592994a12d1b1f23fca84bd038d3827418e803fce63703f84f1bf5"
+    },
+    {
+      "path": "astro.config.mjs",
+      "bytes": 469,
+      "sha256": "0dd1ba3ae55f8125e4c6f32e753df5e7ade00c81208a2ddef6476c764fa0a0bb"
+    },
+    {
+      "path": "package-lock.json",
+      "bytes": 188310,
+      "sha256": "d6d150a52a5873082b526d309173df5d5d9603a5a3d00510572b823e4f1dc93b"
+    },
+    {
+      "path": "package.json",
+      "bytes": 1630,
+      "sha256": "b912654e1bd610eb799b15625fcc478cff6101e7c3214950bba6597a69425c64"
+    },
+    {
+      "path": "public/CNAME",
+      "bytes": 20,
+      "sha256": "50ea872cd8828a877db512188d9ef5789bfef1ebe863d58e345eeb23f983fb7d"
+    },
+    {
+      "path": "public/assets/images/og-image.jpg",
+      "bytes": 96285,
+      "sha256": "d8ca91636838100b6f56346583bfeb5a5b10f46a3d4a587f63e6c1bac7284df4"
+    },
+    {
+      "path": "public/assets/images/og-image.png",
+      "bytes": 439306,
+      "sha256": "4c8acaffc735e5b98e9eeaea849f14d02fb33b2e6a03be00addfa1d91291d420"
+    },
+    {
+      "path": "public/assets/images/og-image.webp",
+      "bytes": 38070,
+      "sha256": "aae0d87c00c46ffc61eb9a2464cb26a586608e49ca7689da1187a11d3fc28be8"
+    },
+    {
+      "path": "public/assets/images/vinicius-about.avif",
+      "bytes": 33345,
+      "sha256": "9c5c061740ed95991ee57ab83735b48992a8c6c10c400ac91a3298cb8c4ea834"
+    },
+    {
+      "path": "public/assets/images/vinicius-about.jpg",
+      "bytes": 113575,
+      "sha256": "36fc937be8b42ef85e58f9a3d23a1949dd1c9526d5499477f8f590320dbd4336"
+    },
+    {
+      "path": "public/assets/images/vinicius-about.webp",
+      "bytes": 39158,
+      "sha256": "ceb926c17889307408a06b78189275336952455915002760e4c530e81c5467c1"
+    },
+    {
+      "path": "public/assets/images/vinicius-avatar.avif",
+      "bytes": 14733,
+      "sha256": "ba0e6f8ba88e21214cf694760747e3ba79843731b685fde920504d59cc187450"
+    },
+    {
+      "path": "public/assets/images/vinicius-avatar.jpg",
+      "bytes": 46091,
+      "sha256": "33b6f23d586c5f28b96a7ad9f399d2c7ce2c086d542bdb7b5b9196d20bfb3573"
+    },
+    {
+      "path": "public/assets/images/vinicius-avatar.webp",
+      "bytes": 18264,
+      "sha256": "7b433916c868fdeb93a53fedbd895874ef5266d69a3692850e69b3c387d9b07a"
+    },
+    {
+      "path": "public/assets/images/vinicius-hero-desktop.avif",
+      "bytes": 22494,
+      "sha256": "849917eb1020bbc6ea96407df5128477e7bf7ca435af2d9880c435ee8cc53ecb"
+    },
+    {
+      "path": "public/assets/images/vinicius-hero-desktop.jpg",
+      "bytes": 98529,
+      "sha256": "aef4a25f1b08bca37613b2291fe08048ebd6091532c9454d23069769ecb78412"
+    },
+    {
+      "path": "public/assets/images/vinicius-hero-desktop.webp",
+      "bytes": 29314,
+      "sha256": "a54e25ddd749ff644e5c9ba98aadbaa0088032890013da2a801276abb70f92b1"
+    },
+    {
+      "path": "public/assets/images/vinicius-portrait-mobile.avif",
+      "bytes": 35676,
+      "sha256": "4e95620ec11e282c4e180ca1b9f39c90a34146e7a4a415cf6d3c01081a127bbf"
+    },
+    {
+      "path": "public/assets/images/vinicius-portrait-mobile.jpg",
+      "bytes": 120161,
+      "sha256": "92eca8c69de08ac97d45194f72b82e6689bf1554260a4ebd42fb878ae7d77594"
+    },
+    {
+      "path": "public/assets/images/vinicius-portrait-mobile.webp",
+      "bytes": 43336,
+      "sha256": "23fd58ff7abb1d87d843bc209086b4fb2128fe8a5571ea64e163fb2439fb4d53"
+    },
+    {
+      "path": "public/assets/posters/detail-cnesdata-desktop.webp",
+      "bytes": 40252,
+      "sha256": "e12199afdde0a0cf277d42bbfabbbcab9f12a939f47c1d91968dba1887674d4d"
+    },
+    {
+      "path": "public/assets/posters/detail-cnesdata-mobile.webp",
+      "bytes": 21088,
+      "sha256": "815765c103e181e0bfe79472cbec72dcf26f1f33572426eaf37b76a1808f4a22"
+    },
+    {
+      "path": "public/assets/posters/detail-infrastructure-desktop.webp",
+      "bytes": 26528,
+      "sha256": "f8141536f1246cff03056f50843437bea5d091c83737550eb6979d527d4a21bf"
+    },
+    {
+      "path": "public/assets/posters/detail-infrastructure-failed-desktop.webp",
+      "bytes": 25812,
+      "sha256": "9d27a734e97cb84b0687533915e8319122a79946c4312630a91c8d7b45bb9841"
+    },
+    {
+      "path": "public/assets/posters/detail-infrastructure-failed-mobile.webp",
+      "bytes": 17456,
+      "sha256": "47c5ca5436a977ae0510755d847ccf044ee8aa0da45678ba2386dc43ba89b2ec"
+    },
+    {
+      "path": "public/assets/posters/detail-infrastructure-mobile.webp",
+      "bytes": 17864,
+      "sha256": "57f6c40f09b172751e7944ed7103608d6236c2c2e5ac8f957b5b0b4c4858556e"
+    },
+    {
+      "path": "public/assets/posters/district-cnesdata-desktop.webp",
+      "bytes": 38320,
+      "sha256": "8b7ef44dec358c730443b501af0a07fb36a55727aae810b3da8568bc483b5334"
+    },
+    {
+      "path": "public/assets/posters/district-cnesdata-mobile.webp",
+      "bytes": 22012,
+      "sha256": "817a4f88434ef048cbd579dc6027c575aba4d874d63e7192d2b2fb2af0a31192"
+    },
+    {
+      "path": "public/assets/posters/district-infrastructure-desktop.webp",
+      "bytes": 45094,
+      "sha256": "66cce42c4ec2735d74e94a70fab407af5db2e0a2f58e14f101c4da8c6686fd01"
+    },
+    {
+      "path": "public/assets/posters/district-infrastructure-mobile.webp",
+      "bytes": 24940,
+      "sha256": "4bffdb67665dd9766b3b6c6f606fea704ef4e5944c72d01d023c3c33d9721427"
+    },
+    {
+      "path": "public/assets/posters/district-limnopulse-desktop.webp",
+      "bytes": 26760,
+      "sha256": "f2d02d5c850ef0b158b0ee7f88224c1472bc02516b2e8c3ac9eb697cee6c9f2d"
+    },
+    {
+      "path": "public/assets/posters/district-limnopulse-mobile.webp",
+      "bytes": 14492,
+      "sha256": "4cc1d4835774e5b7e1a946eb6667ec0c1602a55723627aba6ff304ee99d95abb"
+    },
+    {
+      "path": "public/assets/posters/hub-desktop.webp",
+      "bytes": 12024,
+      "sha256": "1160233682dfe2256afe7904ae8c358f7545eb8c5d5e7bdea2ce137f72f7975a"
+    },
+    {
+      "path": "public/assets/posters/hub-mobile.webp",
+      "bytes": 7120,
+      "sha256": "31a92925b760d5961c22267aaed8256b925bd661791f9628c6de2ae9d63a7cc2"
+    },
+    {
+      "path": "public/assets/posters/overview-desktop.webp",
+      "bytes": 70534,
+      "sha256": "cd45dcc91b95b155ff27af050ef5f4d522698280941c8d2fc6e39b0898ea9d5e"
+    },
+    {
+      "path": "public/assets/posters/overview-mobile.webp",
+      "bytes": 58790,
+      "sha256": "fbd625bf87517680ef2519d05989b7db1e75515e5b59f121e704a77aa82739f8"
+    },
+    {
+      "path": "public/assets/scenes/detail-cnesdata.glb",
+      "bytes": 58936,
+      "sha256": "3500b7a9e4dc14c191b2fdb15fe5870564413afd4d05b65839215ebe1438c5c2"
+    },
+    {
+      "path": "public/assets/scenes/detail-infrastructure.glb",
+      "bytes": 22112,
+      "sha256": "7714fcd9a43e82f86843ba9c4f7f148a9ad461f79fdd2846518921fa5c6f5894"
+    },
+    {
+      "path": "public/assets/scenes/district-cnesdata.glb",
+      "bytes": 151148,
+      "sha256": "21bcf2fcde9120bc235f93b551c738036ee19dca4c65febbd030f2c2d6da0469"
+    },
+    {
+      "path": "public/assets/scenes/district-infrastructure.glb",
+      "bytes": 159600,
+      "sha256": "eca0954840d061acb9afc1e92f6b97398ea36432deeabdf1a49375ff5227966d"
+    },
+    {
+      "path": "public/assets/scenes/district-limnopulse.glb",
+      "bytes": 167976,
+      "sha256": "c24923b64083d9ee1a2301c7dd98c07c7fd87ab5b3e0fe030177a8543e4604cf"
+    },
+    {
+      "path": "public/assets/scenes/hub.glb",
+      "bytes": 7000,
+      "sha256": "bb0a93d00722956cf23f53d287086d6e3e109c83301a1f245187f6fad489c73e"
+    },
+    {
+      "path": "public/assets/vinicius-santana-resume.pdf",
+      "bytes": 470921,
+      "sha256": "b2cca4eac1313462b8ff44eb0c42a3143e5bd1a3ac02a2d756b1b38bc16b769e"
+    },
+    {
+      "path": "public/favicon.svg",
+      "bytes": 570,
+      "sha256": "4706296e237b8275616218d0ee096c263d6bba85d2ac223c98e7af0d48fc2c78"
+    },
+    {
+      "path": "public/site.webmanifest",
+      "bytes": 388,
+      "sha256": "795feea3dbbb5bb2cde8dc4be7d7446f81b99362e4c632608acd81a10fdabcdb"
+    },
+    {
+      "path": "scripts/assets/atlas-landmarks.mjs",
+      "bytes": 20607,
+      "sha256": "46a2faf485c9a957efb27e8f11488b53d6068f49313d989dc36b0f0877c300ba"
+    },
+    {
+      "path": "scripts/assets/generate.mjs",
+      "bytes": 4592,
+      "sha256": "c940e73123dc1b15be2de4be81a84480c7a7e563af8ca0c4cd7c36464cd1cbaf"
+    },
+    {
+      "path": "scripts/assets/harness.html",
+      "bytes": 8683,
+      "sha256": "6c0b61624c458dc3a06596f8b47e908935f2447c3b169b51006737bf94f2db30"
+    },
+    {
+      "path": "scripts/assets/infrastructure-state.mjs",
+      "bytes": 1595,
+      "sha256": "90a013a148e072f1e64740f57867f695d9d6ea59864ddcd66571682bfeb1f8a8"
+    },
+    {
+      "path": "scripts/assets/scenes.mjs",
+      "bytes": 10312,
+      "sha256": "bbcdbe700bc588eb9b9c9555b709b183ec45d258cc146ef9e51680bd466f391d"
+    },
+    {
+      "path": "scripts/gallery/README.md",
+      "bytes": 1636,
+      "sha256": "b448e10e91095149412938a61450da84c9d17af1d55e67f04148028028385a02"
+    },
+    {
+      "path": "scripts/gallery/server.mjs",
+      "bytes": 3908,
+      "sha256": "d9a9f47048582d3eb1ac3fc4db180190a4e1d085347882e8c445dd81b5f19399"
+    },
+    {
+      "path": "scripts/gallery/verify.mjs",
+      "bytes": 3476,
+      "sha256": "f91fceb4d5f2ddd88a95f1d7458ff631f08bde68bac5db81cbfecd45b6523053"
+    },
+    {
+      "path": "scripts/gallery/viewer.mjs",
+      "bytes": 3113,
+      "sha256": "c7347a80abeec2345eb562d286f2a57fedbb2360c70ac94841614b7e1cfa1093"
+    },
+    {
+      "path": "scripts/illustrations/README.md",
+      "bytes": 459,
+      "sha256": "af0ce914bb95cee3d567d40d6d6bd87211fb3b5f1cbc526dda844eab7d54443b"
+    },
+    {
+      "path": "scripts/illustrations/prompts.json",
+      "bytes": 4813,
+      "sha256": "259f1ea2b6ca514e45f2bb76c9f11e28486e9f313f698d19bb0ebd2aea39552a"
+    },
+    {
+      "path": "scripts/measure-home.mjs",
+      "bytes": 8884,
+      "sha256": "fdb793990b58c4de125d4abe83ea5f704b0b6c350e26946686d7701d0cdf5198"
+    },
+    {
+      "path": "src/components/ExternalLink.astro",
+      "bytes": 260,
+      "sha256": "f258e9be356137cd2f122d7eda759ec1662d23d7e01165f24a0efecce7852424"
+    },
+    {
+      "path": "src/components/Footer.astro",
+      "bytes": 612,
+      "sha256": "17dcdb5106c832c26e333a8c51a776a54786842dabb0c2d9d2ca4b8352cc52fa"
+    },
+    {
+      "path": "src/components/Header.astro",
+      "bytes": 3474,
+      "sha256": "0d64b65e12bb2396780fcf6490ca36e04c535e4750fcd9273b7c57473fdce935"
+    },
+    {
+      "path": "src/components/LegacyRedirect.astro",
+      "bytes": 956,
+      "sha256": "6bf4787f59d0a058a397ac13bf44477611588fa2217b94ee2f106b413cbc85a0"
+    },
+    {
+      "path": "src/components/PracticeCards.astro",
+      "bytes": 255,
+      "sha256": "fba9aac835ee2c3defbf88fa19c6516ad1e4260c453b84e9bc93935d33f2f65c"
+    },
+    {
+      "path": "src/components/ProjectDetail.astro",
+      "bytes": 10284,
+      "sha256": "48662c5408eafd1346fe98da4c2f20dc1ac5f96b26e60d99c3291307d6b9d2eb"
+    },
+    {
+      "path": "src/components/ResponsivePoster.astro",
+      "bytes": 618,
+      "sha256": "a6ab7bc277d45456b6669ed06aaf8ad933a52aa47688a9258aa4da49f4a440b3"
+    },
+    {
+      "path": "src/components/StackGrid.astro",
+      "bytes": 266,
+      "sha256": "428852f084ec5c27f77ef8f3ae5b56c1f039aa92d45c16f3278a6b4fd6a1d3b4"
+    },
+    {
+      "path": "src/config/siteMetadata.ts",
+      "bytes": 1580,
+      "sha256": "2946f5bbd7a3bd5c47655e11abda858a4685ecff3100cfc06147305492deb592"
+    },
+    {
+      "path": "src/content.config.ts",
+      "bytes": 1423,
+      "sha256": "71e3a39477db47f6be1848777c11aefb99c219d78f7aeb1890a56cfc34dfa90a"
+    },
+    {
+      "path": "src/content/case-studies.yaml",
+      "bytes": 14752,
+      "sha256": "4a92132f1fc270907ddf1b6843329e9a686c73dbb31e9dc08e2b7ccee48ab7c8"
+    },
+    {
+      "path": "src/content/publicEvidenceUrl.js",
+      "bytes": 216,
+      "sha256": "5d27eef51865b09417a0032598e0c34f7131c3e516ec01a41518d19aac4d9b33"
+    },
+    {
+      "path": "src/content/scenarios/cnesdata.ts",
+      "bytes": 1357,
+      "sha256": "78c36b12f4b96010943f876297a00ce1353b512b44f60fa4d9bb3fdec192f4b2"
+    },
+    {
+      "path": "src/content/scenes/atlas-authoring.json",
+      "bytes": 9974,
+      "sha256": "359c07c5ab288ba2d632e47205d78933b759939293a88c1b39eb34f2c5f26bac"
+    },
+    {
+      "path": "src/content/scenes/generated.json",
+      "bytes": 52483,
+      "sha256": "5e4ff2fd985ea105e4216415034889f03ca1376cc8b91e500e630b31287f14d6"
+    },
+    {
+      "path": "src/content/scenes/index.ts",
+      "bytes": 5669,
+      "sha256": "8d10e85591bc4cfe5b7f1031b20d1fc2f160e87285b8f130cf1dad34fb680ae7"
+    },
+    {
+      "path": "src/content/scenes/types.ts",
+      "bytes": 1766,
+      "sha256": "947c5c25da382b5162f5a6bd20a7ac8305018b68c20bbd801644127f986b1444"
+    },
+    {
+      "path": "src/data/content.js",
+      "bytes": 2771,
+      "sha256": "d31639bd1f15a993302f89a1f83652eebeb6bc8ff11e69fb06992c48effad6ca"
+    },
+    {
+      "path": "src/features/explorer/CnesDataSystemView.astro",
+      "bytes": 5566,
+      "sha256": "1aef1288bfa20fa9811c7c872b90eef1acfed91b91210d71089dc4bb1750b4cb"
+    },
+    {
+      "path": "src/features/explorer/Infrastructure.astro",
+      "bytes": 4244,
+      "sha256": "7a4a484b6e2c6d667e01d5ddfaed53e7f73203b519a480fd61791d99288a5c12"
+    },
+    {
+      "path": "src/features/explorer/InfrastructureSystemView.astro",
+      "bytes": 5321,
+      "sha256": "8ab521163b69463940f9fa985f9a9fbac0b6598a533d93ffffc5011bc62d0d5d"
+    },
+    {
+      "path": "src/features/explorer/LimnopulseSystemView.astro",
+      "bytes": 5348,
+      "sha256": "53bdd869588f312fae8e4b5c6f20449440495c87852b682fda65272751b60285"
+    },
+    {
+      "path": "src/features/explorer/SystemViewCards.astro",
+      "bytes": 3031,
+      "sha256": "4d503ac8b12468db2a32e603b8f3d4e9ec1077cd5204d02e8bb1721628da5e1e"
+    },
+    {
+      "path": "src/features/explorer/Walkthrough.astro",
+      "bytes": 2269,
+      "sha256": "d93d2f264abb3ee6cd89e70cdc36292ac712f6814c01b04ecd6a3a64d953dc33"
+    },
+    {
+      "path": "src/features/explorer/client.ts",
+      "bytes": 6470,
+      "sha256": "c14ae4dc7f5bd3d6462c67921f1c740b44f5e6bc749554c13e1d1599f3abc728"
+    },
+    {
+      "path": "src/features/explorer/controller.ts",
+      "bytes": 2647,
+      "sha256": "8dfd9df93f43e06bf8ecd031403ddadb6883e3a536aa336d22245fa1dc64899c"
+    },
+    {
+      "path": "src/features/explorer/districts.ts",
+      "bytes": 1191,
+      "sha256": "53ab2ae1da1f6a3e28199f4e05e73a2a7e5d8bcfcb8925866b5adfd026c324d9"
+    },
+    {
+      "path": "src/features/explorer/explorer.css",
+      "bytes": 2723,
+      "sha256": "197f58f21332d10575eff1aa222092f8ec4cb404066fc5058a6d12c622f6fa8c"
+    },
+    {
+      "path": "src/features/explorer/home-preview-client.ts",
+      "bytes": 4904,
+      "sha256": "10bd7b71f3b3cfe6aabfce84947d59745d54d918da001d6cd723d6d2e5131978"
+    },
+    {
+      "path": "src/features/explorer/infrastructure-client.ts",
+      "bytes": 4143,
+      "sha256": "8fd469d7ccee2a0ee1d911e67bff83724fe18e1c3334cbe4b03dfbadbc2810d9"
+    },
+    {
+      "path": "src/features/explorer/observatory-client.ts",
+      "bytes": 7415,
+      "sha256": "09715c22ce8f1ddea650d258d0cfed489a417402c66ff11cd6e010ddb17e6d77"
+    },
+    {
+      "path": "src/features/explorer/observatory-controller.ts",
+      "bytes": 1075,
+      "sha256": "71a1594372bc50c4f109fd2f05ee8ad4e908919cf099f333333576a13f088423"
+    },
+    {
+      "path": "src/features/explorer/observatory-projection.ts",
+      "bytes": 1254,
+      "sha256": "2246e6191361777904eb5f5508cb2b9ed2ca21d11055e78570b94a49ef0f07d5"
+    },
+    {
+      "path": "src/features/explorer/observatory.css",
+      "bytes": 6362,
+      "sha256": "6c7f20cef3ba56db6c9771c7fc5c547c6ca5ab575419547ba3b53a981e2ce7d0"
+    },
+    {
+      "path": "src/features/explorer/presentation.ts",
+      "bytes": 984,
+      "sha256": "10d46338fde0c1f9e1e70b0c0117a3725dc6b7e66a4e60222663cf4035d6eafc"
+    },
+    {
+      "path": "src/features/explorer/projects.ts",
+      "bytes": 2928,
+      "sha256": "295c7b040923c867fe3c8de2fb68da30fb3ccc56472143104b0bbd7ecd6cc053"
+    },
+    {
+      "path": "src/features/explorer/scene/ambient-motion.ts",
+      "bytes": 1639,
+      "sha256": "0b225740847b133162e6b46b2437ebbeb97eec7a028f0d5488ab00c04ac3c202"
+    },
+    {
+      "path": "src/features/explorer/scene/atlas-terrain.mjs",
+      "bytes": 9768,
+      "sha256": "b00900e67b5e1839ed3ea1910ebf0ce6d077ed7a1117069a6b913d657da371a1"
+    },
+    {
+      "path": "src/features/explorer/scene/atlas-world.mjs",
+      "bytes": 9671,
+      "sha256": "37ebfdea770887c83daedd9605a83b80c76c0e704279e73980b734d12e559919"
+    },
+    {
+      "path": "src/features/explorer/scene/composition.ts",
+      "bytes": 1838,
+      "sha256": "34406edee8dc78bda45bbf6c5ee608bd39b932f2607999833d37d0e418346b5a"
+    },
+    {
+      "path": "src/features/explorer/scene/infrastructure-projection.ts",
+      "bytes": 3196,
+      "sha256": "a67aebabf808b02801f4026fdc75873d188b019882c23f4df9f05bb171044a5b"
+    },
+    {
+      "path": "src/features/explorer/scene/infrastructure-renderer.ts",
+      "bytes": 5705,
+      "sha256": "813581f1087d00cbe1bd090ecd519de4cf80414897e0c2b57405d8ab3176677c"
+    },
+    {
+      "path": "src/features/explorer/scene/motion-playback.ts",
+      "bytes": 3297,
+      "sha256": "ac7d41d44973f61e849385b9ed1a13796f81d8f770e39f0d716318b90225fae0"
+    },
+    {
+      "path": "src/features/explorer/scene/motion.css",
+      "bytes": 632,
+      "sha256": "e121e455673d68afe349fe15c7abc2216b9198c582b0aaf0cbd7cc0499bad52d"
+    },
+    {
+      "path": "src/features/explorer/scene/preview.ts",
+      "bytes": 4655,
+      "sha256": "a9658831a4d81d698149485948b72d632a07b25f62a7704be7d594356dc04259"
+    },
+    {
+      "path": "src/features/explorer/scene/renderer.tsx",
+      "bytes": 16017,
+      "sha256": "c8ac3bf187b8e66680a3fa7b4830810fb9676fc38c12561fd9d9ee9f763fa190"
+    },
+    {
+      "path": "src/features/explorer/scene/resources.ts",
+      "bytes": 2516,
+      "sha256": "eb92d4e35dd0627ea9657fbcbcc6bd3454a26b9ca1b2f46803ba8b706c5150c4"
+    },
+    {
+      "path": "src/features/explorer/simulation/cnesdata.ts",
+      "bytes": 3758,
+      "sha256": "e51c090da15f9473d986e9ce9e9a32f0295643330b4d8d494c06bfd80db6bafb"
+    },
+    {
+      "path": "src/features/explorer/simulation/infrastructure.ts",
+      "bytes": 1626,
+      "sha256": "ec49a3170ebe9d1810c8720b80be6f56d858ba42cc49615e4df6ad0fe22ea097"
+    },
+    {
+      "path": "src/features/explorer/system-view.ts",
+      "bytes": 655,
+      "sha256": "d9219fd6f4aaf044bd64dcd630cb81c72fd6801349e2d91bbe0d8665a19f526f"
+    },
+    {
+      "path": "src/features/explorer/walkthrough.css",
+      "bytes": 1392,
+      "sha256": "3e43ace921803738bf75d0d6655c3fdd7ef8715ffb20b0e95c389525df93d7b7"
+    },
+    {
+      "path": "src/features/navigation/legacy-routes.ts",
+      "bytes": 618,
+      "sha256": "0ee003bf3f11f8fa6a205bbef565e0c7765d22b2f7e81246578729c292d4af80"
+    },
+    {
+      "path": "src/layouts/BaseLayout.astro",
+      "bytes": 3037,
+      "sha256": "752d293ff141a732aeda000fbc8a3b2099e14cc43b161045b80e83a1e64de26e"
+    },
+    {
+      "path": "src/layouts/EditorialLayout.astro",
+      "bytes": 881,
+      "sha256": "d63a9b19f795fa1d77e18cca4d5bf675f2e0708e28e12390c9ba3baa9b9b7037"
+    },
+    {
+      "path": "src/pages/404.astro",
+      "bytes": 732,
+      "sha256": "e46070ab143beab16446c9e2dc9cd124cbd0011afb4e0c5188d2d8481b809fde"
+    },
+    {
+      "path": "src/pages/about.astro",
+      "bytes": 3586,
+      "sha256": "146d357c1d145d66c56eebefad3d0d3a994a2d53b69ec7ff606fca005b18c2af"
+    },
+    {
+      "path": "src/pages/explore/[project].astro",
+      "bytes": 2182,
+      "sha256": "35146565c58e70df3d48cc22e6cd958f321f5ad50cb390ad029c1257cb1dd634"
+    },
+    {
+      "path": "src/pages/explore/index.astro",
+      "bytes": 5025,
+      "sha256": "7725efd82d1a4f8603cc1e5e8506c20548decb120d4559b4a87a33e6913dd84b"
+    },
+    {
+      "path": "src/pages/index.astro",
+      "bytes": 6591,
+      "sha256": "014b245bb073c58da1062d20fc0f92403812e5a7c9764d62c1386dbabc427970"
+    },
+    {
+      "path": "src/pages/privacy.astro",
+      "bytes": 907,
+      "sha256": "650275c5dcedb23dbe5415ccca51c07d004f3a6226360d9f94553ccd5eb586a1"
+    },
+    {
+      "path": "src/pages/resume.astro",
+      "bytes": 2035,
+      "sha256": "be9953b54377f57f949357f99c73bfc82a592fefbf8a178c8cf8557b4fe86c92"
+    },
+    {
+      "path": "src/pages/robots.txt.ts",
+      "bytes": 397,
+      "sha256": "081efb4f2d9795889b9658ce654a1bb4bb1aa59aea3af152455dc9bee51e3b75"
+    },
+    {
+      "path": "src/pages/work/[...path].astro",
+      "bytes": 464,
+      "sha256": "071c4dc9baf744566d3996a6980a25b03fa43ddefaa3d43a6d91f36beb2c4f31"
+    },
+    {
+      "path": "src/styles/global.css",
+      "bytes": 19431,
+      "sha256": "62a10ffef84ce8e114ecded3e7c35d999f9ffc4ab3fe9cdc4b33ae7a56adcc2a"
+    },
+    {
+      "path": "src/styles/observatory.css",
+      "bytes": 5844,
+      "sha256": "adc93c1d1c3c186b2873273bad511ba4a772e0816d6066b67baa2e32badca357"
+    },
+    {
+      "path": "tsconfig.explorer.json",
+      "bytes": 326,
+      "sha256": "9c6aefc5cf3a40a8f58788b2b370c799d6cae64f1d8c8efddd28a7bd30f987a1"
+    },
+    {
+      "path": "tsconfig.json",
+      "bytes": 109,
+      "sha256": "b5b0a5b04a14cddd7713c5e1c82e86c79c17c2f86b170e26e9b170b3d5e01cd9"
+    },
+    {
+      "path": "tsconfig.scenes.json",
+      "bytes": 143,
+      "sha256": "ca9259b0c777e8d4d24e6811d67d7458531ac84c4cffaf5d962d49933228c1e0"
+    },
+    {
+      "path": "tsconfig.simulation.json",
+      "bytes": 375,
+      "sha256": "5b177051ba580f4e4b652015d14395a608d96fa298bbe38f115988e4ae08ef17"
+    }
+  ],
+  "built": [
+    {
+      "path": "404.html",
+      "bytes": 5900,
+      "sha256": "4fe6e83968b99d5087df59d41154d690aee9a29bd5ac0e51b82e6b18c909e63e"
+    },
+    {
+      "path": "CNAME",
+      "bytes": 20,
+      "sha256": "50ea872cd8828a877db512188d9ef5789bfef1ebe863d58e345eeb23f983fb7d"
+    },
+    {
+      "path": "_astro/BaseLayout.y_MDQ6sz.css",
+      "bytes": 14751,
+      "sha256": "a899cc1bde5d6dda2c26044c63f822983f074e121bbefd4b9cd0c524f3de6d80"
+    },
+    {
+      "path": "_astro/EditorialLayout.J1dYlSsd.css",
+      "bytes": 4916,
+      "sha256": "6fe6166c09844e8b879c34caf9809fc904e32f31175fb7c523972e8820b13993"
+    },
+    {
+      "path": "_astro/_project_.astro_astro_type_script_index_0_lang.pl3I2vf4.js",
+      "bytes": 8937,
+      "sha256": "670f7113f1e4a5bc4089821efc39fb4f46bdcfb0170f41b06ac68ffefd8ea83c"
+    },
+    {
+      "path": "_astro/_project_.y9U5fmRu.css",
+      "bytes": 19103,
+      "sha256": "83e9e27d1a6786bd02db33e1e08fd096267aba2a12520d70a89c476b02f3f7fc"
+    },
+    {
+      "path": "_astro/client.fx05C6nO.js",
+      "bytes": 180538,
+      "sha256": "2d703c72d4447abefd7b81c3a3e674824309365e4d8f7679b37afb10dfd37dac"
+    },
+    {
+      "path": "_astro/index.BkJctKAv.css",
+      "bytes": 5561,
+      "sha256": "ef8ef125c6085a1b744febf31fb6154379f0e0bb76490f3ec86b27ea522a426b"
+    },
+    {
+      "path": "_astro/index.astro_astro_type_script_index_0_lang.BVgzR9U0.js",
+      "bytes": 4193,
+      "sha256": "d1478e6528bdd171704f3064323928f5541e140b52f850b13f82e2ddaa797200"
+    },
+    {
+      "path": "_astro/index.astro_astro_type_script_index_0_lang.CnM14mWF.js",
+      "bytes": 2591,
+      "sha256": "3daaf8b0d1ac814c69997f6a4dd56d1df97d176eeb916945d83dd34f5e8dc547"
+    },
+    {
+      "path": "_astro/infrastructure-renderer.6lM_ZR03.js",
+      "bytes": 3882,
+      "sha256": "eb5d24ab419a8886af106e62fb70db6236e73138e856d1f15e7067f821ef32e9"
+    },
+    {
+      "path": "_astro/motion-playback.B1rFmSrq.js",
+      "bytes": 15580,
+      "sha256": "ebe70de7dd9dd8dc91a461a7da33b0ad6ca09c576b6028b32a098ad8304a1884"
+    },
+    {
+      "path": "_astro/preload-helper.CxFQXtKk.js",
+      "bytes": 1342,
+      "sha256": "b39ea8a0a9ff7dd6b08f09d4cc161bbfc41f2039d1606fecbaed8f165af4070d"
+    },
+    {
+      "path": "_astro/preview.SOJXEbOX.js",
+      "bytes": 1931,
+      "sha256": "303831f9b5f2160787279f9601e017b2c8b6b60d1ab300631cd6018d1d83809f"
+    },
+    {
+      "path": "_astro/projects.q_jrk2kO.js",
+      "bytes": 2177,
+      "sha256": "730e1bd2df3907f0f93dd3932ddec3795faedf5a58e15b88b3b0d7c4daa46bbe"
+    },
+    {
+      "path": "_astro/renderer.BSpLi8Zu.js",
+      "bytes": 176082,
+      "sha256": "88ff0f02a621f223fb4944538bdefb24560c288ffe99c798bc3183647ade3166"
+    },
+    {
+      "path": "_astro/resources.DUSlKkDL.js",
+      "bytes": 637237,
+      "sha256": "330a80e1b6eca16c32679454f5275ebe1e5c1ceadc27779eea2ba9f23bec3989"
+    },
+    {
+      "path": "_astro/scheduler.B4IZwwFr.js",
+      "bytes": 11561,
+      "sha256": "3129a47ec24a73ceb63c69a438293df714292044d12319e40d638ad70b1de1dc"
+    },
+    {
+      "path": "about/index.html",
+      "bytes": 10260,
+      "sha256": "e9ab6d8b9964492e12e61722888f34a35f190f99dadfca2a55c158c8ec693a29"
+    },
+    {
+      "path": "assets/images/og-image.jpg",
+      "bytes": 96285,
+      "sha256": "d8ca91636838100b6f56346583bfeb5a5b10f46a3d4a587f63e6c1bac7284df4"
+    },
+    {
+      "path": "assets/images/og-image.png",
+      "bytes": 439306,
+      "sha256": "4c8acaffc735e5b98e9eeaea849f14d02fb33b2e6a03be00addfa1d91291d420"
+    },
+    {
+      "path": "assets/images/og-image.webp",
+      "bytes": 38070,
+      "sha256": "aae0d87c00c46ffc61eb9a2464cb26a586608e49ca7689da1187a11d3fc28be8"
+    },
+    {
+      "path": "assets/images/vinicius-about.avif",
+      "bytes": 33345,
+      "sha256": "9c5c061740ed95991ee57ab83735b48992a8c6c10c400ac91a3298cb8c4ea834"
+    },
+    {
+      "path": "assets/images/vinicius-about.jpg",
+      "bytes": 113575,
+      "sha256": "36fc937be8b42ef85e58f9a3d23a1949dd1c9526d5499477f8f590320dbd4336"
+    },
+    {
+      "path": "assets/images/vinicius-about.webp",
+      "bytes": 39158,
+      "sha256": "ceb926c17889307408a06b78189275336952455915002760e4c530e81c5467c1"
+    },
+    {
+      "path": "assets/images/vinicius-avatar.avif",
+      "bytes": 14733,
+      "sha256": "ba0e6f8ba88e21214cf694760747e3ba79843731b685fde920504d59cc187450"
+    },
+    {
+      "path": "assets/images/vinicius-avatar.jpg",
+      "bytes": 46091,
+      "sha256": "33b6f23d586c5f28b96a7ad9f399d2c7ce2c086d542bdb7b5b9196d20bfb3573"
+    },
+    {
+      "path": "assets/images/vinicius-avatar.webp",
+      "bytes": 18264,
+      "sha256": "7b433916c868fdeb93a53fedbd895874ef5266d69a3692850e69b3c387d9b07a"
+    },
+    {
+      "path": "assets/images/vinicius-hero-desktop.avif",
+      "bytes": 22494,
+      "sha256": "849917eb1020bbc6ea96407df5128477e7bf7ca435af2d9880c435ee8cc53ecb"
+    },
+    {
+      "path": "assets/images/vinicius-hero-desktop.jpg",
+      "bytes": 98529,
+      "sha256": "aef4a25f1b08bca37613b2291fe08048ebd6091532c9454d23069769ecb78412"
+    },
+    {
+      "path": "assets/images/vinicius-hero-desktop.webp",
+      "bytes": 29314,
+      "sha256": "a54e25ddd749ff644e5c9ba98aadbaa0088032890013da2a801276abb70f92b1"
+    },
+    {
+      "path": "assets/images/vinicius-portrait-mobile.avif",
+      "bytes": 35676,
+      "sha256": "4e95620ec11e282c4e180ca1b9f39c90a34146e7a4a415cf6d3c01081a127bbf"
+    },
+    {
+      "path": "assets/images/vinicius-portrait-mobile.jpg",
+      "bytes": 120161,
+      "sha256": "92eca8c69de08ac97d45194f72b82e6689bf1554260a4ebd42fb878ae7d77594"
+    },
+    {
+      "path": "assets/images/vinicius-portrait-mobile.webp",
+      "bytes": 43336,
+      "sha256": "23fd58ff7abb1d87d843bc209086b4fb2128fe8a5571ea64e163fb2439fb4d53"
+    },
+    {
+      "path": "assets/posters/detail-cnesdata-desktop.webp",
+      "bytes": 40252,
+      "sha256": "e12199afdde0a0cf277d42bbfabbbcab9f12a939f47c1d91968dba1887674d4d"
+    },
+    {
+      "path": "assets/posters/detail-cnesdata-mobile.webp",
+      "bytes": 21088,
+      "sha256": "815765c103e181e0bfe79472cbec72dcf26f1f33572426eaf37b76a1808f4a22"
+    },
+    {
+      "path": "assets/posters/detail-infrastructure-desktop.webp",
+      "bytes": 26528,
+      "sha256": "f8141536f1246cff03056f50843437bea5d091c83737550eb6979d527d4a21bf"
+    },
+    {
+      "path": "assets/posters/detail-infrastructure-failed-desktop.webp",
+      "bytes": 25812,
+      "sha256": "9d27a734e97cb84b0687533915e8319122a79946c4312630a91c8d7b45bb9841"
+    },
+    {
+      "path": "assets/posters/detail-infrastructure-failed-mobile.webp",
+      "bytes": 17456,
+      "sha256": "47c5ca5436a977ae0510755d847ccf044ee8aa0da45678ba2386dc43ba89b2ec"
+    },
+    {
+      "path": "assets/posters/detail-infrastructure-mobile.webp",
+      "bytes": 17864,
+      "sha256": "57f6c40f09b172751e7944ed7103608d6236c2c2e5ac8f957b5b0b4c4858556e"
+    },
+    {
+      "path": "assets/posters/district-cnesdata-desktop.webp",
+      "bytes": 38320,
+      "sha256": "8b7ef44dec358c730443b501af0a07fb36a55727aae810b3da8568bc483b5334"
+    },
+    {
+      "path": "assets/posters/district-cnesdata-mobile.webp",
+      "bytes": 22012,
+      "sha256": "817a4f88434ef048cbd579dc6027c575aba4d874d63e7192d2b2fb2af0a31192"
+    },
+    {
+      "path": "assets/posters/district-infrastructure-desktop.webp",
+      "bytes": 45094,
+      "sha256": "66cce42c4ec2735d74e94a70fab407af5db2e0a2f58e14f101c4da8c6686fd01"
+    },
+    {
+      "path": "assets/posters/district-infrastructure-mobile.webp",
+      "bytes": 24940,
+      "sha256": "4bffdb67665dd9766b3b6c6f606fea704ef4e5944c72d01d023c3c33d9721427"
+    },
+    {
+      "path": "assets/posters/district-limnopulse-desktop.webp",
+      "bytes": 26760,
+      "sha256": "f2d02d5c850ef0b158b0ee7f88224c1472bc02516b2e8c3ac9eb697cee6c9f2d"
+    },
+    {
+      "path": "assets/posters/district-limnopulse-mobile.webp",
+      "bytes": 14492,
+      "sha256": "4cc1d4835774e5b7e1a946eb6667ec0c1602a55723627aba6ff304ee99d95abb"
+    },
+    {
+      "path": "assets/posters/hub-desktop.webp",
+      "bytes": 12024,
+      "sha256": "1160233682dfe2256afe7904ae8c358f7545eb8c5d5e7bdea2ce137f72f7975a"
+    },
+    {
+      "path": "assets/posters/hub-mobile.webp",
+      "bytes": 7120,
+      "sha256": "31a92925b760d5961c22267aaed8256b925bd661791f9628c6de2ae9d63a7cc2"
+    },
+    {
+      "path": "assets/posters/overview-desktop.webp",
+      "bytes": 70534,
+      "sha256": "cd45dcc91b95b155ff27af050ef5f4d522698280941c8d2fc6e39b0898ea9d5e"
+    },
+    {
+      "path": "assets/posters/overview-mobile.webp",
+      "bytes": 58790,
+      "sha256": "fbd625bf87517680ef2519d05989b7db1e75515e5b59f121e704a77aa82739f8"
+    },
+    {
+      "path": "assets/scenes/detail-cnesdata.glb",
+      "bytes": 58936,
+      "sha256": "3500b7a9e4dc14c191b2fdb15fe5870564413afd4d05b65839215ebe1438c5c2"
+    },
+    {
+      "path": "assets/scenes/detail-infrastructure.glb",
+      "bytes": 22112,
+      "sha256": "7714fcd9a43e82f86843ba9c4f7f148a9ad461f79fdd2846518921fa5c6f5894"
+    },
+    {
+      "path": "assets/scenes/district-cnesdata.glb",
+      "bytes": 151148,
+      "sha256": "21bcf2fcde9120bc235f93b551c738036ee19dca4c65febbd030f2c2d6da0469"
+    },
+    {
+      "path": "assets/scenes/district-infrastructure.glb",
+      "bytes": 159600,
+      "sha256": "eca0954840d061acb9afc1e92f6b97398ea36432deeabdf1a49375ff5227966d"
+    },
+    {
+      "path": "assets/scenes/district-limnopulse.glb",
+      "bytes": 167976,
+      "sha256": "c24923b64083d9ee1a2301c7dd98c07c7fd87ab5b3e0fe030177a8543e4604cf"
+    },
+    {
+      "path": "assets/scenes/hub.glb",
+      "bytes": 7000,
+      "sha256": "bb0a93d00722956cf23f53d287086d6e3e109c83301a1f245187f6fad489c73e"
+    },
+    {
+      "path": "assets/vinicius-santana-resume.pdf",
+      "bytes": 470921,
+      "sha256": "b2cca4eac1313462b8ff44eb0c42a3143e5bd1a3ac02a2d756b1b38bc16b769e"
+    },
+    {
+      "path": "explore/cnesdata/index.html",
+      "bytes": 34912,
+      "sha256": "5e2372873b987ce0d953dfc9c22957542d89a5697e020d6f2c27f7ac3a91708a"
+    },
+    {
+      "path": "explore/index.html",
+      "bytes": 30152,
+      "sha256": "11908a8ad1b79be574e1fa1d50c9b95ed1e6cbc91c9a3e19215f611d0c77cb93"
+    },
+    {
+      "path": "explore/infrastructure/index.html",
+      "bytes": 30073,
+      "sha256": "5e1ab0e2ca33c2fcb9e8ad419958451f0b99c0f7b37760e0dcc9d7d621728ac3"
+    },
+    {
+      "path": "explore/limnopulse/index.html",
+      "bytes": 34306,
+      "sha256": "07c1b2395f17ae59289d2ad8f42613f9a2bff017ecb44d5cd788c9498f15b72e"
+    },
+    {
+      "path": "favicon.svg",
+      "bytes": 570,
+      "sha256": "4706296e237b8275616218d0ee096c263d6bba85d2ac223c98e7af0d48fc2c78"
+    },
+    {
+      "path": "index.html",
+      "bytes": 16598,
+      "sha256": "26c2e5d299aea558e54cdb71887f88a1c17d35e3a83ea2fab06151c85629b6d0"
+    },
+    {
+      "path": "privacy/index.html",
+      "bytes": 6100,
+      "sha256": "e4417782f88723626e07ce4284b64dade380290623346345a08c847a7146489e"
+    },
+    {
+      "path": "resume/index.html",
+      "bytes": 7062,
+      "sha256": "a252a71b6a1c714855e97e12216f3a5b05c669e5d87633ffbe8360a5eda097c1"
+    },
+    {
+      "path": "robots.txt",
+      "bytes": 79,
+      "sha256": "181b19cc1bbeabbd4621eb2d140df6306aa7fd397e4141d2e4e10eebd28c0e6e"
+    },
+    {
+      "path": "site.webmanifest",
+      "bytes": 388,
+      "sha256": "795feea3dbbb5bb2cde8dc4be7d7446f81b99362e4c632608acd81a10fdabcdb"
+    },
+    {
+      "path": "sitemap-0.xml",
+      "bytes": 822,
+      "sha256": "3146d100d48494e0d41beb11b8737be1c78577b61fcc49ccee0bbbd168f43ca6"
+    },
+    {
+      "path": "sitemap-index.xml",
+      "bytes": 190,
+      "sha256": "747a39d366c91a0d46bfd94e0a70c7fba173846a67e6cf86a5d028c90667d9e0"
+    },
+    {
+      "path": "work/cnesdata/index.html",
+      "bytes": 3156,
+      "sha256": "6e4604900041a6e3ea1a741e9b02c6c8ffb79013ed4340ab2c5e6ce75117e48f"
+    },
+    {
+      "path": "work/index.html",
+      "bytes": 3135,
+      "sha256": "b72b38483eca2eb8383890a9485e6eb1bc50701efd9052d41d9565462588e927"
+    },
+    {
+      "path": "work/infrastructure/index.html",
+      "bytes": 3174,
+      "sha256": "b1b9d24fb5c7894ab93604ed5cfb2aa24db471934f0e61e6451937067b50e6c9"
+    },
+    {
+      "path": "work/limnopulse/index.html",
+      "bytes": 3162,
+      "sha256": "13764b4c73aba31c0356a8c86fbe0d1f7a7a41cdede307527bae322e399099b6"
+    }
+  ]
+}

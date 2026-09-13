@@ -1,7 +1,6 @@
 import generated from './generated.json' with { type: 'json' };
 import type { DistrictId, OverviewLayout, ResponsivePoster, SceneAsset, SceneCamera, Vector3 } from './types.ts';
-import type { ProjectId } from '../../features/explorer/projects.ts';
-export type { DistrictId, OverviewLayout, ResponsivePoster, SceneAsset, SceneCamera, SceneModel, Vector3, VisualImage } from './types.ts';
+export type { AtlasDistrictId, DistrictId, OverviewLayout, ResponsivePoster, SceneAsset, SceneCamera, SceneModel, Vector3, VisualImage } from './types.ts';
 
 export { districtIds } from '../../features/explorer/districts.ts';
 
@@ -13,13 +12,18 @@ function camera(value: { projection: string; position: number[]; target: number[
   if (value.projection !== 'orthographic' || !Object.values(value.frustum).every(Number.isFinite) || !Number.isFinite(value.zoom)) throw new Error('Invalid generated scene camera');
   return { projection: 'orthographic', position: vector(value.position), target: vector(value.target), up: vector(value.up), frustum: value.frustum, zoom: value.zoom };
 }
-function layout(value: { districtPositions: Record<DistrictId, number[]>; districtScale: number; hubPosition: number[] }, sceneCamera: SceneCamera): OverviewLayout {
+function layout(value: { districtPositions: Record<DistrictId, number[]>; districtScale: number; hubPosition: number[]; rotations: Record<DistrictId, number[]>; labelPositions: Record<DistrictId, number[]>; regionOutlines: Record<DistrictId, number[][]>; terrainOutline: number[][]; interaction: OverviewLayout['interaction'] }, sceneCamera: SceneCamera): OverviewLayout {
   return {
     placements: {
       cnesdata: vector(value.districtPositions.cnesdata),
       limnopulse: vector(value.districtPositions.limnopulse),
       infrastructure: vector(value.districtPositions.infrastructure),
     },
+    rotations: { cnesdata: vector(value.rotations.cnesdata), limnopulse: vector(value.rotations.limnopulse), infrastructure: vector(value.rotations.infrastructure) },
+    labelPositions: { cnesdata: vector(value.labelPositions.cnesdata), limnopulse: vector(value.labelPositions.limnopulse), infrastructure: vector(value.labelPositions.infrastructure) },
+    regionOutlines: { cnesdata: value.regionOutlines.cnesdata.map(vector), limnopulse: value.regionOutlines.limnopulse.map(vector), infrastructure: value.regionOutlines.infrastructure.map(vector) },
+    terrainOutline: value.terrainOutline,
+    interaction: value.interaction,
     districtScale: value.districtScale,
     hubPosition: vector(value.hubPosition),
     camera: sceneCamera,
@@ -48,27 +52,12 @@ function scene(id: string, alt: string): SceneAsset {
     poster: poster(id, alt),
   };
 }
-function illustration(stem: string, alt: string): ResponsivePoster {
-  return {
-    desktop: { src: `/assets/posters/${stem}-desktop.webp`, width: 1200, height: 800, alt },
-    mobile: { src: `/assets/posters/${stem}-mobile.webp`, width: 600, height: 600, alt },
-  };
-}
-
-export const homeVisual = illustration('home-globe', 'Luminous globe floating in navy space, connected by fine data-network arcs.');
-export const workPosters = {
-  cnesdata: illustration('work-cnesdata', 'Isometric data platform with connected processing and storage architecture.'),
-  limnopulse: illustration('work-limnopulse', 'Aquatic environment with illustrative sensing instruments and telemetry connections.'),
-  infrastructure: illustration('work-infrastructure', 'Isometric infrastructure cluster with illuminated server racks and shared connections.'),
-  'public-health': illustration('work-public-health', 'Public-health campus with connected clinical and administrative buildings.'),
-} as const satisfies Record<ProjectId | 'public-health', ResponsivePoster>;
-
 export const districts = {
-  cnesdata: scene('district-cnesdata', 'Isometric data platform with distinct processing, storage, and orchestration buildings.'),
+  cnesdata: scene('district-cnesdata', 'Stepped horizontal data layers and an open gateway on low cartographic terrain.'),
   limnopulse: scene('district-limnopulse', 'Water basin with sensing buoys and illustrative telemetry instruments.'),
-  infrastructure: scene('district-infrastructure', 'Server-rack district with three connected infrastructure nodes.'),
+  infrastructure: scene('district-infrastructure', 'Three illustrative compute nodes with a lower shared layer on angular terrain.'),
 } as const satisfies Record<DistrictId, SceneAsset>;
-export const hub = scene('hub', 'Luminous central hub on a circular architectural platform.');
+export const hub = scene('hub', 'Small decorative cartographic origin ring and registration cross.');
 export const details = {
   infrastructure: scene('detail-infrastructure', 'Infrastructure detail with three nodes, a shared layer, and an identifiable workload.'),
 } as const;
@@ -80,7 +69,7 @@ const overviewLayouts = {
 } as const;
 export const overview = {
   id: 'overview',
-  poster: poster('overview', 'Three architectural project districts arranged around a luminous central hub.'),
+  poster: poster('overview', 'CnesData layers, an irregular LimnoPulse basin and three Infrastructure nodes share one continuous conceptual terrain.'),
   layouts: overviewLayouts,
   placements: overviewLayouts.desktop.placements,
   districtScale: overviewLayouts.desktop.districtScale,
@@ -92,4 +81,4 @@ export const overview = {
 export const sceneAssets: readonly SceneAsset[] = [...Object.values(districts), hub, ...Object.values(details)];
 export const infrastructureFailurePoster = poster('detail-infrastructure-failed', 'Synthetic Infrastructure failure: node-02 highlighted red, workload transferred to node-01, node-03 and shared layer available.');
 
-export const allPosters: readonly ResponsivePoster[] = [homeVisual, ...Object.values(workPosters), ...sceneAssets.map(asset => asset.poster), overview.poster, infrastructureFailurePoster];
+export const allPosters: readonly ResponsivePoster[] = [...sceneAssets.map(asset => asset.poster), overview.poster, infrastructureFailurePoster];

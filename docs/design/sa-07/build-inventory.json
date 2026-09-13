@@ -1,0 +1,92 @@
+{
+  "removedPosters": [
+    {
+      "path": "public/assets/posters/home-globe-desktop.webp",
+      "bytes": 71584
+    },
+    {
+      "path": "public/assets/posters/home-globe-mobile.webp",
+      "bytes": 41546
+    },
+    {
+      "path": "public/assets/posters/work-cnesdata-desktop.webp",
+      "bytes": 117090
+    },
+    {
+      "path": "public/assets/posters/work-cnesdata-mobile.webp",
+      "bytes": 64564
+    },
+    {
+      "path": "public/assets/posters/work-infrastructure-desktop.webp",
+      "bytes": 83774
+    },
+    {
+      "path": "public/assets/posters/work-infrastructure-mobile.webp",
+      "bytes": 47086
+    },
+    {
+      "path": "public/assets/posters/work-limnopulse-desktop.webp",
+      "bytes": 123676
+    },
+    {
+      "path": "public/assets/posters/work-limnopulse-mobile.webp",
+      "bytes": 61614
+    },
+    {
+      "path": "public/assets/posters/work-public-health-desktop.webp",
+      "bytes": 113922
+    },
+    {
+      "path": "public/assets/posters/work-public-health-mobile.webp",
+      "bytes": 62426
+    }
+  ],
+  "removedPosterBytes": 787282,
+  "publishedPosters": [
+    "detail-cnesdata-desktop.webp",
+    "detail-cnesdata-mobile.webp",
+    "detail-infrastructure-desktop.webp",
+    "detail-infrastructure-failed-desktop.webp",
+    "detail-infrastructure-failed-mobile.webp",
+    "detail-infrastructure-mobile.webp",
+    "district-cnesdata-desktop.webp",
+    "district-cnesdata-mobile.webp",
+    "district-infrastructure-desktop.webp",
+    "district-infrastructure-mobile.webp",
+    "district-limnopulse-desktop.webp",
+    "district-limnopulse-mobile.webp",
+    "hub-desktop.webp",
+    "hub-mobile.webp",
+    "overview-desktop.webp",
+    "overview-mobile.webp"
+  ],
+  "publishedModels": [
+    "detail-cnesdata.glb",
+    "detail-infrastructure.glb",
+    "district-cnesdata.glb",
+    "district-infrastructure.glb",
+    "district-limnopulse.glb",
+    "hub.glb"
+  ],
+  "exploreHtml": [
+    "explore/cnesdata/index.html",
+    "explore/index.html",
+    "explore/infrastructure/index.html",
+    "explore/limnopulse/index.html"
+  ],
+  "retiredReferencesInBuiltHtmlCssJs": [],
+  "cssAudit": {
+    "removedClassesStillInBuiltHtml": [],
+    "preservedDynamicPrefixes": [
+      "area-",
+      "district-link-",
+      "status-"
+    ],
+    "restoredAtlasRules": [
+      "explorer-area",
+      "area-limnopulse",
+      "area-infrastructure"
+    ],
+    "method": "Compare removed stylesheet class names against all generated HTML class attributes and inspect interpolated class expressions/classList mutations."
+  }
+}

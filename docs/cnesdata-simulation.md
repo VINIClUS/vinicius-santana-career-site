@@ -1,4 +1,6 @@
-# CnesData synthetic simulation API
+# CnesData raw-write regression API
+
+This legacy primitive is retained for domain regression tests. Its Synthetic demonstration UI was removed; the public CnesData page now uses the [Systems Atlas V3 lifecycle](design/lifecycle-reports/README.md).
 
 SO-05 / Issue #9 supplies the pure TypeScript state engine for SO-06 / Issue #10. Import the three functions and their exported types from `src/features/explorer/simulation/cnesdata.ts`. Scenario definitions and the demonstration label live in `src/content/scenarios/cnesdata.ts`.
 

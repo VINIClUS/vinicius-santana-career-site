@@ -5,7 +5,7 @@ Static career landing page for **Vinicius Santana**, focused on Data Engineering
 Built with **Astro** and designed for GitHub Pages under:
 
 ```txt
-dev.vinisantana.com
+vinisantana.com
 ```
 
 ## What this version improves
@@ -17,7 +17,7 @@ dev.vinisantana.com
 - Concrete project descriptions linked to public repositories and technical notes.
 - SEO, Open Graph and JSON-LD metadata for recruiter sharing.
 - Keyboard-accessible navigation, skip link, visible focus states and semantic landmarks.
-- Lightweight static build with no backend, no form processor and no tracking scripts.
+- Lightweight static build with no backend or form processor; Google Analytics 4 loads only in production builds.
 
 ## Local development
 
@@ -56,13 +56,15 @@ npm ci
 npm test
 npm run build
 npm run smoke
+npm run test:explorer
+npm run gallery:verify
 ```
 
 The smoke command validates files in `dist/`, so always run the build first.
 
 `npm test` checks the pure simulation TypeScript modules and runs the focused
 Node tests. The [CnesData simulation API](docs/cnesdata-simulation.md) documents
-the synthetic engine and generated transcripts for the SO-06 explorer.
+the legacy raw-write primitive retained for regression tests; the canonical page uses the complete lifecycle tour.
 
 ## Project structure
 
@@ -83,7 +85,8 @@ the synthetic engine and generated transcripts for the SO-06 explorer.
 │   ├── data/content.js
 │   ├── layouts/
 │   ├── pages/
-│   │   ├── work/
+│   │   ├── explore/     # Canonical Atlas and project pages
+│   │   ├── work/        # Four static compatibility pages
 │   │   ├── 404.astro
 │   │   └── index.astro
 │   └── styles/global.css
@@ -106,19 +109,10 @@ the synthetic engine and generated transcripts for the SO-06 explorer.
 The repository includes `public/CNAME`, which Astro copies unchanged into the deployed output.
 
 ```txt
-dev.vinisantana.com
+vinisantana.com
 ```
 
-In your DNS provider, create a CNAME record similar to:
-
-```txt
-Name: dev
-Value: viniclus.github.io
-```
-
-Then in GitHub, open **Settings → Pages → Custom domain**, enter `dev.vinisantana.com`, save, wait for DNS verification and enable HTTPS.
-
-To use another subdomain, update only:
+The domain and GitHub Pages configuration are managed externally. If the canonical domain changes, update both:
 
 - `public/CNAME`
 - `site` in `astro.config.mjs`
@@ -202,8 +196,42 @@ There is no backend, database, authentication or contact form. Contact actions u
 
 ## Systems Atlas
 
-Open `/explore/` or `/explore/{cnesdata,limnopulse,infrastructure}/`. The overview progressively enhances a static poster and fragment-accessible project panels with an optional WebGL scene. Capable browsers load only the three project maquettes and central hub; browsers without WebGL retain the complete 2D navigation and panel experience.
+**Work** in the primary navigation opens Systems Atlas. Open `/explore/` for the
+three-project Systems Atlas, or `/explore/{cnesdata,limnopulse,infrastructure}/`
+for the individual project walkthroughs.
 
-`npm test` checks the simulation and explorer TypeScript modules and runs the focused Node tests. After `npm run build`, run `npm run smoke` and `npm run test:explorer`. Install the browser once with `npx playwright install --with-deps chromium`. Playwright 1.63.0 covers the project explorers, responsive Atlas interactions, static fallbacks and visual contracts with one worker; screenshots and traces are retained only on failure. To run the same smoke against a deployment, set `EXPLORER_BASE_URL` to its origin.
+The overview is progressively enhanced: capable browsers load an on-demand
+Three.js view after the immediate HTML and 2D poster are already usable. The
+poster remains visible while the scene loads. Save-Data, unavailable WebGL,
+renderer/model failures, a 15-second loading deadline, context loss, and **View 2D** (available during loading) all
+keep or restore the same 2D HTML/poster experience with working district links.
+Home uses the same four overview models through a separate fixed, decorative
+preview. Its small launcher waits for page load, actual viewport intersection,
+document visibility and an idle opportunity before downloading Three.js or models.
+One 15-second deadline covers activation through the first complete draw; failure
+retains the responsive poster. The only Home work CTA is **Explore my work** →
+`/explore/`. The Atlas and project pages do not load the Home preview. All three project pages lead with HTML/SVG lifecycle tours and retain their technical System Views in disclosures.
+See [SA-05 validation](docs/design/sa-05/validation.md) for loading and performance evidence.
 
-Project summaries and technology lists come from [`src/content/case-studies.yaml`](src/content/case-studies.yaml); stable component and scene IDs live in the explorer and scene modules beside their tests.
+`npm test` checks the simulation and explorer TypeScript modules and runs the focused Node tests. After `npm run build`, run `npm run smoke` and `npm run test:explorer`. Install the browser once with `npx playwright install --with-deps chromium`. Playwright 1.63.0 runs the Chromium browser suites with one worker; screenshots and traces are retained only on failure. To run the same smoke against a deployment, set `EXPLORER_BASE_URL` to its origin.
+
+The five Systems Atlas V3 tours cover 91 command checkpoints and 27 negative cases. See the [V3 report, captures and recordings](docs/design/lifecycle-reports/README.md).
+
+See [the explorer contract](docs/explorer.md) for interaction and fallback
+details, and [the SA-01 evidence](docs/design/sa-01/README.md) for the
+release evidence.
+
+## Canonical work navigation
+
+The primary Work link opens `/explore/` (Systems Atlas). Project narratives,
+System Views, simulations and evidence live at `/explore/cnesdata/`,
+`/explore/limnopulse/` and `/explore/infrastructure/`.
+
+The four former `/work/` routes are static compatibility documents with a
+canonical destination, `noindex`, a normal HTML link and `location.replace`.
+The explicit route map preserves query strings and fragments, including
+`#architecture`; query parameters never select a redirect destination. Without
+JavaScript, the HTML link opens the canonical page. These are not HTTP 301/308
+responses. The sitemap contains only the seven canonical pages.
+
+HTML owns content and navigation; deterministic controllers own selection and simulation. Optional renderers project that state without replacing evidence, focus or static fallbacks. See [SA-07 validation](docs/design/sa-07/validation.md) for migration cleanup and release evidence.

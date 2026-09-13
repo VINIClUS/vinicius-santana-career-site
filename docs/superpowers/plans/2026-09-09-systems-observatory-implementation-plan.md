@@ -1,5 +1,7 @@
 # Systems Observatory Implementation Plan
 
+> **Superseded for future implementation:** the approved [Systems Atlas implementation plan](./2026-09-11-systems-atlas-navigation-project-experience-implementation-plan.md) replaces this plan for subsequent work. This file remains the historical delivery record for Systems Observatory.
+
 > **For agentic workers:** implement one GitHub issue per branch/worktree. The committed reference image is the primary visual target. Keep tests localized and merge when the issue works and integrates.
 
 **Goal:** Finish the portfolio as the dark, cinematic technical-dashboard and isometric Systems Observatory shown in the approved reference, while preserving truthful content and the current static Astro architecture.

@@ -35,18 +35,18 @@
   ],
   "routes": {
     "infrastructure": {
-      "htmlBytes": 104678,
-      "htmlGzipBytes": 15906,
+      "htmlBytes": 113543,
+      "htmlGzipBytes": 17154,
       "tourDataGzipBytes": 6968
     },
     "limnopulse": {
-      "htmlBytes": 77662,
-      "htmlGzipBytes": 12906,
+      "htmlBytes": 97675,
+      "htmlGzipBytes": 15738,
       "tourDataGzipBytes": 5597
     },
     "cnesdata": {
-      "htmlBytes": 69699,
-      "htmlGzipBytes": 13364,
+      "htmlBytes": 82618,
+      "htmlGzipBytes": 14969,
       "tourDataGzipBytes": 5026
     }
   },

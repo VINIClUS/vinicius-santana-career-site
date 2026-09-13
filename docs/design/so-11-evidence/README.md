@@ -1,3 +1,5 @@
+> Historical delivery record: superseded where it describes separate Work/Explore, the Home globe or five selectable districts. See [Systems Atlas specification](../../superpowers/specs/2026-09-11-systems-atlas-navigation-project-experience-spec-v2.md). Original evidence below is retained.
+
 # SO-11 verification
 
 The screenshots show the five-district Observatory and failed Infrastructure state at 1440px and 390px. They are produced by the Explorer browser tests against the static build.

@@ -1,0 +1,56 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import SystemViewCards from './SystemViewCards.astro';
+import SystemGraphConnectors from './SystemGraphConnectors.astro';
+import { projectDefinitions } from './projects.ts';
+
+interface Props { caseStudy: CollectionEntry<'caseStudies'>['data']; }
+const { caseStudy } = Astro.props;
+const { relations } = projectDefinitions.cnesdata;
+const componentFor = (id: string) => caseStudy.architecture.find(component => component.id === id)!;
+const graphNodes = [
+  { id: 'canonical-contracts', x: 16, y: 16 }, { id: 'edge-agent', x: 16, y: 46 }, { id: 'web-dashboard', x: 16, y: 78 },
+  { id: 'central-api', x: 50, y: 50 },
+  { id: 'tenant-isolation', x: 84, y: 26 }, { id: 'parquet-to-gold', x: 84, y: 55 }, { id: 'kubernetes', x: 84, y: 82 },
+];
+const routes = {
+  'canonical-contracts→edge-agent': { via: [{ x: 16, y: 31 }], label: { x: 16, y: 31 } },
+  'canonical-contracts→central-api': { via: [{ x: 50, y: 20 }], label: { x: 50, y: 20 } },
+  'edge-agent→central-api': { via: [{ x: 50, y: 32 }], label: { x: 50, y: 32 } },
+  'central-api→tenant-isolation': { via: [{ x: 50, y: 8 }], label: { x: 50, y: 8 } },
+  'web-dashboard→central-api': { via: [{ x: 16, y: 62 }], label: { x: 16, y: 62 } },
+  'central-api→parquet-to-gold': { via: [{ x: 50, y: 69 }], label: { x: 50, y: 69 } },
+  'kubernetes→central-api': { via: [{ x: 50, y: 91 }], label: { x: 50, y: 91 } },
+};
+---
+<div class="integrated-system-view cnesdata-system-view" data-integrated-system-view>
+  <p class="explorer-note">Conceptual architecture map for public discussion. Connections describe system responsibilities rather than a live deployment; processing and deployment boundaries remain illustrative.</p>
+  <div class="system-view-layout">
+    <div class="system-graph-column">
+      <section class="system-graph cnesdata-graph" data-system-graph aria-labelledby="system-map-title">
+        <div class="graph-heading"><h3 id="system-map-title">System map</h3><p>Central API is the branching hub between contracts, clients, and downstream boundaries.</p></div>
+        <div class="graph-stage">
+          <SystemGraphConnectors components={caseStudy.architecture} nodes={graphNodes} relations={relations} nodeHalfWidth={14.5} nodeHalfHeight={10.91} {routes} />
+          <ol class="graph-nodes" aria-label="CnesData system components">
+          {graphNodes.map(node => { const component = componentFor(node.id); return <li id={`graph-node-${node.id}`} data-graph-node={node.id} class={node.id === 'central-api' ? 'graph-node graph-node-hub' : 'graph-node'} style={`--node-x: ${node.x}%; --node-y: ${node.y}%`}>
+            <button type="button" data-component-diagram={node.id} data-component-select={node.id} data-selected="false" aria-pressed="false" disabled>
+              <span class="graph-node-kicker" aria-hidden="true">{node.id === 'central-api' ? 'Hub' : 'Component'}</span>
+              <strong>{component.title}</strong>
+              <span class="selection-marker" aria-hidden="true">Selected</span>
+            </button>
+          </li>; })}
+          </ol>
+        </div>
+      </section>
+
+    </div>
+    <SystemViewCards components={caseStudy.architecture} relations={relations} />
+  </div>
+</div>
+<style>
+  .cnesdata-system-view { --graph-accent: var(--accent); --graph-connector: var(--accent); --graph-node-height: 96px; }
+  .system-graph-column { display: grid; gap: 20px; min-width: 0; }
+  .system-graph { background: linear-gradient(140deg, rgba(132,244,230,.08), rgba(7,18,31,.35)); }
+  .graph-stage { position: relative; height: 440px; margin-top: 20px; }
+  .graph-node-hub button { border-color: var(--accent); box-shadow: inset 0 0 0 1px rgba(132,244,230,.25); }
+</style>

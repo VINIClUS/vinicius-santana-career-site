@@ -1,0 +1,485 @@
+{
+  "capturedAt": "2026-09-12T19:14:36.693Z",
+  "baseline": {
+    "sourceLabel": "773022dee346f9e614b4b227aaf1b38fa721ec1c",
+    "capturedAt": "2026-09-12T18:44:35.986Z",
+    "sourceHead": "773022dee346f9e614b4b227aaf1b38fa721ec1c",
+    "sourceManifestSha256": "9daac72867a387045f4f8697cbb63906d35a127fe37e2cfc84aafeb6d460fd88",
+    "builtManifestSha256": "4590d50cdf99b6ae9ad53eeb134ca3110c5a7b35564696dc28a0d4b3ee9e1907"
+  },
+  "firstCandidate": {
+    "sourceLabel": "lighting-motion-final-focus-round2",
+    "capturedAt": "2026-09-12T18:28:53.426Z",
+    "sourceHead": "773022dee346f9e614b4b227aaf1b38fa721ec1c",
+    "sourceManifestSha256": "ce2f0b5419c996de8adb5532fa14d911a399928ec6b8e605ea304dd6c4b161b0",
+    "builtManifestSha256": "76963baeef7af22595ff5ae698410d00fa4fab199b24cc7918a1aec19de17f69"
+  },
+  "correctedPreRun": {
+    "sourceLabel": "lighting-motion-native-preference",
+    "capturedAt": "2026-09-12T18:58:52.086Z",
+    "sourceHead": "773022dee346f9e614b4b227aaf1b38fa721ec1c",
+    "sourceManifestSha256": "9586cb654dbb715e353f2c44aa76b16546887eb60f1e792940606a9950a6fea7",
+    "builtManifestSha256": "907b9ba9ffce0932baf40a97f0e00c4f00171d10f0bf3d336dd9461a716f3519"
+  },
+  "correctedPostRun": {
+    "sourceLabel": "lighting-motion-native-preference",
+    "capturedAt": "2026-09-12T19:04:59.066Z",
+    "sourceHead": "16c7e96267799d1aa1bb18d2b38e160abdfc1840",
+    "sourceManifestSha256": "9586cb654dbb715e353f2c44aa76b16546887eb60f1e792940606a9950a6fea7",
+    "builtManifestSha256": "907b9ba9ffce0932baf40a97f0e00c4f00171d10f0bf3d336dd9461a716f3519"
+  },
+  "currentRepositoryHead": "72e1b9341619364c12d292960385b3fa452b0e9d",
+  "concurrentCommits": [
+    {
+      "sha": "16c7e96267799d1aa1bb18d2b38e160abdfc1840",
+      "subject": "feat: integrate project system view graphs"
+    },
+    {
+      "sha": "72e1b9341619364c12d292960385b3fa452b0e9d",
+      "subject": "docs: record system view implementation report"
+    }
+  ],
+  "reconciliation": "Per the coordinator, the System View changes were authored/committed by separate concurrent work. Their file content was already present in the corrected pre-run source snapshot, when HEAD still named 773022d. Git HEAD advanced during the collection, but complete product-source and build hash manifests remained identical before/after. The later documentation commit does not change those product inputs. Do not attribute the concurrent System View code to Task C or describe the overall candidate as a one-file source delta.",
+  "productContentsFrozen": true,
+  "sourceChangesSinceFirstCandidate": [
+    {
+      "path": "src/features/explorer/CnesDataSystemView.astro",
+      "previous": {
+        "path": "src/features/explorer/CnesDataSystemView.astro",
+        "bytes": 5663,
+        "sha256": "6b9cb8c99caab7fcb89047e96421e6bc3be4e4cdc041197b287f5af8e9437ef0"
+      },
+      "corrected": {
+        "path": "src/features/explorer/CnesDataSystemView.astro",
+        "bytes": 5566,
+        "sha256": "1aef1288bfa20fa9811c7c872b90eef1acfed91b91210d71089dc4bb1750b4cb"
+      }
+    },
+    {
+      "path": "src/features/explorer/Infrastructure.astro",
+      "previous": {
+        "path": "src/features/explorer/Infrastructure.astro",
+        "bytes": 4306,
+        "sha256": "b672e5c108a51b9c74601ff7826247b574303f64992e31c071dcb4817feeaf87"
+      },
+      "corrected": {
+        "path": "src/features/explorer/Infrastructure.astro",
+        "bytes": 4244,
+        "sha256": "7a4a484b6e2c6d667e01d5ddfaed53e7f73203b519a480fd61791d99288a5c12"
+      }
+    },
+    {
+      "path": "src/features/explorer/InfrastructureSystemView.astro",
+      "previous": {
+        "path": "src/features/explorer/InfrastructureSystemView.astro",
+        "bytes": 4912,
+        "sha256": "d52d547d48abecc4c275aa1664fb1bdd6eeadac933dd194eded2d2be6b629d31"
+      },
+      "corrected": {
+        "path": "src/features/explorer/InfrastructureSystemView.astro",
+        "bytes": 5321,
+        "sha256": "8ab521163b69463940f9fa985f9a9fbac0b6598a533d93ffffc5011bc62d0d5d"
+      }
+    },
+    {
+      "path": "src/features/explorer/LimnopulseSystemView.astro",
+      "previous": {
+        "path": "src/features/explorer/LimnopulseSystemView.astro",
+        "bytes": 6966,
+        "sha256": "ae6f42589bc3ba0dd09ff6d72741b98fed2597456e9b68e8723b665157d56afa"
+      },
+      "corrected": {
+        "path": "src/features/explorer/LimnopulseSystemView.astro",
+        "bytes": 5348,
+        "sha256": "53bdd869588f312fae8e4b5c6f20449440495c87852b682fda65272751b60285"
+      }
+    },
+    {
+      "path": "src/features/explorer/SystemViewCards.astro",
+      "previous": null,
+      "corrected": {
+        "path": "src/features/explorer/SystemViewCards.astro",
+        "bytes": 3031,
+        "sha256": "4d503ac8b12468db2a32e603b8f3d4e9ec1077cd5204d02e8bb1721628da5e1e"
+      }
+    },
+    {
+      "path": "src/features/explorer/scene/motion-playback.ts",
+      "previous": {
+        "path": "src/features/explorer/scene/motion-playback.ts",
+        "bytes": 3077,
+        "sha256": "ff97c5c19def51f90efccef93d776f52c935d822203ba80d70b815855a0b0593"
+      },
+      "corrected": {
+        "path": "src/features/explorer/scene/motion-playback.ts",
+        "bytes": 3297,
+        "sha256": "ac7d41d44973f61e849385b9ed1a13796f81d8f770e39f0d716318b90225fae0"
+      }
+    },
+    {
+      "path": "src/features/explorer/system-view.ts",
+      "previous": null,
+      "corrected": {
+        "path": "src/features/explorer/system-view.ts",
+        "bytes": 655,
+        "sha256": "d9219fd6f4aaf044bd64dcd630cb81c72fd6801349e2d91bbe0d8665a19f526f"
+      }
+    }
+  ],
+  "directPageArtifactChanges": [
+    {
+      "path": "index.html",
+      "previous": {
+        "path": "index.html",
+        "bytes": 16598,
+        "sha256": "eccf31436f73161deaf352a7dbb6fc88adced98492961a37ef2e297c2240e686"
+      },
+      "corrected": {
+        "path": "index.html",
+        "bytes": 16598,
+        "sha256": "26c2e5d299aea558e54cdb71887f88a1c17d35e3a83ea2fab06151c85629b6d0"
+      },
+      "equal": false
+    },
+    {
+      "path": "explore/index.html",
+      "previous": {
+        "path": "explore/index.html",
+        "bytes": 30152,
+        "sha256": "d7266f4941d9912ce14309447d23ec2ce3b598cd44c3c97fd92f474c5a6881c2"
+      },
+      "corrected": {
+        "path": "explore/index.html",
+        "bytes": 30152,
+        "sha256": "11908a8ad1b79be574e1fa1d50c9b95ed1e6cbc91c9a3e19215f611d0c77cb93"
+      },
+      "equal": false
+    }
+  ],
+  "requestedJavaScriptChanges": [
+    {
+      "route": "/explore/",
+      "bundles": [
+        {
+          "logicalBundle": "/_astro/index.astro_astro_type_script_index_0_lang.js",
+          "previous": [
+            {
+              "path": "/_astro/index.astro_astro_type_script_index_0_lang.Cni4MveN.js",
+              "logicalBundle": "/_astro/index.astro_astro_type_script_index_0_lang.js",
+              "built": {
+                "path": "_astro/index.astro_astro_type_script_index_0_lang.Cni4MveN.js",
+                "bytes": 4193,
+                "sha256": "2af56110abb46728e0fd699b864e745267047717df8f60735b3f516933d52e13"
+              }
+            }
+          ],
+          "corrected": [
+            {
+              "path": "/_astro/index.astro_astro_type_script_index_0_lang.BVgzR9U0.js",
+              "logicalBundle": "/_astro/index.astro_astro_type_script_index_0_lang.js",
+              "built": {
+                "path": "_astro/index.astro_astro_type_script_index_0_lang.BVgzR9U0.js",
+                "bytes": 4193,
+                "sha256": "d1478e6528bdd171704f3064323928f5541e140b52f850b13f82e2ddaa797200"
+              }
+            }
+          ],
+          "equal": false
+        },
+        {
+          "logicalBundle": "/_astro/motion-playback.js",
+          "previous": [
+            {
+              "path": "/_astro/motion-playback.CtearLnT.js",
+              "logicalBundle": "/_astro/motion-playback.js",
+              "built": {
+                "path": "_astro/motion-playback.CtearLnT.js",
+                "bytes": 15605,
+                "sha256": "6ce018cefe5a1a31a91c0fd26c8d0f44fd264035d3a3f630ddbc5daa79b45825"
+              }
+            }
+          ],
+          "corrected": [
+            {
+              "path": "/_astro/motion-playback.B1rFmSrq.js",
+              "logicalBundle": "/_astro/motion-playback.js",
+              "built": {
+                "path": "_astro/motion-playback.B1rFmSrq.js",
+                "bytes": 15580,
+                "sha256": "ebe70de7dd9dd8dc91a461a7da33b0ad6ca09c576b6028b32a098ad8304a1884"
+              }
+            }
+          ],
+          "equal": false
+        },
+        {
+          "logicalBundle": "/_astro/preload-helper.js",
+          "previous": [
+            {
+              "path": "/_astro/preload-helper.CxFQXtKk.js",
+              "logicalBundle": "/_astro/preload-helper.js",
+              "built": {
+                "path": "_astro/preload-helper.CxFQXtKk.js",
+                "bytes": 1342,
+                "sha256": "b39ea8a0a9ff7dd6b08f09d4cc161bbfc41f2039d1606fecbaed8f165af4070d"
+              }
+            }
+          ],
+          "corrected": [
+            {
+              "path": "/_astro/preload-helper.CxFQXtKk.js",
+              "logicalBundle": "/_astro/preload-helper.js",
+              "built": {
+                "path": "_astro/preload-helper.CxFQXtKk.js",
+                "bytes": 1342,
+                "sha256": "b39ea8a0a9ff7dd6b08f09d4cc161bbfc41f2039d1606fecbaed8f165af4070d"
+              }
+            }
+          ],
+          "equal": true
+        },
+        {
+          "logicalBundle": "/_astro/projects.js",
+          "previous": [
+            {
+              "path": "/_astro/projects.q_jrk2kO.js",
+              "logicalBundle": "/_astro/projects.js",
+              "built": {
+                "path": "_astro/projects.q_jrk2kO.js",
+                "bytes": 2177,
+                "sha256": "730e1bd2df3907f0f93dd3932ddec3795faedf5a58e15b88b3b0d7c4daa46bbe"
+              }
+            }
+          ],
+          "corrected": [
+            {
+              "path": "/_astro/projects.q_jrk2kO.js",
+              "logicalBundle": "/_astro/projects.js",
+              "built": {
+                "path": "_astro/projects.q_jrk2kO.js",
+                "bytes": 2177,
+                "sha256": "730e1bd2df3907f0f93dd3932ddec3795faedf5a58e15b88b3b0d7c4daa46bbe"
+              }
+            }
+          ],
+          "equal": true
+        },
+        {
+          "logicalBundle": "/_astro/renderer.js",
+          "previous": [
+            {
+              "path": "/_astro/renderer.DtPrSGcA.js",
+              "logicalBundle": "/_astro/renderer.js",
+              "built": {
+                "path": "_astro/renderer.DtPrSGcA.js",
+                "bytes": 176082,
+                "sha256": "2609a8900890f9ac91b0f015f7465c730ddec2e13409a6d1f7dc456f78a6ac21"
+              }
+            }
+          ],
+          "corrected": [
+            {
+              "path": "/_astro/renderer.BSpLi8Zu.js",
+              "logicalBundle": "/_astro/renderer.js",
+              "built": {
+                "path": "_astro/renderer.BSpLi8Zu.js",
+                "bytes": 176082,
+                "sha256": "88ff0f02a621f223fb4944538bdefb24560c288ffe99c798bc3183647ade3166"
+              }
+            }
+          ],
+          "equal": false
+        },
+        {
+          "logicalBundle": "/_astro/resources.js",
+          "previous": [
+            {
+              "path": "/_astro/resources.DUSlKkDL.js",
+              "logicalBundle": "/_astro/resources.js",
+              "built": {
+                "path": "_astro/resources.DUSlKkDL.js",
+                "bytes": 637237,
+                "sha256": "330a80e1b6eca16c32679454f5275ebe1e5c1ceadc27779eea2ba9f23bec3989"
+              }
+            }
+          ],
+          "corrected": [
+            {
+              "path": "/_astro/resources.DUSlKkDL.js",
+              "logicalBundle": "/_astro/resources.js",
+              "built": {
+                "path": "_astro/resources.DUSlKkDL.js",
+                "bytes": 637237,
+                "sha256": "330a80e1b6eca16c32679454f5275ebe1e5c1ceadc27779eea2ba9f23bec3989"
+              }
+            }
+          ],
+          "equal": true
+        },
+        {
+          "logicalBundle": "/_astro/scheduler.js",
+          "previous": [
+            {
+              "path": "/_astro/scheduler.B4IZwwFr.js",
+              "logicalBundle": "/_astro/scheduler.js",
+              "built": {
+                "path": "_astro/scheduler.B4IZwwFr.js",
+                "bytes": 11561,
+                "sha256": "3129a47ec24a73ceb63c69a438293df714292044d12319e40d638ad70b1de1dc"
+              }
+            }
+          ],
+          "corrected": [
+            {
+              "path": "/_astro/scheduler.B4IZwwFr.js",
+              "logicalBundle": "/_astro/scheduler.js",
+              "built": {
+                "path": "_astro/scheduler.B4IZwwFr.js",
+                "bytes": 11561,
+                "sha256": "3129a47ec24a73ceb63c69a438293df714292044d12319e40d638ad70b1de1dc"
+              }
+            }
+          ],
+          "equal": true
+        }
+      ]
+    },
+    {
+      "route": "/",
+      "bundles": [
+        {
+          "logicalBundle": "/_astro/index.astro_astro_type_script_index_0_lang.js",
+          "previous": [
+            {
+              "path": "/_astro/index.astro_astro_type_script_index_0_lang.CeiHqOno.js",
+              "logicalBundle": "/_astro/index.astro_astro_type_script_index_0_lang.js",
+              "built": {
+                "path": "_astro/index.astro_astro_type_script_index_0_lang.CeiHqOno.js",
+                "bytes": 2591,
+                "sha256": "4a84737a93c6506348698d18054cc7265897ea19a4f014369d9bc684ca528ed5"
+              }
+            }
+          ],
+          "corrected": [
+            {
+              "path": "/_astro/index.astro_astro_type_script_index_0_lang.CnM14mWF.js",
+              "logicalBundle": "/_astro/index.astro_astro_type_script_index_0_lang.js",
+              "built": {
+                "path": "_astro/index.astro_astro_type_script_index_0_lang.CnM14mWF.js",
+                "bytes": 2591,
+                "sha256": "3daaf8b0d1ac814c69997f6a4dd56d1df97d176eeb916945d83dd34f5e8dc547"
+              }
+            }
+          ],
+          "equal": false
+        },
+        {
+          "logicalBundle": "/_astro/motion-playback.js",
+          "previous": [
+            {
+              "path": "/_astro/motion-playback.CtearLnT.js",
+              "logicalBundle": "/_astro/motion-playback.js",
+              "built": {
+                "path": "_astro/motion-playback.CtearLnT.js",
+                "bytes": 15605,
+                "sha256": "6ce018cefe5a1a31a91c0fd26c8d0f44fd264035d3a3f630ddbc5daa79b45825"
+              }
+            }
+          ],
+          "corrected": [
+            {
+              "path": "/_astro/motion-playback.B1rFmSrq.js",
+              "logicalBundle": "/_astro/motion-playback.js",
+              "built": {
+                "path": "_astro/motion-playback.B1rFmSrq.js",
+                "bytes": 15580,
+                "sha256": "ebe70de7dd9dd8dc91a461a7da33b0ad6ca09c576b6028b32a098ad8304a1884"
+              }
+            }
+          ],
+          "equal": false
+        },
+        {
+          "logicalBundle": "/_astro/preload-helper.js",
+          "previous": [
+            {
+              "path": "/_astro/preload-helper.CxFQXtKk.js",
+              "logicalBundle": "/_astro/preload-helper.js",
+              "built": {
+                "path": "_astro/preload-helper.CxFQXtKk.js",
+                "bytes": 1342,
+                "sha256": "b39ea8a0a9ff7dd6b08f09d4cc161bbfc41f2039d1606fecbaed8f165af4070d"
+              }
+            }
+          ],
+          "corrected": [
+            {
+              "path": "/_astro/preload-helper.CxFQXtKk.js",
+              "logicalBundle": "/_astro/preload-helper.js",
+              "built": {
+                "path": "_astro/preload-helper.CxFQXtKk.js",
+                "bytes": 1342,
+                "sha256": "b39ea8a0a9ff7dd6b08f09d4cc161bbfc41f2039d1606fecbaed8f165af4070d"
+              }
+            }
+          ],
+          "equal": true
+        },
+        {
+          "logicalBundle": "/_astro/preview.js",
+          "previous": [
+            {
+              "path": "/_astro/preview.DHkjOIbC.js",
+              "logicalBundle": "/_astro/preview.js",
+              "built": {
+                "path": "_astro/preview.DHkjOIbC.js",
+                "bytes": 1931,
+                "sha256": "1c7902d27b374ea5cd0f940849a6e706158f5a50dc2e826412f824de0595d454"
+              }
+            }
+          ],
+          "corrected": [
+            {
+              "path": "/_astro/preview.SOJXEbOX.js",
+              "logicalBundle": "/_astro/preview.js",
+              "built": {
+                "path": "_astro/preview.SOJXEbOX.js",
+                "bytes": 1931,
+                "sha256": "303831f9b5f2160787279f9601e017b2c8b6b60d1ab300631cd6018d1d83809f"
+              }
+            }
+          ],
+          "equal": false
+        },
+        {
+          "logicalBundle": "/_astro/resources.js",
+          "previous": [
+            {
+              "path": "/_astro/resources.DUSlKkDL.js",
+              "logicalBundle": "/_astro/resources.js",
+              "built": {
+                "path": "_astro/resources.DUSlKkDL.js",
+                "bytes": 637237,
+                "sha256": "330a80e1b6eca16c32679454f5275ebe1e5c1ceadc27779eea2ba9f23bec3989"
+              }
+            }
+          ],
+          "corrected": [
+            {
+              "path": "/_astro/resources.DUSlKkDL.js",
+              "logicalBundle": "/_astro/resources.js",
+              "built": {
+                "path": "_astro/resources.DUSlKkDL.js",
+                "bytes": 637237,
+                "sha256": "330a80e1b6eca16c32679454f5275ebe1e5c1ceadc27779eea2ba9f23bec3989"
+              }
+            }
+          ],
+          "equal": true
+        }
+      ]
+    }
+  ],
+  "causalityLimit": "These are direct artifact/request hash and byte comparisons. They establish which HTML/bundles differ, not how much of any timing change was caused by a concurrent commit, the motion correction, scheduling or backend variability. No additional browser/benchmark run is part of this analysis.",
+  "subsequentWorkingTreeNotice": "After collection, the coordinator reported additional concurrent System View/connector/test edits and is validating their coexistence separately. This evidence covers only the exact frozen product/build manifests recorded before and after the measurement; it does not automatically benchmark every subsequent working-tree state. The measured inventory files must not be refreshed to include later inputs."
+}

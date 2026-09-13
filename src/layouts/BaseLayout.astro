@@ -9,6 +9,7 @@ interface Props {
   noIndex?: boolean;
   preloadPortrait?: boolean;
   observatory?: boolean;
+  analyticsPageView?: boolean;
 }
 
 const {
@@ -16,7 +17,8 @@ const {
   description = siteMetadata.description,
   canonicalPath = '/',
   noIndex = false,
-  preloadPortrait = false
+  preloadPortrait = false,
+  analyticsPageView = true
 } = Astro.props;
 const socialDescription = Astro.props.description === undefined ? undefined : description;
 if (!Astro.site) {
@@ -25,6 +27,14 @@ if (!Astro.site) {
 const canonicalUrl = new URL(canonicalPath, Astro.site).href;
 const imageUrl = new URL(siteMetadata.imagePath, Astro.site).href;
 const personStructuredData = createPersonStructuredData(Astro.site);
+const analyticsSnippet = `
+  window.dataLayer = window.dataLayer || [];
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+  gtag('js', new Date());
+  gtag('config', 'G-2DY87DZC90'${analyticsPageView ? '' : ', { send_page_view: false }'});
+`;
 ---
 
 <!doctype html>
@@ -37,7 +47,8 @@ const personStructuredData = createPersonStructuredData(Astro.site);
     <meta name="description" content={description} />
     <meta name="robots" content={noIndex ? 'noindex,nofollow' : 'index,follow,max-image-preview:large'} />
     <link rel="canonical" href={canonicalUrl} />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="manifest" href="/site.webmanifest" />
     {preloadPortrait && (
       <>
@@ -66,6 +77,12 @@ const personStructuredData = createPersonStructuredData(Astro.site);
     <meta name="twitter:image:alt" content="Professional profile card for Vinicius Santana" />
 
     <script type="application/ld+json" set:html={JSON.stringify(personStructuredData)}></script>
+    {import.meta.env.PROD && (
+      <>
+        <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-2DY87DZC90"></script>
+        <script is:inline set:html={analyticsSnippet}></script>
+      </>
+    )}
     <title>{title}</title>
   </head>
   <body class:list={{ observatory: Astro.props.observatory }}>

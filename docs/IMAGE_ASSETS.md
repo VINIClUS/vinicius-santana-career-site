@@ -1,17 +1,13 @@
-# Image replacement guide
+# Image assets
 
-The four professional photos added in ChatGPT were visible in the conversation, but they were not exposed as downloadable files in the runtime that generated this project. The site therefore ships with neutral placeholder image files using the final production names.
+Professional portrait and sharing assets live in `public/assets/images/`; their AVIF, WebP and JPG variants are referenced by the page markup. Inspect the actual files and active references before replacing any image. Preserve identity, descriptive alt text, declared dimensions and responsive crops. The resume PDF is independent and must not change during image maintenance.
 
-Replace these files before publishing:
+Systems Atlas uses `src/content/scenes/index.ts` and `generated.json` for responsive posters and models. The active kit contains three districts (CnesData, LimnoPulse, Infrastructure), the hub, overview, the Infrastructure detail and the Infrastructure failure poster. HTML/SVG supplies project structure; posters remain usable without JavaScript or WebGL. Optional Home and Atlas renderers progressively enhance that baseline. The CnesData detail poster and model are retired.
 
-- `vinicius-hero-desktop.avif`, `vinicius-hero-desktop.webp` and `vinicius-hero-desktop.jpg` — use the best horizontal/wide professional photo for desktop hero.
-- `vinicius-portrait-mobile.avif`, `vinicius-portrait-mobile.webp` and `vinicius-portrait-mobile.jpg` — use the best vertical portrait or close-up for mobile hero.
-- `vinicius-about.avif`, `vinicius-about.webp` and `vinicius-about.jpg` — use an alternate portrait for the About section.
-- `og-image.png` — create a 1200 x 630 Open Graph image, preferably using one professional portrait and the same visual system.
+Run `rtk npm run assets:generate` for the full authored kit, or append `-- overview` for partial generation. An overview request first regenerates the three district models and hub (including their posters and metadata), then reloads those GLBs to render both overview posters. Detail assets and their metadata remain untouched. Other partial requests generate only the named scenes. The generator rejects retired district IDs and normalizes obsolete metadata on partial runs. GPU differences can change raster pixels; inspect changes and avoid committing incidental regeneration.
 
-Recommended exports:
+With Playwright Chromium installed, run `rtk proxy node --experimental-strip-types --test tests/overview-generation.integration.mjs` to verify source edits propagate through GLB export/reload into overview posters while preserving unrequested assets. The test uses a temporary copy and also runs in CI.
 
-- Hero desktop: 1600 x 1200 or 1600 x 1067, AVIF/WebP quality tuned for a small file size with natural skin tones.
-- Mobile portrait/About: 900 x 1200, AVIF/WebP quality tuned for a small file size with natural skin tones.
-- Keep the person natural and realistic. Do not alter facial identity.
-- Keep the existing filenames so no code changes are necessary.
+Run `rtk npm run gallery` for local inspection and `rtk npm run gallery:verify` for responsive images and model fallback checks. See [gallery instructions](../scripts/gallery/README.md).
+
+The Home globe and Work illustrations were retired in SA-07. `scripts/illustrations/prompts.json`, the SO-07 inventory and older screenshots are historical provenance, not regeneration instructions. See [historical evidence](design/README.md) and [SA-07 inventory](design/sa-07/inventory.md).

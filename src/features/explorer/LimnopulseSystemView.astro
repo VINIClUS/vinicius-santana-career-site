@@ -1,0 +1,54 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import SystemViewCards from './SystemViewCards.astro';
+import SystemGraphConnectors from './SystemGraphConnectors.astro';
+import { projectDefinitions } from './projects.ts';
+
+interface Props { caseStudy: CollectionEntry<'caseStudies'>['data']; }
+const { caseStudy } = Astro.props;
+const { relations } = projectDefinitions.limnopulse;
+const componentFor = (id: string) => caseStudy.architecture.find(component => component.id === id)!;
+const bands = [
+  { title: 'Observations', ids: ['mqtt-ingestion'] },
+  { title: 'Telemetry', ids: ['telemetry-api', 'evaluator'] },
+  { title: 'Events', ids: ['alert-rules', 'notifications'] },
+];
+const boundaries = ['cloud-infrastructure', 'production-device-layer'];
+const graphNodes = [
+  { id: 'cloud-infrastructure', x: 24, y: 12 }, { id: 'production-device-layer', x: 76, y: 12 },
+  { id: 'mqtt-ingestion', x: 18, y: 55 }, { id: 'telemetry-api', x: 50, y: 55 }, { id: 'evaluator', x: 50, y: 82 },
+  { id: 'alert-rules', x: 82, y: 55 }, { id: 'notifications', x: 82, y: 82 },
+];
+const routes = {
+  'mqtt-ingestion→telemetry-api': { via: [{ x: 18, y: 40 }], label: { x: 18, y: 40 } },
+  'alert-rules→evaluator': { via: [{ x: 66, y: 68.5 }, { x: 50, y: 68.5 }], label: { x: 50, y: 68.5 } },
+  'evaluator→mqtt-ingestion': { via: [{ x: 18, y: 82 }], label: { x: 18, y: 82 } },
+  'evaluator→alert-rules': { via: [{ x: 66, y: 97 }, { x: 98, y: 97 }, { x: 98, y: 68 }], label: { x: 82, y: 97 } },
+  'alert-rules→notifications': { via: [{ x: 82, y: 68.5 }], label: { x: 82, y: 68.5 } },
+  'cloud-infrastructure→evaluator': { via: [{ x: 50, y: 12 }, { x: 34, y: 32 }, { x: 34, y: 82 }], label: { x: 50, y: 12 } },
+  'production-device-layer→mqtt-ingestion': { via: [{ x: 76, y: 40 }, { x: 18, y: 40 }], label: { x: 60, y: 40 } },
+};
+---
+<div class="integrated-system-view limnopulse-system-view" data-integrated-system-view>
+  <p class="explorer-note">Conceptual operational map, not live telemetry. It traces observation, telemetry, and event responsibilities across local and external boundaries without representing a real environment.</p>
+  <div class="system-view-layout">
+    <section class="system-graph limnopulse-graph" data-system-graph aria-labelledby="system-map-title">
+      <div class="graph-heading"><h3 id="system-map-title">Operational map</h3><p>Observations move through telemetry and event bands, with operational boundaries framing the flow.</p></div>
+      <div class="graph-stage">
+        <SystemGraphConnectors components={caseStudy.architecture} nodes={graphNodes} relations={relations} nodeHalfWidth={14} nodeHalfHeight={11.17} {routes} />
+        <div class="operational-bands">{bands.map((band, index) => <h4 style={`--band-x: ${[18, 50, 82][index]}%`}>{band.title}</h4>)}</div>
+        <ol class="graph-nodes" aria-label="Limnopulse system components">
+          {graphNodes.map(node => { const component = componentFor(node.id); const isBoundary = boundaries.includes(node.id); const band = bands.find(candidate => candidate.ids.includes(node.id)); return <li id={`graph-node-${node.id}`} data-graph-node={node.id} class={isBoundary ? 'graph-node boundary-node' : 'graph-node'} style={`--node-x: ${node.x}%; --node-y: ${node.y}%`}><button type="button" data-component-diagram={node.id} data-component-select={node.id} data-selected="false" aria-pressed="false" disabled><span class="graph-node-kicker" aria-hidden="true">{isBoundary ? 'Boundary' : band?.title}</span><strong>{component.title}</strong><span class="selection-marker" aria-hidden="true">Selected</span></button></li>; })}
+        </ol>
+      </div>
+    </section>
+    <SystemViewCards components={caseStudy.architecture} relations={relations} />
+  </div>
+</div>
+<style>
+  .limnopulse-system-view { --graph-accent: #8dcaff; --graph-connector: #8dcaff; --graph-node-width: 28%; --graph-node-height: 96px; }
+  .system-graph { background: linear-gradient(140deg, rgba(141,202,255,.1), rgba(7,18,31,.35)); }
+  .graph-stage { position: relative; height: 430px; margin-top: 20px; }
+  .operational-bands { position: absolute; inset: 30% 0 0; z-index: 0; }.operational-bands h4 { position: absolute; left: var(--band-x); top: 0; width: 27%; height: 58%; margin: 0; transform: translateX(-50%); border-top: 2px solid #8dcaff; background: rgba(141,202,255,.035); color: #8dcaff; padding: 6px 8px; font-size: .62rem; letter-spacing: .06em; text-transform: uppercase; }
+  .boundary-node button { border-style: dashed; }
+</style>

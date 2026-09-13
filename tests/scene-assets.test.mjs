@@ -1,14 +1,18 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
+import { spawnSync } from 'node:child_process';
 import test from 'node:test';
-import { Box3 } from 'three';
+import { Box3, Group, OrthographicCamera, Vector3 } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { allPosters, districtIds, districts, sceneAssets, overview, workPosters } from '../src/content/scenes/index.ts';
+import { allPosters, details, districtIds, districts, sceneAssets, overview } from '../src/content/scenes/index.ts';
 import { projectDefinitions, projectIds } from '../src/features/explorer/projects.ts';
-import { sceneIds } from '../scripts/assets/scenes.mjs';
+import { makeScene, normalizeGeneratedMetadata, sceneIds } from '../scripts/assets/scenes.mjs';
+import visual from '../src/content/scenes/atlas-authoring.json' with { type: 'json' };
+import { applyAtlasCamera, createAtlasWorld } from '../src/features/explorer/scene/atlas-world.mjs';
+import { projectToPoster } from '../src/features/explorer/observatory-projection.ts';
+import { disposeObjects } from '../src/features/explorer/scene/resources.ts';
 
 const publicRoot = new URL('../public/', import.meta.url);
-const generated = JSON.parse(await readFile(new URL('../src/content/scenes/generated.json', import.meta.url), 'utf8'));
 const assetFile = src => {
   assert.match(src, /^\/assets\/(posters|scenes)\/[a-z0-9-]+\.(webp|glb)$/);
   return new URL(src.slice(1), publicRoot);
@@ -31,23 +35,13 @@ function webpSize(bytes) {
   throw new Error('WebP dimensions not found');
 }
 
-test('scene contract contains project districts and the infrastructure detail', () => {
+test('scene contract covers the three routable projects and preserves infrastructure detail artwork', () => {
   assert.deepEqual(projectIds, ['cnesdata', 'limnopulse', 'infrastructure']);
-  assert.deepEqual(districtIds, projectIds);
+  assert.deepEqual([...districtIds], projectIds);
   assert.deepEqual(Object.keys(districts).sort(), [...districtIds].sort());
   assert.deepEqual(Object.keys(overview.placements).sort(), [...districtIds].sort());
-  assert.ok(workPosters['public-health']);
+  assert.deepEqual(Object.keys(details).sort(), ['infrastructure']);
   assert.equal(sceneAssets.length, 5);
-  assert.deepEqual(Object.keys(generated).sort(), [
-    'detail-infrastructure',
-    'detail-infrastructure-failed',
-    'district-cnesdata',
-    'district-infrastructure',
-    'district-limnopulse',
-    'hub',
-    'overview',
-  ]);
-  assert.deepEqual([...sceneIds, 'detail-infrastructure-failed'].sort(), Object.keys(generated).sort());
   assert.equal(new Set(sceneAssets.map(asset => asset.id)).size, sceneAssets.length);
   assert.equal(new Set(sceneAssets.map(asset => asset.model.src)).size, sceneAssets.length);
   for (const vector of [...Object.values(overview.placements), overview.hubPosition, overview.camera.position, overview.camera.target, overview.camera.up]) assert.ok(vector.length === 3 && vector.every(Number.isFinite));
@@ -65,13 +59,129 @@ test('scene contract contains project districts and the infrastructure detail', 
     assert.deepEqual(layout.camera, overview.cameras[variant]);
   }
   assert.notDeepEqual(overview.layouts.mobile.placements, overview.layouts.desktop.placements, 'Portrait layout must compose its districts for the narrow frame');
+  const desktopXs = Object.values(overview.layouts.desktop.placements).map(position => position[0]);
+  const desktopZs = Object.values(overview.layouts.desktop.placements).map(position => position[2]);
+  assert.ok(Math.max(...desktopXs) - Math.min(...desktopXs) > Math.max(...desktopZs) - Math.min(...desktopZs), 'Desktop triangle should use the wide frame');
+  const projectedHorizontal = position => position[0] - position[2];
+  const projectedVertical = position => position[0] + position[2];
+  const mobile = overview.layouts.mobile.placements;
+  assert.ok(projectedVertical(mobile.cnesdata) < projectedVertical(mobile.infrastructure));
+  assert.ok(projectedVertical(mobile.cnesdata) < projectedVertical(mobile.limnopulse));
+  assert.ok(projectedHorizontal(mobile.infrastructure) < projectedHorizontal(overview.layouts.mobile.hubPosition));
+  assert.ok(projectedHorizontal(mobile.limnopulse) > projectedHorizontal(overview.layouts.mobile.hubPosition));
   assert.deepEqual(overview.placements, overview.layouts.desktop.placements);
+});
+
+test('partial generation retains supported detail metadata and purges obsolete districts', async () => {
+  const metadata = JSON.parse(await readFile(new URL('../src/content/scenes/generated.json', import.meta.url), 'utf8'));
+  assert.ok(metadata['detail-infrastructure']);
+  assert.deepEqual(Object.keys(metadata).sort(), [...sceneIds, 'detail-infrastructure-failed'].sort());
+  assert.equal(metadata['district-public-health'], undefined);
+  assert.equal(metadata['district-observability'], undefined);
+});
+
+test('partial generation sanitizer removes obsolete metadata and placements', () => {
+  const stalePositions = {
+    cnesdata: [-5, 0, -6],
+    'public-health': [5, 0, -6],
+    infrastructure: [-7, 0, 4],
+    observability: [0, 0, 7],
+    limnopulse: [7, 0, 4],
+  };
+  const metadata = normalizeGeneratedMetadata({
+      overview: {
+        districtPositions: stalePositions,
+        layouts: {
+          desktop: { districtPositions: stalePositions },
+          mobile: { districtPositions: stalePositions },
+        },
+      },
+      'detail-infrastructure': { retained: true },
+      'district-public-health': { obsolete: true },
+  });
+  assert.ok(metadata['detail-infrastructure']);
+  assert.equal(metadata['district-public-health'], undefined);
+  assert.deepEqual(Object.keys(metadata.overview.districtPositions), projectIds);
+  for (const layout of Object.values(metadata.overview.layouts)) {
+    assert.deepEqual(Object.keys(layout.districtPositions), projectIds);
+  }
+});
+
+test('scene authoring rejects unknown and retired district identities', () => {
+  for (const id of ['district-public-health', 'district-observability', 'unknown', '__proto__']) {
+    assert.throws(() => makeScene(id), /Unknown scene/);
+  }
+});
+
+test('the cartographic origin is low, decorative and has no project identity', () => {
+  const origin = makeScene('hub');
+  assert.ok(new Box3().setFromObject(origin).max.y <= 0.3, 'Origin must not read as a fourth landmark');
+  origin.traverse(object => {
+    assert.equal(object.userData.districtId, undefined);
+    assert.equal(object.userData.componentId, undefined);
+    assert.equal(object.userData.simulationId, undefined);
+  });
+});
+
+test('label anchors include placement rotation, scale and translation', () => {
+  const authored = structuredClone(visual);
+  authored.regions.cnesdata.labelAnchor = [1, 2, 3];
+  const models = Object.fromEntries([...districtIds, 'hub'].map(id => [id, new Group()]));
+  const composition = createAtlasWorld({ models, visual: authored });
+  const layout = structuredClone(overview.layouts.desktop);
+  layout.placements.cnesdata = [10, 20, 30];
+  layout.rotations.cnesdata = [0, Math.PI / 2, 0];
+  layout.districtScale = 2;
+  composition.applyLayout(layout);
+  const actual = composition.labelPosition('cnesdata', new Vector3()).toArray();
+  // Local [1,2,3] -> scale [2,4,6] -> yaw [6,4,-2] -> translation.
+  actual.forEach((value, axis) => assert.ok(Math.abs(value - [16, 24, 28][axis]) < 1e-10));
+  disposeObjects([composition.world]);
+});
+
+test('exported overview GLBs reproduce the generated HTML anchors in both layouts', async () => {
+  const models = Object.fromEntries(await Promise.all([...districtIds, 'hub'].map(async id => {
+    const bytes = await readFile(new URL(`assets/scenes/${id === 'hub' ? id : `district-${id}`}.glb`, publicRoot));
+    const gltf = await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength), '');
+    return [id, gltf.scene];
+  })));
+  const composition = createAtlasWorld({ models, visual });
+  const camera = new OrthographicCamera();
+  for (const layout of Object.values(overview.layouts)) {
+    composition.applyLayout(layout);
+    applyAtlasCamera(camera, layout.camera);
+    for (const id of districtIds) {
+      const runtime = composition.labelPosition(id, new Vector3()).project(camera);
+      const html = projectToPoster(layout.labelPositions[id], layout.camera);
+      assert.ok(Math.abs((runtime.x + 1) * 50 - html.x) < 0.01, `${id}: horizontal parity`);
+      assert.ok(Math.abs((1 - runtime.y) * 50 - html.y) < 0.01, `${id}: vertical parity`);
+      assert.ok(html.x > 15 && html.x < 90 && html.y > 5 && html.y < 90, `${id}: label reserved inside useful frame`);
+    }
+  }
+  // Returning to a prior breakpoint reuses its environment; both remain owned for teardown.
+  const resources = new Set();
+  composition.world.traverse(object => { if (object.geometry) resources.add(object.geometry); });
+  composition.applyLayout(overview.layouts.desktop);
+  composition.world.traverse(object => { if (object.geometry) assert.ok(resources.has(object.geometry)); });
+  const releases = new Map([...resources].map(resource => [resource, 0]));
+  for (const resource of resources) resource.addEventListener('dispose', () => releases.set(resource, releases.get(resource) + 1));
+  disposeObjects([composition.world, ...Object.values(models)]);
+  assert.ok([...releases.values()].every(count => count === 1), 'Each cached geometry releases exactly once');
+});
+
+test('asset generator rejects obsolete and unknown scene IDs before launching Chromium', () => {
+  for (const id of ['district-public-health', 'district-observability', 'district-unknown']) {
+    const result = spawnSync(process.execPath, ['--experimental-strip-types', 'scripts/assets/generate.mjs', id], { cwd: new URL('..', import.meta.url), encoding: 'utf8' });
+    assert.notEqual(result.status, 0, id);
+    assert.match(result.stderr, new RegExp(`Unknown scene ${id}`));
+  }
 });
 
 test('every responsive fallback exists with its declared dimensions and alternative text', async () => {
   const images = allPosters.flatMap(poster => [poster.desktop, poster.mobile]);
-  assert.equal(images.length, 24);
+  assert.equal(images.length, 14);
   assert.equal(new Set(images.map(image => image.src)).size, images.length);
+  assert.deepEqual((await readdir(new URL('assets/posters/', publicRoot))).sort(), images.map(image => image.src.split('/').at(-1)).sort());
   for (const image of images) {
     assert.ok(image.alt.trim().length > 20, image.src);
     const bytes = await readFile(assetFile(image.src));
@@ -139,6 +249,7 @@ for (const asset of sceneAssets) test(`${asset.id}: self-contained GLB loads wit
 
 test('built output publishes every referenced asset byte-for-byte when requested', { skip: process.env.VERIFY_BUILT_ASSETS !== '1' }, async () => {
   const paths = [...allPosters.flatMap(poster => [poster.desktop.src, poster.mobile.src]), ...sceneAssets.map(asset => asset.model.src)];
+  assert.deepEqual((await readdir(new URL('../dist/assets/posters/', import.meta.url))).sort(), allPosters.flatMap(poster => [poster.desktop.src, poster.mobile.src]).map(src => src.split('/').at(-1)).sort());
   for (const src of paths) {
     const built = await readFile(new URL(`../dist${src}`, import.meta.url));
     assert.deepEqual(built, await readFile(assetFile(src)), src);

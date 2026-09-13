@@ -1,4 +1,7 @@
 import * as T from "three";
+import atlasVisual from "../../src/content/scenes/atlas-authoring.json" with { type: "json" };
+import { createAtlasWorld } from "../../src/features/explorer/scene/atlas-world.mjs";
+import { makeAtlasLandmark } from "./atlas-landmarks.mjs";
 
 // Authored architectural miniatures. All dimensions share an illustrative metre.
 // Repeated props deliberately share geometry and material instances.
@@ -237,55 +240,6 @@ function link(p, a, b, mat = "cyan") {
   m.scale.y = v.length();
   m.quaternion.setFromUnitVectors(new T.Vector3(0, 1, 0), v.normalize());
 }
-function district(id) {
-  const g = base(`district-${id}`, id);
-  landscape(g);
-  if (id === "cnesdata") {
-    building(g, -1.8, -1.3, 1.6, 3.3, 1.6);
-    building(g, 1.8, -1.6, 1.4, 2.6, 1.5);
-    building(g, 0, 0.7, 3.6, 1.4, 2.1, "dark");
-    for (let i = 0; i < 4; i++)
-      box(g, -1.2 + i * 0.8, 1.97, 0.7, 0.52, 0.07, 1.2, "glass");
-    link(g, [-1.8, 0.46, -1.3], [-1.8, 0.46, 2]);
-    link(g, [-1.8, 0.46, 2], [1.8, 0.46, 2]);
-  }
-  if (id === "infrastructure") {
-    for (let i = 0; i < 3; i++) {
-      const r = rack(g, (i - 1) * 1.85, 0);
-      r.userData = {
-        districtId: id,
-        simulationId: `node-0${i + 1}`,
-        componentId: "reference-topology",
-      };
-    }
-    box(g, 0, 0.47, 2.2, 5.6, 0.13, 0.8, "dark");
-    for (let i = 0; i < 3; i++)
-      link(g, [(i - 1) * 1.85, 0.5, 0.7], [(i - 1) * 1.85, 0.5, 2.2]);
-    for (let i = 0; i < 3; i++)
-      cylinder(g, -2.5 + i * 2.5, 0.65, -2.6, 0.42, 0.4, "roof");
-  }
-  if (id === "limnopulse") {
-    const pond = cylinder(g, 0.3, 0.44, 0, 2.7, 0.12, "water");
-    pond.scale.z *= 0.78;
-    for (let i = 0; i < 4; i++) {
-      const x = -2.3 + i * 1.55,
-        z = i % 2 ? -1.1 : 1.2;
-      cylinder(g, x, 0.58, z, 0.23, 0.12, "amber");
-      cylinder(g, x, 1.05, z, 0.035, 0.9, "rim");
-      mesh(
-        g,
-        shape("buoy", () => new T.SphereGeometry(0.09, 12, 8)),
-        "cyan",
-        [x, 1.55, z],
-      );
-      ring(g, x, 0.515, z, 0.38, "rim");
-    }
-    building(g, -2.55, -1.7, 0.8, 0.75, 0.9);
-    for (let i = 0; i < 7; i++)
-      box(g, 2.7, 0.46, -1.8 + i * 0.48, 0.5, 0.08, 0.38, "amber");
-  }
-  return g;
-}
 function infrastructureDetail() {
   const g = base("detail-infrastructure", "infrastructure", 8);
   for (let i = 0; i < 3; i++) {
@@ -314,76 +268,43 @@ function infrastructureDetail() {
   box(workload, 0, 3.75, -0.8, 0.5, 0.5, 0.5, "cyan");
   return g;
 }
-function hub() {
-  const g = base("hub", null, 3.5);
-  cylinder(g, 0, 0.5, 0, 1.4, 0.23, "dark");
-  ring(g, 0, 0.64, 0, 1.22);
-  box(g, 0, 1.4, 0, 0.8, 0.8, 0.8, "cyan");
-  const edges = new T.EdgesGeometry(new T.BoxGeometry(1.3, 1.3, 1.3));
-  const frame = new T.LineSegments(
-    edges,
-    new T.LineBasicMaterial({ color: colors.cyan }),
-  );
-  frame.position.y = 1.4;
-  g.add(frame);
-  for (let i = 0; i < 4; i++) {
-    const a = (i * Math.PI) / 2;
-    link(g, [0, 0.67, 0], [Math.cos(a) * 1.6, 0.67, Math.sin(a) * 1.6]);
-  }
-  return g;
-}
 export const districtIds = [
   "cnesdata",
   "limnopulse",
   "infrastructure",
 ];
-export const overviewPositions = {
-  cnesdata: [0, 0, -6.5],
-  limnopulse: [6, 0, 4],
-  infrastructure: [-6, 0, 4],
-};
-export const overviewLayouts = {
-  desktop: {
-    districtPositions: overviewPositions,
-    hubPosition: [0, 0, 0],
-    districtScale: 0.7,
-  },
-  mobile: {
-    districtPositions: {
-      cnesdata: [0, 0, -6.5],
-      limnopulse: [5.25, 0, 4],
-      infrastructure: [-5.25, 0, 4],
-    },
-    hubPosition: [0, 0, 0],
-    districtScale: 0.7,
-  },
-};
+export const overviewPositions = atlasVisual.layouts.desktop.placements;
+export const overviewLayouts = atlasVisual.layouts;
 export const sceneIds = [
   ...districtIds.map((id) => `district-${id}`),
   "hub",
   "detail-infrastructure",
   "overview",
 ];
-export function makeScene(id, variant = "desktop") {
-  if (id.startsWith("district-")) return district(id.slice(9));
-  if (id === "hub") return hub();
-  if (id === "detail-infrastructure") return infrastructureDetail();
-  const g = new T.Group();
-  g.name = "overview";
-  const layout = overviewLayouts[variant];
-  const centralHub = hub();
-  centralHub.position.set(...layout.hubPosition);
-  g.add(centralHub);
-  for (const id of districtIds) {
-    const d = district(id);
-    d.scale.setScalar(layout.districtScale);
-    d.position.set(...layout.districtPositions[id]);
-    g.add(d);
-    link(
-      g,
-      [layout.hubPosition[0], 0.2, layout.hubPosition[2]],
-      [d.position.x, 0.2, d.position.z],
-    );
+export function normalizeGeneratedMetadata(metadata) {
+  const generatedSceneIds = [...sceneIds, "detail-infrastructure-failed"];
+  const normalized = Object.fromEntries(
+    Object.entries(metadata).filter(([id]) => generatedSceneIds.includes(id)),
+  );
+  if (!normalized.overview) return normalized;
+  const keepPlacements = (positions = {}) =>
+    Object.fromEntries(districtIds.map((id) => [id, positions[id]]));
+  normalized.overview.districtPositions = keepPlacements(
+    normalized.overview.districtPositions,
+  );
+  for (const layout of Object.values(normalized.overview.layouts ?? {})) {
+    layout.districtPositions = keepPlacements(layout.districtPositions);
   }
-  return g;
+  return normalized;
+}
+export function makeScene(id, variant = "desktop") {
+  if (!sceneIds.includes(id)) throw new Error(`Unknown scene ${id}`);
+  if (id.startsWith("district-")) return makeAtlasLandmark(id.slice(9));
+  if (id === "hub") return makeAtlasLandmark("hub");
+  if (id === "detail-infrastructure") return infrastructureDetail();
+  const models = Object.fromEntries([...districtIds, "hub"].map(id => [id, makeAtlasLandmark(id)]));
+  const composition = createAtlasWorld({ models, visual: atlasVisual });
+  composition.applyLayout(overviewLayouts[variant]);
+  composition.world.name = "overview";
+  return composition.world;
 }

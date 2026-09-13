@@ -1,17 +1,21 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { districtIds } from '../src/features/explorer/districts.ts';
+import { districtIds, districtRegistry } from '../src/features/explorer/districts.ts';
 import { districtIds as manifestIds, districts, overview } from '../src/content/scenes/index.ts';
 import { projectIds } from '../src/features/explorer/projects.ts';
 import { createObservatoryController } from '../src/features/explorer/observatory-controller.ts';
 import { projectToPoster } from '../src/features/explorer/observatory-projection.ts';
 
-test('the three project districts resolve to their canonical explorers', () => {
-  assert.deepEqual(districtIds, projectIds);
+test('Atlas exposes exactly three project identities and canonical destinations', () => {
+  assert.deepEqual(districtIds, ['cnesdata', 'limnopulse', 'infrastructure']);
   assert.deepEqual(districtIds, manifestIds);
+  assert.deepEqual(districtIds.map(id => districtRegistry[id].href), ['/explore/cnesdata/', '/explore/limnopulse/', '/explore/infrastructure/']);
   assert.deepEqual(projectIds, ['cnesdata', 'limnopulse', 'infrastructure']);
   for (const id of districtIds) {
+    assert.equal(districtRegistry[id].id, id);
+    assert.ok(districtRegistry[id].description.length > 0);
     assert.ok(districts[id]);
+    assert.equal(districtRegistry[id].kind, 'project');
   }
 });
 
@@ -26,7 +30,7 @@ test('district selection starts empty, rejects invalid IDs and toggles repeated 
   }
   assert.equal(changes, 3);
   const selected = controller.getState();
-  for (const districtId of ['unknown', 'toString', '__proto__']) controller.dispatch({ type: 'SELECT_DISTRICT', districtId });
+  for (const districtId of ['infrastructure', 'public-health', 'observability', 'hub', 'unknown', 'toString', '__proto__']) controller.dispatch({ type: 'SELECT_DISTRICT', districtId });
   assert.equal(controller.getState(), selected);
   assert.equal(changes, 3);
   controller.dispatch({ type: 'ACTIVATE_DISTRICT', districtId: 'infrastructure' });

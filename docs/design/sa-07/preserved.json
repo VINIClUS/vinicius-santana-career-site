@@ -1,0 +1,42 @@
+[
+  {
+    "path": "public/CNAME",
+    "sha256": "50ea872cd8828a877db512188d9ef5789bfef1ebe863d58e345eeb23f983fb7d",
+    "unchanged": true
+  },
+  {
+    "path": "public/assets/vinicius-santana-resume.pdf",
+    "sha256": "b2cca4eac1313462b8ff44eb0c42a3143e5bd1a3ac02a2d756b1b38bc16b769e",
+    "unchanged": true
+  },
+  {
+    "path": "package.json",
+    "sha256": "b912654e1bd610eb799b15625fcc478cff6101e7c3214950bba6597a69425c64",
+    "unchanged": true
+  },
+  {
+    "path": "package-lock.json",
+    "sha256": "d6d150a52a5873082b526d309173df5d5d9603a5a3d00510572b823e4f1dc93b",
+    "unchanged": true
+  },
+  {
+    "path": "astro.config.mjs",
+    "sha256": "0dd1ba3ae55f8125e4c6f32e753df5e7ade00c81208a2ddef6476c764fa0a0bb",
+    "unchanged": true
+  },
+  {
+    "path": ".github/workflows/deploy-site.yml",
+    "sha256": "6cc4d70ff9592994a12d1b1f23fca84bd038d3827418e803fce63703f84f1bf5",
+    "unchanged": true
+  },
+  {
+    "path": "scripts/illustrations/prompts.json",
+    "sha256": "259f1ea2b6ca514e45f2bb76c9f11e28486e9f313f698d19bb0ebd2aea39552a",
+    "unchanged": true
+  },
+  {
+    "path": "docs/design/so-07-inventory.json",
+    "sha256": "d6c70422d0bdb3e96d989e3ced47eebdd75355b1491d1312d35971adfab2dc6f",
+    "unchanged": true
+  }
+]

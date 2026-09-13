@@ -31,17 +31,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
       - name: Test
         run: npm test
+
+      - name: Asset generation regression
+        run: node --experimental-strip-types --test tests/overview-generation.integration.mjs
 
       - name: Build
         run: npm run build
 
       - name: Smoke test
         run: npm run smoke
-
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
 
       - name: Explorer browser smoke
         run: npm run test:explorer

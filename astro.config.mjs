@@ -4,12 +4,15 @@ import { defineConfig } from 'astro/config';
 
 export default defineConfig({
   output: 'static',
-  site: 'https://dev.vinisantana.com',
+  site: 'https://vinisantana.com',
   trailingSlash: 'always',
   integrations: [
     react(),
     sitemap({
-      filter: (page) => !['/404.html', '/404/'].includes(new URL(page).pathname)
+      filter: (page) => {
+        const { pathname } = new URL(page);
+        return !['/404.html', '/404/'].includes(pathname) && !pathname.startsWith('/work/');
+      }
     })
   ]
 });

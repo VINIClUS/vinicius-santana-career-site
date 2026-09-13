@@ -1,0 +1,28 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import CnesDataSystemView from './CnesDataSystemView.astro';
+import InfrastructureSystemView from './InfrastructureSystemView.astro';
+import LimnopulseSystemView from './LimnopulseSystemView.astro';
+import { projectDefinitions, projectIds, type ProjectDefinition } from './projects.ts';
+
+interface Props {
+  caseStudy: CollectionEntry<'caseStudies'>['data'];
+  definition: ProjectDefinition;
+}
+
+const { caseStudy, definition } = Astro.props;
+const projectId = projectIds.find(id => projectDefinitions[id] === definition);
+if (!projectId) throw new Error('SystemView requires a canonical project definition.');
+---
+
+<div class="system-view" data-system-view data-primary-component-id={definition.primaryComponentId}>
+  {projectId === 'cnesdata' && <CnesDataSystemView {caseStudy} />}
+  {projectId === 'limnopulse' && <LimnopulseSystemView {caseStudy} />}
+  {projectId === 'infrastructure' && <InfrastructureSystemView {caseStudy} />}
+</div>
+
+
+
+<style>
+  .system-view { min-width: 0; }
+</style>

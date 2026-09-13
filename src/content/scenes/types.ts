@@ -1,6 +1,8 @@
 import type { ProjectId } from '../../features/explorer/projects.ts';
 
-export type DistrictId = ProjectId;
+export type AtlasDistrictId = ProjectId;
+/** Compatibility alias for existing Atlas renderer imports. */
+export type DistrictId = AtlasDistrictId;
 export type Vector3 = readonly [number, number, number];
 export interface VisualImage {
   readonly src: string;
@@ -32,6 +34,11 @@ export interface SceneCamera {
 }
 export interface OverviewLayout {
   readonly placements: Readonly<Record<DistrictId, Vector3>>;
+  readonly rotations: Readonly<Record<DistrictId, Vector3>>;
+  readonly labelPositions: Readonly<Record<DistrictId, Vector3>>;
+  readonly regionOutlines: Readonly<Record<DistrictId, readonly Vector3[]>>;
+  readonly interaction: { readonly horizontalDegrees: number; readonly verticalDegrees: number; readonly minZoom: number; readonly maxZoom: number };
+  readonly terrainOutline: readonly (readonly number[])[];
   readonly districtScale: number;
   readonly hubPosition: Vector3;
   readonly camera: SceneCamera;

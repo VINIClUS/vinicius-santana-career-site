@@ -1,74 +1,28 @@
 ---
 import { getCollection } from 'astro:content';
-import EditorialLayout from '../../layouts/EditorialLayout.astro';
-import Infrastructure from '../../features/explorer/Infrastructure.astro';
-import Lifecycle from '../../features/explorer/lifecycle/Lifecycle.astro';
-import ComponentDetail from '../../features/explorer/ComponentDetail.astro';
-import Walkthrough from '../../features/explorer/Walkthrough.astro';
-import { projectDefinitions, type ProjectId } from '../../features/explorer/projects.ts';
+import ProjectDetail from '../../components/ProjectDetail.astro';
+import SystemView from '../../features/explorer/SystemView.astro';
+import { cnesdataPresentation, limnopulsePresentation, infrastructurePresentation } from '../../features/explorer/presentation.ts';
+import { projectDefinitions, projectIds } from '../../features/explorer/projects.ts';
 import '../../features/explorer/explorer.css';
+import '../../features/explorer/system-graph.css';
 export async function getStaticPaths() {
   const projects = (await getCollection('caseStudies')).sort((a, b) => a.data.order - b.data.order);
+  const ids = projects.map(({ data }) => data.id);
+  if (ids.length !== projectIds.length || projectIds.some(id => ids.filter(candidate => candidate === id).length !== 1)) {
+    throw new Error(`Project routes must match projectIds exactly: ${projectIds.join(', ')}`);
+  }
   return projects.map(({ data: project }) => ({ params: { project: project.id }, props: { project, projects } }));
 }
 const { project, projects } = Astro.props;
-const definition = projectDefinitions[project.id as ProjectId];
-const titleFor = (id: string) => project.architecture.find(component => component.id === id)!.title;
-const rightCount = Math.ceil(project.architecture.length / 2);
-const statusLabel = (status: string) => status[0].toUpperCase() + status.slice(1);
 ---
-<EditorialLayout title={`${project.title} explorer — Vinicius Santana`} description={project.summary} canonicalPath={`/explore/${project.id}/`}>
-  <div class="shell explorer" data-explorer data-project={project.id}>
-    <nav class="explorer-nav" aria-label="Explorer projects">
-      <a href="/explore/">All systems</a>
-      {projects.map(({ data: entry }) => <a href={`/explore/${entry.id}/`} aria-current={entry.id === project.id ? 'page' : undefined}>{entry.title}</a>)}
-    </nav>
-    <header class="explorer-heading">
-      <p class="eyebrow">Systems Observatory / {definition.area}</p>
-      <h1>{project.title}</h1>
-      <p>{project.summary}</p>
-      <a class="text-link" href={`/work/${project.id}/`}>Read the {project.title} case study</a>
-    </header>
-    <Lifecycle project={project.id} />
-    <p class="explorer-note">Illustrative architecture map. Component statuses describe the public work; connections summarize relationships, not a live deployment.</p>
-    {project.id === 'infrastructure' && <p class="explorer-note">A sanitized, illustrative reference topology, not a production inventory or a map of any real environment.</p>}
-    <details class="explorer-technical-disclosure" data-component-disclosure>
-    <summary>Architecture and component details</summary>
-    <div class="explorer-columns">
-      <section class="explorer-map" aria-labelledby="architecture-title">
-        <h2 id="architecture-title">Architecture</h2>
-        <p>Select a component or detail card to highlight its matching representation.</p>
-        <ol class="component-map">
-          {project.architecture.map((component, index) => <li>
-            <button type="button" data-component-select={component.id} data-component-diagram={component.id} data-selected="false" aria-pressed="false" disabled>
-              <span class="component-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
-              <span><strong>{component.title}</strong><span class="component-status">{statusLabel(component.status)}</span></span>
-              <span class="selection-marker" aria-hidden="true">Selected</span>
-            </button>
-          </li>)}
-        </ol>
-        <h3>Relationships</h3>
-        <ul class="relationship-list">
-          {definition.relations.map(relation => <li><button type="button" data-component-select={relation.from} aria-pressed="false" disabled>{titleFor(relation.from)}</button><span aria-hidden="true"> → </span><span class="visually-hidden"> to </span><button type="button" data-component-select={relation.to} aria-pressed="false" disabled>{titleFor(relation.to)}</button><p>{relation.label}</p></li>)}
-        </ul>
-      </section>
-      <section class="component-panel component-panel-right" aria-labelledby="details-title">
-        <h2 id="details-title">Component details</h2>
-        {project.architecture.slice(0, rightCount).map(component => <ComponentDetail component={component} architecture={project.architecture} relations={definition.relations} />)}
-      </section>
-      <section class="component-panel component-panel-bottom" aria-label="More component details">
-        {project.architecture.slice(rightCount).map(component => <ComponentDetail component={component} architecture={project.architecture} relations={definition.relations} />)}
-      </section>
-    </div>
-    </details>
-    {project.id === 'infrastructure' && <details class="explorer-technical-disclosure"><summary>Original failure primitive and transcript</summary><Infrastructure /></details>}
-    {project.id === 'cnesdata' && <details class="explorer-technical-disclosure"><summary>Raw object writing, replay and conflict</summary><Walkthrough /></details>}
-    <section class="explorer-limits" aria-labelledby="limits-title">
-      <h2 id="limits-title">Scope and limitations</h2>
-      <ul>{project.limitations.map(limit => <li>{limit}</li>)}</ul>
-    </section>
-  </div>
-</EditorialLayout>
+{project.id === 'cnesdata' ? <ProjectDetail caseStudy={project} presentation={cnesdataPresentation} projects={projects}>
+  <SystemView slot="system-view" caseStudy={project} definition={projectDefinitions.cnesdata} />
+</ProjectDetail> : project.id === 'infrastructure' ? <ProjectDetail caseStudy={project} presentation={infrastructurePresentation} projects={projects}>
+  <SystemView slot="system-view" caseStudy={project} definition={projectDefinitions.infrastructure} />
+</ProjectDetail> : project.id === 'limnopulse' ? <ProjectDetail caseStudy={project} presentation={limnopulsePresentation} projects={projects}>
+  <SystemView slot="system-view" caseStudy={project} definition={projectDefinitions.limnopulse} />
+</ProjectDetail> : null}
 <script>
   import { initializeExplorer } from '../../features/explorer/client.ts';
   initializeExplorer();

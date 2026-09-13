@@ -2,12 +2,16 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFile, readdir, stat } from 'node:fs/promises';
 import path from 'node:path';
+import yaml from 'js-yaml';
+import { projectDefinitions } from '../src/features/explorer/projects.ts';
 
 const root = new URL('../', import.meta.url);
 const fromRoot = (...segments) => new URL(segments.join('/'), root);
 const expectedResumeHash = 'b2cca4eac1313462b8ff44eb0c42a3143e5bd1a3ac02a2d756b1b38bc16b769e';
 const expectedOrigin = 'https://vinisantana.com';
 const analyticsMeasurementId = 'G-2DY87DZC90';
+
+assert.ok(process.execArgv.includes('--experimental-strip-types'), 'smoke must explicitly enable TypeScript stripping for the supported Node 22 runtime');
 
 async function assertFile(relativePath) {
   const details = await stat(fromRoot(relativePath));
@@ -19,20 +23,6 @@ async function readBuiltPage(relativePath) {
   return readFile(fromRoot(relativePath), 'utf8');
 }
 
-async function readBuiltHtmlPages(directory = fromRoot('dist/')) {
-  const entries = await readdir(directory, { withFileTypes: true });
-  const pages = await Promise.all(
-    entries.map(async (entry) => {
-      const entryUrl = new URL(`${entry.name}${entry.isDirectory() ? '/' : ''}`, directory);
-      if (entry.isDirectory()) return readBuiltHtmlPages(entryUrl);
-      if (!entry.isFile() || !entry.name.endsWith('.html')) return [];
-      return [[entryUrl.pathname, await readFile(entryUrl, 'utf8')]];
-    })
-  );
-
-  return pages.flat();
-}
-
 function assertEditorialShell(html, pageName, explorer = false) {
   assert.match(html, /<header\b/i, `${pageName} must include the global header`);
   assert.match(html, /<nav\b[^>]*aria-label="Primary navigation"/i, `${pageName} must include primary navigation`);
@@ -42,6 +32,28 @@ function assertEditorialShell(html, pageName, explorer = false) {
 
 function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function escapeHtmlText(value) {
+  return value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+}
+
+function assertTechnologyList(html, projectTitle, technologies) {
+  const list = html.match(
+    new RegExp(`<ul(?=[^>]*\\bclass="[^"]*\\btechnology-labels\\b[^"]*")(?=[^>]*\\baria-label="Technologies used in ${escapeRegExp(projectTitle)}")(?=[^>]*\\brole="list")[^>]*>[\\s\\S]*?</ul>`, 'i')
+  )?.[0];
+
+  assert.ok(list, `${projectTitle} must expose a specifically labelled technology list`);
+  assert.equal((list.match(/<li\b/g) || []).length, technologies.length, `${projectTitle} must render every technology exactly once`);
+
+  const offsets = technologies.map((technology) => {
+    const offset = list.indexOf(`>${escapeHtmlText(technology)}</li>`);
+    assert.notEqual(offset, -1, `${projectTitle} must render ${technology}`);
+    return offset;
+  });
+  assert.deepEqual(offsets, [...offsets].sort((left, right) => left - right), `${projectTitle} must preserve technology order`);
+
+  return list;
 }
 
 function assertMetadata(html, route, origin) {
@@ -64,11 +76,51 @@ function assertMetadata(html, route, origin) {
 function assertAnalytics(html, pageName) {
   const scriptUrl = `https://www.googletagmanager.com/gtag/js?id=${analyticsMeasurementId}`;
   const scriptLoads = html.match(new RegExp(`<script\\b[^>]*\\bsrc="${escapeRegExp(scriptUrl)}"[^>]*>`, 'gi')) ?? [];
-  const configurations = html.match(new RegExp(`gtag\\(\\s*['"]config['"]\\s*,\\s*['"]${analyticsMeasurementId}['"]\\s*\\)`, 'g')) ?? [];
+  const configurations = html.match(new RegExp(`gtag\\(\\s*['"]config['"]\\s*,\\s*['"]${analyticsMeasurementId}['"]`, 'g')) ?? [];
 
   assert.equal(scriptLoads.length, 1, `${pageName} must load the GA4 script exactly once`);
   assert.match(scriptLoads[0], /\basync(?:="")?(?:\s|>)/i, `${pageName} must load the GA4 script asynchronously`);
   assert.equal(configurations.length, 1, `${pageName} must configure the GA4 measurement ID exactly once`);
+}
+
+function assertIntegratedSystemView(html, study, projectId) {
+  const start = html.search(/<div class="integrated-system-view[^"]*"/);
+  let depth = 0;
+  let view;
+  if (start >= 0) {
+    for (const match of html.slice(start).matchAll(/<div\b[^>]*>|<\/div>/g)) {
+      depth += match[0].startsWith('</') ? -1 : 1;
+      if (depth === 0) {
+        view = html.slice(start, start + match.index + match[0].length);
+        break;
+      }
+    }
+  }
+  assert.ok(view, `${projectId} renders one integrated graph and cards view`);
+  assert.match(view, /data-system-graph/, `${projectId} exposes a labeled graph region`);
+  assert.match(view, /component-cards-right/, `${projectId} exposes details beside the graph`);
+  assert.doesNotMatch(view, /component-cards-bottom/, `${projectId} keeps all details in one vertical column`);
+  assert.doesNotMatch(view, />Relationships</, `${projectId} removes the standalone relationships section`);
+  assert.doesNotMatch(view, /status-(?:implemented|documented|planned|historical|illustrative)/, `${projectId} removes status from the system view`);
+  assert.doesNotMatch(view, /Back to System View/, `${projectId} cards do not link back to the system view`);
+
+  for (const component of study.architecture) {
+    assert.equal([...view.matchAll(new RegExp(`data-component-diagram="${component.id}"`, 'g'))].length, 1, `${projectId}:${component.id} has exactly one graph selection control`);
+    assert.match(view, new RegExp(`id="graph-node-${component.id}"[^>]*data-graph-node="${component.id}"|data-graph-node="${component.id}"[^>]*id="graph-node-${component.id}"`), `${projectId}:${component.id} is an addressable graph endpoint`);
+    const card = view.match(new RegExp(`<article[^>]*id="component-${component.id}"[^>]*>[\\s\\S]*?<\\/article>`))?.[0];
+    assert.ok(card, `${projectId}:${component.id} has one static detail card`);
+    assert.ok(card.includes(escapeHtml(component.description)), `${projectId}:${component.id} card keeps its description`);
+    assert.match(card, /Receives from|Sends to/, `${projectId}:${component.id} card derives directional relationship text`);
+    assert.doesNotMatch(card, /<a\b/i, `${projectId}:${component.id} card contains no links`);
+  }
+
+  for (const relation of projectDefinitions[projectId].relations) {
+    const connector = view.match(new RegExp(`<div[^>]*data-graph-connector[^>]*data-connector-from="${relation.from}"[^>]*data-connector-to="${relation.to}"[^>]*>[\\s\\S]*?<\\/div>`))?.[0];
+    assert.ok(connector, `${projectId} renders ${relation.from} → ${relation.to} as a node-anchored graph connector`);
+    assert.match(connector, /aria-label="Connection from [^"]+ to [^"]+:/, `${projectId} connector names both endpoints`);
+    assert.match(connector, /<path[^>]*d="M /, `${projectId} connector draws a path instead of a detached list item`);
+    assert.ok(connector.includes(escapeHtml(relation.shortLabel)), `${projectId} connector keeps its short label`);
+  }
 }
 
 const html = await readFile(fromRoot('dist/index.html'), 'utf8');
@@ -79,13 +131,17 @@ assert.match(html, /Software &amp; Data Engineer/, 'home must show the professio
 assert.match(html, /reliable systems where software, data and infrastructure meet/, 'home must explain systems positioning');
 for (const pillar of ['Data Systems', 'Distributed Infrastructure', 'Backend Engineering', 'Public Health']) assert.ok(html.includes(pillar));
 const hero = html.match(/<section[^>]*id="top"[\s\S]*?<\/section>/)[0];
-assert.equal((hero.match(/<a /g) || []).length, 2, 'hero must have exactly two primary actions');
-assert.match(hero, /href="\/work\/"[^>]*>View selected work/);
-assert.match(hero, /href="\/explore\/"[^>]*>Explore systems/);
-assert.match(hero, /home-globe-desktop\.webp/);
+assert.equal((hero.match(/<a /g) || []).length, 1, 'hero must have exactly one work discovery action');
+
+assert.match(hero, /href="\/explore\/"[^>]*>Explore my work/);
+assert.match(hero, /overview-desktop\.webp/);
+assert.match(hero, /overview-mobile\.webp/);
+assert.match(hero, /data-home-preview/);
+assert.doesNotMatch(html, /home-globe|project-grid|Selected work|Browse all selected work/);
+for (const name of ['CnesData', 'LimnoPulse', 'Infrastructure']) assert.ok(hero.includes(name));
 assert.match(hero, /fetchpriority="high"/);
 assert.doesNotMatch(html, /<link[^>]*rel="preload"[^>]*vinicius-(?:hero|portrait)/);
-assert.doesNotMatch(html, /<canvas|\.(?:glb|gltf|ktx2)["']/i);
+assert.doesNotMatch(html, /<link[^>]+(?:preload|modulepreload)[^>]+(?:preview\.|renderer\.|\.glb)/i, 'graphics must not preload');
 
 for (const id of ['about', 'experience', 'projects', 'stack', 'contact']) {
   assert.match(html, new RegExp(`id=["']${id}["']`), `home must preserve #${id}`);
@@ -95,7 +151,35 @@ for (const id of ['case-cnesdata', 'case-aquafarm', 'case-esus-pec-bootstrap', '
   assert.match(html, new RegExp(`id=["']${id}["']`), `home must preserve #${id}`);
 }
 
-assert.match(html, /href="\/assets\/vinicius-santana-resume\.pdf"/i, 'home must link to the resume');
+const contactActions = html.match(/<div class="contact-actions"[^>]*>([\s\S]*?)<\/div>/i)?.[1];
+assert.ok(contactActions, 'home must render the contact actions');
+const homeActions = [...contactActions.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/gi)].map(([, attributes, label]) => ({
+  attributes,
+  label: label.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
+}));
+assert.deepEqual(
+  homeActions.map(({ label }) => label),
+  ['me@vinisantana.com', 'Resume', 'LinkedIn', 'GitHub'],
+  'home must present contact and social actions in the recruiter-facing order'
+);
+assert.match(homeActions[0].attributes, /href="mailto:me@vinisantana\.com\?subject=/i, 'home email must use the exact address');
+assert.match(homeActions[1].attributes, /href="\/assets\/vinicius-santana-resume\.pdf"/i, 'home Resume must use the canonical PDF');
+assert.match(homeActions[1].attributes, /\bdownload\b/i, 'home Resume must download the PDF');
+for (const socialAction of homeActions.slice(2)) {
+  assert.match(socialAction.attributes, /target="_blank"/i, `${socialAction.label} must open in a new tab`);
+  assert.match(socialAction.attributes, /rel="noopener noreferrer"/i, `${socialAction.label} must protect the opener`);
+}
+
+const headerNavigationHtml = html.match(/<nav\b[^>]*aria-label="Primary navigation"[\s\S]*?<\/nav>/i)?.[0];
+assert.ok(headerNavigationHtml, 'home must render primary navigation');
+assert.doesNotMatch(headerNavigationHtml, />Resume</i, 'header must not expose the removed Resume route');
+for (const social of ['LinkedIn', 'GitHub']) {
+  assert.match(headerNavigationHtml, new RegExp(`>${social}<`, 'i'), `header must include ${social}`);
+}
+
+const footer = html.match(/<footer\b[\s\S]*?<\/footer>/i)?.[0];
+assert.ok(footer, 'home must render a footer');
+assert.match(footer, /<a\b[^>]*href="\/assets\/vinicius-santana-resume\.pdf"[^>]*\bdownload\b[^>]*>Resume<\/a>/i, 'footer Resume must download the canonical PDF');
 assertEditorialShell(html, 'home');
 
 const homeSectionOrder = ['hero-title', 'projects', 'contact', 'about', 'experience', 'stack'].map((marker) => {
@@ -116,12 +200,81 @@ assert.equal((homeAbout.match(/class="role-card"/g) || []).length, 2, 'home Abou
 assert.doesNotMatch(homeAbout, /Platform \/ DevOps/, 'home About must not render the removed Platform / DevOps card');
 
 const editorialPages = {
-  work: await readBuiltPage('dist/work/index.html'),
   about: await readBuiltPage('dist/about/index.html'),
-  resume: await readBuiltPage('dist/resume/index.html'),
   privacy: await readBuiltPage('dist/privacy/index.html'),
   notFound: await readBuiltPage('dist/404.html')
 };
+
+await assert.rejects(stat(fromRoot('dist/resume/index.html')), { code: 'ENOENT' }, 'build must not emit the removed Resume route');
+const builtHtmlFiles = (await readdir(fromRoot('dist'), { recursive: true })).filter(file => file.endsWith('.html'));
+const builtHtmlPages = await Promise.all(builtHtmlFiles.map(file => readFile(fromRoot(`dist/${file}`), 'utf8')));
+for (const [index, pageHtml] of builtHtmlPages.entries()) {
+  assert.doesNotMatch(pageHtml, /href="\/resume\//i, 'built pages must not link to the removed Resume route');
+  assertAnalytics(pageHtml, builtHtmlFiles[index]);
+  const disabledPageViews = pageHtml.match(/send_page_view:\s*false/g) ?? [];
+  assert.equal(
+    disabledPageViews.length,
+    builtHtmlFiles[index].startsWith('work/') ? 1 : 0,
+    `${builtHtmlFiles[index]} must ${builtHtmlFiles[index].startsWith('work/') ? 'disable' : 'retain'} automatic GA4 page views`
+  );
+}
+
+function assertExperienceSection(pageHtml, pageName, headingId) {
+  const section = pageHtml.match(new RegExp(`<section[^>]*aria-labelledby="${headingId}"[^>]*>[\\s\\S]*?</section>`))?.[0];
+  assert.ok(section, `${pageName} must render its experience section`);
+  const articles = section.match(/<article class="timeline-card"[\s\S]*?<\/article>/gi) || [];
+  assert.equal(articles.length, 2, `${pageName} must group experience into two organization articles`);
+
+  const municipalArticle = articles[0];
+  assert.equal(
+    (municipalArticle.match(/Prefeitura de Presidente Epitácio/g) || []).length,
+    1,
+    `${pageName} must name the municipality once within its article`
+  );
+  assert.match(municipalArticle, /<h3[^>]*>Prefeitura de Presidente Epitácio<\/h3>/i);
+  assert.match(municipalArticle, /Nov 2021 — Present/);
+
+  const municipalRoles = [
+    ['Health Informatics Analyst &amp; Data Engineer', 'Oct 2023 — Present'],
+    ['IT Infrastructure &amp; Systems Support · Internship', 'Nov 2021 — Oct 2023']
+  ];
+  for (const [title, period] of municipalRoles) {
+    assert.match(
+      municipalArticle,
+      new RegExp(`<h4[^>]*>${escapeRegExp(title)}<\\/h4>[\\s\\S]*?${escapeRegExp(period)}`, 'i'),
+      `${pageName} must associate ${title} with ${period}`
+    );
+  }
+
+  const municipalRoleOffsets = municipalRoles.map(([title]) => municipalArticle.indexOf(title));
+  assert.ok(municipalRoleOffsets.every((offset) => offset >= 0), `${pageName} must render both municipal roles`);
+  assert.deepEqual(
+    municipalRoleOffsets,
+    [...municipalRoleOffsets].sort((left, right) => left - right),
+    `${pageName} must render municipal roles in reverse chronological order`
+  );
+  assert.equal((municipalArticle.match(/<h4/g) || []).length, 2, `${pageName} must expose both municipal roles below the organization heading`);
+
+  const internshipMarkup = municipalArticle.slice(municipalRoleOffsets[1]);
+  assert.equal((internshipMarkup.match(/<li>/g) || []).length, 3, `${pageName} internship must expose exactly three highlights`);
+  assert.match(internshipMarkup, /Maintained rotating snapshots plus incremental and weekly full backups/);
+
+  assert.match(articles[1], /<h3[^>]*>Irmãos Santana<\/h3>/i);
+  assert.match(articles[1], /<h4[^>]*>Business Analyst &amp; Operations Manager<\/h4>/i);
+
+  for (const evidence of ['21,000+', '12%+', 'below 1%', '240+', 'about 4 hours', '10,000+', 'Proxmox/Linux', 'Ceph', '26%', '11%', 'Python', 'MQTT']) {
+    assert.ok(section.includes(evidence), `${pageName} experience must include ${evidence}`);
+  }
+  assert.match(section, /Java and Spring/, `${pageName} must identify Java and Spring as current-role technologies`);
+}
+
+assertExperienceSection(html, 'home', 'experience-title');
+assertExperienceSection(editorialPages.about, 'about', 'experience-heading');
+
+for (const pageHtml of [html, editorialPages.about]) {
+  for (const item of ['Java', 'Spring', 'AWS', 'Redis', 'Platform &amp; Reliability']) assert.ok(pageHtml.includes(item));
+  for (const retiredItem of ['Firebird', 'DevOps / Infra', 'Observability']) assert.doesNotMatch(pageHtml, new RegExp(`>${escapeRegExp(retiredItem)}<`));
+}
 
 const publicCname = await readFile(fromRoot('public/CNAME'));
 const origin = `https://${publicCname.toString().trim()}`;
@@ -129,9 +282,7 @@ assert.equal(publicCname.toString().trim(), 'vinisantana.com', 'CNAME must use t
 assert.equal(origin, expectedOrigin, 'build metadata must use the root domain origin');
 const routePages = new Map([
   ['/', html],
-  ['/work/', editorialPages.work],
   ['/about/', editorialPages.about],
-  ['/resume/', editorialPages.resume],
   ['/privacy/', editorialPages.privacy],
   ['/404.html', editorialPages.notFound]
 ]);
@@ -145,10 +296,6 @@ for (const [pageName, pageHtml] of Object.entries(editorialPages)) {
   assert.match(pageHtml, new RegExp(`<title>[^<]+ — Vinicius Santana<\\/title>`, 'i'), `${pageName} must have a specific title`);
 }
 
-assert.match(editorialPages.work, /<a[^>]*aria-current="page"[^>]*>Work<\/a>/i, 'Work navigation must expose the active page');
-assert.equal((editorialPages.work.match(/<article class="project-card visual-work-card"/g) || []).length, 4);
-assert.match(editorialPages.work, /Health Systems/);
-assert.match(editorialPages.work, /href="\/#experience"[^>]*>View experience/);
 assert.match(editorialPages.about, /alt="Professional portrait of Vinicius Santana"/);
 assert.match(editorialPages.about, /<h1[^>]*>Python backend engineering grounded in operational reality\.<\/h1>/i);
 assert.match(
@@ -166,51 +313,12 @@ assert.match(
 );
 assert.equal((editorialPages.about.match(/class="role-card"/g) || []).length, 2, 'About must render exactly two role cards');
 assert.doesNotMatch(editorialPages.about, /Platform \/ DevOps/, 'About must not render the removed Platform / DevOps card');
-
-const experiencePages = new Map([
-  ['home', html],
-  ['about', editorialPages.about]
-]);
-
-for (const [pageName, pageHtml] of experiencePages) {
-  const experienceArticle = pageHtml.match(/<article class="timeline-card"[\s\S]*?<\/article>/i)?.[0];
-  assert.ok(experienceArticle, `${pageName} must render the municipal experience as one article`);
-  assert.equal(
-    (experienceArticle.match(/Prefeitura de Presidente Epitácio/g) || []).length,
-    1,
-    `${pageName} must name the organization once within the experience article`
-  );
-  assert.match(
-    experienceArticle,
-    /<h3[^>]*>Prefeitura de Presidente Epitácio<\/h3>/i,
-    `${pageName} must expose the organization as the article heading`
-  );
-  assert.match(experienceArticle, /Nov 2021 — Present/, `${pageName} must show the complete employment period`);
-
-  for (const [role, period] of [
-    ['Health Informatics Analyst &amp; Data Engineer', 'Oct 2023 — Present'],
-    ['IT Infrastructure &amp; Systems Support · Internship', 'Nov 2021 — Oct 2023']
-  ]) {
-    assert.match(experienceArticle, new RegExp(`<h4[^>]*>${role}<\\/h4>`, 'i'), `${pageName} must expose ${role} as a role heading`);
-    assert.match(experienceArticle, new RegExp(escapeRegExp(period)), `${pageName} must show ${period}`);
-  }
-
-  const currentRoleOffset = experienceArticle.indexOf('Health Informatics Analyst &amp; Data Engineer');
-  const internshipOffset = experienceArticle.indexOf('IT Infrastructure &amp; Systems Support · Internship');
-  assert.ok(currentRoleOffset < internshipOffset, `${pageName} must list roles from newest to oldest`);
-}
-
-const workCardOffsets = ['CnesData', 'Limnopulse', 'Infrastructure &amp; Operations'].map((title) => editorialPages.work.indexOf(title));
-assert.ok(workCardOffsets.every((offset) => offset >= 0), 'Work must list all three selected case studies');
-assert.deepEqual(workCardOffsets, [...workCardOffsets].sort((left, right) => left - right), 'Work must follow collection order');
-for (const slug of ['cnesdata', 'limnopulse', 'infrastructure']) {
-  assert.match(editorialPages.work, new RegExp(`href="/work/${slug}/"`, 'i'), `Work must link to ${slug}`);
-}
-
+assert.match(
+  editorialPages.about,
+  /<img[^>]*src="\/assets\/images\/vinicius-about\.jpg"[^>]*width="900"[^>]*height="1125"/i,
+  'About portrait dimensions must match the approved asset set'
+);
 assert.match(editorialPages.about, /aria-current="page"[^>]*>About</i, 'About navigation must expose the active page');
-assert.match(editorialPages.resume, /aria-current="page"[^>]*>Resume</i, 'Resume navigation must expose the active page');
-assert.match(editorialPages.resume, /href="\/assets\/vinicius-santana-resume\.pdf"[^>]*target="_blank"/i, 'Resume must offer an open action');
-assert.match(editorialPages.resume, /href="\/assets\/vinicius-santana-resume\.pdf"[^>]*download/i, 'Resume must offer a download action');
 assert.match(editorialPages.privacy, /Google Analytics 4/i, 'Privacy must disclose GA4 analytics');
 assert.match(editorialPages.privacy, /navigation metrics/i, 'Privacy must disclose navigation metrics');
 assert.match(editorialPages.privacy, /identifiers[^<]*cookies/i, 'Privacy must disclose identifiers stored in cookies');
@@ -219,14 +327,12 @@ assert.match(editorialPages.privacy, /does not provide[^<]*account/i, 'Privacy m
 assert.match(editorialPages.notFound, /<meta name="robots" content="noindex,nofollow">/i, '404 must be noindex');
 assert.doesNotMatch(html, /id=["']root["']/i, 'home must not include the former React mount point');
 assert.doesNotMatch(html, /src\/main\.jsx/i, 'home must not load the former Vite entry point');
-assert.doesNotMatch(html, /<astro-island\b/i, 'home must not ship hydrated React islands');
+assert.doesNotMatch(html, /<astro-island\b/i, 'Home preview launcher must not eagerly hydrate the Atlas application');
 
 const caseStudies = [
   {
     slug: 'cnesdata',
     title: 'CnesData',
-    summary: 'A contract-led platform for moving municipal source extracts from edge environments into a tenant-isolated central data layer.',
-    technologies: ['Python', 'FastAPI', 'Go', 'PostgreSQL'],
     repositoryUrls: ['https://github.com/VINIClUS/CnesData'],
     evidenceLabels: ['CnesData public repository', 'Architecture documentation'],
     statuses: ['Implemented', 'Planned']
@@ -234,8 +340,6 @@ const caseStudies = [
   {
     slug: 'limnopulse',
     title: 'Limnopulse',
-    summary: 'An API and evaluation runtime for authorized telemetry reads, alert rules, durable incidents, and notification delivery.',
-    technologies: ['Python', 'FastAPI', 'Go', 'DynamoDB'],
     repositoryUrls: ['https://github.com/VINIClUS/limnopulse'],
     evidenceLabels: ['Limnopulse public repository', 'Alert evaluator operations', 'Notification operations'],
     statuses: ['Implemented', 'Documented']
@@ -243,8 +347,6 @@ const caseStudies = [
   {
     slug: 'infrastructure',
     title: 'Infrastructure &amp; Operations',
-    summary: 'Public infrastructure work that separates reusable automation, image-building, and system runbooks from private runtime configuration.',
-    technologies: ['Ansible', 'Packer', 'Proxmox VE', 'Python'],
     repositoryUrls: [
       'https://github.com/VINIClUS/infra-ansible',
       'https://github.com/VINIClUS/packer-proxmox-templates',
@@ -260,18 +362,15 @@ const caseStudies = [
 ];
 
 for (const caseStudy of caseStudies) {
-  const caseHtml = await readFile(fromRoot(`dist/work/${caseStudy.slug}/index.html`), 'utf8');
+  const caseHtml = await readFile(fromRoot(`dist/explore/${caseStudy.slug}/index.html`), 'utf8');
 
-  for (const anchor of ['overview', 'architecture', 'engineering', 'results']) {
+  for (const anchor of ['overview', 'system', 'engineering', 'results']) {
     assert.match(caseHtml, new RegExp(`href="#${anchor}"`));
     assert.match(caseHtml, new RegExp(`id="${anchor}"`));
   }
-  if (caseStudy.slug === 'cnesdata') {
-    assert.doesNotMatch(caseHtml, /<picture|CnesData \/ System view/);
-  } else {
-    assert.match(caseHtml, /<picture/);
-  }
-  assertMetadata(caseHtml, `/work/${caseStudy.slug}/`, origin);
+  assert.match(caseHtml, /id="system-title"/);
+  assert.match(caseHtml, /id="limitations"/);
+  assertMetadata(caseHtml, `/explore/${caseStudy.slug}/`, origin);
 
   assert.match(caseHtml, new RegExp(`<title>${caseStudy.title} — Vinicius Santana<\\/title>`, 'i'));
   assert.match(caseHtml, /<main\b[^>]*id="main"/i, `${caseStudy.slug} must render a semantic main landmark`);
@@ -281,18 +380,12 @@ for (const caseStudy of caseStudies) {
     'Problem',
     'Context',
     'Contribution',
-    'Architecture',
     'Decisions',
     'Reliability',
     'Outcomes',
-    'Limitations',
     'Public evidence'
   ]) {
     assert.match(caseHtml, new RegExp(`<h[23][^>]*>${heading}<\\/h[23]>`, 'i'), `${caseStudy.slug} must include ${heading}`);
-  }
-
-  for (const status of caseStudy.statuses) {
-    assert.match(caseHtml, new RegExp(`>${status}<`, 'i'), `${caseStudy.slug} must render the ${status} status`);
   }
 
   for (const repositoryUrl of caseStudy.repositoryUrls) {
@@ -308,14 +401,14 @@ for (const caseStudy of caseStudies) {
   }
 
   assert.match(caseHtml, /target="_blank"/i, `${caseStudy.slug} must open external evidence separately`);
-  assert.match(caseHtml, /rel="noreferrer noopener"/i, `${caseStudy.slug} must protect external links`);
+  assert.match(caseHtml, /rel="noopener noreferrer"/i, `${caseStudy.slug} must protect external links`);
   assert.doesNotMatch(caseHtml, /<astro-island\b/i, `${caseStudy.slug} must not ship hydrated islands`);
 }
 
 const [cnesDataHtml, limnopulseHtml, infrastructureHtml] = await Promise.all([
-  readFile(fromRoot('dist/work/cnesdata/index.html'), 'utf8'),
-  readFile(fromRoot('dist/work/limnopulse/index.html'), 'utf8'),
-  readFile(fromRoot('dist/work/infrastructure/index.html'), 'utf8')
+  readFile(fromRoot('dist/explore/cnesdata/index.html'), 'utf8'),
+  readFile(fromRoot('dist/explore/limnopulse/index.html'), 'utf8'),
+  readFile(fromRoot('dist/explore/infrastructure/index.html'), 'utf8')
 ]);
 
 assert.doesNotMatch(cnesDataHtml, /BigQuery/i, 'CnesData must omit BigQuery');
@@ -335,9 +428,7 @@ assert.doesNotMatch(
   'Infrastructure must not expose private repository names or real network addresses'
 );
 
-assert.match(html, /href="\/work\/"/i, 'home must link to Work');
-assert.match(editorialPages.work, /href="\/work\/cnesdata\/"/i, 'Work must link to CnesData');
-assert.match(editorialPages.resume, /href="mailto:[^"]+"/i, 'Resume must provide a direct contact link');
+assert.match(html, /href="\/explore\/"/i, 'home must link to Work');
 
 const [builtCname, publicResume, builtResume, robots, sitemapIndex, sitemap] = await Promise.all([
   readFile(fromRoot('dist/CNAME')),
@@ -354,17 +445,17 @@ assert.equal(createHash('sha256').update(builtResume).digest('hex'), expectedRes
 
 assert.match(robots, /^User-agent: \*$/m, 'robots.txt must address all crawlers');
 assert.match(robots, /^Allow: \/$/m, 'robots.txt must allow the site');
-assert.match(robots, new RegExp(`^Sitemap: ${escapeRegExp(new URL('/sitemap-index.xml', origin).href)}$`, 'm'), 'robots.txt must reference the generated sitemap index');
+assert.match(robots, new RegExp(`^Sitemap: ${escapeRegExp(new URL('/sitemap.xml', origin).href)}$`, 'm'), 'robots.txt must reference the public sitemap entry point');
+const sitemapEntry = await readFile(fromRoot('dist/sitemap.xml'), 'utf8');
+assert.match(sitemapEntry, new RegExp(`<loc>${escapeRegExp(new URL('/sitemap-index.xml', origin).href)}</loc>`), 'public sitemap must reference the generated sitemap index');
 assert.match(sitemapIndex, new RegExp(`<loc>${escapeRegExp(new URL('/sitemap-0.xml', origin).href)}</loc>`), 'sitemap index must reference the generated page sitemap');
 
-const indexableRoutes = ['/explore/', '/explore/cnesdata/', '/explore/limnopulse/', '/explore/infrastructure/', '/', '/about/', '/privacy/', '/resume/', '/work/', '/work/cnesdata/', '/work/infrastructure/', '/work/limnopulse/'];
+const indexableRoutes = ['/explore/', '/explore/cnesdata/', '/explore/limnopulse/', '/explore/infrastructure/', '/', '/about/', '/privacy/'];
 const sitemapLocations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]).sort();
-assert.deepEqual(sitemapLocations, indexableRoutes.map((route) => new URL(route, origin).href).sort(), 'sitemap must contain exactly the twelve M1 and explorer indexable routes');
+assert.deepEqual(sitemapLocations, indexableRoutes.map((route) => new URL(route, origin).href).sort(), 'sitemap must contain exactly the seven canonical indexable routes');
+assert.doesNotMatch(sitemap, /\/resume\//i, 'sitemap must exclude the removed Resume route');
+assert.doesNotMatch(sitemap, /\/work(?:\/|<)/i, 'sitemap must exclude compatibility routes');
 assert.doesNotMatch(sitemap, /\/404(?:\.html|\/)?<\/loc>/i, 'sitemap must exclude the 404 page');
-
-const builtHtmlPages = await readBuiltHtmlPages();
-assert.ok(builtHtmlPages.length > 0, 'build must generate HTML pages');
-for (const [pageName, pageHtml] of builtHtmlPages) assertAnalytics(pageHtml, pageName);
 
 await Promise.all(
   [
@@ -391,19 +482,49 @@ console.log('Static build smoke checks passed.');
 const overview = await readBuiltPage('dist/explore/index.html');
 assertEditorialShell(overview, 'explorer overview', true);
 assertMetadata(overview, '/explore/', origin);
-assert.match(overview, /Systems Observatory/);
-assert.equal([...overview.matchAll(/<article\b[^>]*data-district-detail=/g)].length, 3, 'overview renders the three project panels');
-for (const { slug: id, title, summary, technologies } of caseStudies) {
-  const href = `/explore/${id}/`;
+assert.match(overview, /Systems Atlas/);
+const districtDestinations = {
+  cnesdata: '/explore/cnesdata/',
+  infrastructure: '/explore/infrastructure/',
+  limnopulse: '/explore/limnopulse/',
+};
+const explorerProjects = yaml.load(await readFile(fromRoot('src/content/case-studies.yaml'), 'utf8'));
+const expectedTechnologies = {
+  cnesdata: ['Python', 'FastAPI', 'Go', 'PostgreSQL', 'Parquet', 'Docker', 'React'],
+  limnopulse: ['Python', 'FastAPI', 'Go', 'DynamoDB', 'InfluxDB', 'SQS', 'OpenTofu'],
+  infrastructure: ['Ansible', 'Packer', 'Proxmox VE', 'Python', 'PowerShell', 'Bash', 'Docker'],
+};
+assert.equal([...overview.matchAll(/<article\b[^>]*data-district-detail=/g)].length, 3, 'overview renders exactly three project articles');
+for (const [id, href] of Object.entries(districtDestinations)) {
   assert.match(overview, new RegExp(`href="#district-${id}"`));
   const article = overview.match(new RegExp(`<article[^>]*id="district-${id}"[^>]*>[\\s\\S]*?</article>`))?.[0];
   assert.ok(article, `${id} article is present without JavaScript`);
-  assert.match(article, new RegExp(escapeRegExp(summary)));
-  for (const technology of technologies) assert.match(article, new RegExp(`<li>${escapeRegExp(technology)}</li>`));
   assert.match(article, new RegExp(`href="${escapeRegExp(href)}"`));
-  assert.match(article, new RegExp(`Explore ${escapeRegExp(title)}`));
+  const project = explorerProjects.find(entry => entry.id === id);
+  assert.deepEqual(project.technologies, expectedTechnologies[id], `${id} technology source must retain the approved stack and order`);
+  assert.ok(article.includes(`<h2 id="district-title-${id}">${escapeHtmlText(project.title)}</h2>`), `${id} title comes from the editorial source`);
+  assert.ok(article.includes(`<p>${escapeHtmlText(project.summary)}</p>`), `${id} summary comes from the editorial source`);
+  const technologyList = article.match(/<ul class="district-technologies" aria-label="Main technologies">[\s\S]*?<\/ul>/)?.[0];
+  assert.ok(technologyList, `${project.title} must expose its main technologies`);
+  assert.equal((technologyList.match(/<li>/g) || []).length, 4, `${project.title} must render four main technologies`);
+  const technologies = project.technologies.slice(0, 4);
+  const offsets = technologies.map(technology => {
+    const offset = technologyList.indexOf(`>${escapeHtmlText(technology)}</li>`);
+    assert.notEqual(offset, -1, `${project.title} must render ${technology}`);
+    return offset;
+  });
+  assert.deepEqual(offsets, [...offsets].sort((left, right) => left - right), `${project.title} must preserve technology order`);
+  assert.ok(article.includes(`>Explore ${escapeHtmlText(project.title)}</a>`), `${id} must use the canonical CTA label`);
+  const technologyOffset = article.indexOf(technologyList);
+  assert.ok(
+    (article.slice(0, technologyOffset).match(/<\/p>/g) || []).length === 2
+      && technologyOffset < article.indexOf('<a class="button'),
+    `${project.title} overview technologies must sit between the description and button`
+  );
 }
-assert.doesNotMatch(overview, /district-(?:public-health|observability)|data-district-(?:link|detail)="(?:public-health|observability)"/);
+assert.equal([...overview.matchAll(/data-district-link=/g)].length, 3);
+assert.doesNotMatch(overview, /district-(?:public-health|observability)|atlas-context/, 'retired districts must be absent without compatibility redirects');
+assert.doesNotMatch(overview, /href="#district-hub"|data-district-(?:link|detail)="hub"/);
 assert.doesNotMatch(overview, /<canvas|<astro-island|\.(glb|gltf|ktx2)["']/i);
 for (const { slug, title } of caseStudies) {
   assert.match(overview, new RegExp(`href="/explore/${slug}/"`));
@@ -411,35 +532,204 @@ for (const { slug, title } of caseStudies) {
   assertEditorialShell(explorer, slug + ' explorer', true);
   assertMetadata(explorer, `/explore/${slug}/`, origin);
   assert.match(explorer, new RegExp(`<h1[^>]*>${title}</h1>`));
-  assert.match(explorer, new RegExp(`href="/work/${slug}/"`));
+  const project = explorerProjects.find(entry => entry.id === slug);
+  const projectHeader = explorer.match(/<header[^>]*class="case-hero"[^>]*>[\s\S]*?<\/header>/)?.[0];
+  const technologyList = assertTechnologyList(projectHeader, title, project.technologies);
+  const technologyOffset = projectHeader.indexOf(technologyList);
+  assert.ok(
+    (projectHeader.slice(0, technologyOffset).match(/<\/p>/g) || []).length === 2
+      && technologyOffset < projectHeader.indexOf('<div class="hero-evidence"'),
+    `${project.title} technologies must sit between the summary and public evidence`
+  );
+  assert.doesNotMatch(explorer, new RegExp(`href="/work/${slug}/"`));
   assert.match(explorer, /Component details/);
-  assert.match(explorer, /Relationships/);
+  assert.match(explorer, /Receives from/);
+  assert.match(explorer, /Sends to/);
   assert.match(explorer, /data-component-diagram/);
   assert.match(explorer, /data-component-detail/);
   assert.doesNotMatch(explorer, /<canvas|<astro-island|\.(glb|gltf|ktx2)["']/i);
-  if (slug === 'cnesdata') {
-    for (const id of ['raw-first-write', 'raw-identical-replay', 'raw-content-conflict']) {
-      assert.match(explorer, new RegExp(`id="transcript-${id}"`));
-    }
-    assert.match(explorer, /Synthetic demonstration/);
-    assert.match(explorer, /Illustrative/);
-    assert.match(explorer, /synthetic-content-A/);
-    assert.match(explorer, /data-step[^>]*disabled/);
-  } else if (slug === 'infrastructure') {
-    assert.match(explorer, /data-infrastructure-simulation/);
-    for (const node of ['node-01', 'node-02', 'node-03']) {
-      assert.match(explorer, new RegExp(`data-infra-node="${node}"[^>]*>[^<]*online`));
-    }
-    assert.match(explorer, /data-infra-workload[^>]*>[^<]*node-02/);
-    assert.match(explorer, /data-infra-shared[^>]*>[^<]*available/);
-    assert.match(explorer, /data-fail-node[^>]*disabled/);
-    assert.match(explorer, /data-infra-reset[^>]*disabled/);
-    assert.match(explorer, /Scenario transcript/);
-    assert.match(explorer, /detail-infrastructure-desktop.webp/);
-    assert.match(explorer, /data-infra-announcement[^>]*aria-live="polite"|aria-live="polite"[^>]*data-infra-announcement/);
-    assert.doesNotMatch(explorer, /data-step|data-scenario|data-reset/);
-  } else {
-    assert.doesNotMatch(explorer, /data-step|data-scenario|data-reset/);
-  }
+  assert.equal((explorer.match(/id="simulation"[^>]*data-lifecycle/g) || []).length, 1);
+  assert.match(explorer, /data-life-next[^>]*disabled/);
+  assert.match(explorer, /Read the complete lifecycle transcript/);
+  assert.doesNotMatch(explorer, /Synthetic demonstration|Infrastructure failover|data-step|data-scenario|data-reset|id="transcript-raw-|data-infrastructure-simulation|data-fail-node|data-infra-|data-primitive-disclosure|id="infra-title"/, `${slug} replaces every standalone demonstration with the lifecycle`);
+  assert.doesNotMatch(explorer, /<picture/, 'Project pages use local lifecycle service icons without a detail poster');
 }
 console.log('Explorer static routes and transcripts passed.');
+
+// SO-09 release: the Observatory is a first-class route, and the supporting
+// pages share its technical visual system rather than reverting to the former
+// editorial shell. These assertions operate on built HTML, so they protect the
+// published contract without coupling the test to source files.
+function primaryNavigation(html, pageName) {
+  const navigation = html.match(/<nav\b[^>]*aria-label="Primary navigation"[^>]*>[\s\S]*?<\/nav>/i)?.[0];
+  assert.ok(navigation, `${pageName} must include a bounded primary navigation region`);
+  return navigation;
+}
+
+assert.match(primaryNavigation(html, 'home'), /<a[^>]*href="\/explore\/"[^>]*>Work<\/a>/i, 'primary navigation must expose Work from Home');
+assert.match(primaryNavigation(overview, 'Explore'), /<a[^>]*href="\/explore\/"[^>]*aria-current="page"[^>]*>Work<\/a>/i, 'Explore navigation must expose the active page');
+
+for (const [pageName, pageHtml] of Object.entries({ about: editorialPages.about })) {
+  assert.match(pageHtml, /<body\b[^>]*class="[^"]*\bobservatory\b[^"]*"/i, `${pageName} must use the shared Systems Observatory theme`);
+  assert.match(pageHtml, /<header\b[^>]*class="[^"]*page-hero[^"]*"/i, `${pageName} must retain the shared technical page structure`);
+}
+
+const fictionalReferenceMetrics = [
+  /5(?:[.,]5)?\s*k\+?\s*municipalit(?:y|ies)/i,
+  /100\s*m\+?\s*records/i,
+  /99(?:[.,]9)?\s*%\s*data reliability/i,
+  /100\s*%\s*uptime/i,
+  /(?:<|&lt;)\s*2\s*s\s*failover/i
+];
+const publishedPages = [
+  ['/', html],
+  ...Object.entries(editorialPages).map(([pageName, pageHtml]) => [`/${pageName === 'notFound' ? '404.html' : `${pageName}/`}`, pageHtml]),
+  ...(await Promise.all(
+    ['cnesdata', 'limnopulse', 'infrastructure'].flatMap(async slug => [
+      [`/work/${slug}/`, await readBuiltPage(`dist/work/${slug}/index.html`)],
+      [`/explore/${slug}/`, await readBuiltPage(`dist/explore/${slug}/index.html`)]
+    ])
+  )).flat(),
+  ['/explore/', overview]
+];
+for (const [route, pageHtml] of publishedPages) {
+  for (const metric of fictionalReferenceMetrics) {
+    assert.doesNotMatch(pageHtml, metric, `${route} must not publish unsupported reference metrics`);
+  }
+}
+
+// SA-02: canonical content must be complete before the legacy route is retired.
+const canonicalCnes = await readBuiltPage('dist/explore/cnesdata/index.html');
+const cnes = yaml.load(await readFile(fromRoot('src/content/case-studies.yaml'), 'utf8')).find(entry => entry.id === 'cnesdata');
+const escapeHtml = value => value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
+for (const id of ['overview', 'system', 'engineering', 'simulation', 'results', 'evidence', 'limitations']) {
+  assert.match(canonicalCnes, new RegExp(`id="${id}"`), `canonical CnesData preserves #${id}`);
+  assert.match(canonicalCnes, new RegExp(`href="#${id}"`), `canonical navigation exposes #${id}`);
+}
+assert.match(canonicalCnes, /<title>CnesData — Vinicius Santana<\/title>/);
+assert.match(canonicalCnes, /System View/);
+assert.match(canonicalCnes, /id="system-title"/, 'canonical System View fragment remains a target');
+for (const text of [cnes.eyebrow, cnes.summary, cnes.problem, cnes.context, ...cnes.contribution, ...cnes.decisions, ...cnes.reliability, ...cnes.outcomes, ...cnes.limitations]) {
+  assert.ok(canonicalCnes.includes(escapeHtml(text)), `canonical HTML retains: ${text}`);
+}
+for (const component of cnes.architecture) {
+  const article = canonicalCnes.match(new RegExp(`<article[^>]*id="component-${component.id}"[^>]*>[\\s\\S]*?</article>`))?.[0];
+  assert.ok(article, `${component.id} details are static HTML`);
+  assert.ok(article.includes(escapeHtml(component.description)));
+  assert.doesNotMatch(article, new RegExp(component.status, 'i'), `${component.id} status is not repeated in its card`);
+}
+assertIntegratedSystemView(canonicalCnes, cnes, 'cnesdata');
+assert.doesNotMatch(canonicalCnes, /architecture statuses above/i, 'walkthrough does not refer to removed System View statuses');
+for (const evidence of cnes.evidence) {
+  assert.ok(canonicalCnes.includes(`href="${evidence.url}"`));
+  assert.ok(canonicalCnes.includes(escapeHtml(evidence.description)));
+  assert.ok(canonicalCnes.includes(`aria-label="Open ${evidence.label} in a new tab"`));
+}
+assert.doesNotMatch(canonicalCnes, /system-poster|detail-cnesdata/, 'CnesData omits its detailed architecture poster');
+assert.equal([...canonicalCnes.matchAll(/id="([^" ]+)"/g)].length, new Set([...canonicalCnes.matchAll(/id="([^" ]+)"/g)].map(match => match[1])).size, 'canonical IDs must be unique');
+console.log('Canonical CnesData content equivalence passed.');
+
+const canonicalInfra = await readBuiltPage('dist/explore/infrastructure/index.html');
+const infra = yaml.load(await readFile(fromRoot('src/content/case-studies.yaml'), 'utf8')).find(entry => entry.id === 'infrastructure');
+for (const id of ['overview', 'system', 'system-title', 'engineering', 'simulation', 'results', 'evidence', 'limitations', 'details-title']) {
+  assert.equal([...canonicalInfra.matchAll(new RegExp(`id="${id}"`, 'g'))].length, 1, `unique Infrastructure #${id}`);
+}
+for (const text of [infra.eyebrow, infra.summary, infra.problem, infra.context, ...infra.contribution, ...infra.decisions, ...infra.reliability, ...infra.outcomes, ...infra.limitations]) {
+  assert.ok(canonicalInfra.includes(escapeHtml(text)), `Infrastructure retains: ${text}`);
+}
+for (const component of infra.architecture) {
+  const article = canonicalInfra.match(new RegExp(`<article[^>]*id="component-${component.id}"[^>]*>[\\s\\S]*?</article>`))?.[0];
+  assert.ok(article?.includes(escapeHtml(component.description)));
+  assert.doesNotMatch(article, new RegExp(component.status, 'i'));
+}
+assertIntegratedSystemView(canonicalInfra, infra, 'infrastructure');
+assert.doesNotMatch(canonicalInfra, /Synthetic simulation · Illustrative/);
+for (const evidence of infra.evidence) {
+  assert.ok(canonicalInfra.includes(`href="${evidence.url}"`));
+  assert.ok(canonicalInfra.includes(escapeHtml(evidence.description)));
+}
+assert.equal([...canonicalInfra.matchAll(/id="([^" ]+)"/g)].length, new Set([...canonicalInfra.matchAll(/id="([^" ]+)"/g)].map(match => match[1])).size);
+assert.match(canonicalInfra, /data-visual-mode="cluster"/);
+assert.ok(canonicalInfra.indexOf('id="simulation"') < canonicalInfra.indexOf('id="engineering"'));
+console.log('Canonical Infrastructure content equivalence passed.');
+
+// SA-03: all public facts remain available in the canonical HTML without a runtime.
+const canonicalLimno = await readBuiltPage('dist/explore/limnopulse/index.html');
+const limno = yaml.load(await readFile(fromRoot('src/content/case-studies.yaml'), 'utf8')).find(entry => entry.id === 'limnopulse');
+assert.match(canonicalLimno, /data-visual-mode="telemetry"/);
+assert.match(canonicalLimno, /<title>Limnopulse — Vinicius Santana<\/title>/);
+for (const id of ['overview', 'system', 'engineering', 'results', 'evidence', 'limitations']) {
+  assert.ok(canonicalLimno.includes(`id="${id}"`));
+  assert.ok(canonicalLimno.includes(`href="#${id}"`));
+}
+assert.match(canonicalLimno, /id="system-title"/);
+for (const heading of ['Operational map', 'Component details', 'Problem', 'Context', 'Contribution', 'Decisions', 'Reliability', 'Outcomes', 'Public evidence']) {
+  assert.match(canonicalLimno, new RegExp(`<h[234][^>]*>${heading}</h[234]>`));
+}
+assert.doesNotMatch(canonicalLimno, />Relationships</, 'Limnopulse has no standalone Relationships heading');
+for (const value of [limno.eyebrow, limno.summary, limno.problem, limno.context, ...limno.technologies, ...limno.contribution, ...limno.decisions, ...limno.reliability, ...limno.outcomes, ...limno.limitations]) {
+  assert.ok(canonicalLimno.includes(escapeHtml(value)), `canonical Limnopulse retains: ${value}`);
+}
+assert.equal(limno.architecture.length, 7);
+for (const component of limno.architecture) {
+  const article = canonicalLimno.match(new RegExp(`<article[^>]*id="component-${component.id}"[^>]*>[\\s\\S]*?</article>`))?.[0];
+  assert.ok(article, `${component.id} details are static HTML`);
+  for (const value of [component.title, component.description]) assert.ok(article.includes(escapeHtml(value)));
+  assert.doesNotMatch(article, new RegExp(component.status, 'i'), `${component.id} status is not repeated in its card`);
+  assert.ok(canonicalLimno.includes(`data-component-diagram="${component.id}"`));
+}
+assertIntegratedSystemView(canonicalLimno, limno, 'limnopulse');
+for (const evidence of limno.evidence) {
+  const article = [...canonicalLimno.matchAll(/<article[^>]*class="evidence-card"[^>]*>[\s\S]*?<\/article>/g)].map(match => match[0]).find(article => article.includes(`href="${evidence.url}"`));
+  assert.ok(article, `${evidence.label} has an evidence card`);
+  assert.ok(article.includes(escapeHtml(evidence.description)));
+  assert.ok(article.includes(`aria-label="Open ${evidence.label} in a new tab"`));
+  assert.match(article, new RegExp(evidence.status, 'i'));
+}
+assert.match(canonicalLimno, /docs\/architecture.md/);
+assert.match(canonicalLimno, /docs\/notifications-phase-3c-b.md/);
+const limnoIds = [...canonicalLimno.matchAll(/\bid="([^" ]+)"/g)].map(match => match[1]);
+assert.equal(limnoIds.length, new Set(limnoIds).size, 'Limnopulse IDs must be unique');
+assert.doesNotMatch(canonicalLimno, /href="\/work\/limnopulse\/"|data-step|data-scenario|data-reset|<canvas|<astro-island|\.(?:glb|gltf|ktx2)["']/i);
+assert.match(canonicalLimno, /id="simulation"[^>]*data-lifecycle/);
+const limnoRelations = [...canonicalLimno.matchAll(/<div[^>]*data-graph-connector[^>]*data-relation-from="([^"]+)"[^>]*data-relation-to="([^"]+)"[^>]*>[\s\S]*?<\/div>/g)];
+assert.ok(limnoRelations.length >= 6, 'directional relationships are rendered');
+for (const [relation, from, to] of limnoRelations) {
+  assert.ok(limno.architecture.some(component => component.id === from));
+  assert.ok(limno.architecture.some(component => component.id === to));
+  assert.notEqual(from, to);
+  assert.match(relation, /graph-connector-label/);
+}
+console.log('Canonical Limnopulse content and relationship checks passed.');
+
+// SA-06: compatibility documents own no project content or graphics runtime.
+const compatibilityRoutes = {
+  '/work/': '/explore/',
+  '/work/cnesdata/': '/explore/cnesdata/',
+  '/work/limnopulse/': '/explore/limnopulse/',
+  '/work/infrastructure/': '/explore/infrastructure/'
+};
+const compatibilityFiles = (await readdir(fromRoot('dist/work'), { recursive: true })).filter(file => file.endsWith('.html')).sort();
+assert.deepEqual(compatibilityFiles, ['cnesdata/index.html', 'index.html', 'infrastructure/index.html', 'limnopulse/index.html']);
+for (const [source, destination] of Object.entries(compatibilityRoutes)) {
+  const page = await readBuiltPage(`dist${source}index.html`);
+  assertMetadata(page, destination, origin);
+  assert.match(page, /<meta name="robots" content="noindex,nofollow">/);
+  assert.match(page, new RegExp(`<a[^>]*href="${destination}"[^>]*data-compatibility-link[^>]*>[^<]+</a>`));
+  assert.doesNotMatch(page, /<canvas|<astro-island|<picture|<img|data-explorer|project-grid|id="architecture"/);
+  const scripts = [...page.matchAll(/<script type="module"(?: src="([^"]+)")?>([\s\S]*?)<\/script>/g)];
+  assert.equal(scripts.length, 1, 'compatibility loads only its redirect module');
+  const script = scripts[0][1] ? await readFile(fromRoot(`dist${scripts[0][1]}`), 'utf8') : scripts[0][2];
+  assert.match(script, /location\.replace\(/);
+  assert.doesNotMatch(script, /import\s*\(|WebGL|renderer|\.glb/);
+}
+for (const route of indexableRoutes) {
+  const page = await readBuiltPage(`dist${route}index.html`);
+  assert.doesNotMatch(page, /href="\/work(?:\/|["?#])/i, `${route} must not link alternate Work pages`);
+  const nav = page.match(/<nav[^>]*aria-label="Primary navigation"[\s\S]*?<\/nav>/)[0];
+  assert.equal([...nav.matchAll(/href="\/explore\/"/g)].length, 1);
+  assert.match(nav, /href="\/explore\/"[^>]*>Work<\/a>/);
+  assert.doesNotMatch(nav, />Explore<\/a>/);
+  if (route.startsWith('/explore/')) assert.match(nav, /href="\/explore\/"[^>]*aria-current="page"[^>]*>Work<\/a>/);
+}
+console.log('SA-06 compatibility, canonical navigation and sitemap contracts passed.');

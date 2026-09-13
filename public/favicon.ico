@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">Vinicius Santana favicon</title>
+  <desc id="desc">Letters VS on a dark blue rounded square.</desc>
+  <rect width="128" height="128" rx="30" fill="#06111f"/>
+  <rect x="8" y="8" width="112" height="112" rx="24" fill="none" stroke="#84f4e6" stroke-opacity="0.48" stroke-width="4"/>
+  <text x="64" y="78" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="44" font-weight="800" letter-spacing="2" fill="#f4f8fc">VS</text>
+</svg>
