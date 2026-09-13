@@ -86,6 +86,7 @@ export function projectCnesdata(s: CnesdataState): Record<string, unknown> {
     userView: s.userView, logicalTick: s.logicalTick, replacementFullJobCreated: s.replacementFullJobCreated,
     resyncReason: s.resyncReason, competencia: s.competencia,
     comparedRows: s.serving?.comparedRows ?? 0, differentRows: s.serving?.differentRows ?? 0, sameRows: s.serving?.sameRows ?? 0,
+    responseComparedRows: s.response?.comparedRows ?? 0, responseDifferentRows: s.response?.differentRows ?? 0, responseSameRows: s.response?.sameRows ?? 0,
   };
 }
 /** All rows are synthetic; the visual stage shows only work actually performed so far. */

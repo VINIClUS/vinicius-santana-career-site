@@ -16,7 +16,7 @@ export function describeOutcome(project: string, state: Projection): string {
 }
 export function planEvent(project: string, event: DomainEvent, previous: Projection, current: Projection, scenario?: Scenario, command?: Command): Plan {
   const matching = scenario?.checkpoints.find(cp => cp.command.type === (command?.type ?? event.type)
-    && ['channel','kind','result'].every(key => command?.[key] === undefined || cp.command[key] === command[key]));
+    && Object.entries(command ?? {}).every(([key, expected]) => key === 'type' || expected === undefined || JSON.stringify(cp.command[key]) === JSON.stringify(expected)));
   if (matching) return JSON.stringify(previous)===JSON.stringify(current)
     ? { ...matching.plan,headline:event.description,motion:'hold',microbeats:[{...matching.plan.microbeats[0]!,label:event.description,routeKind:null}] }
     : { ...matching.plan, headline: event.description };

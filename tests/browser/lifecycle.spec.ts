@@ -73,6 +73,18 @@ test('CnesData preview retains source captures until normalization finishes its 
   await noMotion(page);
 });
 
+test('CnesData recipient renders counts from the response pinned before candidate publication', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await ready(page, 'cnesdata', '#technical');
+  await checkpoint(page, 15);
+  await root(page).getByText('Try a scenario', { exact: true }).click();
+  await control(page, 'operation').selectOption({ label: 'Resolver acesso autorizado' });
+  await control(page, 'apply').click();
+  await control(page, 'operation').selectOption({ label: 'Resultado pronto para uso' });
+  await control(page, 'apply').click();
+  await expect(control(page, 'recipient-message')).toHaveText('0 records compared · 0 different · 0 equal. Every row belongs to v-demo-00.');
+});
+
 test('autoplay stays silent until completion while manual actions announce', async ({ page }) => {
   await page.clock.install();
   await ready(page);
@@ -262,6 +274,23 @@ test('visibilitychange pauses presentation and becoming visible does not resume'
   await page.waitForTimeout(1000);
   await expect(control(page, 'progress')).toHaveText(progress!);
   await noMotion(page);
+});
+
+test('persisted pagehide keeps the paused player usable after pageshow while real unload disposes it', async ({ page }) => {
+  await ready(page);
+  await expect(stage(page)).toHaveAttribute('data-playing', 'true');
+  await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent('pagehide', { persisted: true })));
+  await noMotion(page);
+  await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true })));
+  await control(page, 'replay').click();
+  await control(page, 'next').click();
+  await control(page, 'next').click();
+  await expect(control(page, 'progress')).toContainText('operation 2 /');
+
+  await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent('pagehide', { persisted: false })));
+  const disposedProgress = await control(page, 'progress').textContent();
+  await control(page, 'replay').click();
+  await expect(control(page, 'progress')).toHaveText(disposedProgress!);
 });
 
 test('technical component selection keeps URL, scroll and keyboard focus', async ({ page }) => {

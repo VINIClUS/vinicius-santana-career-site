@@ -140,7 +140,7 @@ export async function initializeLifecycles() {
       p.userView==='acknowledged'?'Acknowledged. The low condition remains active until a valid clean window confirms recovery.':
       p.userView==='incident_opened'?`Incident ${p.incidentId} · ${p.condition} condition · version ${p.incidentVersion}`:
       'Low oxygen alert · a synthetic notification was accepted. Provider acceptance does not prove that a person read it.':
-      `${p.comparedRows} records compared · ${p.differentRows} different · ${p.sameRows} equal. Every row belongs to ${p.servedVersion}.`;
+      `${p.responseComparedRows} records compared · ${p.responseDifferentRows} different · ${p.responseSameRows} equal. Every row belongs to ${p.servedVersion}.`;
     if(limno){
       get<HTMLButtonElement>('recipient-open').disabled=!p.membershipActive||p.userView==='idle';
       get<HTMLButtonElement>('recipient-ack').disabled=!p.membershipActive||p.incident!=='open';
@@ -209,6 +209,10 @@ export async function initializeLifecycles() {
     const saveData=(navigator as Navigator&{connection?:{saveData?:boolean}}).connection?.saveData;
     if(!autoConsumed&&!interacted&&!document.hidden&&!reduced.matches&&!saveData&&(!location.hash||location.hash==='#simulation')){autoConsumed=true;player.play();}
   },{threshold:0}).observe(stage);
-  window.addEventListener('pagehide',()=>{generation++;player.dispose();cancelMotion();},{once:true});
+  window.addEventListener('pagehide',event=>{
+    if(event.persisted){player.pause();cancelMotion();return;}
+    generation++;player.dispose();cancelMotion();
+  });
+  window.addEventListener('pageshow',event=>{if(event.persisted){cancelMotion();render();}});
   actions();render();
 }

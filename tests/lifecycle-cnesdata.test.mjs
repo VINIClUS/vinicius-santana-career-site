@@ -98,6 +98,17 @@ test('read pins a full version across conditional rollback, membership revocatio
   assert.equal(revoked.servedVersion, null);
   assert.equal(revoked.response, null);
 });
+test('projection keeps prepared counts separate from the pinned response counts', () => {
+  let state = prefix(15);
+  state = apply(state, { type: 'AUTHORIZE_AND_READ', tenantId: 'tenant-demo-A' }).state;
+  state = apply(state, { type: 'SHOW_SERVING' }).state;
+  const projection = projectCnesdata(state);
+  assert.equal(projection.servedVersion, 'v-demo-00');
+  assert.equal(projection.comparedRows, 3);
+  assert.equal(projection.responseComparedRows, 0);
+  assert.equal(projection.responseDifferentRows, 0);
+  assert.equal(projection.responseSameRows, 0);
+});
 test('local profile changes deployment labels without changing rules', () => {
   const local = createCnesdataState('local');
   assert.equal(projectCnesdata(local).profile, 'local');
