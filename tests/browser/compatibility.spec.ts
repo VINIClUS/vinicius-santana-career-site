@@ -8,7 +8,7 @@ const compatibilityRoutes = [
 ] as const;
 
 async function expectCompatibilityMetadata(page: Page, destination: string) {
-  const canonicalDestination = new URL(destination, 'https://dev.vinisantana.com').href;
+  const canonicalDestination = new URL(destination, 'https://vinisantana.com').href;
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/i);
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', canonicalDestination);
   await expect(page.locator('meta[property="og:url"]')).toHaveAttribute('content', canonicalDestination);

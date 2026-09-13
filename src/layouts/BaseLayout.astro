@@ -66,6 +66,19 @@ const personStructuredData = createPersonStructuredData(Astro.site);
     <meta name="twitter:image:alt" content="Professional profile card for Vinicius Santana" />
 
     <script type="application/ld+json" set:html={JSON.stringify(personStructuredData)}></script>
+    {import.meta.env.PROD && (
+      <>
+        <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-2DY87DZC90"></script>
+        <script is:inline>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', 'G-2DY87DZC90');
+        </script>
+      </>
+    )}
     <title>{title}</title>
   </head>
   <body class:list={{ observatory: Astro.props.observatory }}>
