@@ -6,7 +6,7 @@ import { Box3, Group, OrthographicCamera, Vector3 } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { allPosters, details, districtIds, districts, sceneAssets, overview } from '../src/content/scenes/index.ts';
 import { projectDefinitions, projectIds } from '../src/features/explorer/projects.ts';
-import { makeScene, normalizeGeneratedMetadata } from '../scripts/assets/scenes.mjs';
+import { makeScene, normalizeGeneratedMetadata, sceneIds } from '../scripts/assets/scenes.mjs';
 import visual from '../src/content/scenes/atlas-authoring.json' with { type: 'json' };
 import { applyAtlasCamera, createAtlasWorld } from '../src/features/explorer/scene/atlas-world.mjs';
 import { projectToPoster } from '../src/features/explorer/observatory-projection.ts';
@@ -35,13 +35,13 @@ function webpSize(bytes) {
   throw new Error('WebP dimensions not found');
 }
 
-test('scene contract covers the three routable projects and preserves system detail artwork', () => {
+test('scene contract covers the three routable projects and preserves infrastructure detail artwork', () => {
   assert.deepEqual(projectIds, ['cnesdata', 'limnopulse', 'infrastructure']);
   assert.deepEqual([...districtIds], projectIds);
   assert.deepEqual(Object.keys(districts).sort(), [...districtIds].sort());
   assert.deepEqual(Object.keys(overview.placements).sort(), [...districtIds].sort());
-  assert.deepEqual(Object.keys(details).sort(), ['cnesdata', 'infrastructure']);
-  assert.equal(sceneAssets.length, 6);
+  assert.deepEqual(Object.keys(details).sort(), ['infrastructure']);
+  assert.equal(sceneAssets.length, 5);
   assert.equal(new Set(sceneAssets.map(asset => asset.id)).size, sceneAssets.length);
   assert.equal(new Set(sceneAssets.map(asset => asset.model.src)).size, sceneAssets.length);
   for (const vector of [...Object.values(overview.placements), overview.hubPosition, overview.camera.position, overview.camera.target, overview.camera.up]) assert.ok(vector.length === 3 && vector.every(Number.isFinite));
@@ -74,8 +74,8 @@ test('scene contract covers the three routable projects and preserves system det
 
 test('partial generation retains supported detail metadata and purges obsolete districts', async () => {
   const metadata = JSON.parse(await readFile(new URL('../src/content/scenes/generated.json', import.meta.url), 'utf8'));
-  assert.ok(metadata['detail-cnesdata']);
   assert.ok(metadata['detail-infrastructure']);
+  assert.deepEqual(Object.keys(metadata).sort(), [...sceneIds, 'detail-infrastructure-failed'].sort());
   assert.equal(metadata['district-public-health'], undefined);
   assert.equal(metadata['district-observability'], undefined);
 });
@@ -96,10 +96,10 @@ test('partial generation sanitizer removes obsolete metadata and placements', ()
           mobile: { districtPositions: stalePositions },
         },
       },
-      'detail-cnesdata': { retained: true },
+      'detail-infrastructure': { retained: true },
       'district-public-health': { obsolete: true },
   });
-  assert.ok(metadata['detail-cnesdata']);
+  assert.ok(metadata['detail-infrastructure']);
   assert.equal(metadata['district-public-health'], undefined);
   assert.deepEqual(Object.keys(metadata.overview.districtPositions), projectIds);
   for (const layout of Object.values(metadata.overview.layouts)) {
@@ -179,7 +179,7 @@ test('asset generator rejects obsolete and unknown scene IDs before launching Ch
 
 test('every responsive fallback exists with its declared dimensions and alternative text', async () => {
   const images = allPosters.flatMap(poster => [poster.desktop, poster.mobile]);
-  assert.equal(images.length, 16);
+  assert.equal(images.length, 14);
   assert.equal(new Set(images.map(image => image.src)).size, images.length);
   assert.deepEqual((await readdir(new URL('assets/posters/', publicRoot))).sort(), images.map(image => image.src.split('/').at(-1)).sort());
   for (const image of images) {
@@ -200,7 +200,6 @@ for (const asset of sceneAssets) test(`${asset.id}: self-contained GLB loads wit
   for (const resource of [...(json.buffers ?? []), ...(json.images ?? [])]) assert.ok(!resource.uri || resource.uri.startsWith('data:'), 'No external dependencies');
   const gltf = await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength), '');
   let meshes = 0;
-  const componentIds = new Set();
   const simulationIds = new Set();
   const expectedDistrict = asset.id.startsWith('district-') ? asset.id.slice(9) : asset.id.startsWith('detail-') ? asset.id.slice(7) : undefined;
   let foundDistrict = false;
@@ -214,12 +213,6 @@ for (const asset of sceneAssets) test(`${asset.id}: self-contained GLB loads wit
     if (object.userData.componentId) {
       const project = projectDefinitions[expectedDistrict];
       assert.ok(project?.componentIds.includes(object.userData.componentId), `${asset.id}: invalid component ${object.userData.componentId}`);
-      // Semantic groups own identifiers; repeated child meshes may inherit them.
-      if (!object.isMesh) {
-        if (asset.id === 'detail-cnesdata') assert.ok(!componentIds.has(object.userData.componentId), 'Unique architectural group ID');
-        componentIds.add(object.userData.componentId);
-        if (asset.id === 'detail-cnesdata' && ['parquet-to-gold', 'kubernetes'].includes(object.userData.componentId)) assert.equal(object.userData.status, 'planned');
-      }
     }
     if (object.userData.simulationId && !object.isMesh) {
       assert.ok(!simulationIds.has(object.userData.simulationId), 'Unique simulation group ID');
@@ -243,7 +236,6 @@ for (const asset of sceneAssets) test(`${asset.id}: self-contained GLB loads wit
   assert.ok(Object.keys(asset.model.anchors).length > 0);
   assert.deepEqual(asset.model.anchors.base, [0, 0, 0]);
   for (const anchor of Object.values(asset.model.anchors)) assert.ok(anchor.length === 3 && anchor.every(Number.isFinite));
-  if (asset.id === 'detail-cnesdata') assert.deepEqual([...componentIds].sort(), [...projectDefinitions.cnesdata.componentIds].sort());
   if (asset.id === 'detail-infrastructure') {
     assert.deepEqual([...simulationIds].sort(), ['node-01', 'node-02', 'node-03', 'shared-layer', 'workload']);
     const workload = asset.model.anchors.workload;

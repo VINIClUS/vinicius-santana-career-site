@@ -7,6 +7,7 @@ import { projectDefinitions } from './projects.ts';
 interface Props { caseStudy: CollectionEntry<'caseStudies'>['data']; }
 const { caseStudy } = Astro.props;
 const { relations } = projectDefinitions.infrastructure;
+const rightCount = Math.ceil(caseStudy.architecture.length / 2);
 const componentFor = (id: string) => caseStudy.architecture.find(component => component.id === id)!;
 const sources = ['image-builds', 'ansible-contracts', 'operations-automation'];
 const topology = 'reference-topology';
@@ -28,16 +29,17 @@ const routes = {
       <div class="graph-stage">
         <SystemGraphConnectors components={caseStudy.architecture} nodes={graphNodes} relations={relations} nodeHalfWidth={15.5} nodeHalfHeight={13.34} {routes} />
         <ol class="graph-nodes" aria-label="Infrastructure system components">
-          {graphNodes.map(node => { const component = componentFor(node.id); return <li id={`graph-node-${node.id}`} data-graph-node={node.id} class={node.id === topology ? 'graph-node graph-node-hub' : 'graph-node'} style={`--node-x: ${node.x}%; --node-y: ${node.y}%`}><a href={`#component-${node.id}`} data-component-link={node.id}><span class="graph-node-kicker" aria-hidden="true">{sources.includes(node.id) ? 'Source' : 'Convergence'}</span><strong>{component.title}</strong><span class="selection-marker" aria-hidden="true">Selected</span></a></li>; })}
+          {graphNodes.map(node => { const component = componentFor(node.id); return <li id={`graph-node-${node.id}`} data-graph-node={node.id} class={node.id === topology ? 'graph-node graph-node-hub' : 'graph-node'} style={`--node-x: ${node.x}%; --node-y: ${node.y}%`}><button type="button" data-component-diagram={node.id} data-component-select={node.id} data-selected="false" aria-pressed="false" disabled><span class="graph-node-kicker" aria-hidden="true">{sources.includes(node.id) ? 'Source' : 'Convergence'}</span><strong>{component.title}</strong><span class="selection-marker" aria-hidden="true">Selected</span></button></li>; })}
         </ol>
       </div>
     </section>
-    <SystemViewCards components={caseStudy.architecture} relations={relations} />
+    <SystemViewCards components={caseStudy.architecture} visibleComponents={caseStudy.architecture.slice(0, rightCount)} relations={relations} position="right" />
+    <SystemViewCards components={caseStudy.architecture} visibleComponents={caseStudy.architecture.slice(rightCount)} relations={relations} position="bottom" />
   </div>
 </div>
 <style>
   .infrastructure-system-view { --graph-accent: #c4b8f7; --graph-connector: #c4b8f7; --graph-node-width: 31%; --graph-node-height: 96px; }
   .system-graph { background: linear-gradient(140deg, rgba(196,184,247,.1), rgba(7,18,31,.35)); }
   .graph-stage { position: relative; height: 360px; margin-top: 20px; }
-  .graph-node-hub a { height: 116px; justify-content: center; }
+  .graph-node-hub button { height: 116px; justify-content: center; }
 </style>

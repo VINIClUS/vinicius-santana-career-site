@@ -240,42 +240,6 @@ function link(p, a, b, mat = "cyan") {
   m.scale.y = v.length();
   m.quaternion.setFromUnitVectors(new T.Vector3(0, 1, 0), v.normalize());
 }
-const cnesComponents = [
-  "canonical-contracts",
-  "edge-agent",
-  "central-api",
-  "tenant-isolation",
-  "web-dashboard",
-  "parquet-to-gold",
-  "kubernetes",
-];
-function cnesDetail() {
-  const g = base("detail-cnesdata", "cnesdata", 10);
-  for (let i = 0; i < 7; i++) {
-    const x = ((i % 4) - 1.5) * 2.2,
-      z = i < 4 ? 1.8 : -1.5;
-    const planned = i > 4;
-    const c = group(g, cnesComponents[i], {
-      districtId: "cnesdata",
-      componentId: cnesComponents[i],
-      status: planned ? "planned" : "implemented",
-    });
-    if (planned) {
-      for (const dx of [-0.65, 0.65])
-        for (const dz of [-0.65, 0.65])
-          box(c, x + dx, 1.4, z + dz, 0.06, 2, 0.06, "plan");
-      box(c, x, 2.4, z, 1.36, 0.06, 1.36, "plan");
-      box(c, x, 0.43, z, 1.5, 0.06, 1.5, "plan");
-    } else if (i === 3) {
-      cylinder(c, x, 1.4, z, 0.65, 2, "dark");
-      for (let j = 0; j < 4; j++) ring(c, x, 0.6 + j * 0.48, z, 0.66);
-    } else {
-      building(c, x, z, 1.4, 1.5 + i * 0.15, 1.4, i === 2 ? "dark" : "wall");
-    }
-    if (i > 0 && i < 4) link(g, [x - 2.2, 0.47, z], [x, 0.47, z]);
-  }
-  return g;
-}
 function infrastructureDetail() {
   const g = base("detail-infrastructure", "infrastructure", 8);
   for (let i = 0; i < 3; i++) {
@@ -314,7 +278,6 @@ export const overviewLayouts = atlasVisual.layouts;
 export const sceneIds = [
   ...districtIds.map((id) => `district-${id}`),
   "hub",
-  "detail-cnesdata",
   "detail-infrastructure",
   "overview",
 ];
@@ -338,7 +301,6 @@ export function makeScene(id, variant = "desktop") {
   if (!sceneIds.includes(id)) throw new Error(`Unknown scene ${id}`);
   if (id.startsWith("district-")) return makeAtlasLandmark(id.slice(9));
   if (id === "hub") return makeAtlasLandmark("hub");
-  if (id === "detail-cnesdata") return cnesDetail();
   if (id === "detail-infrastructure") return infrastructureDetail();
   const models = Object.fromEntries([...districtIds, "hub"].map(id => [id, makeAtlasLandmark(id)]));
   const composition = createAtlasWorld({ models, visual: atlasVisual });

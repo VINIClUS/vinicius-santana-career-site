@@ -26,25 +26,22 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
         await expect(page).toHaveURL(new RegExp(`#${id}$`));
         await expect(page.locator(`#${id}`)).toBeVisible();
       }
-      const links = page.locator('[data-component-link]');
-      const firstHash = (await links.first().getAttribute('href'))!;
-      const secondHash = (await links.nth(1).getAttribute('href'))!;
+      const links = page.locator('[data-component-diagram]');
+      const selectionURL = page.url();
       for (const index of [0, 1]) {
-        const link = links.nth(index);
-        if (mobile) await link.tap();
-        else { await link.focus(); await page.keyboard.press('Enter'); }
-        const hash = index === 0 ? firstHash : secondHash;
-        await expect(page).toHaveURL(new RegExp(`${hash}$`));
-        await expect(page.locator(hash)).toBeVisible();
-        await expect(page.locator(hash)).toBeFocused();
-        if (javaScriptEnabled) await expect(link).toHaveAttribute('aria-current', 'true');
+        const control = links.nth(index);
+        if (javaScriptEnabled) {
+          if (mobile) await control.tap();
+          else { await control.focus(); await page.keyboard.press('Enter'); }
+          await expect(control).toHaveAttribute('aria-pressed', 'true');
+          if (!mobile) await expect(control).toBeFocused();
+          const id = await control.getAttribute('data-component-diagram');
+          await expect(page.locator(`[data-component-detail="${id}"]`)).toHaveAttribute('data-selected', 'true');
+        } else {
+          await expect(control).toBeDisabled();
+        }
+        await expect(page).toHaveURL(selectionURL);
       }
-      await page.goBack();
-      await expect(page).toHaveURL(new RegExp(`${firstHash}$`));
-      if (javaScriptEnabled) await expect(page.locator(firstHash)).toBeFocused();
-      await page.goForward();
-      await expect(page).toHaveURL(new RegExp(`${secondHash}$`));
-      if (javaScriptEnabled) await expect(page.locator(secondHash)).toBeFocused();
       await page.goto('/explore/limnopulse/#system-title');
       await expect(page.getByRole('heading', { name: 'System View', exact: true })).toBeInViewport();
       const systemView = page.locator('[data-integrated-system-view]');

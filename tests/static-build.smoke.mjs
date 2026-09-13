@@ -84,16 +84,28 @@ function assertAnalytics(html, pageName) {
 }
 
 function assertIntegratedSystemView(html, study, projectId) {
-  const view = html.match(/<div class="integrated-system-view[^"]*"[\s\S]*?<\/div>\s*<\/div>/)?.[0];
+  const start = html.search(/<div class="integrated-system-view[^"]*"/);
+  let depth = 0;
+  let view;
+  if (start >= 0) {
+    for (const match of html.slice(start).matchAll(/<div\b[^>]*>|<\/div>/g)) {
+      depth += match[0].startsWith('</') ? -1 : 1;
+      if (depth === 0) {
+        view = html.slice(start, start + match.index + match[0].length);
+        break;
+      }
+    }
+  }
   assert.ok(view, `${projectId} renders one integrated graph and cards view`);
   assert.match(view, /data-system-graph/, `${projectId} exposes a labeled graph region`);
-  assert.match(view, /data-component-cards/, `${projectId} exposes a component-card region`);
+  assert.match(view, /component-cards-right/, `${projectId} exposes details beside the graph`);
+  assert.match(view, /component-cards-bottom/, `${projectId} exposes details below the graph`);
   assert.doesNotMatch(view, />Relationships</, `${projectId} removes the standalone relationships section`);
   assert.doesNotMatch(view, /status-(?:implemented|documented|planned|historical|illustrative)/, `${projectId} removes status from the system view`);
   assert.doesNotMatch(view, /Back to System View/, `${projectId} cards do not link back to the system view`);
 
   for (const component of study.architecture) {
-    assert.equal([...view.matchAll(new RegExp(`data-component-link="${component.id}"`, 'g'))].length, 1, `${projectId}:${component.id} has exactly one graph node link`);
+    assert.equal([...view.matchAll(new RegExp(`data-component-diagram="${component.id}"`, 'g'))].length, 1, `${projectId}:${component.id} has exactly one graph selection control`);
     assert.match(view, new RegExp(`id="graph-node-${component.id}"[^>]*data-graph-node="${component.id}"|data-graph-node="${component.id}"[^>]*id="graph-node-${component.id}"`), `${projectId}:${component.id} is an addressable graph endpoint`);
     const card = view.match(new RegExp(`<article[^>]*id="component-${component.id}"[^>]*>[\\s\\S]*?<\\/article>`))?.[0];
     assert.ok(card, `${projectId}:${component.id} has one static detail card`);
@@ -531,7 +543,7 @@ for (const { slug, title } of caseStudies) {
   assert.match(explorer, /Component details/);
   assert.match(explorer, /Receives from/);
   assert.match(explorer, /Sends to/);
-  assert.match(explorer, /data-component-link/);
+  assert.match(explorer, /data-component-diagram/);
   assert.match(explorer, /data-component-detail/);
   assert.doesNotMatch(explorer, /<canvas|<astro-island|\.(glb|gltf|ktx2)["']/i);
   if (slug === 'cnesdata') {
@@ -630,7 +642,7 @@ for (const evidence of cnes.evidence) {
   assert.ok(canonicalCnes.includes(escapeHtml(evidence.description)));
   assert.ok(canonicalCnes.includes(`aria-label="Open ${evidence.label} in a new tab"`));
 }
-assert.match(canonicalCnes, /<figure[^>]*class="system-poster"[\s\S]*?<picture[\s\S]*?<img/, 'CnesData retains its architecture poster below the graph');
+assert.doesNotMatch(canonicalCnes, /system-poster|detail-cnesdata/, 'CnesData omits its detailed architecture poster');
 assert.equal([...canonicalCnes.matchAll(/id="([^" ]+)"/g)].length, new Set([...canonicalCnes.matchAll(/id="([^" ]+)"/g)].map(match => match[1])).size, 'canonical IDs must be unique');
 console.log('Canonical CnesData content equivalence passed.');
 
@@ -681,7 +693,7 @@ for (const component of limno.architecture) {
   assert.ok(article, `${component.id} details are static HTML`);
   for (const value of [component.title, component.description]) assert.ok(article.includes(escapeHtml(value)));
   assert.doesNotMatch(article, new RegExp(component.status, 'i'), `${component.id} status is not repeated in its card`);
-  assert.ok(canonicalLimno.includes(`data-component-link="${component.id}"`));
+  assert.ok(canonicalLimno.includes(`data-component-diagram="${component.id}"`));
 }
 assertIntegratedSystemView(canonicalLimno, limno, 'limnopulse');
 for (const evidence of limno.evidence) {

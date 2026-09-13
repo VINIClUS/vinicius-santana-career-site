@@ -59,7 +59,6 @@ export const districts = {
 } as const satisfies Record<DistrictId, SceneAsset>;
 export const hub = scene('hub', 'Small decorative cartographic origin ring and registration cross.');
 export const details = {
-  cnesdata: scene('detail-cnesdata', 'Expanded CnesData architecture showing contract, edge, API, tenant, dashboard, processing, and orchestration elements.'),
   infrastructure: scene('detail-infrastructure', 'Infrastructure detail with three nodes, a shared layer, and an identifiable workload.'),
 } as const;
 

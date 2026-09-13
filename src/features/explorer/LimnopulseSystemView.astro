@@ -7,6 +7,7 @@ import { projectDefinitions } from './projects.ts';
 interface Props { caseStudy: CollectionEntry<'caseStudies'>['data']; }
 const { caseStudy } = Astro.props;
 const { relations } = projectDefinitions.limnopulse;
+const rightCount = Math.ceil(caseStudy.architecture.length / 2);
 const componentFor = (id: string) => caseStudy.architecture.find(component => component.id === id)!;
 const bands = [
   { title: 'Observations', ids: ['mqtt-ingestion'] },
@@ -38,11 +39,12 @@ const routes = {
         <SystemGraphConnectors components={caseStudy.architecture} nodes={graphNodes} relations={relations} nodeHalfWidth={14} nodeHalfHeight={11.17} {routes} />
         <div class="operational-bands">{bands.map((band, index) => <h4 style={`--band-x: ${[18, 50, 82][index]}%`}>{band.title}</h4>)}</div>
         <ol class="graph-nodes" aria-label="Limnopulse system components">
-          {graphNodes.map(node => { const component = componentFor(node.id); const isBoundary = boundaries.includes(node.id); const band = bands.find(candidate => candidate.ids.includes(node.id)); return <li id={`graph-node-${node.id}`} data-graph-node={node.id} class={isBoundary ? 'graph-node boundary-node' : 'graph-node'} style={`--node-x: ${node.x}%; --node-y: ${node.y}%`}><a href={`#component-${node.id}`} data-component-link={node.id}><span class="graph-node-kicker" aria-hidden="true">{isBoundary ? 'Boundary' : band?.title}</span><strong>{component.title}</strong><span class="selection-marker" aria-hidden="true">Selected</span></a></li>; })}
+          {graphNodes.map(node => { const component = componentFor(node.id); const isBoundary = boundaries.includes(node.id); const band = bands.find(candidate => candidate.ids.includes(node.id)); return <li id={`graph-node-${node.id}`} data-graph-node={node.id} class={isBoundary ? 'graph-node boundary-node' : 'graph-node'} style={`--node-x: ${node.x}%; --node-y: ${node.y}%`}><button type="button" data-component-diagram={node.id} data-component-select={node.id} data-selected="false" aria-pressed="false" disabled><span class="graph-node-kicker" aria-hidden="true">{isBoundary ? 'Boundary' : band?.title}</span><strong>{component.title}</strong><span class="selection-marker" aria-hidden="true">Selected</span></button></li>; })}
         </ol>
       </div>
     </section>
-    <SystemViewCards components={caseStudy.architecture} relations={relations} />
+    <SystemViewCards components={caseStudy.architecture} visibleComponents={caseStudy.architecture.slice(0, rightCount)} relations={relations} position="right" />
+    <SystemViewCards components={caseStudy.architecture} visibleComponents={caseStudy.architecture.slice(rightCount)} relations={relations} position="bottom" />
   </div>
 </div>
 <style>
@@ -50,5 +52,5 @@ const routes = {
   .system-graph { background: linear-gradient(140deg, rgba(141,202,255,.1), rgba(7,18,31,.35)); }
   .graph-stage { position: relative; height: 430px; margin-top: 20px; }
   .operational-bands { position: absolute; inset: 30% 0 0; z-index: 0; }.operational-bands h4 { position: absolute; left: var(--band-x); top: 0; width: 27%; height: 58%; margin: 0; transform: translateX(-50%); border-top: 2px solid #8dcaff; background: rgba(141,202,255,.035); color: #8dcaff; padding: 6px 8px; font-size: .62rem; letter-spacing: .06em; text-transform: uppercase; }
-  .boundary-node a { border-style: dashed; }
+  .boundary-node button { border-style: dashed; }
 </style>

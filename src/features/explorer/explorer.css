@@ -25,7 +25,7 @@ html:has(.explorer) { scroll-behavior: auto; }
 .component-map a[aria-current="true"] { border: 2px solid var(--accent); }
 .component-map a[aria-current="true"] .selection-marker { display: inline; }
 .component-panel article { padding: 24px; margin-bottom: 16px; border: 1px solid var(--line); border-radius: 8px; }
-.component-panel article:target, .component-panel article[data-selected="true"] { border: 2px solid var(--accent); }
+
 .explorer [id] { scroll-margin-top: calc(var(--header-height) + 24px); }
 .explorer a:focus-visible, .explorer button:focus-visible, .explorer select:focus-visible, .component-panel article:focus { outline: 3px solid var(--accent); outline-offset: 4px; }
 .component-relations { padding-left: 20px; }

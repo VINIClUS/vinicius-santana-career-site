@@ -20,6 +20,7 @@ async function startStaticServer(directory) {
     const pathname = new URL(request.url, 'http://127.0.0.1').pathname;
     const relativePath = pathname === '/' ? 'index.html' : `${pathname.replace(/^\//, '')}${pathname.endsWith('/') ? 'index.html' : ''}`;
     try {
+      response.setHeader('Content-Type', relativePath.endsWith('.js') ? 'text/javascript' : relativePath.endsWith('.css') ? 'text/css' : 'text/html');
       response.end(await readFile(path.join(directory, relativePath)));
     } catch {
       response.statusCode = 404;
@@ -41,7 +42,13 @@ import SystemView from '../features/explorer/SystemView.astro';
 import { projectDefinitions } from '../features/explorer/projects.ts';
 const caseStudy = ${JSON.stringify(cnesData)};
 ---
-<SystemView {caseStudy} definition={projectDefinitions.cnesdata} />
+<div data-explorer data-project="cnesdata">
+  <SystemView {caseStudy} definition={projectDefinitions.cnesdata} />
+</div>
+<script>
+  import { initializeExplorer } from '../features/explorer/client';
+  initializeExplorer();
+</script>
 `);
   await run(process.execPath, [astroBin, 'build', '--root', rootPath, '--outDir', outputDirectory], { cwd: rootPath });
 
@@ -55,32 +62,40 @@ const caseStudy = ${JSON.stringify(cnesData)};
   try {
     const page = await browser.newPage();
     await page.goto(`${origin}${fixtureRoute}`);
-    await page.waitForSelector('[data-system-view][data-enhanced="true"]');
+    await page.waitForSelector('[data-explorer][data-controller-ready="true"]');
     assert.equal(await page.url(), `${origin}${fixtureRoute}`, 'initial selection does not add a fragment');
-    assert.equal(await page.locator('[data-component-link="central-api"]').first().getAttribute('aria-current'), 'true', 'primary component is initially current');
+    assert.equal(await page.locator('[data-component-diagram="central-api"]').first().getAttribute('aria-pressed'), 'true', 'primary component is initially current');
     assert.equal(await page.locator('[data-component-detail="central-api"]').getAttribute('data-selected'), 'true', 'primary detail is selected');
 
+    await page.goto('about:blank');
     await page.goto(`${origin}${fixtureRoute}#component-edge-agent`);
-    await page.waitForSelector('[data-component-link="edge-agent"][aria-current="true"]');
+    await page.waitForSelector('[data-component-diagram="edge-agent"][aria-pressed="true"]');
     assert.equal(await page.locator('[data-component-detail="edge-agent"]').getAttribute('data-selected'), 'true', 'valid fragment selects its detail');
 
+    await page.goto('about:blank');
     await page.goto(`${origin}${fixtureRoute}`);
-    await page.waitForSelector('[data-component-link="central-api"][aria-current="true"]');
-    await page.locator('[data-system-graph] [data-component-link="canonical-contracts"]').focus();
-    await page.keyboard.press('ArrowRight');
-    await page.waitForURL(/#component-edge-agent$/);
-    assert.equal(await page.locator('[data-component-link="edge-agent"]').first().getAttribute('aria-current'), 'true', 'keyboard selection updates aria-current');
-    await page.goBack();
-    await page.waitForURL(new RegExp(`${fixtureRoute}$`));
-    assert.equal(await page.locator('[data-component-detail="central-api"]').getAttribute('data-selected'), 'true', 'Back synchronizes selected detail');
-    await page.goForward();
-    await page.waitForURL(/#component-edge-agent$/);
-    assert.equal(await page.locator('[data-component-link="edge-agent"]').first().getAttribute('aria-current'), 'true', 'Forward synchronizes aria-current');
+    await page.waitForSelector('[data-component-diagram="central-api"][aria-pressed="true"]');
+    const control = page.locator('[data-component-diagram="edge-agent"]');
+    await control.focus();
+    const scrollBefore = await page.evaluate(() => ({ x: scrollX, y: scrollY }));
+    await page.keyboard.press('Enter');
+    assert.equal(page.url(), `${origin}${fixtureRoute}`, 'keyboard selection leaves the URL unchanged');
+    assert.equal(await control.getAttribute('aria-pressed'), 'true', 'keyboard selection updates pressed state');
+    assert.equal(await control.evaluate(element => element === document.activeElement), true, 'selection retains control focus');
+    assert.deepEqual(await page.evaluate(() => ({ x: scrollX, y: scrollY })), scrollBefore, 'selection leaves scroll unchanged');
+    assert.equal(await page.locator('[data-component-detail="edge-agent"]').getAttribute('data-selected'), 'true', 'selection synchronizes detail');
+    const cardControl = page.locator('[data-component-card="central-api"]');
+    await cardControl.focus();
+    await page.keyboard.press('Space');
+    assert.equal(await page.locator('[data-component-diagram="central-api"]').getAttribute('aria-pressed'), 'true', 'card selection synchronizes diagram');
+    assert.equal(await cardControl.evaluate(element => element === document.activeElement), true, 'card selection retains control focus');
+    assert.equal(page.url(), `${origin}${fixtureRoute}`, 'card selection leaves the URL unchanged');
 
     const noJavaScriptContext = await browser.newContext({ javaScriptEnabled: false });
     const noJavaScriptPage = await noJavaScriptContext.newPage();
     await noJavaScriptPage.goto(`${origin}${fixtureRoute}`);
     assert.equal(await noJavaScriptPage.locator('[data-component-detail]').count(), cnesData.architecture.length, 'no-JavaScript document includes every detail');
+    assert.equal(await noJavaScriptPage.locator('[data-component-select]:enabled').count(), 0, 'selection controls are inactive without JavaScript');
     for (const component of cnesData.architecture) {
       assert.equal(await noJavaScriptPage.locator(`#component-${component.id}`).isVisible(), true, `${component.id} remains readable without JavaScript`);
       const detailText = await noJavaScriptPage.locator(`#component-${component.id}`).textContent();
