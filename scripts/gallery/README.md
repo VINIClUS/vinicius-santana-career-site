@@ -20,4 +20,4 @@ the automated checks cannot determine those qualities.
 `GLTFLoader`. After building, `rtk npm run smoke` additionally verifies that all
 referenced assets were copied into `dist` byte-for-byte.
 
-The active kit has eight responsive poster pairs: three districts, hub, two details, overview and Infrastructure failure. Six cards offer GLB inspection. Verification checks the exact card IDs and the actual served responsive images, not a historical count. Retired Home globe and Work illustrations are not published or generated.
+The active kit has seven responsive poster pairs: three districts, hub, Infrastructure detail, overview and Infrastructure failure. Five cards offer GLB inspection. Verification checks the exact card IDs and the actual served responsive images, not a historical count. Retired Home globe and Work illustrations are not published or generated.
