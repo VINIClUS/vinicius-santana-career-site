@@ -91,7 +91,7 @@ export function reduceLimnopulse(previous: LimnopulseState, command: LimnopulseC
       if (!s.recipient.membershipActive || (command.channel === 'telegram' && !s.recipient.telegramBound)) return reject('INELIGIBLE_RECIPIENT');
       if (command.channel === 'telegram') s.recipient.telegramEnabled = true;
       description = 'Channel preference enabled.'; break;
-    case 'SET_MEMBERSHIP': s.recipient.membershipActive = command.active; description = 'Membership updated.'; break;
+    case 'SET_MEMBERSHIP': s.recipient.membershipActive = command.active; if (!command.active) s.userView = 'idle'; description = 'Membership updated.'; break;
     case 'SET_REDIS': s.redisAvailable = command.available; description = 'Rate limiter availability updated.'; break;
     case 'PUBLISH_READING':
       if (command.deviceId !== 'dev-demo-01' || !Number.isFinite(command.value)) return reject('UNKNOWN_DEVICE_OR_INVALID_READING');

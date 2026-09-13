@@ -13,14 +13,14 @@ type ScalingUnfencedCommand =
   | { type: 'SET_LOAD'; value: number }
   | { type: 'ADVANCE_CLOCK'; ticks: number }
   | { type: 'RESERVE_WORKERS'; ids: string[]; requestId: string };
+type ScalingStartOperation = { type: 'START_REPLICAS'; ids: string[]; workerIds: string[] };
 type ScalingWorkerOperation =
-  | { type: 'START_REPLICAS'; ids: string[]; workerIds: string[] }
   | { type: 'PROVISION_WORKERS' | 'WORKERS_BOOTED' | 'WORKERS_READY' | 'RELEASE_WORKERS' | 'PROVISION_TIMEOUT'; ids: string[] };
 type ScalingReplicaOperation =
   | { type: 'DRAIN_REPLICAS'; ids: string[]; inFlight?: number }
   | { type: 'REPLICAS_HEALTHY' | 'DRAIN_COMPLETE' | 'STOP_REPLICAS'; ids: string[] };
-export type ScalingCommand = ScalingUnfencedCommand | (ScalingWorkerOperation & ScalingIdentity) | (ScalingReplicaOperation & ScalingReplicaIdentity);
-export type ScalingCommandInput = ScalingUnfencedCommand | ((ScalingWorkerOperation | ScalingReplicaOperation) & Partial<ScalingReplicaIdentity>);
+export type ScalingCommand = ScalingUnfencedCommand | (ScalingWorkerOperation & ScalingIdentity) | (ScalingStartOperation & ScalingReplicaIdentity) | (ScalingReplicaOperation & ScalingReplicaIdentity);
+export type ScalingCommandInput = ScalingUnfencedCommand | ((ScalingWorkerOperation | ScalingStartOperation | ScalingReplicaOperation) & Partial<ScalingReplicaIdentity>);
 type WorkerStatus = 'absent' | 'reserved' | 'provisioning' | 'booting' | 'ready';
 type ReplicaStatus = 'absent' | 'starting' | 'ready' | 'draining' | 'stopped';
 export interface ScalingState {
@@ -39,7 +39,7 @@ export function projectScaling(s: ScalingState) {
 /** Capture at scheduling time, never when an asynchronous callback finally arrives. */
 export function normalizeScalingCommand(s: ScalingState, command: ScalingCommandInput): ScalingCommand {
   if (!('ids' in command) || command.type === 'RESERVE_WORKERS') return structuredClone(command) as ScalingCommand;
-  const replicaIds = command.type === 'START_REPLICAS' ? [] : command.ids.filter(id => id.startsWith('replica-'));
+  const replicaIds = command.type === 'START_REPLICAS' ? command.ids : command.ids.filter(id => id.startsWith('replica-'));
   const workerIds = command.type === 'START_REPLICAS' ? command.workerIds : command.ids.map(id => id.startsWith('replica-') ? s.replicaWorkers[id] : id);
   return {
     ...structuredClone(command),
@@ -52,10 +52,10 @@ export function reduceScaling(previous: ScalingState, command: ScalingCommand): 
   const reject = (rejection: string) => ({ state: previous, events: [{ type: 'REJECTED', description: rejection }], rejection });
   if ('ids' in command && (!command.ids.length || new Set(command.ids).size !== command.ids.length || command.ids.some(id => !/^(worker|replica)-[A-Za-z0-9]+$/.test(id)))) return reject('INVALID_IDENTITIES');
   if ('ids' in command && command.type !== 'RESERVE_WORKERS') {
-    const replicaIds = command.type === 'START_REPLICAS' ? [] : command.ids.filter(id => id.startsWith('replica-'));
+    const replicaIds = command.type === 'START_REPLICAS' ? command.ids : command.ids.filter(id => id.startsWith('replica-'));
     const workerIds = command.type === 'START_REPLICAS' ? command.workerIds : command.ids.map(id => id.startsWith('replica-') ? s.replicaWorkers[id] : id);
     if (!command.workerGenerations || (replicaIds.length > 0 && !command.replicaGenerations)) return reject('STALE_OPERATION');
-    if (workerIds.some(id => (command.requestId !== undefined && command.requestId !== s.workerRequests[id]) || command.workerGenerations[id] !== s.workerGenerations[id]) || replicaIds.some(id => command.replicaGenerations![id] !== s.replicaGenerations[id])) return reject('STALE_OPERATION');
+    if (workerIds.some(id => (command.requestId !== undefined && command.requestId !== s.workerRequests[id]) || command.workerGenerations[id] !== (s.workerGenerations[id] ?? 0)) || replicaIds.some(id => command.replicaGenerations![id] !== (s.replicaGenerations[id] ?? 0))) return reject('STALE_OPERATION');
     if (command.generation !== undefined && (replicaIds.length ? replicaIds.some(id => command.generation !== s.replicaGenerations[id]) : workerIds.some(id => command.generation !== s.workerGenerations[id]))) return reject('STALE_OPERATION');
   }
   const release = (id: string) => { s.workers[id] = 'absent'; delete s.deadlines[id]; };

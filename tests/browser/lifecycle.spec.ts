@@ -51,6 +51,9 @@ test('recipient buttons open and acknowledge the same incident without clearing 
   expect(acknowledged.condition).toBe('low');
   await expect(control(page, 'recipient')).toContainText(/acknowledged/i);
   await expect(control(page, 'recipient-ack')).toBeDisabled();
+  await root(page).getByText('Try a scenario', { exact: true }).click();
+  await root(page).getByRole('button', { name: 'Revoke membership' }).click();
+  await expect(control(page, 'recipient')).toBeHidden();
   await expect(control(page, 'progress')).toContainText('Exploring');
   await noMotion(page);
 });

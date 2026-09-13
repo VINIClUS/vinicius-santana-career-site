@@ -83,6 +83,20 @@ test('old replica health cannot confirm a replacement generation on the same wor
  assert.equal(result.state.replicas['replica-02'],'starting');
  assert.equal(applyScaling(state,{type:'REPLICAS_HEALTHY',ids,generation:2}).state.replicas['replica-02'],'ready');
 });
+test('delayed replica start cannot revive a replacement generation',()=>{
+ let state=prefix(scenarios[2],'infra-provision-scale-07');
+ const ids=['replica-02'];
+ const callback=scalingModule.normalizeScalingCommand(state,{type:'START_REPLICAS',ids,workerIds:['worker-02']});
+ assert.deepEqual(callback.replicaGenerations,{'replica-02':0});
+ state=applyScaling(state,callback).state;
+ state=applyScaling(state,{type:'REPLICAS_HEALTHY',ids}).state;
+ state=applyScaling(state,{type:'DRAIN_REPLICAS',ids}).state;
+ state=applyScaling(state,{type:'DRAIN_COMPLETE',ids}).state;
+ state=applyScaling(state,{type:'STOP_REPLICAS',ids}).state;
+ const result=reduceScaling(state,callback);
+ assert.equal(result.rejection,'STALE_OPERATION');
+ assert.deepEqual(result.state,state);
+});
 test('normalization captures identities before scheduling and preserves explicit obsolete identity',()=>{
  assert.equal(typeof scalingModule.normalizeScalingCommand,'function');
  let state=prefix(scenarios[2],'infra-provision-scale-05');

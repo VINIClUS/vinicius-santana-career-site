@@ -28,6 +28,14 @@ test('Membership revocation blocks queued email before provider invocation', () 
   assert.equal(result.state.deliveries['opening:email'].attempts, 0);
   assert.equal(projectLimnopulse(result.state).email, 'suppressed');
 });
+test('membership revocation clears previously displayed recipient content', () => {
+  for (const checkpoint of [16, 17]) {
+    const state = prefix(checkpoint);
+    assert.notEqual(state.userView, 'idle');
+    const revoked = reduceLimnopulse(state, { type: 'SET_MEMBERSHIP', active: false });
+    assert.equal(revoked.state.userView, 'idle');
+  }
+});
 test('Attempt operation identity rejects a result from a previous attempt', () => {
   const original = prefix(10).deliveries['opening:telegram'].operationId;
   const current = prefix(13);
