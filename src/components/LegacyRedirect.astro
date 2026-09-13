@@ -8,7 +8,13 @@ interface Props {
 const { destination } = Astro.props;
 ---
 
-<BaseLayout title="Work has moved — Vinicius Santana" description="Continue to the Systems Atlas and its project pages." canonicalPath={destination} noIndex>
+<BaseLayout
+  title="Work has moved — Vinicius Santana"
+  description="Continue to the Systems Atlas and its project pages."
+  canonicalPath={destination}
+  noIndex
+  analyticsPageView={false}
+>
   <main class="shell section" id="main">
     <h1>Work has moved</h1>
     <p>Find this work in the Systems Atlas.</p>

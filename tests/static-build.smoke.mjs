@@ -8,6 +8,8 @@ import { projectDefinitions } from '../src/features/explorer/projects.ts';
 const root = new URL('../', import.meta.url);
 const fromRoot = (...segments) => new URL(segments.join('/'), root);
 const expectedResumeHash = 'b2cca4eac1313462b8ff44eb0c42a3143e5bd1a3ac02a2d756b1b38bc16b769e';
+const expectedOrigin = 'https://vinisantana.com';
+const analyticsMeasurementId = 'G-2DY87DZC90';
 
 assert.ok(process.execArgv.includes('--experimental-strip-types'), 'smoke must explicitly enable TypeScript stripping for the supported Node 22 runtime');
 
@@ -69,6 +71,16 @@ function assertMetadata(html, route, origin) {
   const structuredData = JSON.parse(structuredDataMatch[1]);
   assert.equal(structuredData.url, origin, `${route} structured data must use the configured origin`);
   assert.equal(structuredData.image, new URL('/assets/images/og-image.jpg', origin).href, `${route} structured data image must use the configured origin`);
+}
+
+function assertAnalytics(html, pageName) {
+  const scriptUrl = `https://www.googletagmanager.com/gtag/js?id=${analyticsMeasurementId}`;
+  const scriptLoads = html.match(new RegExp(`<script\\b[^>]*\\bsrc="${escapeRegExp(scriptUrl)}"[^>]*>`, 'gi')) ?? [];
+  const configurations = html.match(new RegExp(`gtag\\(\\s*['"]config['"]\\s*,\\s*['"]${analyticsMeasurementId}['"]`, 'g')) ?? [];
+
+  assert.equal(scriptLoads.length, 1, `${pageName} must load the GA4 script exactly once`);
+  assert.match(scriptLoads[0], /\basync(?:="")?(?:\s|>)/i, `${pageName} must load the GA4 script asynchronously`);
+  assert.equal(configurations.length, 1, `${pageName} must configure the GA4 measurement ID exactly once`);
 }
 
 function assertIntegratedSystemView(html, study, projectId) {
@@ -184,8 +196,15 @@ const editorialPages = {
 await assert.rejects(stat(fromRoot('dist/resume/index.html')), { code: 'ENOENT' }, 'build must not emit the removed Resume route');
 const builtHtmlFiles = (await readdir(fromRoot('dist'), { recursive: true })).filter(file => file.endsWith('.html'));
 const builtHtmlPages = await Promise.all(builtHtmlFiles.map(file => readFile(fromRoot(`dist/${file}`), 'utf8')));
-for (const pageHtml of builtHtmlPages) {
+for (const [index, pageHtml] of builtHtmlPages.entries()) {
   assert.doesNotMatch(pageHtml, /href="\/resume\//i, 'built pages must not link to the removed Resume route');
+  assertAnalytics(pageHtml, builtHtmlFiles[index]);
+  const disabledPageViews = pageHtml.match(/send_page_view:\s*false/g) ?? [];
+  assert.equal(
+    disabledPageViews.length,
+    builtHtmlFiles[index].startsWith('work/') ? 1 : 0,
+    `${builtHtmlFiles[index]} must ${builtHtmlFiles[index].startsWith('work/') ? 'disable' : 'retain'} automatic GA4 page views`
+  );
 }
 
 function assertExperienceSection(pageHtml, pageName, headingId) {
@@ -247,6 +266,8 @@ for (const pageHtml of [html, editorialPages.about]) {
 
 const publicCname = await readFile(fromRoot('public/CNAME'));
 const origin = `https://${publicCname.toString().trim()}`;
+assert.equal(publicCname.toString().trim(), 'vinisantana.com', 'CNAME must use the root domain');
+assert.equal(origin, expectedOrigin, 'build metadata must use the root domain origin');
 const routePages = new Map([
   ['/', html],
   ['/about/', editorialPages.about],
@@ -286,8 +307,9 @@ assert.match(
   'About portrait dimensions must match the approved asset set'
 );
 assert.match(editorialPages.about, /aria-current="page"[^>]*>About</i, 'About navigation must expose the active page');
-assert.match(editorialPages.privacy, /does not use analytics/i, 'Privacy must disclose the absence of analytics');
-assert.match(editorialPages.privacy, /does not set[^<]*cookies/i, 'Privacy must disclose the absence of first-party cookies');
+assert.match(editorialPages.privacy, /Google Analytics 4/i, 'Privacy must disclose GA4 analytics');
+assert.match(editorialPages.privacy, /navigation metrics/i, 'Privacy must disclose navigation metrics');
+assert.match(editorialPages.privacy, /identifiers[^<]*cookies/i, 'Privacy must disclose identifiers stored in cookies');
 assert.match(editorialPages.privacy, /does not include[^<]*form/i, 'Privacy must disclose the absence of forms');
 assert.match(editorialPages.privacy, /does not provide[^<]*account/i, 'Privacy must disclose the absence of accounts');
 assert.match(editorialPages.notFound, /<meta name="robots" content="noindex,nofollow">/i, '404 must be noindex');

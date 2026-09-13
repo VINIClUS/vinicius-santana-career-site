@@ -4,7 +4,7 @@ import { defineConfig } from 'astro/config';
 
 export default defineConfig({
   output: 'static',
-  site: 'https://dev.vinisantana.com',
+  site: 'https://vinisantana.com',
   trailingSlash: 'always',
   integrations: [
     react(),

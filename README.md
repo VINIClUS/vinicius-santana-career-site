@@ -5,7 +5,7 @@ Static career landing page for **Vinicius Santana**, focused on Data Engineering
 Built with **Astro** and designed for GitHub Pages under:
 
 ```txt
-dev.vinisantana.com
+vinisantana.com
 ```
 
 ## What this version improves
@@ -17,7 +17,7 @@ dev.vinisantana.com
 - Concrete project descriptions linked to public repositories and technical notes.
 - SEO, Open Graph and JSON-LD metadata for recruiter sharing.
 - Keyboard-accessible navigation, skip link, visible focus states and semantic landmarks.
-- Lightweight static build with no backend, no form processor and no tracking scripts.
+- Lightweight static build with no backend or form processor; Google Analytics 4 loads only in production builds.
 
 ## Local development
 
@@ -109,19 +109,10 @@ the synthetic engine and generated transcripts used by the canonical CnesData pr
 The repository includes `public/CNAME`, which Astro copies unchanged into the deployed output.
 
 ```txt
-dev.vinisantana.com
+vinisantana.com
 ```
 
-In your DNS provider, create a CNAME record similar to:
-
-```txt
-Name: dev
-Value: viniclus.github.io
-```
-
-Then in GitHub, open **Settings → Pages → Custom domain**, enter `dev.vinisantana.com`, save, wait for DNS verification and enable HTTPS.
-
-To use another subdomain, update only:
+The domain and GitHub Pages configuration are managed externally. If the canonical domain changes, update both:
 
 - `public/CNAME`
 - `site` in `astro.config.mjs`
