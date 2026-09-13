@@ -4,15 +4,15 @@ test('project navigation and keyboard component selection', async ({ page }) => 
   await page.goto('/explore/');
   await page.locator('[data-district-link="cnesdata"]').click();
   await page.getByRole('link', { name: 'Explore CnesData', exact: true }).click();
-  const component = page.locator('[data-component-link]').nth(1);
+  const component = page.locator('[data-component-diagram]').nth(1);
   await component.focus();
   await page.keyboard.press('Enter');
-  await expect(component).toHaveAttribute('aria-current', 'true');
-  await expect(page.locator('[data-component-detail][data-selected="true"]')).toBeFocused();
+  await expect(component).toHaveAttribute('aria-pressed', 'true');
+  await expect(component).toBeFocused();
   for (const project of ['limnopulse', 'infrastructure']) {
     await page.locator(`nav[aria-label="Explorer projects"] a[href="/explore/${project}/"]`).click();
     await expect(page).toHaveURL(new RegExp(`/explore/${project}/$`));
-    await expect(page.locator('[data-component-link]')).not.toHaveCount(0);
+    await expect(page.locator('[data-component-diagram]')).not.toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Advance one attempt' })).toHaveCount(0);
     await expect(page.locator('canvas')).toHaveCount(0);
     await expect(page.locator(`a[href="/work/${project}/"]`)).toHaveCount(0);
@@ -73,8 +73,8 @@ test('static navigation, details and every transcript without JavaScript', async
   await page.locator('[data-district-link="cnesdata"]').click();
   await page.getByRole('link', { name: 'Explore CnesData', exact: true }).focus();
   await page.keyboard.press('Enter');
-  await page.locator('[data-component-link]').nth(1).click();
-  await expect(page).toHaveURL(/#component-/);
+  await expect(page.locator('[data-component-diagram]').nth(1)).toBeDisabled();
+  await expect(page).toHaveURL(/\/explore\/cnesdata\/$/);
   await expect(page.locator('[data-component-detail]').nth(1)).toBeVisible();
   await expect(page.getByRole('button', { name: 'Advance one attempt' })).toBeDisabled();
   for (const id of ['raw-first-write', 'raw-identical-replay', 'raw-content-conflict']) {
@@ -101,8 +101,8 @@ test('touch walkthrough remains usable without WebGL or 3D assets', async ({ bro
   const assets: string[] = [];
   page.on('request', request => { if (/\.(glb|gltf|ktx2)(?:\?|$)/.test(request.url())) assets.push(request.url()); });
   await page.goto('/explore/cnesdata/');
-  await page.locator('[data-component-link]').first().tap();
-  await expect(page.locator('[data-component-link]').first()).toHaveAttribute('aria-current', 'true');
+  await page.locator('[data-component-diagram]').first().tap();
+  await expect(page.locator('[data-component-diagram]').first()).toHaveAttribute('aria-pressed', 'true');
   await page.getByRole('button', { name: 'Advance one attempt' }).tap();
   await expect(page.locator('[data-result]')).toContainText('stored');
   await expect(page.locator('canvas')).toHaveCount(0);
@@ -121,9 +121,9 @@ test('component selection keeps the detail panel usable at 360px', async ({ brow
     ['infrastructure', 'image-builds'],
   ]) {
     await page.goto(`/explore/${project}/`);
-    const link = page.locator(`[data-component-link="${component}"]`).first();
+    const link = page.locator(`[data-component-diagram="${component}"]`).first();
     await link.click();
-    await expect(page).toHaveURL(new RegExp(`/explore/${project}/#component-${component}$`));
+    await expect(page).toHaveURL(new RegExp(`/explore/${project}/$`));
     await expect(page.locator(`[data-component-detail="${component}"]`)).toHaveAttribute('data-selected', 'true');
     await expect(page.locator(`[data-component-detail="${component}"]`)).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -143,19 +143,19 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     ]) {
       const destination = `/explore/${project}/#component-${component}`;
       const detail = page.locator(`[data-component-detail="${component}"]`);
-      const link = page.locator(`[data-component-link="${component}"]`).first();
+      const link = page.locator(`[data-component-diagram="${component}"]`).first();
 
       await page.goto(destination);
-      await expect(page.locator('[data-system-view]')).toHaveAttribute('data-enhanced', 'true');
+      await expect(page.locator('[data-explorer]')).toHaveAttribute('data-controller-ready', 'true');
       await expect(page).toHaveURL(destination);
-      await expect(link).toHaveAttribute('aria-current', 'true');
+      await expect(link).toHaveAttribute('aria-pressed', 'true');
       await expect(detail).toHaveAttribute('data-selected', 'true');
       await expect(detail).toBeVisible();
 
       await page.reload();
-      await expect(page.locator('[data-system-view]')).toHaveAttribute('data-enhanced', 'true');
+      await expect(page.locator('[data-explorer]')).toHaveAttribute('data-controller-ready', 'true');
       await expect(page).toHaveURL(destination);
-      await expect(link).toHaveAttribute('aria-current', 'true');
+      await expect(link).toHaveAttribute('aria-pressed', 'true');
       await expect(detail).toHaveAttribute('data-selected', 'true');
       await expect(detail).toBeVisible();
     }
@@ -185,7 +185,7 @@ test('system views retain components, connectors, evidence status and transcript
 });
 
 for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
-  test(`canonical CnesData narrative, history and all scenarios at ${viewport.width}`, async ({ page }, testInfo) => {
+  test(`canonical CnesData narrative, selection and all scenarios at ${viewport.width}`, async ({ page }, testInfo) => {
     await page.setViewportSize(viewport);
     const models: string[] = [];
     page.on('request', request => { if (/\.(glb|gltf|ktx2)(?:\?|$)/.test(request.url())) models.push(request.url()); });
@@ -197,27 +197,16 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       await expect(page).toHaveURL(new RegExp(`#${id}$`));
       await expect(page.locator(`#${id}`)).toBeVisible();
     }
-    const first = page.locator('[data-component-link]').first();
-    const second = page.locator('[data-component-link]').nth(1);
-    const firstHash = (await first.getAttribute('href'))!;
-    const secondHash = (await second.getAttribute('href'))!;
-    await first.focus();
-    await page.keyboard.press('Enter');
-    await expect(page).toHaveURL(new RegExp(`${firstHash}$`));
-    await expect(first).toHaveAttribute('aria-current', 'true');
-    await expect(page.locator(firstHash)).toBeFocused();
-    await second.focus();
-    await page.keyboard.press('Enter');
-    await expect(page).toHaveURL(new RegExp(`${secondHash}$`));
-    await expect(second).toHaveAttribute('aria-current', 'true');
-    await expect(page.locator(secondHash)).toBeFocused();
-    await page.goBack();
-    await expect(page).toHaveURL(new RegExp(`${firstHash}$`));
-    await expect(page.locator(firstHash)).toBeFocused();
-    await expect(first).toHaveAttribute('aria-current', 'true');
-    await page.goForward();
-    await expect(page).toHaveURL(new RegExp(`${secondHash}$`));
-    await expect(page.locator(secondHash)).toBeFocused();
+    const first = page.locator('[data-component-diagram]').first();
+    const second = page.locator('[data-component-diagram]').nth(1);
+    const selectionURL = page.url();
+    for (const control of [first, second]) {
+      await control.focus();
+      await page.keyboard.press('Enter');
+      await expect(page).toHaveURL(selectionURL);
+      await expect(control).toHaveAttribute('aria-pressed', 'true');
+      await expect(control).toBeFocused();
+    }
 
     const scenario = page.getByLabel('Scenario');
     const advance = page.getByRole('button', { name: 'Advance one attempt' });
@@ -247,7 +236,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       await expect(advance).toBeEnabled();
     }
     await expect(page.locator('[data-system-view]')).toHaveCount(1);
-    await expect(page.locator('img[src*="detail-cnesdata"]')).toBeVisible();
+    await expect(page.locator('img[src*="detail-cnesdata"]')).toHaveCount(0);
     await expect(page.locator('canvas')).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     expect(models).toEqual([]);

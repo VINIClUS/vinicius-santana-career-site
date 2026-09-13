@@ -17,7 +17,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
         await page.goto(`/explore/${project}/`);
         const view = page.locator('[data-integrated-system-view]');
         await expect(view).toBeVisible();
-        await expect(view.locator('[data-component-link]')).toHaveCount(components);
+        await expect(view.locator('[data-component-diagram]')).toHaveCount(components);
         await expect(view.locator('[data-component-detail]')).toHaveCount(components);
         await expect(view.locator('[data-graph-connector]')).toHaveCount(projectDefinitions[project].relations.length);
         for (const relation of projectDefinitions[project].relations) {
@@ -170,7 +170,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
         expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 
         if (javaScriptEnabled) {
-          for (const link of await view.locator('[data-component-link]').all()) {
+          for (const link of await view.locator('[data-component-diagram]').all()) {
             await link.click();
             const selectedContent = await link.evaluate(element => {
               const container = element.getBoundingClientRect();
@@ -192,16 +192,23 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
               });
               return { overflowingChildren, overlappingChildren };
             });
-            expect(selectedContent, `${project}: selected ${await link.getAttribute('data-component-link')}`).toEqual({ overflowingChildren: [], overlappingChildren: [] });
+            expect(selectedContent, `${project}: selected ${await link.getAttribute('data-component-diagram')}`).toEqual({ overflowingChildren: [], overlappingChildren: [] });
           }
         }
 
-        const firstNode = view.locator('[data-component-link]').first();
-        const target = await firstNode.getAttribute('href');
-        await firstNode.click();
-        await expect(page).toHaveURL(new RegExp(`${target}$`));
-        await expect(page.locator(target!)).toBeFocused();
-        if (javaScriptEnabled) await expect(firstNode).toHaveAttribute('aria-current', 'true');
+        const firstNode = view.locator('[data-component-diagram]').first();
+        const selectionURL = page.url();
+        if (javaScriptEnabled) {
+          await firstNode.click();
+          await expect(firstNode).toHaveAttribute('aria-pressed', 'true');
+          await expect(firstNode).toBeFocused();
+        } else {
+          await expect(firstNode).toBeDisabled();
+          for (const control of await view.locator('[data-component-select]').all()) {
+            await expect(control).toBeDisabled();
+          }
+        }
+        await expect(page).toHaveURL(selectionURL);
       }
 
       await context.close();

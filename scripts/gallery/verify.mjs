@@ -6,7 +6,7 @@ import { chromium } from '@playwright/test';
 
 const expectedIds = [
   'district-cnesdata', 'district-limnopulse', 'district-infrastructure', 'hub',
-  'detail-cnesdata', 'detail-infrastructure', 'overview', 'detail-infrastructure-failed',
+  'detail-infrastructure', 'overview', 'detail-infrastructure-failed',
 ];
 
 const server = spawn(process.execPath, ['--experimental-strip-types', 'scripts/gallery/server.mjs'], { env: { ...process.env, PORT: '4323' }, stdio: ['ignore', 'pipe', 'inherit'] });

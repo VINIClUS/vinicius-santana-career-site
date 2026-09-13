@@ -1,20 +1,6 @@
 {
-  "totalBytes": 1768262,
+  "totalBytes": 1647986,
   "assets": [
-    {
-      "src": "/assets/posters/detail-cnesdata-desktop.webp",
-      "bytes": 40252,
-      "sha256": "e12199afdde0a0cf277d42bbfabbbcab9f12a939f47c1d91968dba1887674d4d",
-      "width": 1200,
-      "height": 800
-    },
-    {
-      "src": "/assets/posters/detail-cnesdata-mobile.webp",
-      "bytes": 21088,
-      "sha256": "815765c103e181e0bfe79472cbec72dcf26f1f33572426eaf37b76a1808f4a22",
-      "width": 720,
-      "height": 900
-    },
     {
       "src": "/assets/posters/detail-infrastructure-desktop.webp",
       "bytes": 26528,
@@ -210,11 +196,6 @@
       "sha256": "cd022241e2726073f1dd3a28b13cf84f75532f97be8a16794f6827f79d6b89a8",
       "width": 600,
       "height": 600
-    },
-    {
-      "src": "/assets/scenes/detail-cnesdata.glb",
-      "bytes": 58936,
-      "sha256": "3500b7a9e4dc14c191b2fdb15fe5870564413afd4d05b65839215ebe1438c5c2"
     },
     {
       "src": "/assets/scenes/detail-infrastructure.glb",

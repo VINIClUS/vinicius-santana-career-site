@@ -28,7 +28,7 @@ for (const width of [390, 1440]) {
     await expect(scheme).toHaveAttribute('data-workload-node', 'node-01');
     await expect(scheme.locator('[data-infra-scheme-node="node-02"]')).toHaveAttribute('data-status', 'failed');
     await expect(simulation.getByRole('button', { name: 'Fail node-02', exact: true })).toBeDisabled();
-    await page.locator('[data-component-link]').first().tap();
+    await page.locator('[data-component-diagram]').first().tap();
     await expect(simulation.locator('[data-infra-workload]')).toContainText('node-01');
     await simulation.scrollIntoViewIfNeeded();
     await page.screenshot({ path: testInfo.outputPath(`infrastructure-failed-${width}.png`), fullPage: true });

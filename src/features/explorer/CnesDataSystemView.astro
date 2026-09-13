@@ -1,7 +1,5 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import ResponsivePoster from '../../components/ResponsivePoster.astro';
-import { details } from '../../content/scenes';
 import SystemViewCards from './SystemViewCards.astro';
 import SystemGraphConnectors from './SystemGraphConnectors.astro';
 import { projectDefinitions } from './projects.ts';
@@ -9,6 +7,7 @@ import { projectDefinitions } from './projects.ts';
 interface Props { caseStudy: CollectionEntry<'caseStudies'>['data']; }
 const { caseStudy } = Astro.props;
 const { relations } = projectDefinitions.cnesdata;
+const rightCount = Math.ceil(caseStudy.architecture.length / 2);
 const componentFor = (id: string) => caseStudy.architecture.find(component => component.id === id)!;
 const graphNodes = [
   { id: 'canonical-contracts', x: 16, y: 16 }, { id: 'edge-agent', x: 16, y: 46 }, { id: 'web-dashboard', x: 16, y: 78 },
@@ -35,21 +34,19 @@ const routes = {
           <SystemGraphConnectors components={caseStudy.architecture} nodes={graphNodes} relations={relations} nodeHalfWidth={14.5} nodeHalfHeight={10.91} {routes} />
           <ol class="graph-nodes" aria-label="CnesData system components">
           {graphNodes.map(node => { const component = componentFor(node.id); return <li id={`graph-node-${node.id}`} data-graph-node={node.id} class={node.id === 'central-api' ? 'graph-node graph-node-hub' : 'graph-node'} style={`--node-x: ${node.x}%; --node-y: ${node.y}%`}>
-            <a href={`#component-${node.id}`} data-component-link={node.id}>
+            <button type="button" data-component-diagram={node.id} data-component-select={node.id} data-selected="false" aria-pressed="false" disabled>
               <span class="graph-node-kicker" aria-hidden="true">{node.id === 'central-api' ? 'Hub' : 'Component'}</span>
               <strong>{component.title}</strong>
               <span class="selection-marker" aria-hidden="true">Selected</span>
-            </a>
+            </button>
           </li>; })}
           </ol>
         </div>
       </section>
-      <figure class="system-poster">
-        <ResponsivePoster poster={details.cnesdata.poster} />
-        <figcaption>CnesData / detailed architectural maquette · static, illustrative poster.</figcaption>
-      </figure>
+
     </div>
-    <SystemViewCards components={caseStudy.architecture} relations={relations} />
+    <SystemViewCards components={caseStudy.architecture} visibleComponents={caseStudy.architecture.slice(0, rightCount)} relations={relations} position="right" />
+    <SystemViewCards components={caseStudy.architecture} visibleComponents={caseStudy.architecture.slice(rightCount)} relations={relations} position="bottom" />
   </div>
 </div>
 <style>
@@ -57,9 +54,5 @@ const routes = {
   .system-graph-column { display: grid; gap: 20px; min-width: 0; }
   .system-graph { background: linear-gradient(140deg, rgba(132,244,230,.08), rgba(7,18,31,.35)); }
   .graph-stage { position: relative; height: 440px; margin-top: 20px; }
-  .graph-node-hub a { border-color: var(--accent); box-shadow: inset 0 0 0 1px rgba(132,244,230,.25); }
-  .system-poster { overflow: hidden; margin: 0; border: 1px solid var(--line); border-radius: 12px; background: #080f19; }
-  .system-poster :global(picture), .system-poster :global(img) { display: block; }
-  .system-poster :global(img) { height: auto; object-fit: contain; }
-  .system-poster figcaption { padding: 14px; border-top: 1px solid var(--line); color: var(--muted-strong); font-size: .72rem; }
+  .graph-node-hub button { border-color: var(--accent); box-shadow: inset 0 0 0 1px rgba(132,244,230,.25); }
 </style>
