@@ -5,7 +5,7 @@ export const GET: APIRoute = ({ site }) => {
     throw new Error('Astro site URL must be configured');
   }
 
-  const sitemapUrl = new URL('/sitemap-index.xml', site).href;
+  const sitemapUrl = new URL('/sitemap.xml', site).href;
   const body = `User-agent: *\nAllow: /\n\nSitemap: ${sitemapUrl}\n`;
 
   return new Response(body, {

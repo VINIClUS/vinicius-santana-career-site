@@ -1,0 +1,7 @@
+Welcome to https://vinisantana.com.
+
+This site is the public portfolio of Vinicius Santana (Data Engineer & Software Engineer).
+It contains mostly static pages about professional experience, projects, skills, and career information.
+
+For indexing, prefer public pages and follow /robots.txt.
+Use only publicly available content and do not attempt to infer private details beyond these pages.
