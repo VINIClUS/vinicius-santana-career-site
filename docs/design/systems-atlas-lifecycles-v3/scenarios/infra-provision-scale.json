@@ -1,0 +1,696 @@
+{
+  "schemaVersion": "2.0",
+  "id": "infra-provision-scale",
+  "project": "infrastructure",
+  "scene": "scaling",
+  "title": "Capacidade primeiro. Réplicas depois.",
+  "subtitle": "Provisionar, validar, servir e drenar sem criar hardware mágico.",
+  "profile": "stateless-service",
+  "evidenceStatus": "illustrative",
+  "requirements": [
+    "INF-SCALE-01",
+    "INF-I6",
+    "INF-I7",
+    "INF-I8"
+  ],
+  "sources": [
+    "R1a"
+  ],
+  "assumptions": [
+    "Três hosts físicos; quatro slots de worker no pool sintético.",
+    "Uma réplica por worker neste fixture; min1/max3.",
+    "Escala 0.8 por 2 ticks; redução 0.3 por 2 ticks; cooldown4."
+  ],
+  "checkpoints": [
+    {
+      "id": "infra-provision-scale-00",
+      "title": "Serviço inicial",
+      "caption": "Um worker e uma réplica atendem dentro da capacidade física.",
+      "command": {
+        "type": "INIT"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "scale.worker-01",
+        "scale.service"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "physicalHosts": 3,
+        "totalSlots": 4,
+        "usedSlots": 1,
+        "reservedSlots": 0,
+        "workers": {
+          "worker-01": "ready",
+          "worker-02": "absent",
+          "worker-03": "absent"
+        },
+        "replicas": {
+          "replica-01": "ready",
+          "replica-02": "absent",
+          "replica-03": "absent"
+        },
+        "desiredReplicas": 1,
+        "readyReplicas": 1,
+        "load": 0.2,
+        "inFlight": 0,
+        "logicalTick": 0,
+        "cooldownUntil": 0,
+        "blockedReasons": []
+      }
+    },
+    {
+      "id": "infra-provision-scale-01",
+      "title": "Carga elevada",
+      "caption": "O sinal muda; ainda não criar recursos por um único pico.",
+      "command": {
+        "type": "SET_LOAD",
+        "value": 0.9
+      },
+      "holdMs": 2600,
+      "focus": [
+        "scale.request"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "physicalHosts": 3,
+        "totalSlots": 4,
+        "usedSlots": 1,
+        "reservedSlots": 0,
+        "workers": {
+          "worker-01": "ready",
+          "worker-02": "absent",
+          "worker-03": "absent"
+        },
+        "replicas": {
+          "replica-01": "ready",
+          "replica-02": "absent",
+          "replica-03": "absent"
+        },
+        "desiredReplicas": 1,
+        "readyReplicas": 1,
+        "load": 0.9,
+        "inFlight": 0,
+        "logicalTick": 0,
+        "cooldownUntil": 0,
+        "blockedReasons": []
+      }
+    },
+    {
+      "id": "infra-provision-scale-02",
+      "title": "Persistência confirmada",
+      "caption": "Dois ticks lógicos confirmam a condição da política.",
+      "command": {
+        "type": "ADVANCE_CLOCK",
+        "ticks": 2
+      },
+      "holdMs": 2600,
+      "focus": [
+        "scale.request"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "physicalHosts": 3,
+        "totalSlots": 4,
+        "usedSlots": 1,
+        "reservedSlots": 0,
+        "workers": {
+          "worker-01": "ready",
+          "worker-02": "absent",
+          "worker-03": "absent"
+        },
+        "replicas": {
+          "replica-01": "ready",
+          "replica-02": "absent",
+          "replica-03": "absent"
+        },
+        "desiredReplicas": 1,
+        "readyReplicas": 1,
+        "load": 0.9,
+        "inFlight": 0,
+        "logicalTick": 2,
+        "cooldownUntil": 0,
+        "blockedReasons": []
+      }
+    },
+    {
+      "id": "infra-provision-scale-03",
+      "title": "Desired aumenta",
+      "caption": "São desejadas três réplicas. Ready ainda é um.",
+      "command": {
+        "type": "EVALUATE_SCALE_POLICY"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "scale.request",
+        "scale.service"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "physicalHosts": 3,
+        "totalSlots": 4,
+        "usedSlots": 1,
+        "reservedSlots": 0,
+        "workers": {
+          "worker-01": "ready",
+          "worker-02": "absent",
+          "worker-03": "absent"
+        },
+        "replicas": {
+          "replica-01": "ready",
+          "replica-02": "absent",
+          "replica-03": "absent"
+        },
+        "desiredReplicas": 3,
+        "readyReplicas": 1,
+        "load": 0.9,
+        "inFlight": 0,
+        "logicalTick": 2,
+        "cooldownUntil": 6,
+        "blockedReasons": []
+      }
+    },
+    {
+      "id": "infra-provision-scale-04",
+      "title": "Reservar recursos",
+      "caption": "Duas reservas cabem no pool. Hosts físicos continuam três.",
+      "command": {
+        "type": "RESERVE_WORKERS",
+        "ids": [
+          "worker-02",
+          "worker-03"
+        ],
+        "requestId": "req-scale-01"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "scale.capacity"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "physicalHosts": 3,
+        "totalSlots": 4,
+        "usedSlots": 1,
+        "reservedSlots": 2,
+        "workers": {
+          "worker-01": "ready",
+          "worker-02": "reserved",
+          "worker-03": "reserved"
+        },
+        "replicas": {
+          "replica-01": "ready",
+          "replica-02": "absent",
+          "replica-03": "absent"
+        },
+        "desiredReplicas": 3,
+        "readyReplicas": 1,
+        "load": 0.9,
+        "inFlight": 0,
+        "logicalTick": 2,
+        "cooldownUntil": 6,
+        "blockedReasons": []
+      }
+    },
+    {
+      "id": "infra-provision-scale-05",
+      "title": "Provisionar e configurar",
+      "caption": "Reservas viram recursos reais do modelo, ainda não servíveis.",
+      "command": {
+        "type": "PROVISION_WORKERS",
+        "ids": [
+          "worker-02",
+          "worker-03"
+        ]
+      },
+      "holdMs": 2600,
+      "focus": [
+        "scale.provision"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "physicalHosts": 3,
+        "totalSlots": 4,
+        "usedSlots": 3,
+        "reservedSlots": 0,
+        "workers": {
+          "worker-01": "ready",
+          "worker-02": "provisioning",
+          "worker-03": "provisioning"
+        },
+        "replicas": {
+          "replica-01": "ready",
+          "replica-02": "absent",
+          "replica-03": "absent"
+        },
+        "desiredReplicas": 3,
+        "readyReplicas": 1,
+        "load": 0.9,
+        "inFlight": 0,
+        "logicalTick": 2,
+        "cooldownUntil": 6,
+        "blockedReasons": []
+      }
+    },
+    {
+      "id": "infra-provision-scale-06",
+      "title": "Boot dos workers",
+      "caption": "Apenas a réplica original atende; novos workers estão em boot.",
+      "command": {
+        "type": "WORKERS_BOOTED",
+        "ids": [
+          "worker-02",
+          "worker-03"
+        ]
+      },
+      "holdMs": 2600,
+      "focus": [
+        "scale.worker-02",
+        "scale.worker-03"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "physicalHosts": 3,
+        "totalSlots": 4,
+        "usedSlots": 3,
+        "reservedSlots": 0,
+        "workers": {
+          "worker-01": "ready",
+          "worker-02": "booting",
+          "worker-03": "booting"
+        },
+        "replicas": {
+          "replica-01": "ready",
+          "replica-02": "absent",
+          "replica-03": "absent"
+        },
+        "desiredReplicas": 3,
+        "readyReplicas": 1,
+        "load": 0.9,
+        "inFlight": 0,
+        "logicalTick": 2,
+        "cooldownUntil": 6,
+        "blockedReasons": []
+      }
+    },
+    {
+      "id": "infra-provision-scale-07",
+      "title": "Capacidade elegível",
+      "caption": "Health/config dos workers concluídos. Réplicas ainda não iniciadas.",
+      "command": {
+        "type": "WORKERS_READY",
+        "ids": [
+          "worker-02",
+          "worker-03"
+        ]
+      },
+      "holdMs": 2600,
+      "focus": [
+        "scale.worker-02",
+        "scale.worker-03"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "physicalHosts": 3,
+        "totalSlots": 4,
+        "usedSlots": 3,
+        "reservedSlots": 0,
+        "workers": {
+          "worker-01": "ready",
+          "worker-02": "ready",
+          "worker-03": "ready"
+        },
+        "replicas": {
+          "replica-01": "ready",
+          "replica-02": "absent",
+          "replica-03": "absent"
+        },
+        "desiredReplicas": 3,
+        "readyReplicas": 1,
+        "load": 0.9,
+        "inFlight": 0,
+        "logicalTick": 2,
+        "cooldownUntil": 6,
+        "blockedReasons": []
+      }
+    },
+    {
+      "id": "infra-provision-scale-08",
+      "title": "Iniciar serviço",
+      "caption": "Duas novas instâncias são criadas com identidades próprias.",
+      "command": {
+        "type": "START_REPLICAS",
+        "ids": [
+          "replica-02",
+          "replica-03"
+        ],
+        "workerIds": [
+          "worker-02",
+          "worker-03"
+        ]
+      },
+      "holdMs": 2600,
+      "focus": [
+        "scale.service"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "physicalHosts": 3,
+        "totalSlots": 4,
+        "usedSlots": 3,
+        "reservedSlots": 0,
+        "workers": {
+          "worker-01": "ready",
+          "worker-02": "ready",
+          "worker-03": "ready"
+        },
+        "replicas": {
+          "replica-01": "ready",
+          "replica-02": "starting",
+          "replica-03": "starting"
+        },
+        "desiredReplicas": 3,
+        "readyReplicas": 1,
+        "load": 0.9,
+        "inFlight": 0,
+        "logicalTick": 2,
+        "cooldownUntil": 6,
+        "blockedReasons": []
+      }
+    },
+    {
+      "id": "infra-provision-scale-09",
+      "title": "Scale-out completo",
+      "caption": "Três réplicas prontas participam do roteamento.",
+      "command": {
+        "type": "REPLICAS_HEALTHY",
+        "ids": [
+          "replica-02",
+          "replica-03"
+        ]
+      },
+      "holdMs": 2600,
+      "focus": [
+        "scale.service",
+        "scale.user"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "physicalHosts": 3,
+        "totalSlots": 4,
+        "usedSlots": 3,
+        "reservedSlots": 0,
+        "workers": {
+          "worker-01": "ready",
+          "worker-02": "ready",
+          "worker-03": "ready"
+        },
+        "replicas": {
+          "replica-01": "ready",
+          "replica-02": "ready",
+          "replica-03": "ready"
+        },
+        "desiredReplicas": 3,
+        "readyReplicas": 3,
+        "load": 0.9,
+        "inFlight": 0,
+        "logicalTick": 2,
+        "cooldownUntil": 6,
+        "blockedReasons": []
+      }
+    },
+    {
+      "id": "infra-provision-scale-10",
+      "title": "Carga cai",
+      "caption": "Não reduzir por um único ponto nem antes do cooldown.",
+      "command": {
+        "type": "SET_LOAD",
+        "value": 0.2
+      },
+      "holdMs": 2600,
+      "focus": [
+        "scale.request"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "physicalHosts": 3,
+        "totalSlots": 4,
+        "usedSlots": 3,
+        "reservedSlots": 0,
+        "workers": {
+          "worker-01": "ready",
+          "worker-02": "ready",
+          "worker-03": "ready"
+        },
+        "replicas": {
+          "replica-01": "ready",
+          "replica-02": "ready",
+          "replica-03": "ready"
+        },
+        "desiredReplicas": 3,
+        "readyReplicas": 3,
+        "load": 0.2,
+        "inFlight": 0,
+        "logicalTick": 2,
+        "cooldownUntil": 6,
+        "blockedReasons": []
+      }
+    },
+    {
+      "id": "infra-provision-scale-11",
+      "title": "Janela e cooldown satisfeitos",
+      "caption": "O relógio lógico atravessa a janela mínima e o cooldown.",
+      "command": {
+        "type": "ADVANCE_CLOCK",
+        "ticks": 4
+      },
+      "holdMs": 2600,
+      "focus": [
+        "scale.request"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "physicalHosts": 3,
+        "totalSlots": 4,
+        "usedSlots": 3,
+        "reservedSlots": 0,
+        "workers": {
+          "worker-01": "ready",
+          "worker-02": "ready",
+          "worker-03": "ready"
+        },
+        "replicas": {
+          "replica-01": "ready",
+          "replica-02": "ready",
+          "replica-03": "ready"
+        },
+        "desiredReplicas": 3,
+        "readyReplicas": 3,
+        "load": 0.2,
+        "inFlight": 0,
+        "logicalTick": 6,
+        "cooldownUntil": 6,
+        "blockedReasons": []
+      }
+    },
+    {
+      "id": "infra-provision-scale-12",
+      "title": "Desired reduz",
+      "caption": "O alvo volta a um; três instâncias ainda existem.",
+      "command": {
+        "type": "EVALUATE_SCALE_POLICY"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "scale.request",
+        "scale.service"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "physicalHosts": 3,
+        "totalSlots": 4,
+        "usedSlots": 3,
+        "reservedSlots": 0,
+        "workers": {
+          "worker-01": "ready",
+          "worker-02": "ready",
+          "worker-03": "ready"
+        },
+        "replicas": {
+          "replica-01": "ready",
+          "replica-02": "ready",
+          "replica-03": "ready"
+        },
+        "desiredReplicas": 1,
+        "readyReplicas": 3,
+        "load": 0.2,
+        "inFlight": 0,
+        "logicalTick": 6,
+        "cooldownUntil": 10,
+        "blockedReasons": []
+      }
+    },
+    {
+      "id": "infra-provision-scale-13",
+      "title": "Drenagem",
+      "caption": "Retirar duas réplicas do tráfego novo; aguardar duas requisições em voo.",
+      "command": {
+        "type": "DRAIN_REPLICAS",
+        "ids": [
+          "replica-02",
+          "replica-03"
+        ],
+        "inFlight": 2
+      },
+      "holdMs": 2600,
+      "focus": [
+        "scale.service",
+        "scale.user"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "physicalHosts": 3,
+        "totalSlots": 4,
+        "usedSlots": 3,
+        "reservedSlots": 0,
+        "workers": {
+          "worker-01": "ready",
+          "worker-02": "ready",
+          "worker-03": "ready"
+        },
+        "replicas": {
+          "replica-01": "ready",
+          "replica-02": "draining",
+          "replica-03": "draining"
+        },
+        "desiredReplicas": 1,
+        "readyReplicas": 1,
+        "load": 0.2,
+        "inFlight": 2,
+        "logicalTick": 6,
+        "cooldownUntil": 10,
+        "blockedReasons": []
+      }
+    },
+    {
+      "id": "infra-provision-scale-14",
+      "title": "Drenagem concluída",
+      "caption": "Nenhuma requisição pendente nessas réplicas; agora podem parar.",
+      "command": {
+        "type": "DRAIN_COMPLETE",
+        "ids": [
+          "replica-02",
+          "replica-03"
+        ]
+      },
+      "holdMs": 2600,
+      "focus": [
+        "scale.service"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "physicalHosts": 3,
+        "totalSlots": 4,
+        "usedSlots": 3,
+        "reservedSlots": 0,
+        "workers": {
+          "worker-01": "ready",
+          "worker-02": "ready",
+          "worker-03": "ready"
+        },
+        "replicas": {
+          "replica-01": "ready",
+          "replica-02": "draining",
+          "replica-03": "draining"
+        },
+        "desiredReplicas": 1,
+        "readyReplicas": 1,
+        "load": 0.2,
+        "inFlight": 0,
+        "logicalTick": 6,
+        "cooldownUntil": 10,
+        "blockedReasons": []
+      }
+    },
+    {
+      "id": "infra-provision-scale-15",
+      "title": "Parar instâncias",
+      "caption": "Processos retirados sem apagar o pool físico.",
+      "command": {
+        "type": "STOP_REPLICAS",
+        "ids": [
+          "replica-02",
+          "replica-03"
+        ]
+      },
+      "holdMs": 2600,
+      "focus": [
+        "scale.service"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "physicalHosts": 3,
+        "totalSlots": 4,
+        "usedSlots": 3,
+        "reservedSlots": 0,
+        "workers": {
+          "worker-01": "ready",
+          "worker-02": "ready",
+          "worker-03": "ready"
+        },
+        "replicas": {
+          "replica-01": "ready",
+          "replica-02": "stopped",
+          "replica-03": "stopped"
+        },
+        "desiredReplicas": 1,
+        "readyReplicas": 1,
+        "load": 0.2,
+        "inFlight": 0,
+        "logicalTick": 6,
+        "cooldownUntil": 10,
+        "blockedReasons": []
+      }
+    },
+    {
+      "id": "infra-provision-scale-16",
+      "title": "Recursos liberados",
+      "caption": "Volta a um worker usado; três hosts físicos permanecem.",
+      "command": {
+        "type": "RELEASE_WORKERS",
+        "ids": [
+          "worker-02",
+          "worker-03"
+        ]
+      },
+      "holdMs": 2600,
+      "focus": [
+        "scale.capacity",
+        "scale.worker-01"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "physicalHosts": 3,
+        "totalSlots": 4,
+        "usedSlots": 1,
+        "reservedSlots": 0,
+        "workers": {
+          "worker-01": "ready",
+          "worker-02": "absent",
+          "worker-03": "absent"
+        },
+        "replicas": {
+          "replica-01": "ready",
+          "replica-02": "stopped",
+          "replica-03": "stopped"
+        },
+        "desiredReplicas": 1,
+        "readyReplicas": 1,
+        "load": 0.2,
+        "inFlight": 0,
+        "logicalTick": 6,
+        "cooldownUntil": 10,
+        "blockedReasons": []
+      }
+    }
+  ]
+}

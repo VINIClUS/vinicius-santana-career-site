@@ -1,0 +1,2 @@
+# Preserve the imported briefing byte-for-byte, including Markdown hard breaks.
+docs/design/systems-atlas-lifecycles-v3/** -whitespace

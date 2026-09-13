@@ -1,0 +1,537 @@
+{
+  "schemaVersion": "2.0",
+  "description": "Acceptance cases for the future reducers. Not executed by the reference viewer. expectedSubset is a deep partial projection. Commands not in guided tours remain mandatory failure controls.",
+  "cases": [
+    {
+      "id": "INF-N01",
+      "scenarioId": "infra-exhaustion-recovery",
+      "fromCheckpoint": "infra-exhaustion-recovery-00",
+      "commands": [
+        {
+          "type": "FAIL_NODE",
+          "nodeId": "node-03"
+        }
+      ],
+      "expectedSubset": {
+        "nodeId": "node-02",
+        "workloadStatus": "running"
+      },
+      "reason": "Falha de host não proprietário não desloca a instância.",
+      "invariant": "INF-I1"
+    },
+    {
+      "id": "INF-N02",
+      "scenarioId": "infra-exhaustion-recovery",
+      "fromCheckpoint": "infra-exhaustion-recovery-01",
+      "commands": [
+        {
+          "type": "RECONCILE"
+        }
+      ],
+      "expectedSubset": {
+        "nodeId": null,
+        "unsafeOwner": "node-02",
+        "clientAvailable": false
+      },
+      "reason": "Não iniciar antes do fence.",
+      "invariant": "INF-I5"
+    },
+    {
+      "id": "INF-N03",
+      "scenarioId": "infra-exhaustion-recovery",
+      "fromCheckpoint": "infra-exhaustion-recovery-11",
+      "commands": [
+        {
+          "type": "RECONCILE"
+        }
+      ],
+      "expectedSubset": {
+        "nodeId": null,
+        "workloadStatus": "pending"
+      },
+      "reason": "Zero workers mantém intenção pendente.",
+      "invariant": "INF-I3"
+    },
+    {
+      "id": "INF-N04",
+      "scenarioId": "infra-exhaustion-recovery",
+      "fromCheckpoint": "infra-exhaustion-recovery-11",
+      "commands": [
+        {
+          "type": "SET_DESIRED",
+          "value": "stopped"
+        },
+        {
+          "type": "RESTORE_NODE",
+          "nodeId": "node-02"
+        },
+        {
+          "type": "NODE_READY",
+          "nodeId": "node-02"
+        },
+        {
+          "type": "ADVANCE_CLOCK",
+          "ticks": 3
+        }
+      ],
+      "expectedSubset": {
+        "desired": "stopped",
+        "nodeId": null,
+        "workloadStatus": "stopped"
+      },
+      "reason": "Retorno não desfaz stop intencional.",
+      "invariant": "INF-I2"
+    },
+    {
+      "id": "INF-N05",
+      "scenarioId": "infra-quorum-recovery",
+      "fromCheckpoint": "infra-quorum-recovery-09",
+      "commands": [
+        {
+          "type": "RECONCILE"
+        }
+      ],
+      "expectedSubset": {
+        "quorum": false,
+        "nodeId": null,
+        "clientAvailable": false
+      },
+      "reason": "1/3 não autoriza novo start.",
+      "invariant": "INF-I4"
+    },
+    {
+      "id": "INF-N06",
+      "scenarioId": "infra-quorum-recovery",
+      "fromCheckpoint": "infra-quorum-recovery-11",
+      "commands": [
+        {
+          "type": "RECONCILE"
+        }
+      ],
+      "expectedSubset": {
+        "quorum": true,
+        "storageReady": false,
+        "nodeId": null
+      },
+      "reason": "Quorum sozinho não libera storage.",
+      "invariant": "INF-I2"
+    },
+    {
+      "id": "INF-N07",
+      "scenarioId": "infra-exhaustion-recovery",
+      "fromCheckpoint": "infra-exhaustion-recovery-03",
+      "commands": [
+        {
+          "type": "FAIL_NODE",
+          "nodeId": "node-01"
+        },
+        {
+          "type": "WORKLOAD_HEALTHY",
+          "generation": 2
+        }
+      ],
+      "expectedSubset": {
+        "nodeId": null,
+        "clientAvailable": false
+      },
+      "reason": "Healthcheck tardio não ressuscita instância em host morto.",
+      "invariant": "INF-I8"
+    },
+    {
+      "id": "INF-N08",
+      "scenarioId": "infra-provision-scale",
+      "fromCheckpoint": "infra-provision-scale-00",
+      "commands": [
+        {
+          "type": "RESERVE_WORKERS",
+          "ids": [
+            "worker-X1",
+            "worker-X2",
+            "worker-X3",
+            "worker-X4"
+          ],
+          "requestId": "req-over-capacity"
+        }
+      ],
+      "expectedSubset": {
+        "usedSlots": 1,
+        "reservedSlots": 0,
+        "physicalHosts": 3
+      },
+      "reason": "Rejeitar reserva que excede quatro slots.",
+      "invariant": "INF-I6"
+    },
+    {
+      "id": "INF-N09",
+      "scenarioId": "infra-provision-scale",
+      "fromCheckpoint": "infra-provision-scale-04",
+      "commands": [
+        {
+          "type": "RESERVE_WORKERS",
+          "ids": [
+            "worker-02",
+            "worker-03"
+          ],
+          "requestId": "req-scale-01"
+        }
+      ],
+      "expectedSubset": {
+        "reservedSlots": 2,
+        "usedSlots": 1
+      },
+      "reason": "Pedido idêntico não reserva outra vez.",
+      "invariant": "INF-I6"
+    },
+    {
+      "id": "INF-N10",
+      "scenarioId": "infra-provision-scale",
+      "fromCheckpoint": "infra-provision-scale-13",
+      "commands": [
+        {
+          "type": "STOP_REPLICAS",
+          "ids": [
+            "replica-02",
+            "replica-03"
+          ]
+        }
+      ],
+      "expectedSubset": {
+        "inFlight": 2,
+        "replicas": {
+          "replica-02": "draining",
+          "replica-03": "draining"
+        }
+      },
+      "reason": "Não parar antes de terminar requisições em voo.",
+      "invariant": "INF-I8"
+    },
+    {
+      "id": "LP-N01",
+      "scenarioId": "limnopulse-end-to-end",
+      "fromCheckpoint": "limnopulse-end-to-end-04",
+      "commands": [
+        {
+          "type": "EVALUATE",
+          "evaluationTick": 0
+        }
+      ],
+      "expectedSubset": {
+        "incident": "none",
+        "outboxCount": 0
+      },
+      "reason": "Leitura ainda sem janela suficiente.",
+      "invariant": "LP-I1"
+    },
+    {
+      "id": "LP-N02",
+      "scenarioId": "limnopulse-end-to-end",
+      "fromCheckpoint": "limnopulse-end-to-end-02",
+      "commands": [
+        {
+          "type": "ENABLE_PREFERENCE",
+          "channel": "telegram"
+        }
+      ],
+      "expectedSubset": {
+        "telegramEnabled": false
+      },
+      "reason": "Binding não verificado não habilita canal.",
+      "invariant": "LP-I7"
+    },
+    {
+      "id": "LP-N03",
+      "scenarioId": "limnopulse-end-to-end",
+      "fromCheckpoint": "limnopulse-end-to-end-06",
+      "commands": [
+        {
+          "type": "EVALUATE",
+          "evaluationTick": 3
+        }
+      ],
+      "expectedSubset": {
+        "incidentId": "evt-demo-01",
+        "outboxCount": 2,
+        "incidentVersion": 1
+      },
+      "reason": "Replay de avaliação não duplica abertura.",
+      "invariant": "LP-I2"
+    },
+    {
+      "id": "LP-N04",
+      "scenarioId": "limnopulse-end-to-end",
+      "fromCheckpoint": "limnopulse-end-to-end-11",
+      "commands": [
+        {
+          "type": "ATTEMPT_DELIVERY",
+          "channel": "telegram",
+          "kind": "opening"
+        }
+      ],
+      "expectedSubset": {
+        "telegram": "retry_wait",
+        "telegramAttempts": 1
+      },
+      "reason": "Ainda antes de retry_after.",
+      "invariant": "LP-I5"
+    },
+    {
+      "id": "LP-N05",
+      "scenarioId": "limnopulse-end-to-end",
+      "fromCheckpoint": "limnopulse-end-to-end-10",
+      "commands": [
+        {
+          "type": "PROVIDER_RESULT",
+          "channel": "telegram",
+          "kind": "opening",
+          "result": "unknown"
+        },
+        {
+          "type": "ADVANCE_CLOCK",
+          "ticks": 100
+        }
+      ],
+      "expectedSubset": {
+        "telegram": "unknown",
+        "telegramAttempts": 1
+      },
+      "reason": "Confirmação ambígua não gera reenvio automático.",
+      "invariant": "LP-I6"
+    },
+    {
+      "id": "LP-N06",
+      "scenarioId": "limnopulse-end-to-end",
+      "fromCheckpoint": "limnopulse-end-to-end-17",
+      "commands": [
+        {
+          "type": "ACKNOWLEDGE",
+          "expectedVersion": 1
+        }
+      ],
+      "expectedSubset": {
+        "incident": "acknowledged",
+        "incidentVersion": 2,
+        "condition": "low"
+      },
+      "reason": "Versão obsoleta conflita sem resolver incidente.",
+      "invariant": "LP-I4"
+    },
+    {
+      "id": "LP-N07",
+      "scenarioId": "limnopulse-end-to-end",
+      "fromCheckpoint": "limnopulse-end-to-end-17",
+      "commands": [
+        {
+          "type": "SET_WINDOW_QUALITY",
+          "valid": false
+        },
+        {
+          "type": "EVALUATE_RECOVERY",
+          "evaluationTick": 7
+        }
+      ],
+      "expectedSubset": {
+        "incident": "acknowledged",
+        "outboxCount": 2
+      },
+      "reason": "Ausência de dados não é recuperação.",
+      "invariant": "LP-I1"
+    },
+    {
+      "id": "LP-N08",
+      "scenarioId": "limnopulse-end-to-end",
+      "fromCheckpoint": "limnopulse-end-to-end-14",
+      "commands": [
+        {
+          "type": "DUPLICATE_QUEUE_JOB",
+          "channel": "telegram",
+          "kind": "opening"
+        }
+      ],
+      "expectedSubset": {
+        "telegram": "accepted",
+        "telegramAttempts": 2
+      },
+      "reason": "Duplicata já confirmada não chama provedor de novo.",
+      "invariant": "LP-I5"
+    },
+    {
+      "id": "CND-N01",
+      "scenarioId": "cnesdata-end-to-end",
+      "fromCheckpoint": "cnesdata-end-to-end-05",
+      "commands": [
+        {
+          "type": "REPLAY_RAW_OBJECT",
+          "snapshotId": "snap-local-01"
+        }
+      ],
+      "expectedSubset": {
+        "rawObjects": 1,
+        "currentVersion": "v-demo-00"
+      },
+      "reason": "Replay preserva um objeto.",
+      "invariant": "CND-I1"
+    },
+    {
+      "id": "CND-N02",
+      "scenarioId": "cnesdata-end-to-end",
+      "fromCheckpoint": "cnesdata-end-to-end-05",
+      "commands": [
+        {
+          "type": "PUT_RAW_OBJECT",
+          "snapshotId": "snap-local-01",
+          "fence": 1,
+          "contentVariant": "different"
+        }
+      ],
+      "expectedSubset": {
+        "rawObjects": 1,
+        "currentVersion": "v-demo-00"
+      },
+      "reason": "Conflito não sobrescreve bytes originais; verificar hash também no teste de domínio.",
+      "invariant": "CND-I1"
+    },
+    {
+      "id": "CND-N03",
+      "scenarioId": "cnesdata-end-to-end",
+      "fromCheckpoint": "cnesdata-end-to-end-07",
+      "commands": [
+        {
+          "type": "START_RUN"
+        }
+      ],
+      "expectedSubset": {
+        "run": "WAITING_INPUTS",
+        "normalized": 0
+      },
+      "reason": "Fonte nacional obrigatória ainda ausente.",
+      "invariant": "CND-I4"
+    },
+    {
+      "id": "CND-N04",
+      "scenarioId": "cnesdata-end-to-end",
+      "fromCheckpoint": "cnesdata-end-to-end-11",
+      "commands": [
+        {
+          "type": "FAIL_PROCESSING",
+          "unit": "reconciliation"
+        }
+      ],
+      "expectedSubset": {
+        "run": "FAILED",
+        "currentVersion": "v-demo-00",
+        "servedVersion": null
+      },
+      "reason": "Transformação falha sem publicar.",
+      "invariant": "CND-I8"
+    },
+    {
+      "id": "CND-N05",
+      "scenarioId": "cnesdata-end-to-end",
+      "fromCheckpoint": "cnesdata-end-to-end-15",
+      "commands": [
+        {
+          "type": "PUBLISH_CURRENT",
+          "expectedVersion": "v-demo-WRONG",
+          "fence": 1
+        }
+      ],
+      "expectedSubset": {
+        "currentVersion": "v-demo-00",
+        "run": "PUBLISHING"
+      },
+      "reason": "CAS obsoleto não ativa candidato.",
+      "invariant": "CND-I7"
+    },
+    {
+      "id": "CND-N06",
+      "scenarioId": "cnesdata-end-to-end",
+      "fromCheckpoint": "cnesdata-end-to-end-15",
+      "commands": [
+        {
+          "type": "PUBLISH_CURRENT",
+          "expectedVersion": "v-demo-00",
+          "fence": 0
+        }
+      ],
+      "expectedSubset": {
+        "currentVersion": "v-demo-00",
+        "run": "PUBLISHING"
+      },
+      "reason": "Fence obsoleto não publica.",
+      "invariant": "CND-I7"
+    },
+    {
+      "id": "CND-N07",
+      "scenarioId": "cnesdata-end-to-end",
+      "fromCheckpoint": "cnesdata-end-to-end-16",
+      "commands": [
+        {
+          "type": "AUTHORIZE_AND_READ",
+          "tenantId": "tenant-demo-B"
+        }
+      ],
+      "expectedSubset": {
+        "servedVersion": null
+      },
+      "reason": "Tenant diferente não recebe dados nem referências privadas.",
+      "invariant": "CND-I9"
+    },
+    {
+      "id": "CND-N08",
+      "scenarioId": "cnesdata-end-to-end",
+      "fromCheckpoint": "cnesdata-end-to-end-07",
+      "commands": [
+        {
+          "type": "REQUEST_EXTRACTION",
+          "source": "CNES_LOCAL",
+          "competencia": "2026-07",
+          "snapshotMode": "DELTA"
+        },
+        {
+          "type": "CLAIM_JOB",
+          "agentId": "agent-demo-01"
+        },
+        {
+          "type": "PUT_RAW_OBJECT",
+          "snapshotId": "snap-delta-gap",
+          "fence": "current"
+        },
+        {
+          "type": "REGISTER_DELTA_MANIFEST",
+          "baseSnapshotId": "snap-local-01",
+          "sequence": 3,
+          "previousManifestHash": "canonical-head-from-state"
+        },
+        {
+          "type": "ADVANCE_CLOCK",
+          "ticks": 30
+        }
+      ],
+      "expectedSubset": {
+        "job": "FAILED_FINAL",
+        "currentVersion": "v-demo-00",
+        "replacementFullJobCreated": false
+      },
+      "reason": "Validar um DELTA autenticado cuja sequência pula 2; job falha final e resync não agenda FULL. Valores current/canonical-head-from-state são resolvidos pelo harness, não campos enviados ao backend.",
+      "invariant": "CND-I8"
+    },
+    {
+      "id": "CND-N09",
+      "scenarioId": "cnesdata-end-to-end",
+      "fromCheckpoint": "cnesdata-end-to-end-07",
+      "commands": [
+        {
+          "type": "NATIONAL_SOURCE_NOT_PUBLISHED",
+          "competencia": "2026-07"
+        }
+      ],
+      "expectedSubset": {
+        "nationalAccepted": false,
+        "run": "WAITING_INPUTS",
+        "currentVersion": "v-demo-00"
+      },
+      "reason": "Não trocar para mês anterior.",
+      "invariant": "CND-I10"
+    }
+  ]
+}

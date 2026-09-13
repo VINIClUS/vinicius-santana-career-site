@@ -1,0 +1,19 @@
+flowchart LR
+    L[Municipal source] --> E[Edge: fidelity transforms]
+    E --> P[Plain Parquet + hash]
+    N[DATASUS PF adapter] --> R[Raw objects + manifests]
+    P --> R
+    C[Control plane: Job / lease / fence] -.-> E
+    R --> A[NormalizeSource per source]
+    A --> B[ReconcileCompetencia]
+    B --> M[MaterializeServing]
+    M --> V[Verify outputs + immutable DatasetVersion]
+    V --> CAS{CAS CURRENT + valid fence}
+    CAS -->|success| U[Authorized serving for one pinned version]
+    CAS -->|conflict or failure| OLD[Keep previous CURRENT]
+    C -.-> CAS
+    D[DELTA rejected by policy] --> F[Resync marker; no auto replacement]
+    F --> J[Explicit later FULL job]
+    J --> E
+    classDef planned stroke:#baafff,stroke-dasharray:5 5
+    class A,B,M,V,CAS,U planned

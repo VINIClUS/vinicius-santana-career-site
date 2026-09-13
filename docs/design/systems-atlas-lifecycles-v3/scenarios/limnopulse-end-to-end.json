@@ -1,0 +1,1043 @@
+{
+  "schemaVersion": "2.0",
+  "id": "limnopulse-end-to-end",
+  "project": "limnopulse",
+  "scene": "limnopulse",
+  "title": "Da água à ação — e à recuperação.",
+  "subtitle": "Acompanhe um incidente até o destinatário, sem confundir envio e leitura.",
+  "profile": "documented-software-and-mock-ui",
+  "evidenceStatus": "illustrative",
+  "requirements": [
+    "LP-LIFE-01",
+    "LP-ERR-01",
+    "LP-I1",
+    "LP-I2",
+    "LP-I3",
+    "LP-I4",
+    "LP-I5",
+    "LP-I8"
+  ],
+  "sources": [
+    "R4a",
+    "R4b",
+    "R4c"
+  ],
+  "assumptions": [
+    "Dispositivo e provedores são falsos; nenhuma mensagem real é enviada.",
+    "Regra/leituras são sintéticas; não são orientação de aquicultura.",
+    "Tela do usuário é mock proposto, não aplicativo auditado."
+  ],
+  "checkpoints": [
+    {
+      "id": "limnopulse-end-to-end-00",
+      "title": "Antes da leitura",
+      "caption": "Uma pessoa precisa receber avisos e acompanhar o incidente.",
+      "command": {
+        "type": "INIT"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "limno.sensor",
+        "limno.user"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "ruleConfigured": false,
+        "membershipActive": true,
+        "telegramBound": false,
+        "telegramEnabled": false,
+        "samples": 0,
+        "windowValid": false,
+        "condition": "normal",
+        "incident": "none",
+        "incidentId": null,
+        "incidentVersion": 0,
+        "outboxCount": 0,
+        "queueCount": 0,
+        "email": "idle",
+        "telegram": "idle",
+        "telegramAttempts": 0,
+        "retryDueTick": null,
+        "userView": "idle",
+        "openingConfirmed": {
+          "email": false,
+          "telegram": false
+        },
+        "recoveryEmail": "idle",
+        "recoveryTelegram": "idle",
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "limnopulse-end-to-end-01",
+      "title": "Definir regra",
+      "caption": "Limiar, janela, duração e canal são configurados para este exemplo.",
+      "command": {
+        "type": "CONFIGURE_RULE",
+        "metric": "do_mg_l",
+        "threshold": 5,
+        "operator": "<",
+        "windowTicks": 3,
+        "durationTicks": 3
+      },
+      "holdMs": 2600,
+      "focus": [
+        "limno.evaluator"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "ruleConfigured": true,
+        "membershipActive": true,
+        "telegramBound": false,
+        "telegramEnabled": false,
+        "samples": 0,
+        "windowValid": false,
+        "condition": "normal",
+        "incident": "none",
+        "incidentId": null,
+        "incidentVersion": 0,
+        "outboxCount": 0,
+        "queueCount": 0,
+        "email": "idle",
+        "telegram": "idle",
+        "telegramAttempts": 0,
+        "retryDueTick": null,
+        "userView": "idle",
+        "openingConfirmed": {
+          "email": false,
+          "telegram": false
+        },
+        "recoveryEmail": "idle",
+        "recoveryTelegram": "idle",
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "limnopulse-end-to-end-02",
+      "title": "Vincular destinatário",
+      "caption": "Binding prova a associação. Preferência continua desligada.",
+      "command": {
+        "type": "VERIFY_BINDING"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "limno.user",
+        "limno.api"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "ruleConfigured": true,
+        "membershipActive": true,
+        "telegramBound": true,
+        "telegramEnabled": false,
+        "samples": 0,
+        "windowValid": false,
+        "condition": "normal",
+        "incident": "none",
+        "incidentId": null,
+        "incidentVersion": 0,
+        "outboxCount": 0,
+        "queueCount": 0,
+        "email": "idle",
+        "telegram": "idle",
+        "telegramAttempts": 0,
+        "retryDueTick": null,
+        "userView": "idle",
+        "openingConfirmed": {
+          "email": false,
+          "telegram": false
+        },
+        "recoveryEmail": "idle",
+        "recoveryTelegram": "idle",
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "limnopulse-end-to-end-03",
+      "title": "Habilitar canal",
+      "caption": "Usuário com membership ativa habilita a preferência.",
+      "command": {
+        "type": "ENABLE_PREFERENCE",
+        "channel": "telegram"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "limno.api",
+        "limno.delivery"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "ruleConfigured": true,
+        "membershipActive": true,
+        "telegramBound": true,
+        "telegramEnabled": true,
+        "samples": 0,
+        "windowValid": false,
+        "condition": "normal",
+        "incident": "none",
+        "incidentId": null,
+        "incidentVersion": 0,
+        "outboxCount": 0,
+        "queueCount": 0,
+        "email": "idle",
+        "telegram": "idle",
+        "telegramAttempts": 0,
+        "retryDueTick": null,
+        "userView": "idle",
+        "openingConfirmed": {
+          "email": false,
+          "telegram": false
+        },
+        "recoveryEmail": "idle",
+        "recoveryTelegram": "idle",
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "limnopulse-end-to-end-04",
+      "title": "Publicar amostra",
+      "caption": "A boia ilustrativa publica um ponto; ainda não há janela persistida.",
+      "command": {
+        "type": "PUBLISH_READING",
+        "value": 4.8,
+        "deviceId": "dev-demo-01"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "limno.sensor",
+        "limno.ingestion"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "ruleConfigured": true,
+        "membershipActive": true,
+        "telegramBound": true,
+        "telegramEnabled": true,
+        "samples": 0,
+        "windowValid": false,
+        "condition": "normal",
+        "incident": "none",
+        "incidentId": null,
+        "incidentVersion": 0,
+        "outboxCount": 0,
+        "queueCount": 0,
+        "email": "idle",
+        "telegram": "idle",
+        "telegramAttempts": 0,
+        "retryDueTick": null,
+        "userView": "idle",
+        "openingConfirmed": {
+          "email": false,
+          "telegram": false
+        },
+        "recoveryEmail": "idle",
+        "recoveryTelegram": "idle",
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "limnopulse-end-to-end-05",
+      "title": "Persistir janela",
+      "caption": "Quatro pontos cobrem três ticks e confirmam a condição do exemplo.",
+      "command": {
+        "type": "INGEST_WINDOW",
+        "values": [
+          4.8,
+          4.6,
+          4.4,
+          4.3
+        ],
+        "ticks": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "holdMs": 2600,
+      "focus": [
+        "limno.ingestion",
+        "limno.timeseries"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "ruleConfigured": true,
+        "membershipActive": true,
+        "telegramBound": true,
+        "telegramEnabled": true,
+        "samples": 4,
+        "windowValid": true,
+        "condition": "low",
+        "incident": "none",
+        "incidentId": null,
+        "incidentVersion": 0,
+        "outboxCount": 0,
+        "queueCount": 0,
+        "email": "idle",
+        "telegram": "idle",
+        "telegramAttempts": 0,
+        "retryDueTick": null,
+        "userView": "idle",
+        "openingConfirmed": {
+          "email": false,
+          "telegram": false
+        },
+        "recoveryEmail": "idle",
+        "recoveryTelegram": "idle",
+        "logicalTick": 3
+      }
+    },
+    {
+      "id": "limnopulse-end-to-end-06",
+      "title": "Avaliar e registrar",
+      "caption": "Scheduler invoca evaluator. Incidente e dois trabalhos de outbox ficam duráveis.",
+      "command": {
+        "type": "EVALUATE",
+        "evaluationTick": 3
+      },
+      "holdMs": 2600,
+      "focus": [
+        "limno.evaluator",
+        "limno.domain"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "ruleConfigured": true,
+        "membershipActive": true,
+        "telegramBound": true,
+        "telegramEnabled": true,
+        "samples": 4,
+        "windowValid": true,
+        "condition": "low",
+        "incident": "open",
+        "incidentId": "evt-demo-01",
+        "incidentVersion": 1,
+        "outboxCount": 2,
+        "queueCount": 0,
+        "email": "idle",
+        "telegram": "idle",
+        "telegramAttempts": 0,
+        "retryDueTick": null,
+        "userView": "idle",
+        "openingConfirmed": {
+          "email": false,
+          "telegram": false
+        },
+        "recoveryEmail": "idle",
+        "recoveryTelegram": "idle",
+        "logicalTick": 3
+      }
+    },
+    {
+      "id": "limnopulse-end-to-end-07",
+      "title": "Publicar por canal",
+      "caption": "Relay cria Delivery e enfileira IDs; isso ainda não é entrega.",
+      "command": {
+        "type": "RELAY",
+        "kind": "opening"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "limno.domain",
+        "limno.delivery"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "ruleConfigured": true,
+        "membershipActive": true,
+        "telegramBound": true,
+        "telegramEnabled": true,
+        "samples": 4,
+        "windowValid": true,
+        "condition": "low",
+        "incident": "open",
+        "incidentId": "evt-demo-01",
+        "incidentVersion": 1,
+        "outboxCount": 2,
+        "queueCount": 2,
+        "email": "queued",
+        "telegram": "queued",
+        "telegramAttempts": 0,
+        "retryDueTick": null,
+        "userView": "idle",
+        "openingConfirmed": {
+          "email": false,
+          "telegram": false
+        },
+        "recoveryEmail": "idle",
+        "recoveryTelegram": "idle",
+        "logicalTick": 3
+      }
+    },
+    {
+      "id": "limnopulse-end-to-end-08",
+      "title": "Tentativa de email",
+      "caption": "Worker reclama a entrega de email e chama o provedor falso.",
+      "command": {
+        "type": "ATTEMPT_DELIVERY",
+        "channel": "email",
+        "kind": "opening"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "limno.delivery",
+        "limno.provider"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "ruleConfigured": true,
+        "membershipActive": true,
+        "telegramBound": true,
+        "telegramEnabled": true,
+        "samples": 4,
+        "windowValid": true,
+        "condition": "low",
+        "incident": "open",
+        "incidentId": "evt-demo-01",
+        "incidentVersion": 1,
+        "outboxCount": 2,
+        "queueCount": 2,
+        "email": "attempting",
+        "telegram": "queued",
+        "telegramAttempts": 0,
+        "retryDueTick": null,
+        "userView": "idle",
+        "openingConfirmed": {
+          "email": false,
+          "telegram": false
+        },
+        "recoveryEmail": "idle",
+        "recoveryTelegram": "idle",
+        "logicalTick": 3
+      }
+    },
+    {
+      "id": "limnopulse-end-to-end-09",
+      "title": "Email aceito",
+      "caption": "Aceite do provedor não é recibo de leitura humana.",
+      "command": {
+        "type": "PROVIDER_RESULT",
+        "channel": "email",
+        "kind": "opening",
+        "result": "accepted"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "limno.provider"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "ruleConfigured": true,
+        "membershipActive": true,
+        "telegramBound": true,
+        "telegramEnabled": true,
+        "samples": 4,
+        "windowValid": true,
+        "condition": "low",
+        "incident": "open",
+        "incidentId": "evt-demo-01",
+        "incidentVersion": 1,
+        "outboxCount": 2,
+        "queueCount": 1,
+        "email": "accepted",
+        "telegram": "queued",
+        "telegramAttempts": 0,
+        "retryDueTick": null,
+        "userView": "idle",
+        "openingConfirmed": {
+          "email": true,
+          "telegram": false
+        },
+        "recoveryEmail": "idle",
+        "recoveryTelegram": "idle",
+        "logicalTick": 3
+      }
+    },
+    {
+      "id": "limnopulse-end-to-end-10",
+      "title": "Tentativa Telegram",
+      "caption": "O canal possui worker e fila próprios.",
+      "command": {
+        "type": "ATTEMPT_DELIVERY",
+        "channel": "telegram",
+        "kind": "opening"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "limno.delivery",
+        "limno.provider"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "ruleConfigured": true,
+        "membershipActive": true,
+        "telegramBound": true,
+        "telegramEnabled": true,
+        "samples": 4,
+        "windowValid": true,
+        "condition": "low",
+        "incident": "open",
+        "incidentId": "evt-demo-01",
+        "incidentVersion": 1,
+        "outboxCount": 2,
+        "queueCount": 1,
+        "email": "accepted",
+        "telegram": "attempting",
+        "telegramAttempts": 1,
+        "retryDueTick": null,
+        "userView": "idle",
+        "openingConfirmed": {
+          "email": true,
+          "telegram": false
+        },
+        "recoveryEmail": "idle",
+        "recoveryTelegram": "idle",
+        "logicalTick": 3
+      }
+    },
+    {
+      "id": "limnopulse-end-to-end-11",
+      "title": "Aguardar retry_after",
+      "caption": "O provedor responde 429. Não reenviar antes do tick 6.",
+      "command": {
+        "type": "PROVIDER_RESULT",
+        "channel": "telegram",
+        "kind": "opening",
+        "result": "rate_limited",
+        "retryAfterTicks": 3
+      },
+      "holdMs": 2600,
+      "focus": [
+        "limno.provider",
+        "limno.delivery"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "ruleConfigured": true,
+        "membershipActive": true,
+        "telegramBound": true,
+        "telegramEnabled": true,
+        "samples": 4,
+        "windowValid": true,
+        "condition": "low",
+        "incident": "open",
+        "incidentId": "evt-demo-01",
+        "incidentVersion": 1,
+        "outboxCount": 2,
+        "queueCount": 1,
+        "email": "accepted",
+        "telegram": "retry_wait",
+        "telegramAttempts": 1,
+        "retryDueTick": 6,
+        "userView": "idle",
+        "openingConfirmed": {
+          "email": true,
+          "telegram": false
+        },
+        "recoveryEmail": "idle",
+        "recoveryTelegram": "idle",
+        "logicalTick": 3
+      }
+    },
+    {
+      "id": "limnopulse-end-to-end-12",
+      "title": "Espera cumprida",
+      "caption": "O relógio lógico alcançou o vencimento; a mesma Delivery pode tentar de novo.",
+      "command": {
+        "type": "ADVANCE_CLOCK",
+        "ticks": 3
+      },
+      "holdMs": 2600,
+      "focus": [
+        "limno.delivery"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "ruleConfigured": true,
+        "membershipActive": true,
+        "telegramBound": true,
+        "telegramEnabled": true,
+        "samples": 4,
+        "windowValid": true,
+        "condition": "low",
+        "incident": "open",
+        "incidentId": "evt-demo-01",
+        "incidentVersion": 1,
+        "outboxCount": 2,
+        "queueCount": 1,
+        "email": "accepted",
+        "telegram": "retry_wait",
+        "telegramAttempts": 1,
+        "retryDueTick": 6,
+        "userView": "idle",
+        "openingConfirmed": {
+          "email": true,
+          "telegram": false
+        },
+        "recoveryEmail": "idle",
+        "recoveryTelegram": "idle",
+        "logicalTick": 6
+      }
+    },
+    {
+      "id": "limnopulse-end-to-end-13",
+      "title": "Segunda tentativa",
+      "caption": "Nova Attempt, mesma Delivery e mesmo incidente.",
+      "command": {
+        "type": "ATTEMPT_DELIVERY",
+        "channel": "telegram",
+        "kind": "opening"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "limno.delivery",
+        "limno.provider"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "ruleConfigured": true,
+        "membershipActive": true,
+        "telegramBound": true,
+        "telegramEnabled": true,
+        "samples": 4,
+        "windowValid": true,
+        "condition": "low",
+        "incident": "open",
+        "incidentId": "evt-demo-01",
+        "incidentVersion": 1,
+        "outboxCount": 2,
+        "queueCount": 1,
+        "email": "accepted",
+        "telegram": "attempting",
+        "telegramAttempts": 2,
+        "retryDueTick": 6,
+        "userView": "idle",
+        "openingConfirmed": {
+          "email": true,
+          "telegram": false
+        },
+        "recoveryEmail": "idle",
+        "recoveryTelegram": "idle",
+        "logicalTick": 6
+      }
+    },
+    {
+      "id": "limnopulse-end-to-end-14",
+      "title": "Telegram aceito",
+      "caption": "A confirmação falsa registra message ID; não comprova leitura.",
+      "command": {
+        "type": "PROVIDER_RESULT",
+        "channel": "telegram",
+        "kind": "opening",
+        "result": "accepted"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "limno.provider"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "ruleConfigured": true,
+        "membershipActive": true,
+        "telegramBound": true,
+        "telegramEnabled": true,
+        "samples": 4,
+        "windowValid": true,
+        "condition": "low",
+        "incident": "open",
+        "incidentId": "evt-demo-01",
+        "incidentVersion": 1,
+        "outboxCount": 2,
+        "queueCount": 0,
+        "email": "accepted",
+        "telegram": "accepted",
+        "telegramAttempts": 2,
+        "retryDueTick": null,
+        "userView": "idle",
+        "openingConfirmed": {
+          "email": true,
+          "telegram": true
+        },
+        "recoveryEmail": "idle",
+        "recoveryTelegram": "idle",
+        "logicalTick": 6
+      }
+    },
+    {
+      "id": "limnopulse-end-to-end-15",
+      "title": "Mensagem no dispositivo",
+      "caption": "O mock representa o resultado para o usuário. É uma cena, não callback de leitura.",
+      "command": {
+        "type": "SHOW_MESSAGE",
+        "channel": "telegram",
+        "kind": "opening"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "limno.user"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "ruleConfigured": true,
+        "membershipActive": true,
+        "telegramBound": true,
+        "telegramEnabled": true,
+        "samples": 4,
+        "windowValid": true,
+        "condition": "low",
+        "incident": "open",
+        "incidentId": "evt-demo-01",
+        "incidentVersion": 1,
+        "outboxCount": 2,
+        "queueCount": 0,
+        "email": "accepted",
+        "telegram": "accepted",
+        "telegramAttempts": 2,
+        "retryDueTick": null,
+        "userView": "message_shown",
+        "openingConfirmed": {
+          "email": true,
+          "telegram": true
+        },
+        "recoveryEmail": "idle",
+        "recoveryTelegram": "idle",
+        "logicalTick": 6
+      }
+    },
+    {
+      "id": "limnopulse-end-to-end-16",
+      "title": "Abrir incidente",
+      "caption": "Usuário autenticado abre detalhe pela API; não acessa InfluxDB diretamente.",
+      "command": {
+        "type": "OPEN_INCIDENT",
+        "tenantId": "tenant-demo-A"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "limno.user",
+        "limno.api"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "ruleConfigured": true,
+        "membershipActive": true,
+        "telegramBound": true,
+        "telegramEnabled": true,
+        "samples": 4,
+        "windowValid": true,
+        "condition": "low",
+        "incident": "open",
+        "incidentId": "evt-demo-01",
+        "incidentVersion": 1,
+        "outboxCount": 2,
+        "queueCount": 0,
+        "email": "accepted",
+        "telegram": "accepted",
+        "telegramAttempts": 2,
+        "retryDueTick": null,
+        "userView": "incident_opened",
+        "openingConfirmed": {
+          "email": true,
+          "telegram": true
+        },
+        "recoveryEmail": "idle",
+        "recoveryTelegram": "idle",
+        "logicalTick": 6
+      }
+    },
+    {
+      "id": "limnopulse-end-to-end-17",
+      "title": "Reconhecer, não resolver",
+      "caption": "ACK com versão correta registra ação humana. A condição baixa continua.",
+      "command": {
+        "type": "ACKNOWLEDGE",
+        "expectedVersion": 1
+      },
+      "holdMs": 2600,
+      "focus": [
+        "limno.user",
+        "limno.domain"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "ruleConfigured": true,
+        "membershipActive": true,
+        "telegramBound": true,
+        "telegramEnabled": true,
+        "samples": 4,
+        "windowValid": true,
+        "condition": "low",
+        "incident": "acknowledged",
+        "incidentId": "evt-demo-01",
+        "incidentVersion": 2,
+        "outboxCount": 2,
+        "queueCount": 0,
+        "email": "accepted",
+        "telegram": "accepted",
+        "telegramAttempts": 2,
+        "retryDueTick": null,
+        "userView": "acknowledged",
+        "openingConfirmed": {
+          "email": true,
+          "telegram": true
+        },
+        "recoveryEmail": "idle",
+        "recoveryTelegram": "idle",
+        "logicalTick": 6
+      }
+    },
+    {
+      "id": "limnopulse-end-to-end-18",
+      "title": "Nova janela limpa",
+      "caption": "Novas leituras válidas, frescas e cobertas mostram condição normal.",
+      "command": {
+        "type": "INGEST_CLEAN_WINDOW",
+        "values": [
+          6.1,
+          6.2,
+          6.4,
+          6.5
+        ],
+        "ticks": [
+          7,
+          8,
+          9,
+          10
+        ]
+      },
+      "holdMs": 2600,
+      "focus": [
+        "limno.sensor",
+        "limno.timeseries"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "ruleConfigured": true,
+        "membershipActive": true,
+        "telegramBound": true,
+        "telegramEnabled": true,
+        "samples": 8,
+        "windowValid": true,
+        "condition": "normal",
+        "incident": "acknowledged",
+        "incidentId": "evt-demo-01",
+        "incidentVersion": 2,
+        "outboxCount": 2,
+        "queueCount": 0,
+        "email": "accepted",
+        "telegram": "accepted",
+        "telegramAttempts": 2,
+        "retryDueTick": null,
+        "userView": "acknowledged",
+        "openingConfirmed": {
+          "email": true,
+          "telegram": true
+        },
+        "recoveryEmail": "idle",
+        "recoveryTelegram": "idle",
+        "logicalTick": 10
+      }
+    },
+    {
+      "id": "limnopulse-end-to-end-19",
+      "title": "Recuperação durável",
+      "caption": "Evaluator recupera o incidente e cria trabalhos correlacionados de recuperação.",
+      "command": {
+        "type": "EVALUATE_RECOVERY",
+        "evaluationTick": 10
+      },
+      "holdMs": 2600,
+      "focus": [
+        "limno.evaluator",
+        "limno.domain"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "ruleConfigured": true,
+        "membershipActive": true,
+        "telegramBound": true,
+        "telegramEnabled": true,
+        "samples": 8,
+        "windowValid": true,
+        "condition": "normal",
+        "incident": "recovered",
+        "incidentId": "evt-demo-01",
+        "incidentVersion": 3,
+        "outboxCount": 4,
+        "queueCount": 0,
+        "email": "accepted",
+        "telegram": "accepted",
+        "telegramAttempts": 2,
+        "retryDueTick": null,
+        "userView": "acknowledged",
+        "openingConfirmed": {
+          "email": true,
+          "telegram": true
+        },
+        "recoveryEmail": "idle",
+        "recoveryTelegram": "idle",
+        "logicalTick": 10
+      }
+    },
+    {
+      "id": "limnopulse-end-to-end-20",
+      "title": "Publicar recuperação",
+      "caption": "Elegibilidade é revalidada; canais recebem novos trabalhos da mesma linhagem.",
+      "command": {
+        "type": "RELAY",
+        "kind": "recovery"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "limno.delivery"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "ruleConfigured": true,
+        "membershipActive": true,
+        "telegramBound": true,
+        "telegramEnabled": true,
+        "samples": 8,
+        "windowValid": true,
+        "condition": "normal",
+        "incident": "recovered",
+        "incidentId": "evt-demo-01",
+        "incidentVersion": 3,
+        "outboxCount": 4,
+        "queueCount": 2,
+        "email": "accepted",
+        "telegram": "accepted",
+        "telegramAttempts": 2,
+        "retryDueTick": null,
+        "userView": "acknowledged",
+        "openingConfirmed": {
+          "email": true,
+          "telegram": true
+        },
+        "recoveryEmail": "queued",
+        "recoveryTelegram": "queued",
+        "logicalTick": 10
+      }
+    },
+    {
+      "id": "limnopulse-end-to-end-21",
+      "title": "Enviar recuperação",
+      "caption": "Workers fazem tentativas independentes nos provedores falsos.",
+      "command": {
+        "type": "ATTEMPT_RECOVERY_CHANNELS"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "limno.provider"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "ruleConfigured": true,
+        "membershipActive": true,
+        "telegramBound": true,
+        "telegramEnabled": true,
+        "samples": 8,
+        "windowValid": true,
+        "condition": "normal",
+        "incident": "recovered",
+        "incidentId": "evt-demo-01",
+        "incidentVersion": 3,
+        "outboxCount": 4,
+        "queueCount": 2,
+        "email": "accepted",
+        "telegram": "accepted",
+        "telegramAttempts": 2,
+        "retryDueTick": null,
+        "userView": "acknowledged",
+        "openingConfirmed": {
+          "email": true,
+          "telegram": true
+        },
+        "recoveryEmail": "attempting",
+        "recoveryTelegram": "attempting",
+        "logicalTick": 10
+      }
+    },
+    {
+      "id": "limnopulse-end-to-end-22",
+      "title": "Recuperação aceita",
+      "caption": "Respostas falsas confirmam aceite; o resultado ambiental e o de entrega são distintos.",
+      "command": {
+        "type": "PROVIDER_RECOVERY_ACCEPTED"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "limno.provider"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "ruleConfigured": true,
+        "membershipActive": true,
+        "telegramBound": true,
+        "telegramEnabled": true,
+        "samples": 8,
+        "windowValid": true,
+        "condition": "normal",
+        "incident": "recovered",
+        "incidentId": "evt-demo-01",
+        "incidentVersion": 3,
+        "outboxCount": 4,
+        "queueCount": 0,
+        "email": "accepted",
+        "telegram": "accepted",
+        "telegramAttempts": 2,
+        "retryDueTick": null,
+        "userView": "acknowledged",
+        "openingConfirmed": {
+          "email": true,
+          "telegram": true
+        },
+        "recoveryEmail": "accepted",
+        "recoveryTelegram": "accepted",
+        "logicalTick": 10
+      }
+    },
+    {
+      "id": "limnopulse-end-to-end-23",
+      "title": "Ciclo até o destinatário",
+      "caption": "A recuperação aparece no mock. O histórico mantém abertura e reconhecimento.",
+      "command": {
+        "type": "SHOW_MESSAGE",
+        "channel": "telegram",
+        "kind": "recovery"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "limno.user",
+        "limno.domain"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "ruleConfigured": true,
+        "membershipActive": true,
+        "telegramBound": true,
+        "telegramEnabled": true,
+        "samples": 8,
+        "windowValid": true,
+        "condition": "normal",
+        "incident": "recovered",
+        "incidentId": "evt-demo-01",
+        "incidentVersion": 3,
+        "outboxCount": 4,
+        "queueCount": 0,
+        "email": "accepted",
+        "telegram": "accepted",
+        "telegramAttempts": 2,
+        "retryDueTick": null,
+        "userView": "recovery_shown",
+        "openingConfirmed": {
+          "email": true,
+          "telegram": true
+        },
+        "recoveryEmail": "accepted",
+        "recoveryTelegram": "accepted",
+        "logicalTick": 10
+      }
+    }
+  ]
+}

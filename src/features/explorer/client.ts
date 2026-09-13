@@ -7,7 +7,7 @@ export function initializeExplorer() {
   const projectId = root?.dataset.project;
   if (!root || !projectIds.some(id => id === projectId)) return;
   const controller = createExplorerController(projectId as ProjectId);
-  const links = root.querySelectorAll<HTMLAnchorElement>('[data-component-link]');
+  const controls = root.querySelectorAll<HTMLButtonElement>('[data-component-select]');
   const details = root.querySelectorAll<HTMLElement>('[data-component-detail]');
   const scenario = root.querySelector<HTMLSelectElement>('[data-scenario]');
   const step = root.querySelector<HTMLButtonElement>('[data-step]');
@@ -19,9 +19,10 @@ export function initializeExplorer() {
 
   function render() {
     const state = controller.getState();
-    for (const link of links) {
-      if (link.dataset.componentLink === state.selectedComponentId) link.setAttribute('aria-current', 'true');
-      else link.removeAttribute('aria-current');
+    for (const control of controls) {
+      const selected = control.dataset.componentSelect === state.selectedComponentId;
+      control.setAttribute('aria-pressed', String(selected));
+      control.dataset.selected = String(selected);
     }
     for (const detail of details) detail.dataset.selected = String(detail.dataset.componentDetail === state.selectedComponentId);
     const infra = state.infrastructureSimulation;
@@ -74,17 +75,22 @@ export function initializeExplorer() {
 
   const selectFragment = () => {
     const detail = Array.from(details).find(item => `#${item.id}` === window.location.hash);
+    if (detail) {
+      const disclosure = detail.closest<HTMLDetailsElement>('[data-component-disclosure]');
+      if (disclosure) disclosure.open = true;
+    }
     controller.dispatch({ type: 'SELECT_COMPONENT', componentId: detail?.dataset.componentDetail ?? null });
-    detail?.focus({ preventScroll: true });
   };
-  controller.subscribe(render);
   window.addEventListener('hashchange', selectFragment);
-  // Native fragment navigation handles history, scrolling and the no-JS path.
+  controller.subscribe(render);
+  for (const control of controls) control.disabled = false;
   root.addEventListener('click', event => {
     const target = event.target;
     if (!(target instanceof Element)) return;
-    const link = target.closest<HTMLAnchorElement>('a[href^="#component-"]');
-    if (link && link.hash === window.location.hash) selectFragment();
+    const control = target.closest<HTMLButtonElement>('[data-component-select]');
+    if (control && root.contains(control)) {
+      controller.dispatch({ type: 'SELECT_COMPONENT', componentId: control.dataset.componentSelect! });
+    }
   });
   scenario?.addEventListener('change', () => controller.dispatch({ type: 'SELECT_SCENARIO', scenarioId: scenario.value }));
   step?.addEventListener('click', () => controller.dispatch({ type: 'STEP' }));

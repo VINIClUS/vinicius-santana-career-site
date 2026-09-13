@@ -1,0 +1,723 @@
+{
+  "schemaVersion": "2.0",
+  "id": "cnesdata-end-to-end",
+  "project": "cnesdata",
+  "scene": "cnesdata",
+  "title": "Da extração ao dataset publicado.",
+  "subtitle": "Duas origens, artefatos imutáveis e uma versão consistente para a tela.",
+  "profile": "aws-target",
+  "evidenceStatus": "illustrative",
+  "requirements": [
+    "CND-LIFE-01",
+    "CND-PUB-01",
+    "CND-I1",
+    "CND-I2",
+    "CND-I4",
+    "CND-I5",
+    "CND-I6",
+    "CND-I7",
+    "CND-I8"
+  ],
+  "sources": [
+    "R3a",
+    "R3b"
+  ],
+  "assumptions": [
+    "Alvo aprovado em develop; etapas centrais não são afirmadas como release concluído.",
+    "Perfis local/AWS preservam semântica; fixture usa labels AWS.",
+    "Sem dados reais, FTP, credenciais ou engine analítica carregada no navegador."
+  ],
+  "checkpoints": [
+    {
+      "id": "cnesdata-end-to-end-00",
+      "title": "Versão anterior permanece ativa",
+      "caption": "CURRENT aponta para v0 enquanto uma nova competência é preparada.",
+      "command": {
+        "type": "INIT"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "cnes.publish",
+        "cnes.user"
+      ],
+      "evidenceStatus": "planned",
+      "expected": {
+        "profile": "aws-target",
+        "job": "none",
+        "fence": 0,
+        "identityVerified": false,
+        "localRows": 0,
+        "nationalRows": 0,
+        "rawObjects": 0,
+        "localAccepted": false,
+        "nationalAccepted": false,
+        "normalized": 0,
+        "reconciled": false,
+        "servingReady": false,
+        "artifactsVerified": false,
+        "run": "PLANNED",
+        "runId": "run-demo-01",
+        "candidateVersion": null,
+        "currentVersion": "v-demo-00",
+        "servedVersion": null,
+        "userView": "previous_version",
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "cnesdata-end-to-end-01",
+      "title": "Solicitar extração",
+      "caption": "Trabalho municipal e captura nacional são coordenados; ainda sem novos dados.",
+      "command": {
+        "type": "REQUEST_EXTRACTION",
+        "tenantId": "tenant-demo-A",
+        "competencia": "2026-07"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "cnes.control",
+        "cnes.edge"
+      ],
+      "evidenceStatus": "documented",
+      "expected": {
+        "profile": "aws-target",
+        "job": "PENDING",
+        "fence": 0,
+        "identityVerified": false,
+        "localRows": 0,
+        "nationalRows": 0,
+        "rawObjects": 0,
+        "localAccepted": false,
+        "nationalAccepted": false,
+        "normalized": 0,
+        "reconciled": false,
+        "servingReady": false,
+        "artifactsVerified": false,
+        "run": "WAITING_INPUTS",
+        "runId": "run-demo-01",
+        "candidateVersion": null,
+        "currentVersion": "v-demo-00",
+        "servedVersion": null,
+        "userView": "previous_version",
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "cnesdata-end-to-end-02",
+      "title": "Claim autenticado",
+      "caption": "Gateway falso valida mTLS e o Job concede lease/fence. JSON não concede identidade.",
+      "command": {
+        "type": "CLAIM_JOB",
+        "agentId": "agent-demo-01"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "cnes.control",
+        "cnes.edge"
+      ],
+      "evidenceStatus": "documented",
+      "expected": {
+        "profile": "aws-target",
+        "job": "LEASED",
+        "fence": 1,
+        "identityVerified": true,
+        "localRows": 0,
+        "nationalRows": 0,
+        "rawObjects": 0,
+        "localAccepted": false,
+        "nationalAccepted": false,
+        "normalized": 0,
+        "reconciled": false,
+        "servingReady": false,
+        "artifactsVerified": false,
+        "run": "WAITING_INPUTS",
+        "runId": "run-demo-01",
+        "candidateVersion": null,
+        "currentVersion": "v-demo-00",
+        "servedVersion": null,
+        "userView": "previous_version",
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "cnesdata-end-to-end-03",
+      "title": "Ler fonte municipal",
+      "caption": "Três registros fictícios mantêm a proveniência; Edge não faz reconciliação.",
+      "command": {
+        "type": "EXTRACT_LOCAL"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "cnes.local",
+        "cnes.edge"
+      ],
+      "evidenceStatus": "documented",
+      "expected": {
+        "profile": "aws-target",
+        "job": "LEASED",
+        "fence": 1,
+        "identityVerified": true,
+        "localRows": 3,
+        "nationalRows": 0,
+        "rawObjects": 0,
+        "localAccepted": false,
+        "nationalAccepted": false,
+        "normalized": 0,
+        "reconciled": false,
+        "servingReady": false,
+        "artifactsVerified": false,
+        "run": "WAITING_INPUTS",
+        "runId": "run-demo-01",
+        "candidateVersion": null,
+        "currentVersion": "v-demo-00",
+        "servedVersion": null,
+        "userView": "previous_version",
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "cnesdata-end-to-end-04",
+      "title": "Preparar Parquet",
+      "caption": "Encoding e tipos de transporte viram data.parquet com hash; ainda no Edge.",
+      "command": {
+        "type": "PACKAGE_PARQUET",
+        "compression": "zstd",
+        "externalGzip": false
+      },
+      "holdMs": 2600,
+      "focus": [
+        "cnes.edge"
+      ],
+      "evidenceStatus": "documented",
+      "expected": {
+        "profile": "aws-target",
+        "job": "LEASED",
+        "fence": 1,
+        "identityVerified": true,
+        "localRows": 3,
+        "nationalRows": 0,
+        "rawObjects": 0,
+        "localAccepted": false,
+        "nationalAccepted": false,
+        "normalized": 0,
+        "reconciled": false,
+        "servingReady": false,
+        "artifactsVerified": false,
+        "run": "WAITING_INPUTS",
+        "runId": "run-demo-01",
+        "candidateVersion": null,
+        "currentVersion": "v-demo-00",
+        "servedVersion": null,
+        "userView": "previous_version",
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "cnesdata-end-to-end-05",
+      "title": "Publicar bytes raw",
+      "caption": "Primeiro PUT aceita os bytes imutáveis; isso não publica o dataset.",
+      "command": {
+        "type": "PUT_RAW_OBJECT",
+        "snapshotId": "snap-local-01",
+        "fence": 1
+      },
+      "holdMs": 2600,
+      "focus": [
+        "cnes.edge",
+        "cnes.raw"
+      ],
+      "evidenceStatus": "documented",
+      "expected": {
+        "profile": "aws-target",
+        "job": "LEASED",
+        "fence": 1,
+        "identityVerified": true,
+        "localRows": 3,
+        "nationalRows": 0,
+        "rawObjects": 1,
+        "localAccepted": false,
+        "nationalAccepted": false,
+        "normalized": 0,
+        "reconciled": false,
+        "servingReady": false,
+        "artifactsVerified": false,
+        "run": "WAITING_INPUTS",
+        "runId": "run-demo-01",
+        "candidateVersion": null,
+        "currentVersion": "v-demo-00",
+        "servedVersion": null,
+        "userView": "previous_version",
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "cnesdata-end-to-end-06",
+      "title": "Replay seguro",
+      "caption": "Mesmo objeto e mesmos bytes: nenhuma cópia persistida a mais.",
+      "command": {
+        "type": "REPLAY_RAW_OBJECT",
+        "snapshotId": "snap-local-01"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "cnes.raw"
+      ],
+      "evidenceStatus": "documented",
+      "expected": {
+        "profile": "aws-target",
+        "job": "LEASED",
+        "fence": 1,
+        "identityVerified": true,
+        "localRows": 3,
+        "nationalRows": 0,
+        "rawObjects": 1,
+        "localAccepted": false,
+        "nationalAccepted": false,
+        "normalized": 0,
+        "reconciled": false,
+        "servingReady": false,
+        "artifactsVerified": false,
+        "run": "WAITING_INPUTS",
+        "runId": "run-demo-01",
+        "candidateVersion": null,
+        "currentVersion": "v-demo-00",
+        "servedVersion": null,
+        "userView": "previous_version",
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "cnesdata-end-to-end-07",
+      "title": "Aceitar manifesto local",
+      "caption": "Objeto e manifesto irmãos ficam rastreáveis; Job conclui; Run ainda espera a outra fonte.",
+      "command": {
+        "type": "ACCEPT_RAW_MANIFEST",
+        "source": "CNES_LOCAL"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "cnes.raw",
+        "cnes.control"
+      ],
+      "evidenceStatus": "documented",
+      "expected": {
+        "profile": "aws-target",
+        "job": "SUCCEEDED",
+        "fence": 1,
+        "identityVerified": true,
+        "localRows": 3,
+        "nationalRows": 0,
+        "rawObjects": 2,
+        "localAccepted": true,
+        "nationalAccepted": false,
+        "normalized": 0,
+        "reconciled": false,
+        "servingReady": false,
+        "artifactsVerified": false,
+        "run": "WAITING_INPUTS",
+        "runId": "run-demo-01",
+        "candidateVersion": null,
+        "currentVersion": "v-demo-00",
+        "servedVersion": null,
+        "userView": "previous_version",
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "cnesdata-end-to-end-08",
+      "title": "Capturar fonte nacional",
+      "caption": "Adapter central valida PF mensal e competência antes do filtro municipal.",
+      "command": {
+        "type": "EXTRACT_NATIONAL_PF",
+        "competencia": "2026-07"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "cnes.national"
+      ],
+      "evidenceStatus": "documented",
+      "expected": {
+        "profile": "aws-target",
+        "job": "SUCCEEDED",
+        "fence": 1,
+        "identityVerified": true,
+        "localRows": 3,
+        "nationalRows": 3,
+        "rawObjects": 2,
+        "localAccepted": true,
+        "nationalAccepted": false,
+        "normalized": 0,
+        "reconciled": false,
+        "servingReady": false,
+        "artifactsVerified": false,
+        "run": "WAITING_INPUTS",
+        "runId": "run-demo-01",
+        "candidateVersion": null,
+        "currentVersion": "v-demo-00",
+        "servedVersion": null,
+        "userView": "previous_version",
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "cnesdata-end-to-end-09",
+      "title": "Aceitar raw nacional",
+      "caption": "A segunda origem converge no mesmo contrato raw, não no Edge municipal.",
+      "command": {
+        "type": "ACCEPT_NATIONAL_RAW",
+        "snapshotId": "snap-national-01"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "cnes.national",
+        "cnes.raw"
+      ],
+      "evidenceStatus": "documented",
+      "expected": {
+        "profile": "aws-target",
+        "job": "SUCCEEDED",
+        "fence": 1,
+        "identityVerified": true,
+        "localRows": 3,
+        "nationalRows": 3,
+        "rawObjects": 4,
+        "localAccepted": true,
+        "nationalAccepted": true,
+        "normalized": 0,
+        "reconciled": false,
+        "servingReady": false,
+        "artifactsVerified": false,
+        "run": "WAITING_INPUTS",
+        "runId": "run-demo-01",
+        "candidateVersion": null,
+        "currentVersion": "v-demo-00",
+        "servedVersion": null,
+        "userView": "previous_version",
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "cnesdata-end-to-end-10",
+      "title": "Iniciar processamento central",
+      "caption": "Inputs completos habilitam Run e unidades de processamento.",
+      "command": {
+        "type": "START_RUN"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "cnes.control",
+        "cnes.normalize"
+      ],
+      "evidenceStatus": "planned",
+      "expected": {
+        "profile": "aws-target",
+        "job": "SUCCEEDED",
+        "fence": 1,
+        "identityVerified": true,
+        "localRows": 3,
+        "nationalRows": 3,
+        "rawObjects": 4,
+        "localAccepted": true,
+        "nationalAccepted": true,
+        "normalized": 0,
+        "reconciled": false,
+        "servingReady": false,
+        "artifactsVerified": false,
+        "run": "PROCESSING",
+        "runId": "run-demo-01",
+        "candidateVersion": null,
+        "currentVersion": "v-demo-00",
+        "servedVersion": null,
+        "userView": "previous_version",
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "cnesdata-end-to-end-11",
+      "title": "Normalizar por fonte",
+      "caption": "Tipos/chaves são padronizados, mantendo origem e competência em cada artefato.",
+      "command": {
+        "type": "NORMALIZE_SOURCES"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "cnes.normalize"
+      ],
+      "evidenceStatus": "planned",
+      "expected": {
+        "profile": "aws-target",
+        "job": "SUCCEEDED",
+        "fence": 1,
+        "identityVerified": true,
+        "localRows": 3,
+        "nationalRows": 3,
+        "rawObjects": 4,
+        "localAccepted": true,
+        "nationalAccepted": true,
+        "normalized": 2,
+        "reconciled": false,
+        "servingReady": false,
+        "artifactsVerified": false,
+        "run": "PROCESSING",
+        "runId": "run-demo-01",
+        "candidateVersion": null,
+        "currentVersion": "v-demo-00",
+        "servedVersion": null,
+        "userView": "previous_version",
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "cnesdata-end-to-end-12",
+      "title": "Reconciliar",
+      "caption": "Comparar fontes e registrar divergência ilustrativa; raw permanece intacto.",
+      "command": {
+        "type": "RECONCILE_COMPETENCIA"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "cnes.reconcile"
+      ],
+      "evidenceStatus": "planned",
+      "expected": {
+        "profile": "aws-target",
+        "job": "SUCCEEDED",
+        "fence": 1,
+        "identityVerified": true,
+        "localRows": 3,
+        "nationalRows": 3,
+        "rawObjects": 4,
+        "localAccepted": true,
+        "nationalAccepted": true,
+        "normalized": 2,
+        "reconciled": true,
+        "servingReady": false,
+        "artifactsVerified": false,
+        "run": "PROCESSING",
+        "runId": "run-demo-01",
+        "candidateVersion": null,
+        "currentVersion": "v-demo-00",
+        "servedVersion": null,
+        "userView": "previous_version",
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "cnesdata-end-to-end-13",
+      "title": "Materializar a tela",
+      "caption": "JSON pequeno é derivado do mesmo run; browser não acessa raw.",
+      "command": {
+        "type": "MATERIALIZE_SERVING"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "cnes.serving"
+      ],
+      "evidenceStatus": "planned",
+      "expected": {
+        "profile": "aws-target",
+        "job": "SUCCEEDED",
+        "fence": 1,
+        "identityVerified": true,
+        "localRows": 3,
+        "nationalRows": 3,
+        "rawObjects": 4,
+        "localAccepted": true,
+        "nationalAccepted": true,
+        "normalized": 2,
+        "reconciled": true,
+        "servingReady": true,
+        "artifactsVerified": false,
+        "run": "PROCESSING",
+        "runId": "run-demo-01",
+        "candidateVersion": null,
+        "currentVersion": "v-demo-00",
+        "servedVersion": null,
+        "userView": "previous_version",
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "cnesdata-end-to-end-14",
+      "title": "Verificar completude",
+      "caption": "Checar hashes, schemas e leitura dos artefatos antes de publicar.",
+      "command": {
+        "type": "VERIFY_ARTIFACTS"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "cnes.serving",
+        "cnes.publish"
+      ],
+      "evidenceStatus": "planned",
+      "expected": {
+        "profile": "aws-target",
+        "job": "SUCCEEDED",
+        "fence": 1,
+        "identityVerified": true,
+        "localRows": 3,
+        "nationalRows": 3,
+        "rawObjects": 4,
+        "localAccepted": true,
+        "nationalAccepted": true,
+        "normalized": 2,
+        "reconciled": true,
+        "servingReady": true,
+        "artifactsVerified": true,
+        "run": "PUBLISHING",
+        "runId": "run-demo-01",
+        "candidateVersion": null,
+        "currentVersion": "v-demo-00",
+        "servedVersion": null,
+        "userView": "previous_version",
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "cnesdata-end-to-end-15",
+      "title": "Criar versão imutável",
+      "caption": "v1 existe, mas CURRENT ainda aponta para a versão anterior.",
+      "command": {
+        "type": "CREATE_DATASET_VERSION",
+        "versionId": "v-demo-01"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "cnes.publish"
+      ],
+      "evidenceStatus": "planned",
+      "expected": {
+        "profile": "aws-target",
+        "job": "SUCCEEDED",
+        "fence": 1,
+        "identityVerified": true,
+        "localRows": 3,
+        "nationalRows": 3,
+        "rawObjects": 4,
+        "localAccepted": true,
+        "nationalAccepted": true,
+        "normalized": 2,
+        "reconciled": true,
+        "servingReady": true,
+        "artifactsVerified": true,
+        "run": "PUBLISHING",
+        "runId": "run-demo-01",
+        "candidateVersion": "v-demo-01",
+        "currentVersion": "v-demo-00",
+        "servedVersion": null,
+        "userView": "previous_version",
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "cnesdata-end-to-end-16",
+      "title": "Publicar por CAS",
+      "caption": "Somente com expectedVersion/fence válidos CURRENT muda de v0 para v1.",
+      "command": {
+        "type": "PUBLISH_CURRENT",
+        "expectedVersion": "v-demo-00",
+        "fence": 1
+      },
+      "holdMs": 2600,
+      "focus": [
+        "cnes.publish",
+        "cnes.control"
+      ],
+      "evidenceStatus": "planned",
+      "expected": {
+        "profile": "aws-target",
+        "job": "SUCCEEDED",
+        "fence": 1,
+        "identityVerified": true,
+        "localRows": 3,
+        "nationalRows": 3,
+        "rawObjects": 4,
+        "localAccepted": true,
+        "nationalAccepted": true,
+        "normalized": 2,
+        "reconciled": true,
+        "servingReady": true,
+        "artifactsVerified": true,
+        "run": "PUBLISHED",
+        "runId": "run-demo-01",
+        "candidateVersion": "v-demo-01",
+        "currentVersion": "v-demo-01",
+        "servedVersion": null,
+        "userView": "previous_version",
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "cnesdata-end-to-end-17",
+      "title": "Resolver acesso autorizado",
+      "caption": "Membership e tenant válidos; o request fixa uma única versão para toda a resposta.",
+      "command": {
+        "type": "AUTHORIZE_AND_READ",
+        "tenantId": "tenant-demo-A"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "cnes.control",
+        "cnes.user"
+      ],
+      "evidenceStatus": "planned",
+      "expected": {
+        "profile": "aws-target",
+        "job": "SUCCEEDED",
+        "fence": 1,
+        "identityVerified": true,
+        "localRows": 3,
+        "nationalRows": 3,
+        "rawObjects": 4,
+        "localAccepted": true,
+        "nationalAccepted": true,
+        "normalized": 2,
+        "reconciled": true,
+        "servingReady": true,
+        "artifactsVerified": true,
+        "run": "PUBLISHED",
+        "runId": "run-demo-01",
+        "candidateVersion": "v-demo-01",
+        "currentVersion": "v-demo-01",
+        "servedVersion": "v-demo-01",
+        "userView": "previous_version",
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "cnesdata-end-to-end-18",
+      "title": "Resultado pronto para uso",
+      "caption": "O usuário vê o JSON da versão publicada, com proveniência e run identificados.",
+      "command": {
+        "type": "SHOW_SERVING"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "cnes.user"
+      ],
+      "evidenceStatus": "planned",
+      "expected": {
+        "profile": "aws-target",
+        "job": "SUCCEEDED",
+        "fence": 1,
+        "identityVerified": true,
+        "localRows": 3,
+        "nationalRows": 3,
+        "rawObjects": 4,
+        "localAccepted": true,
+        "nationalAccepted": true,
+        "normalized": 2,
+        "reconciled": true,
+        "servingReady": true,
+        "artifactsVerified": true,
+        "run": "PUBLISHED",
+        "runId": "run-demo-01",
+        "candidateVersion": "v-demo-01",
+        "currentVersion": "v-demo-01",
+        "servedVersion": "v-demo-01",
+        "userView": "current_version",
+        "logicalTick": 0
+      }
+    }
+  ]
+}

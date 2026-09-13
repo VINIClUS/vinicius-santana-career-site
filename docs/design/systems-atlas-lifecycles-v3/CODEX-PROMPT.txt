@@ -1,0 +1,15 @@
+Implemente no repositório vinicius-santana-career-site a Spec em docs/design/systems-atlas-lifecycles-v3/TECH-SPEC-V3.md, seguindo CODEX-HANDOFF.md e IMPLEMENTATION-PLAN.md da mesma pasta.
+
+A direção visual foi aprovada. As imagens anexadas são os storyboards novos, não screenshots de produto nem especificações de topologia. ANTES de usar os desenhos, leia design/REFERENCE-CORRECTIONS.md. Não copie logos gerados, slogans ou afiliações. A grade 3x2 de storyboards não é o layout final: o produto mostra uma etapa ampliada de cada vez, com número, verbo, ator responsável, transição evidente e resultado persistente.
+
+Preserve os ciclos da V2: Infrastructure com esgotamento/retorno, variante quorum e provisioning/scaling; Limnopulse até usuário, ACK e recuperação; CnesData da extração até transformação e consumo autorizado. Os 91 checkpoints e 27 casos alternativos continuam oráculos de comportamento. Não atribua checkpoint.expected ao estado e não congele domínio em limitações da V1.
+
+Leia primeiro as instruções existentes do repositório, git status e a branch/SHA atual. A baseline 773022d é histórica, não um alvo de reset. Identifique o que já está implementado; mantenha regras corretas e altere sua apresentação, implementando apenas lacunas reais. Apresente um plano curto antes das alterações e siga os gates do fluxo superpowers/instruções locais.
+
+Use design/service-assets.json para adquirir assets reconhecíveis e permitidos de fontes primárias. Os SVGs dos fornecedores ainda não estão no briefing; não invente que foram baixados. SES/SQS/S3/DynamoDB devem usar os ícones AWS corretos. Telegraf e InfluxDB precisam ser representados distintamente com uso permitido. Worker, Outbox e Relay são funções/padrões, com pictogramas próprios e labels, não serviços inventados. Não reutilize cubos genéricos nem faça runtime fetch de ícones.
+
+Use actor-bindings.json, stage-map.json e choreography.json para mapear os 50 atores, seis capítulos por cenário e seus subbeats. Os 124 subbeats são tomadas explicativas, não transações novas. Comece validando outbox→relay→SQS email→email worker→SES; depois complete os cinco ciclos. Máximo de três atores focais e uma transferência móvel por tomada; logs e controles técnicos ficam recolhidos. Movimento reduzido e fallback devem preservar os estados e a compreensão.
+
+Não reconstrua a Home/Atlas, não mude hosting ou stack, não crie backend nem chamadas reais, não peça credenciais e não altere os backends de CnesData/Limnopulse. Use testes localizados de domínio, apresentação e integração. Capture a implementação real em desktop/mobile, movimento, espera/erro e recuperação; não use as imagens de briefing como evidência de funcionamento.
+
+Trabalhe por fatias verificáveis. Agentes paralelos só após o contrato visual comum, com integrador único para shell/controller. Não publique, crie ou mescle PR sem autorização específica. Ao concluir, informe marcos concluídos, testes realmente executados, evidência visual e limitações restantes.

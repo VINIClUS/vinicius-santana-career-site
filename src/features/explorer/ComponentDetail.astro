@@ -1,0 +1,21 @@
+---
+interface Component { id: string; title: string; status: string; description: string }
+interface Props {
+  component: Component;
+  architecture: Component[];
+  relations: readonly { from: string; to: string; label: string }[];
+}
+const { component, architecture, relations } = Astro.props;
+const related = relations.filter(relation => relation.from === component.id || relation.to === component.id);
+---
+<article id={`component-${component.id}`} data-component-detail={component.id} data-selected="false">
+  <p class="eyebrow">{component.status[0].toUpperCase() + component.status.slice(1)}</p>
+  <h3><button type="button" class="component-detail-select" data-component-select={component.id} data-component-card={component.id} aria-pressed="false" disabled>{component.title}</button></h3>
+  <p>{component.description}</p>
+  <ul class="component-relations">
+    {related.map(relation => {
+      const target = relation.from === component.id ? relation.to : relation.from;
+      return <li>{relation.label}: <button type="button" data-component-select={target} aria-pressed="false" disabled>{architecture.find(item => item.id === target)!.title}</button></li>;
+    })}
+  </ul>
+</article>

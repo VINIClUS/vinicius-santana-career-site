@@ -1,0 +1,43 @@
+{
+  "scope": "Briefing gallery only, not the portfolio simulation",
+  "viewports": [
+    {
+      "width": 1440,
+      "height": 1000,
+      "projectSwitching": "PASS",
+      "keyboardEnter": "PASS",
+      "horizontalOverflow": false,
+      "jsErrors": [],
+      "externalRequests": []
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "projectSwitching": "PASS",
+      "keyboardEnter": "PASS",
+      "horizontalOverflow": false,
+      "jsErrors": [],
+      "externalRequests": []
+    },
+    {
+      "width": 320,
+      "height": 740,
+      "projectSwitching": "PASS",
+      "keyboardEnter": "PASS",
+      "horizontalOverflow": false,
+      "jsErrors": [],
+      "externalRequests": []
+    }
+  ],
+  "loadMethod": "inline HTML; file URL navigation is disabled by the test browser policy",
+  "browser": "Chromium 144.0.7559.96",
+  "noJavaScript": {
+    "allThreeReferencesVisible": true,
+    "allEmbeddedImagesLoaded": true
+  },
+  "reducedMotion": {
+    "selectionFunctional": true,
+    "activeAnimations": 0
+  },
+  "result": "PASS"
+}

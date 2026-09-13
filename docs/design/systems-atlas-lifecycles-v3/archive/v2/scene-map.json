@@ -1,0 +1,701 @@
+{
+  "version": "2.0",
+  "coordinates": "diagram layout anchors, not physical locations",
+  "scenes": {
+    "infrastructure": {
+      "title": "Infrastructure",
+      "layout": "isometric-pool",
+      "actors": [
+        {
+          "id": "infra.controller",
+          "label": "Control plane",
+          "shape": "controller",
+          "desktop": [
+            180,
+            130
+          ],
+          "mobile": [
+            95,
+            60
+          ],
+          "componentRef": null
+        },
+        {
+          "id": "infra.storage",
+          "label": "Durable storage",
+          "shape": "store",
+          "desktop": [
+            980,
+            130
+          ],
+          "mobile": [
+            315,
+            60
+          ],
+          "componentRef": null
+        },
+        {
+          "id": "infra.node-01",
+          "label": "node-01",
+          "shape": "server",
+          "desktop": [
+            280,
+            320
+          ],
+          "mobile": [
+            95,
+            270
+          ],
+          "componentRef": null
+        },
+        {
+          "id": "infra.node-02",
+          "label": "node-02",
+          "shape": "server",
+          "desktop": [
+            600,
+            320
+          ],
+          "mobile": [
+            305,
+            270
+          ],
+          "componentRef": null
+        },
+        {
+          "id": "infra.node-03",
+          "label": "node-03",
+          "shape": "server",
+          "desktop": [
+            920,
+            320
+          ],
+          "mobile": [
+            200,
+            440
+          ],
+          "componentRef": null
+        },
+        {
+          "id": "infra.workload",
+          "label": "workload",
+          "shape": "token",
+          "desktop": [
+            600,
+            205
+          ],
+          "mobile": [
+            200,
+            560
+          ],
+          "componentRef": null
+        },
+        {
+          "id": "infra.client",
+          "label": "User / service",
+          "shape": "user",
+          "desktop": [
+            1030,
+            515
+          ],
+          "mobile": [
+            200,
+            700
+          ],
+          "componentRef": null
+        }
+      ],
+      "edges": [
+        [
+          "infra.controller",
+          "infra.node-01",
+          "control"
+        ],
+        [
+          "infra.controller",
+          "infra.node-02",
+          "control"
+        ],
+        [
+          "infra.controller",
+          "infra.node-03",
+          "control"
+        ],
+        [
+          "infra.node-01",
+          "infra.storage",
+          "data"
+        ],
+        [
+          "infra.node-02",
+          "infra.storage",
+          "data"
+        ],
+        [
+          "infra.node-03",
+          "infra.storage",
+          "data"
+        ]
+      ],
+      "zones": [
+        {
+          "id": "external",
+          "label": "CONTROL / STORAGE — separate failure domain",
+          "members": [
+            "infra.controller",
+            "infra.storage"
+          ]
+        },
+        {
+          "id": "compute",
+          "label": "COMPUTE WORKERS",
+          "members": [
+            "infra.node-01",
+            "infra.node-02",
+            "infra.node-03"
+          ]
+        }
+      ]
+    },
+    "scaling": {
+      "title": "Provisioning & scaling",
+      "layout": "provision-pool",
+      "actors": [
+        {
+          "id": "scale.request",
+          "label": "Desired state",
+          "shape": "controller",
+          "desktop": [
+            130,
+            150
+          ],
+          "mobile": [
+            105,
+            95
+          ],
+          "componentRef": null
+        },
+        {
+          "id": "scale.capacity",
+          "label": "Capacity / 3 hosts",
+          "shape": "store",
+          "desktop": [
+            470,
+            150
+          ],
+          "mobile": [
+            305,
+            95
+          ],
+          "componentRef": null
+        },
+        {
+          "id": "scale.provision",
+          "label": "Provision & configure",
+          "shape": "processor",
+          "desktop": [
+            830,
+            150
+          ],
+          "mobile": [
+            200,
+            250
+          ],
+          "componentRef": null
+        },
+        {
+          "id": "scale.worker-01",
+          "label": "worker-01",
+          "shape": "server",
+          "desktop": [
+            240,
+            345
+          ],
+          "mobile": [
+            90,
+            430
+          ],
+          "componentRef": null
+        },
+        {
+          "id": "scale.worker-02",
+          "label": "worker-02",
+          "shape": "server",
+          "desktop": [
+            600,
+            345
+          ],
+          "mobile": [
+            215,
+            430
+          ],
+          "componentRef": null
+        },
+        {
+          "id": "scale.worker-03",
+          "label": "worker-03",
+          "shape": "server",
+          "desktop": [
+            950,
+            345
+          ],
+          "mobile": [
+            335,
+            430
+          ],
+          "componentRef": null
+        },
+        {
+          "id": "scale.service",
+          "label": "Service replicas",
+          "shape": "token",
+          "desktop": [
+            390,
+            510
+          ],
+          "mobile": [
+            110,
+            660
+          ],
+          "componentRef": null
+        },
+        {
+          "id": "scale.user",
+          "label": "End user",
+          "shape": "user",
+          "desktop": [
+            840,
+            510
+          ],
+          "mobile": [
+            310,
+            660
+          ],
+          "componentRef": null
+        }
+      ],
+      "edges": [
+        [
+          "scale.request",
+          "scale.capacity",
+          "control"
+        ],
+        [
+          "scale.capacity",
+          "scale.provision",
+          "control"
+        ],
+        [
+          "scale.provision",
+          "scale.worker-02",
+          "control"
+        ],
+        [
+          "scale.provision",
+          "scale.worker-03",
+          "control"
+        ],
+        [
+          "scale.worker-01",
+          "scale.service",
+          "data"
+        ],
+        [
+          "scale.worker-02",
+          "scale.service",
+          "data"
+        ],
+        [
+          "scale.worker-03",
+          "scale.service",
+          "data"
+        ],
+        [
+          "scale.service",
+          "scale.user",
+          "data"
+        ]
+      ],
+      "zones": []
+    },
+    "limnopulse": {
+      "title": "Limnopulse",
+      "layout": "lifecycle",
+      "actors": [
+        {
+          "id": "limno.sensor",
+          "label": "Water / sample",
+          "shape": "sensor",
+          "desktop": [
+            125,
+            150
+          ],
+          "mobile": [
+            95,
+            100
+          ],
+          "componentRef": null
+        },
+        {
+          "id": "limno.ingestion",
+          "label": "MQTT / Telegraf",
+          "shape": "processor",
+          "desktop": [
+            410,
+            150
+          ],
+          "mobile": [
+            300,
+            100
+          ],
+          "componentRef": null
+        },
+        {
+          "id": "limno.timeseries",
+          "label": "InfluxDB / window",
+          "shape": "store",
+          "desktop": [
+            715,
+            150
+          ],
+          "mobile": [
+            95,
+            260
+          ],
+          "componentRef": null
+        },
+        {
+          "id": "limno.evaluator",
+          "label": "One-shot evaluator",
+          "shape": "processor",
+          "desktop": [
+            1040,
+            150
+          ],
+          "mobile": [
+            300,
+            260
+          ],
+          "componentRef": null
+        },
+        {
+          "id": "limno.domain",
+          "label": "Incident + outbox",
+          "shape": "store",
+          "desktop": [
+            1040,
+            385
+          ],
+          "mobile": [
+            300,
+            425
+          ],
+          "componentRef": null
+        },
+        {
+          "id": "limno.delivery",
+          "label": "Relay / SQS / worker",
+          "shape": "processor",
+          "desktop": [
+            715,
+            385
+          ],
+          "mobile": [
+            95,
+            425
+          ],
+          "componentRef": null
+        },
+        {
+          "id": "limno.provider",
+          "label": "SES / Telegram",
+          "shape": "processor",
+          "desktop": [
+            410,
+            385
+          ],
+          "mobile": [
+            95,
+            590
+          ],
+          "componentRef": null
+        },
+        {
+          "id": "limno.user",
+          "label": "Recipient",
+          "shape": "phone",
+          "desktop": [
+            125,
+            385
+          ],
+          "mobile": [
+            300,
+            590
+          ],
+          "componentRef": null
+        },
+        {
+          "id": "limno.api",
+          "label": "Authorized API",
+          "shape": "controller",
+          "desktop": [
+            420,
+            515
+          ],
+          "mobile": [
+            200,
+            695
+          ],
+          "componentRef": null
+        }
+      ],
+      "edges": [
+        [
+          "limno.sensor",
+          "limno.ingestion",
+          "data"
+        ],
+        [
+          "limno.ingestion",
+          "limno.timeseries",
+          "data"
+        ],
+        [
+          "limno.timeseries",
+          "limno.evaluator",
+          "query"
+        ],
+        [
+          "limno.evaluator",
+          "limno.domain",
+          "persist"
+        ],
+        [
+          "limno.domain",
+          "limno.delivery",
+          "control"
+        ],
+        [
+          "limno.delivery",
+          "limno.provider",
+          "data"
+        ],
+        [
+          "limno.provider",
+          "limno.user",
+          "illustration"
+        ],
+        [
+          "limno.user",
+          "limno.api",
+          "query"
+        ],
+        [
+          "limno.api",
+          "limno.domain",
+          "control"
+        ]
+      ],
+      "zones": []
+    },
+    "cnesdata": {
+      "title": "CnesData",
+      "layout": "lifecycle",
+      "actors": [
+        {
+          "id": "cnes.local",
+          "label": "Municipal source",
+          "shape": "store",
+          "desktop": [
+            115,
+            140
+          ],
+          "mobile": [
+            95,
+            85
+          ],
+          "componentRef": null
+        },
+        {
+          "id": "cnes.edge",
+          "label": "Edge Agent",
+          "shape": "processor",
+          "desktop": [
+            360,
+            140
+          ],
+          "mobile": [
+            300,
+            85
+          ],
+          "componentRef": null
+        },
+        {
+          "id": "cnes.national",
+          "label": "DATASUS PF adapter",
+          "shape": "store",
+          "desktop": [
+            115,
+            355
+          ],
+          "mobile": [
+            95,
+            250
+          ],
+          "componentRef": null
+        },
+        {
+          "id": "cnes.raw",
+          "label": "Raw + manifest",
+          "shape": "store",
+          "desktop": [
+            630,
+            140
+          ],
+          "mobile": [
+            300,
+            250
+          ],
+          "componentRef": null
+        },
+        {
+          "id": "cnes.normalize",
+          "label": "NormalizeSource",
+          "shape": "processor",
+          "desktop": [
+            930,
+            140
+          ],
+          "mobile": [
+            300,
+            405
+          ],
+          "componentRef": null
+        },
+        {
+          "id": "cnes.reconcile",
+          "label": "ReconcileCompetencia",
+          "shape": "processor",
+          "desktop": [
+            930,
+            360
+          ],
+          "mobile": [
+            95,
+            405
+          ],
+          "componentRef": null
+        },
+        {
+          "id": "cnes.serving",
+          "label": "MaterializeServing",
+          "shape": "processor",
+          "desktop": [
+            635,
+            360
+          ],
+          "mobile": [
+            95,
+            560
+          ],
+          "componentRef": null
+        },
+        {
+          "id": "cnes.publish",
+          "label": "Version + CURRENT",
+          "shape": "controller",
+          "desktop": [
+            370,
+            360
+          ],
+          "mobile": [
+            300,
+            560
+          ],
+          "componentRef": null
+        },
+        {
+          "id": "cnes.user",
+          "label": "Authorized serving",
+          "shape": "user",
+          "desktop": [
+            635,
+            515
+          ],
+          "mobile": [
+            300,
+            685
+          ],
+          "componentRef": null
+        },
+        {
+          "id": "cnes.control",
+          "label": "Control plane",
+          "shape": "controller",
+          "desktop": [
+            260,
+            515
+          ],
+          "mobile": [
+            95,
+            685
+          ],
+          "componentRef": null
+        }
+      ],
+      "edges": [
+        [
+          "cnes.local",
+          "cnes.edge",
+          "data"
+        ],
+        [
+          "cnes.edge",
+          "cnes.raw",
+          "data"
+        ],
+        [
+          "cnes.national",
+          "cnes.raw",
+          "data"
+        ],
+        [
+          "cnes.raw",
+          "cnes.normalize",
+          "data"
+        ],
+        [
+          "cnes.normalize",
+          "cnes.reconcile",
+          "data"
+        ],
+        [
+          "cnes.reconcile",
+          "cnes.serving",
+          "data"
+        ],
+        [
+          "cnes.serving",
+          "cnes.publish",
+          "publish"
+        ],
+        [
+          "cnes.publish",
+          "cnes.user",
+          "query"
+        ],
+        [
+          "cnes.control",
+          "cnes.edge",
+          "control"
+        ],
+        [
+          "cnes.control",
+          "cnes.publish",
+          "control"
+        ]
+      ],
+      "zones": []
+    }
+  }
+}

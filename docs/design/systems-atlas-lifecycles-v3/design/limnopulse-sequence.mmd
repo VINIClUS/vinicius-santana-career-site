@@ -1,0 +1,32 @@
+sequenceDiagram
+    participant Sensor
+    participant Ingest as MQTT + Telegraf
+    participant TS as InfluxDB
+    participant Eval as One-shot evaluator
+    participant DB as DynamoDB domain
+    participant Relay
+    participant Worker as Channel queue + worker
+    participant Provider as SES / Telegram
+    participant User
+    participant API as Authorized API
+    Sensor->>Ingest: Synthetic observations
+    Ingest->>TS: Context-enriched window
+    Eval->>TS: Query complete valid window
+    Eval->>DB: Atomic incident + outbox
+    Relay->>DB: Claim eligible outbox / Delivery
+    Relay->>Worker: Durable IDs per channel
+    Worker->>DB: Fenced Attempt / preflight
+    Worker->>Provider: Fake delivery call
+    Provider-->>Worker: Accepted / retryable / permanent / unknown
+    Worker->>DB: Durable result
+    Note over Provider,User: Provider acceptance is NOT a read receipt
+    Provider-->>User: Illustrative message on mock device
+    User->>API: Open incident, authenticated
+    API->>DB: Check membership and read incident
+    User->>API: Acknowledge expectedVersion
+    API->>DB: Record acknowledgment, not recovery
+    Eval->>TS: Later valid clean window
+    Eval->>DB: Recovery + correlated eligible outbox
+    Relay->>Worker: Recovery work
+    Worker->>Provider: Independent channel calls
+    Provider-->>User: Recovery message in demo

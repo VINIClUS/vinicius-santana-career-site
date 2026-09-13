@@ -5,6 +5,7 @@ import { Box3 } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { allPosters, districtIds, districts, sceneAssets, overview, workPosters } from '../src/content/scenes/index.ts';
 import { projectDefinitions, projectIds } from '../src/features/explorer/projects.ts';
+import { sceneIds } from '../scripts/assets/scenes.mjs';
 
 const publicRoot = new URL('../public/', import.meta.url);
 const generated = JSON.parse(await readFile(new URL('../src/content/scenes/generated.json', import.meta.url), 'utf8'));
@@ -30,15 +31,14 @@ function webpSize(bytes) {
   throw new Error('WebP dimensions not found');
 }
 
-test('scene contract contains only project districts and keeps detail assets available', () => {
+test('scene contract contains project districts and the infrastructure detail', () => {
   assert.deepEqual(projectIds, ['cnesdata', 'limnopulse', 'infrastructure']);
   assert.deepEqual(districtIds, projectIds);
   assert.deepEqual(Object.keys(districts).sort(), [...districtIds].sort());
   assert.deepEqual(Object.keys(overview.placements).sort(), [...districtIds].sort());
   assert.ok(workPosters['public-health']);
-  assert.equal(sceneAssets.length, 6);
+  assert.equal(sceneAssets.length, 5);
   assert.deepEqual(Object.keys(generated).sort(), [
-    'detail-cnesdata',
     'detail-infrastructure',
     'detail-infrastructure-failed',
     'district-cnesdata',
@@ -47,6 +47,7 @@ test('scene contract contains only project districts and keeps detail assets ava
     'hub',
     'overview',
   ]);
+  assert.deepEqual([...sceneIds, 'detail-infrastructure-failed'].sort(), Object.keys(generated).sort());
   assert.equal(new Set(sceneAssets.map(asset => asset.id)).size, sceneAssets.length);
   assert.equal(new Set(sceneAssets.map(asset => asset.model.src)).size, sceneAssets.length);
   for (const vector of [...Object.values(overview.placements), overview.hubPosition, overview.camera.position, overview.camera.target, overview.camera.up]) assert.ok(vector.length === 3 && vector.every(Number.isFinite));
@@ -69,7 +70,7 @@ test('scene contract contains only project districts and keeps detail assets ava
 
 test('every responsive fallback exists with its declared dimensions and alternative text', async () => {
   const images = allPosters.flatMap(poster => [poster.desktop, poster.mobile]);
-  assert.equal(images.length, 26);
+  assert.equal(images.length, 24);
   assert.equal(new Set(images.map(image => image.src)).size, images.length);
   for (const image of images) {
     assert.ok(image.alt.trim().length > 20, image.src);
@@ -89,7 +90,6 @@ for (const asset of sceneAssets) test(`${asset.id}: self-contained GLB loads wit
   for (const resource of [...(json.buffers ?? []), ...(json.images ?? [])]) assert.ok(!resource.uri || resource.uri.startsWith('data:'), 'No external dependencies');
   const gltf = await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength), '');
   let meshes = 0;
-  const componentIds = new Set();
   const simulationIds = new Set();
   const expectedDistrict = asset.id.startsWith('district-') ? asset.id.slice(9) : asset.id.startsWith('detail-') ? asset.id.slice(7) : undefined;
   let foundDistrict = false;
@@ -103,12 +103,6 @@ for (const asset of sceneAssets) test(`${asset.id}: self-contained GLB loads wit
     if (object.userData.componentId) {
       const project = projectDefinitions[expectedDistrict];
       assert.ok(project?.componentIds.includes(object.userData.componentId), `${asset.id}: invalid component ${object.userData.componentId}`);
-      // Semantic groups own identifiers; repeated child meshes may inherit them.
-      if (!object.isMesh) {
-        if (asset.id === 'detail-cnesdata') assert.ok(!componentIds.has(object.userData.componentId), 'Unique architectural group ID');
-        componentIds.add(object.userData.componentId);
-        if (asset.id === 'detail-cnesdata' && ['parquet-to-gold', 'kubernetes'].includes(object.userData.componentId)) assert.equal(object.userData.status, 'planned');
-      }
     }
     if (object.userData.simulationId && !object.isMesh) {
       assert.ok(!simulationIds.has(object.userData.simulationId), 'Unique simulation group ID');
@@ -132,7 +126,6 @@ for (const asset of sceneAssets) test(`${asset.id}: self-contained GLB loads wit
   assert.ok(Object.keys(asset.model.anchors).length > 0);
   assert.deepEqual(asset.model.anchors.base, [0, 0, 0]);
   for (const anchor of Object.values(asset.model.anchors)) assert.ok(anchor.length === 3 && anchor.every(Number.isFinite));
-  if (asset.id === 'detail-cnesdata') assert.deepEqual([...componentIds].sort(), [...projectDefinitions.cnesdata.componentIds].sort());
   if (asset.id === 'detail-infrastructure') {
     assert.deepEqual([...simulationIds].sort(), ['node-01', 'node-02', 'node-03', 'shared-layer', 'workload']);
     const workload = asset.model.anchors.workload;

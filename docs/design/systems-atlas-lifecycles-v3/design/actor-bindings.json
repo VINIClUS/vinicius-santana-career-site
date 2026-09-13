@@ -1,0 +1,738 @@
+{
+  "version": "3.0",
+  "actors": [
+    {
+      "id": "infra.node-01",
+      "label": "Node 01",
+      "assetId": "server",
+      "legacyGroup": "infra.node-01",
+      "role": "worker-node",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "infra.node-02",
+      "label": "Node 02",
+      "assetId": "server",
+      "legacyGroup": "infra.node-02",
+      "role": "worker-node",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "infra.node-03",
+      "label": "Node 03",
+      "assetId": "server",
+      "legacyGroup": "infra.node-03",
+      "role": "worker-node",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "infra.controller",
+      "label": "Control plane",
+      "assetId": "control",
+      "legacyGroup": "infra.controller",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "infra.storage",
+      "label": "Durable storage",
+      "assetId": "storage",
+      "legacyGroup": "infra.storage",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "infra.workload",
+      "label": "Workload",
+      "assetId": "vm",
+      "legacyGroup": "infra.workload",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "infra.client",
+      "label": "Client",
+      "assetId": "client",
+      "legacyGroup": "infra.client",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "scale.request",
+      "label": "Scaling policy",
+      "assetId": "load",
+      "legacyGroup": "scale.request",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "scale.capacity",
+      "label": "Physical capacity",
+      "assetId": "capacity",
+      "legacyGroup": "scale.capacity",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "scale.provision",
+      "label": "Provision & configure",
+      "assetId": "provision",
+      "legacyGroup": "scale.provision",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "scale.service",
+      "label": "Service replicas",
+      "assetId": "service",
+      "legacyGroup": "scale.service",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "scale.user",
+      "label": "Client",
+      "assetId": "client",
+      "legacyGroup": "scale.user",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "scale.worker-01",
+      "label": "Worker 01",
+      "assetId": "server",
+      "legacyGroup": "scale.worker-01",
+      "role": "provisioned-worker",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "scale.worker-02",
+      "label": "Worker 02",
+      "assetId": "server",
+      "legacyGroup": "scale.worker-02",
+      "role": "provisioned-worker",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "scale.worker-03",
+      "label": "Worker 03",
+      "assetId": "server",
+      "legacyGroup": "scale.worker-03",
+      "role": "provisioned-worker",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "limno.sensor",
+      "label": "Sensor",
+      "assetId": "sensor",
+      "legacyGroup": "limno.sensor",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "limno.mqtt",
+      "label": "MQTT broker",
+      "assetId": "mqtt",
+      "legacyGroup": "limno.ingestion",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "limno.telegraf",
+      "label": "Telegraf",
+      "assetId": "telegraf",
+      "legacyGroup": "limno.ingestion",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "limno.timeseries",
+      "label": "InfluxDB",
+      "assetId": "influxdb",
+      "legacyGroup": "limno.timeseries",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "limno.scheduler",
+      "label": "External scheduler",
+      "assetId": "scheduler",
+      "legacyGroup": "limno.evaluator",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "limno.evaluator",
+      "label": "Alert evaluator",
+      "assetId": "evaluator",
+      "legacyGroup": "limno.evaluator",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "limno.incident",
+      "label": "Incident",
+      "assetId": "incident",
+      "legacyGroup": "limno.domain",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "limno.outbox",
+      "label": "Transactional outbox",
+      "assetId": "outbox",
+      "legacyGroup": "limno.domain",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "limno.dynamodb",
+      "label": "DynamoDB",
+      "assetId": "aws-dynamodb",
+      "legacyGroup": "limno.domain",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "limno.relay",
+      "label": "Notification relay",
+      "assetId": "relay",
+      "legacyGroup": "limno.delivery",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "limno.delivery-record",
+      "label": "Delivery / Attempt",
+      "assetId": "manifest",
+      "legacyGroup": "limno.delivery",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "limno.sqs-email",
+      "label": "SQS · email",
+      "assetId": "aws-sqs",
+      "legacyGroup": "limno.delivery",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "limno.sqs-telegram",
+      "label": "SQS · Telegram",
+      "assetId": "aws-sqs",
+      "legacyGroup": "limno.delivery",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "limno.worker-email",
+      "label": "Email worker",
+      "assetId": "worker",
+      "legacyGroup": "limno.delivery",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "limno.worker-telegram",
+      "label": "Telegram worker",
+      "assetId": "worker",
+      "legacyGroup": "limno.delivery",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "limno.redis",
+      "label": "Redis · rate limit",
+      "assetId": "limiter",
+      "legacyGroup": "limno.delivery",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "limno.ses",
+      "label": "Amazon SES",
+      "assetId": "aws-ses",
+      "legacyGroup": "limno.provider",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "limno.telegram",
+      "label": "Telegram Bot API",
+      "assetId": "telegram",
+      "legacyGroup": "limno.provider",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "limno.user",
+      "label": "Recipient",
+      "assetId": "phone",
+      "legacyGroup": "limno.user",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "limno.api",
+      "label": "Authorized API",
+      "assetId": "api",
+      "legacyGroup": "limno.api",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "cnes.local",
+      "label": "CNES local / Firebird",
+      "assetId": "source-db",
+      "legacyGroup": "cnes.local",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "cnes.edge",
+      "label": "Edge Agent",
+      "assetId": "adapter",
+      "legacyGroup": "cnes.edge",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "cnes.national",
+      "label": "DATASUS PF",
+      "assetId": "national",
+      "legacyGroup": "cnes.national",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "cnes.national-adapter",
+      "label": "National adapter",
+      "assetId": "adapter",
+      "legacyGroup": "cnes.national",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "cnes.parquet",
+      "label": "data.parquet",
+      "assetId": "parquet",
+      "legacyGroup": "cnes.raw",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "cnes.manifest",
+      "label": "manifest.json",
+      "assetId": "manifest",
+      "legacyGroup": "cnes.raw",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "cnes.raw",
+      "label": "Amazon S3 · raw",
+      "assetId": "aws-s3",
+      "legacyGroup": "cnes.raw",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "cnes.control",
+      "label": "Control plane · DynamoDB",
+      "assetId": "aws-dynamodb",
+      "legacyGroup": "cnes.control",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "cnes.normalize",
+      "label": "NormalizeSource",
+      "assetId": "normalize",
+      "legacyGroup": "cnes.normalize",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "cnes.reconcile",
+      "label": "ReconcileCompetencia",
+      "assetId": "reconcile",
+      "legacyGroup": "cnes.reconcile",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "cnes.serving",
+      "label": "MaterializeServing",
+      "assetId": "serving",
+      "legacyGroup": "cnes.serving",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "cnes.version",
+      "label": "DatasetVersion",
+      "assetId": "version",
+      "legacyGroup": "cnes.publish",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "cnes.pointer",
+      "label": "CURRENT",
+      "assetId": "pointer",
+      "legacyGroup": "cnes.publish",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "cnes.api",
+      "label": "Serving access",
+      "assetId": "api",
+      "legacyGroup": "cnes.user",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    },
+    {
+      "id": "cnes.user",
+      "label": "Dashboard / user",
+      "assetId": "client",
+      "legacyGroup": "cnes.user",
+      "role": "service",
+      "componentRef": null,
+      "profiles": [
+        "all"
+      ],
+      "factAuthority": "case-studies.yaml after source check; icon does not imply implemented status"
+    }
+  ],
+  "aliases": {
+    "cnes.control": [
+      "cnes.control"
+    ],
+    "cnes.edge": [
+      "cnes.edge"
+    ],
+    "cnes.local": [
+      "cnes.local"
+    ],
+    "cnes.national": [
+      "cnes.national",
+      "cnes.national-adapter"
+    ],
+    "cnes.normalize": [
+      "cnes.normalize"
+    ],
+    "cnes.publish": [
+      "cnes.version",
+      "cnes.pointer"
+    ],
+    "cnes.raw": [
+      "cnes.parquet",
+      "cnes.manifest",
+      "cnes.raw"
+    ],
+    "cnes.reconcile": [
+      "cnes.reconcile"
+    ],
+    "cnes.serving": [
+      "cnes.serving"
+    ],
+    "cnes.user": [
+      "cnes.api",
+      "cnes.user"
+    ],
+    "infra.client": [
+      "infra.client"
+    ],
+    "infra.controller": [
+      "infra.controller"
+    ],
+    "infra.node-01": [
+      "infra.node-01"
+    ],
+    "infra.node-02": [
+      "infra.node-02"
+    ],
+    "infra.node-03": [
+      "infra.node-03"
+    ],
+    "infra.storage": [
+      "infra.storage"
+    ],
+    "infra.workload": [
+      "infra.workload"
+    ],
+    "limno.api": [
+      "limno.api"
+    ],
+    "limno.delivery": [
+      "limno.relay",
+      "limno.delivery-record",
+      "limno.sqs-email",
+      "limno.sqs-telegram",
+      "limno.worker-email",
+      "limno.worker-telegram",
+      "limno.redis"
+    ],
+    "limno.domain": [
+      "limno.incident",
+      "limno.outbox",
+      "limno.dynamodb"
+    ],
+    "limno.evaluator": [
+      "limno.scheduler",
+      "limno.evaluator"
+    ],
+    "limno.ingestion": [
+      "limno.mqtt",
+      "limno.telegraf"
+    ],
+    "limno.provider": [
+      "limno.ses",
+      "limno.telegram"
+    ],
+    "limno.sensor": [
+      "limno.sensor"
+    ],
+    "limno.timeseries": [
+      "limno.timeseries"
+    ],
+    "limno.user": [
+      "limno.user"
+    ],
+    "scale.capacity": [
+      "scale.capacity"
+    ],
+    "scale.provision": [
+      "scale.provision"
+    ],
+    "scale.request": [
+      "scale.request"
+    ],
+    "scale.service": [
+      "scale.service"
+    ],
+    "scale.user": [
+      "scale.user"
+    ],
+    "scale.worker-01": [
+      "scale.worker-01"
+    ],
+    "scale.worker-02": [
+      "scale.worker-02"
+    ],
+    "scale.worker-03": [
+      "scale.worker-03"
+    ]
+  },
+  "profileOverrides": {
+    "cnesdata:local": {
+      "cnes.raw": {
+        "assetId": "filesystem",
+        "label": "Local filesystem · raw"
+      },
+      "cnes.control": {
+        "assetId": "sqlite",
+        "label": "Control plane · SQLite"
+      }
+    }
+  },
+  "rule": "Aliases preserve V2 references. A focused alias must expand into sequential service subbeats, never one merged generic service tile."
+}

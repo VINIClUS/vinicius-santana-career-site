@@ -1,0 +1,210 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/systems-atlas/scenario-v2.schema.json",
+  "title": "Systems Atlas lifecycle reference scenario V2",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "id",
+    "project",
+    "scene",
+    "title",
+    "profile",
+    "evidenceStatus",
+    "requirements",
+    "sources",
+    "assumptions",
+    "checkpoints"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "2.0"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]+$"
+    },
+    "project": {
+      "enum": [
+        "infrastructure",
+        "limnopulse",
+        "cnesdata"
+      ]
+    },
+    "scene": {
+      "enum": [
+        "infrastructure",
+        "scaling",
+        "limnopulse",
+        "cnesdata"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "subtitle": {
+      "type": "string"
+    },
+    "profile": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidenceStatus": {
+      "enum": [
+        "illustrative",
+        "documented",
+        "planned",
+        "implemented"
+      ]
+    },
+    "requirements": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "checkpoints": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "title",
+          "caption",
+          "command",
+          "holdMs",
+          "focus",
+          "evidenceStatus",
+          "expected"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "caption": {
+            "type": "string",
+            "minLength": 1
+          },
+          "command": {
+            "type": "object",
+            "required": [
+              "type"
+            ],
+            "properties": {
+              "type": {
+                "enum": [
+                  "ACCEPT_NATIONAL_RAW",
+                  "ACCEPT_RAW_MANIFEST",
+                  "ACKNOWLEDGE",
+                  "ADVANCE_CLOCK",
+                  "ATTEMPT_DELIVERY",
+                  "ATTEMPT_RECOVERY_CHANNELS",
+                  "AUTHORIZE_AND_READ",
+                  "CLAIM_JOB",
+                  "CONFIGURE_RULE",
+                  "CONFIRM_FENCE",
+                  "CREATE_DATASET_VERSION",
+                  "DRAIN_COMPLETE",
+                  "DRAIN_REPLICAS",
+                  "ENABLE_PREFERENCE",
+                  "EVALUATE",
+                  "EVALUATE_RECOVERY",
+                  "EVALUATE_SCALE_POLICY",
+                  "EXTRACT_LOCAL",
+                  "EXTRACT_NATIONAL_PF",
+                  "FAIL_NODE",
+                  "INGEST_CLEAN_WINDOW",
+                  "INGEST_WINDOW",
+                  "INIT",
+                  "MATERIALIZE_SERVING",
+                  "NODE_READY",
+                  "NORMALIZE_SOURCES",
+                  "OPEN_INCIDENT",
+                  "PACKAGE_PARQUET",
+                  "PROVIDER_RECOVERY_ACCEPTED",
+                  "PROVIDER_RESULT",
+                  "PROVISION_WORKERS",
+                  "PUBLISH_CURRENT",
+                  "PUBLISH_READING",
+                  "PUT_RAW_OBJECT",
+                  "RECONCILE",
+                  "RECONCILE_COMPETENCIA",
+                  "RELAY",
+                  "RELEASE_WORKERS",
+                  "REPLAY_RAW_OBJECT",
+                  "REPLICAS_HEALTHY",
+                  "REQUEST_EXTRACTION",
+                  "RESERVE_WORKERS",
+                  "RESTORE_NODE",
+                  "SET_LOAD",
+                  "SET_STORAGE",
+                  "SHOW_MESSAGE",
+                  "SHOW_SERVING",
+                  "START_REPLICAS",
+                  "START_RUN",
+                  "STOP_REPLICAS",
+                  "VERIFY_ARTIFACTS",
+                  "VERIFY_BINDING",
+                  "WORKERS_BOOTED",
+                  "WORKERS_READY",
+                  "WORKLOAD_HEALTHY"
+                ]
+              }
+            },
+            "additionalProperties": true
+          },
+          "holdMs": {
+            "type": "integer",
+            "minimum": 250,
+            "maximum": 20000
+          },
+          "focus": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 3,
+            "uniqueItems": true,
+            "items": {
+              "type": "string"
+            }
+          },
+          "evidenceStatus": {
+            "enum": [
+              "illustrative",
+              "documented",
+              "planned",
+              "implemented",
+              "historical"
+            ]
+          },
+          "expected": {
+            "type": "object",
+            "minProperties": 3
+          }
+        }
+      }
+    }
+  }
+}

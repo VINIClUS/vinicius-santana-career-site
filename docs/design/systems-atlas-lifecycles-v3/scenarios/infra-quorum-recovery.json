@@ -1,0 +1,549 @@
+{
+  "schemaVersion": "2.0",
+  "id": "infra-quorum-recovery",
+  "project": "infrastructure",
+  "scene": "infrastructure",
+  "title": "Voltar não basta: quorum e storage.",
+  "subtitle": "Perfil de três votantes; nenhum bypass automático.",
+  "profile": "three-voters",
+  "evidenceStatus": "illustrative",
+  "requirements": [
+    "INF-REC-01",
+    "INF-I2",
+    "INF-I4",
+    "INF-I5"
+  ],
+  "sources": [
+    "T1"
+  ],
+  "assumptions": [
+    "Maioria fixa de dois votos entre três nós.",
+    "Disponibilidade de dados é independente do quorum.",
+    "Modelo educativo inspirado em HA, não emulador de Corosync/Ceph."
+  ],
+  "checkpoints": [
+    {
+      "id": "infra-quorum-recovery-00",
+      "title": "Três votantes",
+      "caption": "Três nós aptos; 3/3 votos e dados disponíveis.",
+      "command": {
+        "type": "INIT"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "infra.controller",
+        "infra.node-02"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "profile": "three-voters",
+        "nodes": {
+          "node-01": "ready",
+          "node-02": "ready",
+          "node-03": "ready"
+        },
+        "desired": "running",
+        "workloadStatus": "running",
+        "nodeId": "node-02",
+        "instanceGeneration": 1,
+        "unsafeOwner": null,
+        "storageReady": true,
+        "quorum": true,
+        "controllerAvailable": true,
+        "blockedReasons": [],
+        "clientAvailable": true,
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "infra-quorum-recovery-01",
+      "title": "Primeira falha",
+      "caption": "2/3 mantém quorum; excluir o antigo proprietário antes de reiniciar.",
+      "command": {
+        "type": "FAIL_NODE",
+        "nodeId": "node-02"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "infra.node-02",
+        "infra.controller"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "profile": "three-voters",
+        "nodes": {
+          "node-01": "ready",
+          "node-02": "offline",
+          "node-03": "ready"
+        },
+        "desired": "running",
+        "workloadStatus": "interrupted",
+        "nodeId": null,
+        "instanceGeneration": 1,
+        "unsafeOwner": "node-02",
+        "storageReady": true,
+        "quorum": true,
+        "controllerAvailable": true,
+        "blockedReasons": [
+          "FENCING_REQUIRED"
+        ],
+        "clientAvailable": false,
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "infra-quorum-recovery-02",
+      "title": "Fence confirmado",
+      "caption": "Quorum e dados permitem procurar novo destino.",
+      "command": {
+        "type": "CONFIRM_FENCE",
+        "nodeId": "node-02"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "infra.controller"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "profile": "three-voters",
+        "nodes": {
+          "node-01": "ready",
+          "node-02": "offline",
+          "node-03": "ready"
+        },
+        "desired": "running",
+        "workloadStatus": "pending",
+        "nodeId": null,
+        "instanceGeneration": 1,
+        "unsafeOwner": null,
+        "storageReady": true,
+        "quorum": true,
+        "controllerAvailable": true,
+        "blockedReasons": [],
+        "clientAvailable": false,
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "infra-quorum-recovery-03",
+      "title": "Reiniciando no node-01",
+      "caption": "Destino pronto; esperar a saúde da nova instância.",
+      "command": {
+        "type": "RECONCILE"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "infra.node-01",
+        "infra.workload"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "profile": "three-voters",
+        "nodes": {
+          "node-01": "ready",
+          "node-02": "offline",
+          "node-03": "ready"
+        },
+        "desired": "running",
+        "workloadStatus": "starting",
+        "nodeId": "node-01",
+        "instanceGeneration": 2,
+        "unsafeOwner": null,
+        "storageReady": true,
+        "quorum": true,
+        "controllerAvailable": true,
+        "blockedReasons": [],
+        "clientAvailable": false,
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "infra-quorum-recovery-04",
+      "title": "Operação em 2/3",
+      "caption": "Serviço volta enquanto as condições permanecem válidas.",
+      "command": {
+        "type": "WORKLOAD_HEALTHY",
+        "generation": 2
+      },
+      "holdMs": 2600,
+      "focus": [
+        "infra.client"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "profile": "three-voters",
+        "nodes": {
+          "node-01": "ready",
+          "node-02": "offline",
+          "node-03": "ready"
+        },
+        "desired": "running",
+        "workloadStatus": "running",
+        "nodeId": "node-01",
+        "instanceGeneration": 2,
+        "unsafeOwner": null,
+        "storageReady": true,
+        "quorum": true,
+        "controllerAvailable": true,
+        "blockedReasons": [],
+        "clientAvailable": true,
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "infra-quorum-recovery-05",
+      "title": "Perda de maioria",
+      "caption": "Só 1/3 resta. Novo start fica bloqueado, mesmo havendo um host.",
+      "command": {
+        "type": "FAIL_NODE",
+        "nodeId": "node-01"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "infra.controller",
+        "infra.node-03"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "profile": "three-voters",
+        "nodes": {
+          "node-01": "offline",
+          "node-02": "offline",
+          "node-03": "ready"
+        },
+        "desired": "running",
+        "workloadStatus": "interrupted",
+        "nodeId": null,
+        "instanceGeneration": 2,
+        "unsafeOwner": "node-01",
+        "storageReady": true,
+        "quorum": false,
+        "controllerAvailable": false,
+        "blockedReasons": [
+          "NO_QUORUM",
+          "FENCING_REQUIRED"
+        ],
+        "clientAvailable": false,
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "infra-quorum-recovery-06",
+      "title": "Fence não resolve quorum",
+      "caption": "Excluir o proprietário anterior não cria votos.",
+      "command": {
+        "type": "CONFIRM_FENCE",
+        "nodeId": "node-01"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "infra.controller"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "profile": "three-voters",
+        "nodes": {
+          "node-01": "offline",
+          "node-02": "offline",
+          "node-03": "ready"
+        },
+        "desired": "running",
+        "workloadStatus": "pending",
+        "nodeId": null,
+        "instanceGeneration": 2,
+        "unsafeOwner": null,
+        "storageReady": true,
+        "quorum": false,
+        "controllerAvailable": false,
+        "blockedReasons": [
+          "NO_QUORUM"
+        ],
+        "clientAvailable": false,
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "infra-quorum-recovery-07",
+      "title": "Todos fora do ar",
+      "caption": "Nenhuma capacidade de compute ou quorum. Dados ainda não estão disponíveis.",
+      "command": {
+        "type": "FAIL_NODE",
+        "nodeId": "node-03"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "infra.storage",
+        "infra.workload"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "profile": "three-voters",
+        "nodes": {
+          "node-01": "offline",
+          "node-02": "offline",
+          "node-03": "offline"
+        },
+        "desired": "running",
+        "workloadStatus": "pending",
+        "nodeId": null,
+        "instanceGeneration": 2,
+        "unsafeOwner": null,
+        "storageReady": false,
+        "quorum": false,
+        "controllerAvailable": false,
+        "blockedReasons": [
+          "NO_QUORUM",
+          "STORAGE_UNAVAILABLE",
+          "NO_CAPACITY"
+        ],
+        "clientAvailable": false,
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "infra-quorum-recovery-08",
+      "title": "Primeiro retorno em boot",
+      "caption": "Ainda não existe um votante utilizável.",
+      "command": {
+        "type": "RESTORE_NODE",
+        "nodeId": "node-02"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "infra.node-02"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "profile": "three-voters",
+        "nodes": {
+          "node-01": "offline",
+          "node-02": "booting",
+          "node-03": "offline"
+        },
+        "desired": "running",
+        "workloadStatus": "pending",
+        "nodeId": null,
+        "instanceGeneration": 2,
+        "unsafeOwner": null,
+        "storageReady": false,
+        "quorum": false,
+        "controllerAvailable": false,
+        "blockedReasons": [
+          "NO_QUORUM",
+          "STORAGE_UNAVAILABLE",
+          "NO_CAPACITY"
+        ],
+        "clientAvailable": false,
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "infra-quorum-recovery-09",
+      "title": "Somente 1/3 pronto",
+      "caption": "Continua bloqueado. O demo não muda os votos esperados.",
+      "command": {
+        "type": "NODE_READY",
+        "nodeId": "node-02"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "infra.controller",
+        "infra.node-02"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "profile": "three-voters",
+        "nodes": {
+          "node-01": "offline",
+          "node-02": "ready",
+          "node-03": "offline"
+        },
+        "desired": "running",
+        "workloadStatus": "pending",
+        "nodeId": null,
+        "instanceGeneration": 2,
+        "unsafeOwner": null,
+        "storageReady": false,
+        "quorum": false,
+        "controllerAvailable": false,
+        "blockedReasons": [
+          "NO_QUORUM",
+          "STORAGE_UNAVAILABLE"
+        ],
+        "clientAvailable": false,
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "infra-quorum-recovery-10",
+      "title": "Segundo nó em boot",
+      "caption": "Preparar o segundo membro ainda não restaura quorum.",
+      "command": {
+        "type": "RESTORE_NODE",
+        "nodeId": "node-01"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "infra.node-01"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "profile": "three-voters",
+        "nodes": {
+          "node-01": "booting",
+          "node-02": "ready",
+          "node-03": "offline"
+        },
+        "desired": "running",
+        "workloadStatus": "pending",
+        "nodeId": null,
+        "instanceGeneration": 2,
+        "unsafeOwner": null,
+        "storageReady": false,
+        "quorum": false,
+        "controllerAvailable": false,
+        "blockedReasons": [
+          "NO_QUORUM",
+          "STORAGE_UNAVAILABLE"
+        ],
+        "clientAvailable": false,
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "infra-quorum-recovery-11",
+      "title": "Quorum restaurado",
+      "caption": "2/3 está pronto; o storage ainda precisa ficar utilizável.",
+      "command": {
+        "type": "NODE_READY",
+        "nodeId": "node-01"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "infra.controller",
+        "infra.storage"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "profile": "three-voters",
+        "nodes": {
+          "node-01": "ready",
+          "node-02": "ready",
+          "node-03": "offline"
+        },
+        "desired": "running",
+        "workloadStatus": "pending",
+        "nodeId": null,
+        "instanceGeneration": 2,
+        "unsafeOwner": null,
+        "storageReady": false,
+        "quorum": true,
+        "controllerAvailable": true,
+        "blockedReasons": [
+          "STORAGE_UNAVAILABLE"
+        ],
+        "clientAvailable": false,
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "infra-quorum-recovery-12",
+      "title": "Dados disponíveis",
+      "caption": "Agora todas as dependências de start estão satisfeitas.",
+      "command": {
+        "type": "SET_STORAGE",
+        "ready": true
+      },
+      "holdMs": 2600,
+      "focus": [
+        "infra.storage"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "profile": "three-voters",
+        "nodes": {
+          "node-01": "ready",
+          "node-02": "ready",
+          "node-03": "offline"
+        },
+        "desired": "running",
+        "workloadStatus": "pending",
+        "nodeId": null,
+        "instanceGeneration": 2,
+        "unsafeOwner": null,
+        "storageReady": true,
+        "quorum": true,
+        "controllerAvailable": true,
+        "blockedReasons": [],
+        "clientAvailable": false,
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "infra-quorum-recovery-13",
+      "title": "Autostart autorizado",
+      "caption": "Uma instância nova é iniciada no primeiro destino elegível.",
+      "command": {
+        "type": "RECONCILE"
+      },
+      "holdMs": 2600,
+      "focus": [
+        "infra.node-01",
+        "infra.workload"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "profile": "three-voters",
+        "nodes": {
+          "node-01": "ready",
+          "node-02": "ready",
+          "node-03": "offline"
+        },
+        "desired": "running",
+        "workloadStatus": "starting",
+        "nodeId": "node-01",
+        "instanceGeneration": 3,
+        "unsafeOwner": null,
+        "storageReady": true,
+        "quorum": true,
+        "controllerAvailable": true,
+        "blockedReasons": [],
+        "clientAvailable": false,
+        "logicalTick": 0
+      }
+    },
+    {
+      "id": "infra-quorum-recovery-14",
+      "title": "Recuperação segura",
+      "caption": "Serviço saudável após retorno de quorum, dados e compute.",
+      "command": {
+        "type": "WORKLOAD_HEALTHY",
+        "generation": 3
+      },
+      "holdMs": 2600,
+      "focus": [
+        "infra.client"
+      ],
+      "evidenceStatus": "illustrative",
+      "expected": {
+        "profile": "three-voters",
+        "nodes": {
+          "node-01": "ready",
+          "node-02": "ready",
+          "node-03": "offline"
+        },
+        "desired": "running",
+        "workloadStatus": "running",
+        "nodeId": "node-01",
+        "instanceGeneration": 3,
+        "unsafeOwner": null,
+        "storageReady": true,
+        "quorum": true,
+        "controllerAvailable": true,
+        "blockedReasons": [],
+        "clientAvailable": true,
+        "logicalTick": 0
+      }
+    }
+  ]
+}

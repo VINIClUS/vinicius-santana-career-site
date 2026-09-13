@@ -10,6 +10,8 @@ for (const width of [390, 1440]) {
     const modelRequests: string[] = [];
     page.on('request', request => { if (/\.(glb|gltf|ktx2)(?:\?|$)/.test(request.url())) modelRequests.push(request.url()); });
     await page.goto('/explore/infrastructure/');
+    await page.getByText('Original failure primitive and transcript', { exact: true }).click();
+    await page.getByText('Architecture and component details', { exact: true }).click();
     const simulation = page.locator('[data-infrastructure-simulation]');
     const poster = simulation.locator('[data-infra-poster]');
     const crop = width < 641 ? 'mobile' : 'desktop';
@@ -26,7 +28,7 @@ for (const width of [390, 1440]) {
     await expect.poll(() => poster.evaluate((img: HTMLImageElement) => img.currentSrc)).toContain(`detail-infrastructure-failed-${crop}.webp`);
     await poster.evaluate((img: HTMLImageElement) => img.decode());
     await expect(simulation.getByRole('button', { name: 'Fail node-02', exact: true })).toBeDisabled();
-    await page.locator('[data-component-link]').first().tap();
+    await page.locator('[data-component-diagram]').first().tap();
     await expect(simulation.locator('[data-infra-workload]')).toContainText('node-01');
     await simulation.scrollIntoViewIfNeeded();
     await page.screenshot({ path: testInfo.outputPath(`infrastructure-failed-${width}.png`), fullPage: true });
@@ -45,6 +47,8 @@ for (const width of [390, 1440]) {
     const context = await browser.newContext({ baseURL, viewport: { width, height: 900 }, javaScriptEnabled: false });
     const page = await context.newPage();
     await page.goto('/explore/infrastructure/');
+    await page.getByText('Original failure primitive and transcript', { exact: true }).click();
+    await page.getByText('Architecture and component details', { exact: true }).click();
     const simulation = page.locator('[data-infrastructure-simulation]');
     await expect(simulation.getByRole('button', { name: 'Fail node-02', exact: true })).toBeDisabled();
     await expect(simulation.getByRole('button', { name: 'Reset simulation', exact: true })).toBeDisabled();

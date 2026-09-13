@@ -11,7 +11,7 @@ interface Props {
 }
 const { caseStudy } = Astro.props;
 const canonicalPath = `/work/${caseStudy.id}/`;
-const poster = caseStudy.id === 'cnesdata' ? details.cnesdata.poster
+const poster = caseStudy.id === 'cnesdata' ? undefined
   : caseStudy.id === 'infrastructure' ? details.infrastructure.poster : districts.limnopulse.poster;
 const statusLabels = {
   implemented: 'Implemented', documented: 'Documented', planned: 'Planned',
@@ -43,10 +43,10 @@ const sections = ['Overview', 'Architecture', 'Engineering', 'Results'];
       {caseStudy.id === 'cnesdata' && <a href="#simulation">Simulation</a>}
     </nav>
 
-    <figure class="visual-stage">
+    {poster && <figure class="visual-stage">
       <ResponsivePoster poster={poster} priority />
       <figcaption><span>{caseStudy.title} / System view</span><span>Illustrative architecture</span></figcaption>
-    </figure>
+    </figure>}
 
     <div class="case-body">
       <section id="overview" tabindex="-1" class="chapter" aria-labelledby="overview-heading">

@@ -1,11 +1,13 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { readFile, stat } from 'node:fs/promises';
+import { readFile, readdir, stat } from 'node:fs/promises';
 import path from 'node:path';
 
 const root = new URL('../', import.meta.url);
 const fromRoot = (...segments) => new URL(segments.join('/'), root);
 const expectedResumeHash = 'b2cca4eac1313462b8ff44eb0c42a3143e5bd1a3ac02a2d756b1b38bc16b769e';
+const expectedOrigin = 'https://vinisantana.com';
+const analyticsMeasurementId = 'G-2DY87DZC90';
 
 async function assertFile(relativePath) {
   const details = await stat(fromRoot(relativePath));
@@ -15,6 +17,20 @@ async function assertFile(relativePath) {
 async function readBuiltPage(relativePath) {
   await assertFile(relativePath);
   return readFile(fromRoot(relativePath), 'utf8');
+}
+
+async function readBuiltHtmlPages(directory = fromRoot('dist/')) {
+  const entries = await readdir(directory, { withFileTypes: true });
+  const pages = await Promise.all(
+    entries.map(async (entry) => {
+      const entryUrl = new URL(`${entry.name}${entry.isDirectory() ? '/' : ''}`, directory);
+      if (entry.isDirectory()) return readBuiltHtmlPages(entryUrl);
+      if (!entry.isFile() || !entry.name.endsWith('.html')) return [];
+      return [[entryUrl.pathname, await readFile(entryUrl, 'utf8')]];
+    })
+  );
+
+  return pages.flat();
 }
 
 function assertEditorialShell(html, pageName, explorer = false) {
@@ -43,6 +59,16 @@ function assertMetadata(html, route, origin) {
   const structuredData = JSON.parse(structuredDataMatch[1]);
   assert.equal(structuredData.url, origin, `${route} structured data must use the configured origin`);
   assert.equal(structuredData.image, new URL('/assets/images/og-image.jpg', origin).href, `${route} structured data image must use the configured origin`);
+}
+
+function assertAnalytics(html, pageName) {
+  const scriptUrl = `https://www.googletagmanager.com/gtag/js?id=${analyticsMeasurementId}`;
+  const scriptLoads = html.match(new RegExp(`<script\\b[^>]*\\bsrc="${escapeRegExp(scriptUrl)}"[^>]*>`, 'gi')) ?? [];
+  const configurations = html.match(new RegExp(`gtag\\(\\s*['"]config['"]\\s*,\\s*['"]${analyticsMeasurementId}['"]\\s*\\)`, 'g')) ?? [];
+
+  assert.equal(scriptLoads.length, 1, `${pageName} must load the GA4 script exactly once`);
+  assert.match(scriptLoads[0], /\basync(?:="")?(?:\s|>)/i, `${pageName} must load the GA4 script asynchronously`);
+  assert.equal(configurations.length, 1, `${pageName} must configure the GA4 measurement ID exactly once`);
 }
 
 const html = await readFile(fromRoot('dist/index.html'), 'utf8');
@@ -79,6 +105,16 @@ const homeSectionOrder = ['hero-title', 'projects', 'contact', 'about', 'experie
 });
 assert.deepEqual(homeSectionOrder, [...homeSectionOrder].sort((left, right) => left - right), 'home must use recruiter-first section order');
 
+const homeAbout = html.match(/<section[^>]*id="about"[\s\S]*?<\/section>/i)?.[0];
+assert.ok(homeAbout, 'home must render the About section');
+assert.match(homeAbout, /I build backend systems for data-heavy, operational work\./);
+assert.match(
+  homeAbout,
+  /I’m Vinicius Santana, a Python backend engineer in Brazil\. I build FastAPI and PostgreSQL services, validation workflows and automation for municipal public-health operations—work that validates 21,000\+ records each month and reduced a municipality-wide reconciliation cycle from 240\+ person-hours to about four\./
+);
+assert.equal((homeAbout.match(/class="role-card"/g) || []).length, 2, 'home About must render exactly two role cards');
+assert.doesNotMatch(homeAbout, /Platform \/ DevOps/, 'home About must not render the removed Platform / DevOps card');
+
 const editorialPages = {
   work: await readBuiltPage('dist/work/index.html'),
   about: await readBuiltPage('dist/about/index.html'),
@@ -89,6 +125,8 @@ const editorialPages = {
 
 const publicCname = await readFile(fromRoot('public/CNAME'));
 const origin = `https://${publicCname.toString().trim()}`;
+assert.equal(publicCname.toString().trim(), 'vinisantana.com', 'CNAME must use the root domain');
+assert.equal(origin, expectedOrigin, 'build metadata must use the root domain origin');
 const routePages = new Map([
   ['/', html],
   ['/work/', editorialPages.work],
@@ -112,6 +150,22 @@ assert.equal((editorialPages.work.match(/<article class="project-card visual-wor
 assert.match(editorialPages.work, /Health Systems/);
 assert.match(editorialPages.work, /href="\/#experience"[^>]*>View experience/);
 assert.match(editorialPages.about, /alt="Professional portrait of Vinicius Santana"/);
+assert.match(editorialPages.about, /<h1[^>]*>Python backend engineering grounded in operational reality\.<\/h1>/i);
+assert.match(
+  editorialPages.about,
+  /I design and operate data-intensive APIs, validation services and automation for municipal public-health systems\. My work combines FastAPI, SQLAlchemy and PostgreSQL with tenant-aware authorization, automated tests and monitored Linux deployments\./
+);
+assert.match(editorialPages.about, /Make contracts explicit, protect boundaries and design for recovery\./);
+assert.match(
+  editorialPages.about,
+  /I work from the operational problem backward: define typed contracts and exception paths, protect tenant boundaries, test deterministic rules, and keep deployment, observability, backup and rollback procedures close to the code\. The result is software that teams can inspect, recover and maintain\./
+);
+assert.match(
+  editorialPages.about,
+  /<meta name="description" content="About Vinicius Santana, a Python backend engineer building data-intensive APIs, validation services and automation for municipal public-health systems\.">/i
+);
+assert.equal((editorialPages.about.match(/class="role-card"/g) || []).length, 2, 'About must render exactly two role cards');
+assert.doesNotMatch(editorialPages.about, /Platform \/ DevOps/, 'About must not render the removed Platform / DevOps card');
 
 const experiencePages = new Map([
   ['home', html],
@@ -157,8 +211,9 @@ assert.match(editorialPages.about, /aria-current="page"[^>]*>About</i, 'About na
 assert.match(editorialPages.resume, /aria-current="page"[^>]*>Resume</i, 'Resume navigation must expose the active page');
 assert.match(editorialPages.resume, /href="\/assets\/vinicius-santana-resume\.pdf"[^>]*target="_blank"/i, 'Resume must offer an open action');
 assert.match(editorialPages.resume, /href="\/assets\/vinicius-santana-resume\.pdf"[^>]*download/i, 'Resume must offer a download action');
-assert.match(editorialPages.privacy, /does not use analytics/i, 'Privacy must disclose the absence of analytics');
-assert.match(editorialPages.privacy, /does not set[^<]*cookies/i, 'Privacy must disclose the absence of first-party cookies');
+assert.match(editorialPages.privacy, /Google Analytics 4/i, 'Privacy must disclose GA4 analytics');
+assert.match(editorialPages.privacy, /navigation metrics/i, 'Privacy must disclose navigation metrics');
+assert.match(editorialPages.privacy, /identifiers[^<]*cookies/i, 'Privacy must disclose identifiers stored in cookies');
 assert.match(editorialPages.privacy, /does not include[^<]*form/i, 'Privacy must disclose the absence of forms');
 assert.match(editorialPages.privacy, /does not provide[^<]*account/i, 'Privacy must disclose the absence of accounts');
 assert.match(editorialPages.notFound, /<meta name="robots" content="noindex,nofollow">/i, '404 must be noindex');
@@ -211,7 +266,11 @@ for (const caseStudy of caseStudies) {
     assert.match(caseHtml, new RegExp(`href="#${anchor}"`));
     assert.match(caseHtml, new RegExp(`id="${anchor}"`));
   }
-  assert.match(caseHtml, /<picture/);
+  if (caseStudy.slug === 'cnesdata') {
+    assert.doesNotMatch(caseHtml, /<picture|CnesData \/ System view/);
+  } else {
+    assert.match(caseHtml, /<picture/);
+  }
   assertMetadata(caseHtml, `/work/${caseStudy.slug}/`, origin);
 
   assert.match(caseHtml, new RegExp(`<title>${caseStudy.title} — Vinicius Santana<\\/title>`, 'i'));
@@ -303,6 +362,10 @@ const sitemapLocations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((matc
 assert.deepEqual(sitemapLocations, indexableRoutes.map((route) => new URL(route, origin).href).sort(), 'sitemap must contain exactly the twelve M1 and explorer indexable routes');
 assert.doesNotMatch(sitemap, /\/404(?:\.html|\/)?<\/loc>/i, 'sitemap must exclude the 404 page');
 
+const builtHtmlPages = await readBuiltHtmlPages();
+assert.ok(builtHtmlPages.length > 0, 'build must generate HTML pages');
+for (const [pageName, pageHtml] of builtHtmlPages) assertAnalytics(pageHtml, pageName);
+
 await Promise.all(
   [
     'dist/404.html',
@@ -351,7 +414,7 @@ for (const { slug, title } of caseStudies) {
   assert.match(explorer, new RegExp(`href="/work/${slug}/"`));
   assert.match(explorer, /Component details/);
   assert.match(explorer, /Relationships/);
-  assert.match(explorer, /data-component-link/);
+  assert.match(explorer, /data-component-diagram/);
   assert.match(explorer, /data-component-detail/);
   assert.doesNotMatch(explorer, /<canvas|<astro-island|\.(glb|gltf|ktx2)["']/i);
   if (slug === 'cnesdata') {

@@ -1,4 +1,4 @@
-/* Fragment navigation is immediate, including when JavaScript is disabled. */
+/* Legacy deep links retain immediate native navigation. */
 html:has(.explorer) { scroll-behavior: auto; }
 .explorer { padding-block: 32px 80px; }
 .explorer-heading { padding-block: 28px; max-width: 850px; }
@@ -18,25 +18,35 @@ html:has(.explorer) { scroll-behavior: auto; }
 .area-infrastructure { border-top-color: #c4b8f7; background: rgba(196,184,247,.04); }
 .explorer-columns { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; margin-block: 32px; align-items: start; }
 .component-map { list-style: none; padding: 0; display: grid; gap: 12px; }
-.component-map a { display: flex; gap: 14px; align-items: center; padding: 16px; min-height: 68px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,.03); }
+.component-map button { width: 100%; text-align: left; color: inherit; font: inherit; cursor: pointer; display: flex; gap: 14px; align-items: center; padding: 16px; min-height: 68px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,.03); }
 .component-number { color: var(--accent); font-variant-numeric: tabular-nums; }
 .component-status { display: block; margin-top: 4px; color: var(--muted-strong); font-size: .85rem; }
-.selection-marker { display: none; margin-left: auto; font-size: .75rem; }
-.component-map a[aria-current="true"] { border: 2px solid var(--accent); }
-.component-map a[aria-current="true"] .selection-marker { display: inline; }
-.component-panel article { padding: 24px; margin-bottom: 16px; border: 1px solid var(--line); border-radius: 8px; }
-.component-panel article:target, .component-panel article[data-selected="true"] { border: 2px solid var(--accent); }
+.selection-marker { visibility: hidden; margin-left: auto; font-size: .75rem; }
+
+.component-map button[data-selected="true"] .selection-marker { visibility: visible; }
+.component-panel article { position: relative; padding: 24px; margin-bottom: 16px; border: 1px solid var(--line); border-radius: 8px; }
+.component-map button[data-selected="true"], .component-panel article[data-selected="true"] { border-color: var(--accent); background: rgba(132,244,230,.08); box-shadow: 0 0 16px rgba(132,244,230,.1); }
+.component-panel-bottom { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+.component-panel-bottom article { padding: 18px; margin: 0; }
+.component-panel-bottom h3 { font-size: 1.05rem; }
+.component-panel-bottom p, .component-panel-bottom li { font-size: .9rem; }
+.component-detail-select, .component-relations button, .relationship-list button { border: 0; padding: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.component-detail-select { width: 100%; }
+.component-detail-select::after { content: ""; position: absolute; inset: 0; border-radius: 8px; }
+.component-relations button { position: relative; z-index: 1; }
+.component-relations button, .relationship-list button { text-decoration: underline; text-underline-offset: 3px; padding-block: 10px; }
+.explorer button[data-component-select]:disabled { opacity: 1; cursor: default; }
 .explorer [id] { scroll-margin-top: calc(var(--header-height) + 24px); }
 .explorer a:focus-visible, .explorer button:focus-visible, .explorer select:focus-visible, .component-panel article:focus { outline: 3px solid var(--accent); outline-offset: 4px; }
 .component-relations, .relationship-list { padding-left: 20px; }
 .relationship-list li { margin-bottom: 16px; }
 .relationship-list p { margin: 4px 0; color: var(--muted-strong); }
-.component-relations a, .relationship-list a { text-decoration: underline; text-underline-offset: 3px; }
-.component-relations a { display: inline-block; padding-block: 10px; }
 .explorer-limits { border-top: 1px solid var(--line); padding-top: 32px; margin-top: 40px; }
 .explorer-limits ul { padding-left: 24px; }
 @media (max-width: 800px) {
-  .explorer-areas, .explorer-columns { grid-template-columns: 1fr; }
+  .explorer-areas, .explorer-columns, .component-panel-bottom { grid-template-columns: 1fr; }
   .explorer-nav a { flex-grow: 1; }
   .selection-marker { max-width: 54px; }
 }
+
+.explorer-technical-disclosure{margin:24px 0;border-top:1px solid var(--line,#354959);padding-top:12px}.explorer-technical-disclosure>summary{cursor:pointer;min-height:44px;align-content:center;font-size:16px;font-weight:600}.explorer-technical-disclosure[open]>summary{margin-bottom:20px}
