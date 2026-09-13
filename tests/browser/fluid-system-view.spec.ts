@@ -52,4 +52,3 @@ for (const project of ['cnesdata', 'limnopulse', 'infrastructure']) {
     await page.screenshot({ path: `test-results/${project}-390.png`, fullPage: true });
   });
 }
-
