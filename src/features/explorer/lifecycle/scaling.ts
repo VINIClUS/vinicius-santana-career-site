@@ -2,17 +2,25 @@
 export interface ScalingIdentity {
   requestId?: string;
   generation?: number;
-  workerGenerations?: Record<string, number>;
+  workerGenerations: Record<string, number>;
   replicaGenerations?: Record<string, number>;
 }
-export type ScalingCommand = (
+interface ScalingReplicaIdentity extends ScalingIdentity {
+  replicaGenerations: Record<string, number>;
+}
+type ScalingUnfencedCommand =
   | { type: 'INIT' | 'EVALUATE_SCALE_POLICY' }
   | { type: 'SET_LOAD'; value: number }
   | { type: 'ADVANCE_CLOCK'; ticks: number }
-  | { type: 'RESERVE_WORKERS'; ids: string[]; requestId: string }
+  | { type: 'RESERVE_WORKERS'; ids: string[]; requestId: string };
+type ScalingWorkerOperation =
   | { type: 'START_REPLICAS'; ids: string[]; workerIds: string[] }
+  | { type: 'PROVISION_WORKERS' | 'WORKERS_BOOTED' | 'WORKERS_READY' | 'RELEASE_WORKERS' | 'PROVISION_TIMEOUT'; ids: string[] };
+type ScalingReplicaOperation =
   | { type: 'DRAIN_REPLICAS'; ids: string[]; inFlight?: number }
-  | { type: 'PROVISION_WORKERS' | 'WORKERS_BOOTED' | 'WORKERS_READY' | 'REPLICAS_HEALTHY' | 'DRAIN_COMPLETE' | 'STOP_REPLICAS' | 'RELEASE_WORKERS' | 'PROVISION_TIMEOUT'; ids: string[] }) & ScalingIdentity;
+  | { type: 'REPLICAS_HEALTHY' | 'DRAIN_COMPLETE' | 'STOP_REPLICAS'; ids: string[] };
+export type ScalingCommand = ScalingUnfencedCommand | (ScalingWorkerOperation & ScalingIdentity) | (ScalingReplicaOperation & ScalingReplicaIdentity);
+export type ScalingCommandInput = ScalingUnfencedCommand | ((ScalingWorkerOperation | ScalingReplicaOperation) & Partial<ScalingReplicaIdentity>);
 type WorkerStatus = 'absent' | 'reserved' | 'provisioning' | 'booting' | 'ready';
 type ReplicaStatus = 'absent' | 'starting' | 'ready' | 'draining' | 'stopped';
 export interface ScalingState {
@@ -29,15 +37,15 @@ export function projectScaling(s: ScalingState) {
   return { physicalHosts: 3, totalSlots: 4, usedSlots: statuses.filter(v => v !== 'absent' && v !== 'reserved').length, reservedSlots: statuses.filter(v => v === 'reserved').length, workers: { ...s.workers }, replicas: { ...s.replicas }, desiredReplicas: s.desiredReplicas, readyReplicas: Object.values(s.replicas).filter(v => v === 'ready').length, load: s.load, inFlight: s.inFlight, logicalTick: s.logicalTick, cooldownUntil: s.cooldownUntil, blockedReasons: [] as string[] };
 }
 /** Capture at scheduling time, never when an asynchronous callback finally arrives. */
-export function normalizeScalingCommand(s: ScalingState, command: ScalingCommand): ScalingCommand {
-  if (!('ids' in command) || command.type === 'RESERVE_WORKERS') return structuredClone(command);
+export function normalizeScalingCommand(s: ScalingState, command: ScalingCommandInput): ScalingCommand {
+  if (!('ids' in command) || command.type === 'RESERVE_WORKERS') return structuredClone(command) as ScalingCommand;
   const replicaIds = command.type === 'START_REPLICAS' ? [] : command.ids.filter(id => id.startsWith('replica-'));
   const workerIds = command.type === 'START_REPLICAS' ? command.workerIds : command.ids.map(id => id.startsWith('replica-') ? s.replicaWorkers[id] : id);
   return {
     ...structuredClone(command),
     workerGenerations: structuredClone(command.workerGenerations ?? Object.fromEntries(workerIds.map(id => [id, s.workerGenerations[id] ?? 0]))),
     ...(replicaIds.length ? { replicaGenerations: structuredClone(command.replicaGenerations ?? Object.fromEntries(replicaIds.map(id => [id, s.replicaGenerations[id] ?? 0]))) } : {}),
-  };
+  } as ScalingCommand;
 }
 export function reduceScaling(previous: ScalingState, command: ScalingCommand): { state: ScalingState; events: { type: string; description: string }[]; rejection?: string } {
   const s = structuredClone(previous);
@@ -46,7 +54,8 @@ export function reduceScaling(previous: ScalingState, command: ScalingCommand): 
   if ('ids' in command && command.type !== 'RESERVE_WORKERS') {
     const replicaIds = command.type === 'START_REPLICAS' ? [] : command.ids.filter(id => id.startsWith('replica-'));
     const workerIds = command.type === 'START_REPLICAS' ? command.workerIds : command.ids.map(id => id.startsWith('replica-') ? s.replicaWorkers[id] : id);
-    if (workerIds.some(id => (command.requestId !== undefined && command.requestId !== s.workerRequests[id]) || (command.workerGenerations !== undefined && command.workerGenerations[id] !== s.workerGenerations[id])) || replicaIds.some(id => command.replicaGenerations !== undefined && command.replicaGenerations[id] !== s.replicaGenerations[id])) return reject('STALE_OPERATION');
+    if (!command.workerGenerations || (replicaIds.length > 0 && !command.replicaGenerations)) return reject('STALE_OPERATION');
+    if (workerIds.some(id => (command.requestId !== undefined && command.requestId !== s.workerRequests[id]) || command.workerGenerations[id] !== s.workerGenerations[id]) || replicaIds.some(id => command.replicaGenerations![id] !== s.replicaGenerations[id])) return reject('STALE_OPERATION');
     if (command.generation !== undefined && (replicaIds.length ? replicaIds.some(id => command.generation !== s.replicaGenerations[id]) : workerIds.some(id => command.generation !== s.workerGenerations[id]))) return reject('STALE_OPERATION');
   }
   const release = (id: string) => { s.workers[id] = 'absent'; delete s.deadlines[id]; };

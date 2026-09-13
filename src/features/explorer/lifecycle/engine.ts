@@ -44,7 +44,7 @@ export async function loadEngine(scenarioId: string): Promise<DomainAdapter> {
       initialize: engine.createScalingState,
       dispatch: (state, command) => {
         const current=state as ReturnType<typeof engine.createScalingState>;
-        return engine.reduceScaling(current,engine.normalizeScalingCommand(current,command as Parameters<typeof engine.reduceScaling>[1]));
+        return engine.reduceScaling(current,engine.normalizeScalingCommand(current,command as Parameters<typeof engine.normalizeScalingCommand>[1]));
       },
       project: state => engine.projectScaling(state as ReturnType<typeof engine.createScalingState>),
     };

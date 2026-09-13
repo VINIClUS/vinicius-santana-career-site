@@ -10,7 +10,8 @@ const read = name => JSON.parse(readFileSync(new URL(`../docs/design/systems-atl
 const scenarios = ['infra-exhaustion-recovery', 'infra-quorum-recovery', 'infra-provision-scale'];
 function engine(id) { return id === scenarios[2] ? [createScalingState, reduceScaling, projectScaling] : [() => createInfrastructureState(id), reduceInfrastructure, projectInfrastructure]; }
 function commands(cp) { return cp.id === 'infra-quorum-recovery-07' ? [cp.command, { type: 'SET_STORAGE', ready: false }] : [cp.command]; }
-function dispatch(id,state,command) { const [,reduce] = engine(id); const normalized=id===scenarios[2]?scalingModule.normalizeScalingCommand(state,command):lifecycleEngine.normalizeInfrastructureCommand(state,command); return reduce(state,normalized); }
+function applyScaling(state,command) { return reduceScaling(state,scalingModule.normalizeScalingCommand(state,command)); }
+function dispatch(id,state,command) { const [,reduce] = engine(id); return id===scenarios[2]?applyScaling(state,command):reduce(state,lifecycleEngine.normalizeInfrastructureCommand(state,command)); }
 function prefix(id, checkpoint) { const [create] = engine(id); let state = create(); for (const cp of read(id).checkpoints) { for (const c of commands(cp)) state = dispatch(id,state,c).state; if(cp.id === checkpoint) break; } return state; }
 for (const id of scenarios) test(`${id}: all checkpoints (quorum -07 explicit storage erratum)`, () => { const [create,,project] = engine(id); let state = create(); for(const cp of read(id).checkpoints) { for(const c of commands(cp)) state = dispatch(id,state,c).state; assert.deepEqual(project(state), cp.expected, cp.id); } });
 function subset(actual, expected) { for(const [key, value] of Object.entries(expected)) { if(value && typeof value === 'object' && !Array.isArray(value)) subset(actual[key], value); else assert.deepEqual(actual[key], value, key); } }
@@ -47,7 +48,7 @@ test('reservation conflicts and duplicate ids cannot overallocate; release requi
  assert.ok(reduceScaling(state,{type:'RESERVE_WORKERS',ids:['worker-04'],requestId:'req-scale-01'}).rejection);
  assert.ok(reduceScaling(state,{type:'RESERVE_WORKERS',ids:['worker-04','worker-04'],requestId:'new'}).rejection);
  const ready=prefix(scenarios[2],'infra-provision-scale-09');
- assert.ok(reduceScaling(ready,{type:'RELEASE_WORKERS',ids:['worker-02']}).rejection);
+ assert.ok(applyScaling(ready,{type:'RELEASE_WORKERS',ids:['worker-02']}).rejection);
 });
 test('repeating running intent preserves the existing healthy singleton',()=>{
  const state=createInfrastructureState(scenarios[0]);
@@ -55,32 +56,32 @@ test('repeating running intent preserves the existing healthy singleton',()=>{
 });
 test('completing one drain does not discard requests belonging to another replica',()=>{
  let state=prefix(scenarios[2],'infra-provision-scale-09');
- state=reduceScaling(state,{type:'DRAIN_REPLICAS',ids:['replica-02'],inFlight:2}).state;
- state=reduceScaling(state,{type:'DRAIN_REPLICAS',ids:['replica-03'],inFlight:3}).state;
- state=reduceScaling(state,{type:'DRAIN_COMPLETE',ids:['replica-02']}).state;
+ state=applyScaling(state,{type:'DRAIN_REPLICAS',ids:['replica-02'],inFlight:2}).state;
+ state=applyScaling(state,{type:'DRAIN_REPLICAS',ids:['replica-03'],inFlight:3}).state;
+ state=applyScaling(state,{type:'DRAIN_COMPLETE',ids:['replica-02']}).state;
  assert.equal(state.inFlight,3);
- assert.ok(reduceScaling(state,{type:'STOP_REPLICAS',ids:['replica-03']}).rejection);
- assert.equal(reduceScaling(state,{type:'STOP_REPLICAS',ids:['replica-02']}).state.replicas['replica-02'],'stopped');
+ assert.ok(applyScaling(state,{type:'STOP_REPLICAS',ids:['replica-03']}).rejection);
+ assert.equal(applyScaling(state,{type:'STOP_REPLICAS',ids:['replica-02']}).state.replicas['replica-02'],'stopped');
 });
 test('old provisioning request cannot mutate a replacement worker with the same id',()=>{
  let state=createScalingState();
  const ids=['worker-02'];
- for(const command of [{type:'RESERVE_WORKERS',ids,requestId:'old'},{type:'PROVISION_WORKERS',ids},{type:'PROVISION_TIMEOUT',ids},{type:'RESERVE_WORKERS',ids,requestId:'new'}]) state=reduceScaling(state,command).state;
+ for(const command of [{type:'RESERVE_WORKERS',ids,requestId:'old'},{type:'PROVISION_WORKERS',ids},{type:'PROVISION_TIMEOUT',ids},{type:'RESERVE_WORKERS',ids,requestId:'new'}]) state=applyScaling(state,command).state;
  for(const type of ['PROVISION_WORKERS','WORKERS_BOOTED','WORKERS_READY']) {
-   const rejected=reduceScaling(state,{type,ids,requestId:'old'});
+   const rejected=reduceScaling(state,scalingModule.normalizeScalingCommand(state,{type,ids,requestId:'old'}));
    assert.ok(rejected.rejection,type);
    assert.deepEqual(rejected.state,state);
-   state=reduceScaling(state,{type,ids,requestId:'new'}).state;
+   state=applyScaling(state,{type,ids,requestId:'new'}).state;
  }
 });
 test('old replica health cannot confirm a replacement generation on the same worker',()=>{
  let state=prefix(scenarios[2],'infra-provision-scale-09');
  const ids=['replica-02'];
- for(const command of [{type:'DRAIN_REPLICAS',ids},{type:'DRAIN_COMPLETE',ids},{type:'STOP_REPLICAS',ids},{type:'START_REPLICAS',ids,workerIds:['worker-02']}]) state=reduceScaling(state,command).state;
- const result=reduceScaling(state,{type:'REPLICAS_HEALTHY',ids,generation:1});
+ for(const command of [{type:'DRAIN_REPLICAS',ids},{type:'DRAIN_COMPLETE',ids},{type:'STOP_REPLICAS',ids},{type:'START_REPLICAS',ids,workerIds:['worker-02']}]) state=applyScaling(state,command).state;
+ const result=reduceScaling(state,scalingModule.normalizeScalingCommand(state,{type:'REPLICAS_HEALTHY',ids,generation:1}));
  assert.ok(result.rejection);
  assert.equal(result.state.replicas['replica-02'],'starting');
- assert.equal(reduceScaling(state,{type:'REPLICAS_HEALTHY',ids,generation:2}).state.replicas['replica-02'],'ready');
+ assert.equal(applyScaling(state,{type:'REPLICAS_HEALTHY',ids,generation:2}).state.replicas['replica-02'],'ready');
 });
 test('normalization captures identities before scheduling and preserves explicit obsolete identity',()=>{
  assert.equal(typeof scalingModule.normalizeScalingCommand,'function');
@@ -88,7 +89,7 @@ test('normalization captures identities before scheduling and preserves explicit
  const ids=['worker-02'];
  const callback=scalingModule.normalizeScalingCommand(state,{type:'WORKERS_BOOTED',ids});
  assert.deepEqual(callback.workerGenerations,{'worker-02':1});
- for(const command of [{type:'PROVISION_TIMEOUT',ids},{type:'RESERVE_WORKERS',ids,requestId:'replacement'},{type:'PROVISION_WORKERS',ids}]) state=reduceScaling(state,command).state;
+ for(const command of [{type:'PROVISION_TIMEOUT',ids},{type:'RESERVE_WORKERS',ids,requestId:'replacement'},{type:'PROVISION_WORKERS',ids}]) state=applyScaling(state,command).state;
  assert.ok(reduceScaling(state,callback).rejection);
  assert.ok(reduceScaling(state,scalingModule.normalizeScalingCommand(state,callback)).rejection);
  const current=scalingModule.normalizeScalingCommand(state,{type:'WORKERS_BOOTED',ids});
@@ -97,6 +98,15 @@ test('normalization captures identities before scheduling and preserves explicit
  const health=scalingModule.normalizeScalingCommand(replicas,{type:'REPLICAS_HEALTHY',ids:['replica-02']});
  assert.deepEqual(health.replicaGenerations,{'replica-02':1});
  assert.equal(reduceScaling(replicas,health).state.replicas['replica-02'],'ready');
+});
+test('identity-less delayed boot cannot advance a replacement worker',()=>{
+ let state=createScalingState();
+ const ids=['worker-02'];
+ for(const command of [{type:'RESERVE_WORKERS',ids,requestId:'old'},{type:'PROVISION_WORKERS',ids},{type:'PROVISION_TIMEOUT',ids},{type:'RESERVE_WORKERS',ids,requestId:'replacement'},{type:'PROVISION_WORKERS',ids}]) state=reduceScaling(state,scalingModule.normalizeScalingCommand(state,command)).state;
+ assert.equal(state.workers['worker-02'],'provisioning');
+ const result=reduceScaling(state,{type:'WORKERS_BOOTED',ids});
+ assert.equal(result.rejection,'STALE_OPERATION');
+ assert.deepEqual(result.state,state);
 });
 test('node readiness requires the operation identity at the reducer boundary',()=>{
  let state=createInfrastructureState(scenarios[0]);
