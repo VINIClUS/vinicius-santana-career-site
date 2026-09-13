@@ -7,6 +7,9 @@ export default defineConfig({
   use: {
     browserName: 'chromium',
     baseURL: process.env.EXPLORER_BASE_URL || 'http://127.0.0.1:4321',
+    launchOptions: {
+      args: ['--host-resolver-rules=MAP www.googletagmanager.com 0.0.0.0, MAP *.google-analytics.com 0.0.0.0']
+    },
     screenshot: 'only-on-failure',
     trace: 'retain-on-failure'
   },

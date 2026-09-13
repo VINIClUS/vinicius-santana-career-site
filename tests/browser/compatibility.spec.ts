@@ -7,6 +7,18 @@ const compatibilityRoutes = [
   ['/work/infrastructure/', '/explore/infrastructure/'],
 ] as const;
 
+test('browser tests block the production analytics script', async ({ page }) => {
+  const analyticsUrl = 'https://www.googletagmanager.com/gtag/js?id=G-2DY87DZC90';
+  const failedRequest = page.waitForEvent('requestfailed', {
+    predicate: request => request.url() === analyticsUrl
+  });
+
+  await page.goto('/');
+
+  const request = await failedRequest;
+  expect(request.failure()?.errorText).toMatch(/ERR_(?:NAME_NOT_RESOLVED|CONNECTION_REFUSED)/);
+});
+
 async function expectCompatibilityMetadata(page: Page, destination: string) {
   const canonicalDestination = new URL(destination, 'https://vinisantana.com').href;
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/i);
