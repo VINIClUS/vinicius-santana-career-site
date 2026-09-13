@@ -99,7 +99,7 @@ function assertIntegratedSystemView(html, study, projectId) {
   assert.ok(view, `${projectId} renders one integrated graph and cards view`);
   assert.match(view, /data-system-graph/, `${projectId} exposes a labeled graph region`);
   assert.match(view, /component-cards-right/, `${projectId} exposes details beside the graph`);
-  assert.match(view, /component-cards-bottom/, `${projectId} exposes details below the graph`);
+  assert.doesNotMatch(view, /component-cards-bottom/, `${projectId} keeps all details in one vertical column`);
   assert.doesNotMatch(view, />Relationships</, `${projectId} removes the standalone relationships section`);
   assert.doesNotMatch(view, /status-(?:implemented|documented|planned|historical|illustrative)/, `${projectId} removes status from the system view`);
   assert.doesNotMatch(view, /Back to System View/, `${projectId} cards do not link back to the system view`);
@@ -445,7 +445,9 @@ assert.equal(createHash('sha256').update(builtResume).digest('hex'), expectedRes
 
 assert.match(robots, /^User-agent: \*$/m, 'robots.txt must address all crawlers');
 assert.match(robots, /^Allow: \/$/m, 'robots.txt must allow the site');
-assert.match(robots, new RegExp(`^Sitemap: ${escapeRegExp(new URL('/sitemap-index.xml', origin).href)}$`, 'm'), 'robots.txt must reference the generated sitemap index');
+assert.match(robots, new RegExp(`^Sitemap: ${escapeRegExp(new URL('/sitemap.xml', origin).href)}$`, 'm'), 'robots.txt must reference the public sitemap entry point');
+const sitemapEntry = await readFile(fromRoot('dist/sitemap.xml'), 'utf8');
+assert.match(sitemapEntry, new RegExp(`<loc>${escapeRegExp(new URL('/sitemap-index.xml', origin).href)}</loc>`), 'public sitemap must reference the generated sitemap index');
 assert.match(sitemapIndex, new RegExp(`<loc>${escapeRegExp(new URL('/sitemap-0.xml', origin).href)}</loc>`), 'sitemap index must reference the generated page sitemap');
 
 const indexableRoutes = ['/explore/', '/explore/cnesdata/', '/explore/limnopulse/', '/explore/infrastructure/', '/', '/about/', '/privacy/'];
@@ -546,30 +548,11 @@ for (const { slug, title } of caseStudies) {
   assert.match(explorer, /data-component-diagram/);
   assert.match(explorer, /data-component-detail/);
   assert.doesNotMatch(explorer, /<canvas|<astro-island|\.(glb|gltf|ktx2)["']/i);
-  if (slug === 'cnesdata') {
-    for (const id of ['raw-first-write', 'raw-identical-replay', 'raw-content-conflict']) {
-      assert.match(explorer, new RegExp(`id="transcript-${id}"`));
-    }
-    assert.match(explorer, /Synthetic demonstration/);
-    assert.match(explorer, /Illustrative/);
-    assert.match(explorer, /synthetic-content-A/);
-    assert.match(explorer, /data-step[^>]*disabled/);
-  } else if (slug === 'infrastructure') {
-    assert.match(explorer, /data-infrastructure-simulation/);
-    for (const node of ['node-01', 'node-02', 'node-03']) {
-      assert.match(explorer, new RegExp(`data-infra-node="${node}"[^>]*>[^<]*online`));
-    }
-    assert.match(explorer, /data-infra-workload[^>]*>[^<]*node-02/);
-    assert.match(explorer, /data-infra-shared[^>]*>[^<]*available/);
-    assert.match(explorer, /data-fail-node[^>]*disabled/);
-    assert.match(explorer, /data-infra-reset[^>]*disabled/);
-    assert.match(explorer, /Scenario transcript/);
-    assert.doesNotMatch(explorer, /<picture|<img/, 'Infrastructure System View remains a semantic, non-visual document');
-    assert.match(explorer, /data-infra-announcement[^>]*aria-live="polite"|aria-live="polite"[^>]*data-infra-announcement/);
-    assert.doesNotMatch(explorer, /data-step|data-scenario|data-reset/);
-  } else {
-    assert.doesNotMatch(explorer, /data-step|data-scenario|data-reset/);
-  }
+  assert.equal((explorer.match(/id="simulation"[^>]*data-lifecycle/g) || []).length, 1);
+  assert.match(explorer, /data-life-next[^>]*disabled/);
+  assert.match(explorer, /Read the complete lifecycle transcript/);
+  assert.doesNotMatch(explorer, /Synthetic demonstration|Infrastructure failover|data-step|data-scenario|data-reset|id="transcript-raw-|data-infrastructure-simulation|data-fail-node|data-infra-|data-primitive-disclosure|id="infra-title"/, `${slug} replaces every standalone demonstration with the lifecycle`);
+  assert.doesNotMatch(explorer, /<picture/, 'Project pages use local lifecycle service icons without a detail poster');
 }
 console.log('Explorer static routes and transcripts passed.');
 
@@ -648,7 +631,7 @@ console.log('Canonical CnesData content equivalence passed.');
 
 const canonicalInfra = await readBuiltPage('dist/explore/infrastructure/index.html');
 const infra = yaml.load(await readFile(fromRoot('src/content/case-studies.yaml'), 'utf8')).find(entry => entry.id === 'infrastructure');
-for (const id of ['overview', 'system', 'system-title', 'engineering', 'simulation', 'results', 'evidence', 'limitations', 'infra-title', 'details-title']) {
+for (const id of ['overview', 'system', 'system-title', 'engineering', 'simulation', 'results', 'evidence', 'limitations', 'details-title']) {
   assert.equal([...canonicalInfra.matchAll(new RegExp(`id="${id}"`, 'g'))].length, 1, `unique Infrastructure #${id}`);
 }
 for (const text of [infra.eyebrow, infra.summary, infra.problem, infra.context, ...infra.contribution, ...infra.decisions, ...infra.reliability, ...infra.outcomes, ...infra.limitations]) {
@@ -707,7 +690,8 @@ assert.match(canonicalLimno, /docs\/architecture.md/);
 assert.match(canonicalLimno, /docs\/notifications-phase-3c-b.md/);
 const limnoIds = [...canonicalLimno.matchAll(/\bid="([^" ]+)"/g)].map(match => match[1]);
 assert.equal(limnoIds.length, new Set(limnoIds).size, 'Limnopulse IDs must be unique');
-assert.doesNotMatch(canonicalLimno, /href="\/work\/limnopulse\/"|data-step|data-scenario|data-reset|id="simulation"|<canvas|<astro-island|\.(?:glb|gltf|ktx2)["']/i);
+assert.doesNotMatch(canonicalLimno, /href="\/work\/limnopulse\/"|data-step|data-scenario|data-reset|<canvas|<astro-island|\.(?:glb|gltf|ktx2)["']/i);
+assert.match(canonicalLimno, /id="simulation"[^>]*data-lifecycle/);
 const limnoRelations = [...canonicalLimno.matchAll(/<div[^>]*data-graph-connector[^>]*data-relation-from="([^"]+)"[^>]*data-relation-to="([^"]+)"[^>]*>[\s\S]*?<\/div>/g)];
 assert.ok(limnoRelations.length >= 6, 'directional relationships are rendered');
 for (const [relation, from, to] of limnoRelations) {

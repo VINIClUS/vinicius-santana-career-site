@@ -1,0 +1,19 @@
+stateDiagram-v2
+    [*] --> Running
+    Running --> Interrupted: owner node fails
+    Interrupted --> WaitingFence: owner may still write
+    WaitingFence --> Pending: old owner fenced
+    Pending --> Blocked: no quorum OR no storage OR no ready capacity
+    Blocked --> Pending: prerequisites recover
+    Pending --> Starting: desired running AND all guards
+    Starting --> Running: current generation healthy
+    Starting --> Interrupted: target fails
+    Running --> Stopped: desired stopped
+    Pending --> Stopped: desired stopped
+    Stopped --> Pending: explicit desired running
+    note right of Blocked
+      No worker: preserve intent and data.
+      Three voters: 1/3 cannot restart.
+      External control: one worker may restart
+      only under the explicit external-dependency assumption.
+    end note

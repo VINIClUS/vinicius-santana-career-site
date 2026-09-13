@@ -25,9 +25,11 @@ try {
     assert.equal((html.match(/<[^>]+\bdata-system-view\b/g) ?? []).length, 1, `${caseStudy.id} has exactly one shared System View`);
     assert.deepEqual(
       sectionOrder(html),
-      ['overview', 'system', ...(caseStudy.id === 'limnopulse' ? [] : ['simulation']), 'engineering', 'results', 'evidence'],
-      `${caseStudy.id} preserves the canonical editorial order`
+      ['simulation', 'overview', 'system', 'engineering', 'results', 'evidence'],
+      `${caseStudy.id} leads with its lifecycle and preserves the canonical editorial content`
     );
+    assert.equal((html.match(/\bid="simulation"/g) ?? []).length, 1);
+    assert.match(html, /data-component-disclosure/);
 
     for (const text of [
       caseStudy.problem,

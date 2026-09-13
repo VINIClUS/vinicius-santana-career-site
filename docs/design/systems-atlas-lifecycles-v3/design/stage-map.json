@@ -1,0 +1,367 @@
+{
+  "version": "3.0",
+  "rule": "A storyboard sheet is NOT a six-panel runtime grid. Render one active chapter; checkpoints are substeps, not 91 equally prominent user actions.",
+  "scenarios": [
+    {
+      "scenarioId": "infra-exhaustion-recovery",
+      "referenceId": "infrastructure",
+      "chapters": [
+        {
+          "id": "infra-exhaustion-recovery:stage-1",
+          "number": 1,
+          "title": "Serve",
+          "summary": "One instance serves on node-02.",
+          "checkpointIds": [
+            "infra-exhaustion-recovery-00"
+          ]
+        },
+        {
+          "id": "infra-exhaustion-recovery:stage-2",
+          "number": 2,
+          "title": "Recover once",
+          "summary": "Restart only after the former owner is excluded.",
+          "checkpointIds": [
+            "infra-exhaustion-recovery-01",
+            "infra-exhaustion-recovery-02",
+            "infra-exhaustion-recovery-03",
+            "infra-exhaustion-recovery-04"
+          ]
+        },
+        {
+          "id": "infra-exhaustion-recovery:stage-3",
+          "number": 3,
+          "title": "Recover again",
+          "summary": "Use the last eligible worker.",
+          "checkpointIds": [
+            "infra-exhaustion-recovery-05",
+            "infra-exhaustion-recovery-06",
+            "infra-exhaustion-recovery-07",
+            "infra-exhaustion-recovery-08"
+          ]
+        },
+        {
+          "id": "infra-exhaustion-recovery:stage-4",
+          "number": 4,
+          "title": "Wait",
+          "summary": "No workers remain; desired state and data persist.",
+          "checkpointIds": [
+            "infra-exhaustion-recovery-09",
+            "infra-exhaustion-recovery-10",
+            "infra-exhaustion-recovery-11"
+          ]
+        },
+        {
+          "id": "infra-exhaustion-recovery:stage-5",
+          "number": 5,
+          "title": "Restore capacity",
+          "summary": "A returning node boots before becoming eligible.",
+          "checkpointIds": [
+            "infra-exhaustion-recovery-12",
+            "infra-exhaustion-recovery-13"
+          ]
+        },
+        {
+          "id": "infra-exhaustion-recovery:stage-6",
+          "number": 6,
+          "title": "Autostart",
+          "summary": "Restore the preserved intent and confirm service health.",
+          "checkpointIds": [
+            "infra-exhaustion-recovery-14",
+            "infra-exhaustion-recovery-15"
+          ]
+        }
+      ]
+    },
+    {
+      "scenarioId": "infra-quorum-recovery",
+      "referenceId": "infrastructure",
+      "chapters": [
+        {
+          "id": "infra-quorum-recovery:stage-1",
+          "number": 1,
+          "title": "Recover with majority",
+          "summary": "Two voters can still authorize recovery.",
+          "checkpointIds": [
+            "infra-quorum-recovery-00",
+            "infra-quorum-recovery-01",
+            "infra-quorum-recovery-02",
+            "infra-quorum-recovery-03",
+            "infra-quorum-recovery-04"
+          ]
+        },
+        {
+          "id": "infra-quorum-recovery:stage-2",
+          "number": 2,
+          "title": "Lose quorum",
+          "summary": "Fencing alone cannot replace quorum.",
+          "checkpointIds": [
+            "infra-quorum-recovery-05",
+            "infra-quorum-recovery-06"
+          ]
+        },
+        {
+          "id": "infra-quorum-recovery:stage-3",
+          "number": 3,
+          "title": "Stop safely",
+          "summary": "No eligible owner can serve.",
+          "checkpointIds": [
+            "infra-quorum-recovery-07"
+          ]
+        },
+        {
+          "id": "infra-quorum-recovery:stage-4",
+          "number": 4,
+          "title": "Return one node",
+          "summary": "One voter is not a majority.",
+          "checkpointIds": [
+            "infra-quorum-recovery-08",
+            "infra-quorum-recovery-09"
+          ]
+        },
+        {
+          "id": "infra-quorum-recovery:stage-5",
+          "number": 5,
+          "title": "Restore quorum",
+          "summary": "Two voters return; storage is still a separate gate.",
+          "checkpointIds": [
+            "infra-quorum-recovery-10",
+            "infra-quorum-recovery-11"
+          ]
+        },
+        {
+          "id": "infra-quorum-recovery:stage-6",
+          "number": 6,
+          "title": "Resume safely",
+          "summary": "Confirm data availability before restarting.",
+          "checkpointIds": [
+            "infra-quorum-recovery-12",
+            "infra-quorum-recovery-13",
+            "infra-quorum-recovery-14"
+          ]
+        }
+      ]
+    },
+    {
+      "scenarioId": "infra-provision-scale",
+      "referenceId": "infrastructure",
+      "chapters": [
+        {
+          "id": "infra-provision-scale:stage-1",
+          "number": 1,
+          "title": "Request capacity",
+          "summary": "Sustained load changes desired replicas.",
+          "checkpointIds": [
+            "infra-provision-scale-00",
+            "infra-provision-scale-01",
+            "infra-provision-scale-02",
+            "infra-provision-scale-03"
+          ]
+        },
+        {
+          "id": "infra-provision-scale:stage-2",
+          "number": 2,
+          "title": "Reserve",
+          "summary": "Reserve finite physical resources.",
+          "checkpointIds": [
+            "infra-provision-scale-04"
+          ]
+        },
+        {
+          "id": "infra-provision-scale:stage-3",
+          "number": 3,
+          "title": "Provision",
+          "summary": "Configure, boot and check workers.",
+          "checkpointIds": [
+            "infra-provision-scale-05",
+            "infra-provision-scale-06",
+            "infra-provision-scale-07"
+          ]
+        },
+        {
+          "id": "infra-provision-scale:stage-4",
+          "number": 4,
+          "title": "Serve",
+          "summary": "Only healthy replicas receive traffic.",
+          "checkpointIds": [
+            "infra-provision-scale-08",
+            "infra-provision-scale-09"
+          ]
+        },
+        {
+          "id": "infra-provision-scale:stage-5",
+          "number": 5,
+          "title": "Reduce target",
+          "summary": "Low load and cooldown allow scale-in.",
+          "checkpointIds": [
+            "infra-provision-scale-10",
+            "infra-provision-scale-11",
+            "infra-provision-scale-12"
+          ]
+        },
+        {
+          "id": "infra-provision-scale:stage-6",
+          "number": 6,
+          "title": "Drain & release",
+          "summary": "Finish in-flight work before stopping and releasing capacity.",
+          "checkpointIds": [
+            "infra-provision-scale-13",
+            "infra-provision-scale-14",
+            "infra-provision-scale-15",
+            "infra-provision-scale-16"
+          ]
+        }
+      ]
+    },
+    {
+      "scenarioId": "limnopulse-end-to-end",
+      "referenceId": "limnopulse",
+      "chapters": [
+        {
+          "id": "limnopulse-end-to-end:stage-1",
+          "number": 1,
+          "title": "Observe",
+          "summary": "Configure the recipient and persist a valid telemetry window.",
+          "checkpointIds": [
+            "limnopulse-end-to-end-00",
+            "limnopulse-end-to-end-01",
+            "limnopulse-end-to-end-02",
+            "limnopulse-end-to-end-03",
+            "limnopulse-end-to-end-04",
+            "limnopulse-end-to-end-05"
+          ]
+        },
+        {
+          "id": "limnopulse-end-to-end:stage-2",
+          "number": 2,
+          "title": "Evaluate",
+          "summary": "A qualified breach creates a durable incident and outbox.",
+          "checkpointIds": [
+            "limnopulse-end-to-end-06"
+          ]
+        },
+        {
+          "id": "limnopulse-end-to-end:stage-3",
+          "number": 3,
+          "title": "Hand off",
+          "summary": "Relay creates delivery work and publishes to a queue per channel.",
+          "checkpointIds": [
+            "limnopulse-end-to-end-07"
+          ]
+        },
+        {
+          "id": "limnopulse-end-to-end:stage-4",
+          "number": 4,
+          "title": "Deliver",
+          "summary": "Independent workers call their providers; rate limiting waits.",
+          "checkpointIds": [
+            "limnopulse-end-to-end-08",
+            "limnopulse-end-to-end-09",
+            "limnopulse-end-to-end-10",
+            "limnopulse-end-to-end-11",
+            "limnopulse-end-to-end-12",
+            "limnopulse-end-to-end-13",
+            "limnopulse-end-to-end-14"
+          ]
+        },
+        {
+          "id": "limnopulse-end-to-end:stage-5",
+          "number": 5,
+          "title": "Acknowledge",
+          "summary": "The user opens an authorized incident view and acknowledges.",
+          "checkpointIds": [
+            "limnopulse-end-to-end-15",
+            "limnopulse-end-to-end-16",
+            "limnopulse-end-to-end-17"
+          ]
+        },
+        {
+          "id": "limnopulse-end-to-end:stage-6",
+          "number": 6,
+          "title": "Recover",
+          "summary": "A clean valid window triggers a correlated recovery notification.",
+          "checkpointIds": [
+            "limnopulse-end-to-end-18",
+            "limnopulse-end-to-end-19",
+            "limnopulse-end-to-end-20",
+            "limnopulse-end-to-end-21",
+            "limnopulse-end-to-end-22",
+            "limnopulse-end-to-end-23"
+          ]
+        }
+      ]
+    },
+    {
+      "scenarioId": "cnesdata-end-to-end",
+      "referenceId": "cnesdata",
+      "chapters": [
+        {
+          "id": "cnesdata-end-to-end:stage-1",
+          "number": 1,
+          "title": "Request",
+          "summary": "Keep the previous version active while coordinating new inputs.",
+          "checkpointIds": [
+            "cnesdata-end-to-end-00",
+            "cnesdata-end-to-end-01",
+            "cnesdata-end-to-end-02"
+          ]
+        },
+        {
+          "id": "cnesdata-end-to-end:stage-2",
+          "number": 2,
+          "title": "Extract",
+          "summary": "Prepare a faithful municipal Parquet snapshot.",
+          "checkpointIds": [
+            "cnesdata-end-to-end-03",
+            "cnesdata-end-to-end-04"
+          ]
+        },
+        {
+          "id": "cnesdata-end-to-end:stage-3",
+          "number": 3,
+          "title": "Complete raw inputs",
+          "summary": "Accept local and national raw objects and manifests.",
+          "checkpointIds": [
+            "cnesdata-end-to-end-05",
+            "cnesdata-end-to-end-06",
+            "cnesdata-end-to-end-07",
+            "cnesdata-end-to-end-08",
+            "cnesdata-end-to-end-09"
+          ]
+        },
+        {
+          "id": "cnesdata-end-to-end:stage-4",
+          "number": 4,
+          "title": "Normalize",
+          "summary": "Standardize each source without losing provenance.",
+          "checkpointIds": [
+            "cnesdata-end-to-end-10",
+            "cnesdata-end-to-end-11"
+          ]
+        },
+        {
+          "id": "cnesdata-end-to-end:stage-5",
+          "number": 5,
+          "title": "Reconcile",
+          "summary": "Compare normalized inputs and materialize serving JSON.",
+          "checkpointIds": [
+            "cnesdata-end-to-end-12",
+            "cnesdata-end-to-end-13"
+          ]
+        },
+        {
+          "id": "cnesdata-end-to-end:stage-6",
+          "number": 6,
+          "title": "Publish & use",
+          "summary": "Verify artifacts, switch CURRENT conditionally and read one consistent version.",
+          "checkpointIds": [
+            "cnesdata-end-to-end-14",
+            "cnesdata-end-to-end-15",
+            "cnesdata-end-to-end-16",
+            "cnesdata-end-to-end-17",
+            "cnesdata-end-to-end-18"
+          ]
+        }
+      ]
+    }
+  ]
+}

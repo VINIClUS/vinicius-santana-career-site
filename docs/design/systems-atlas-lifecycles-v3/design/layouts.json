@@ -1,0 +1,84 @@
+{
+  "version": "3.0",
+  "coordinates": "normalized presentation anchors (0..1); not production topology",
+  "desktop": {
+    "sceneAspect": "16/9",
+    "single": [
+      [
+        0.5,
+        0.46
+      ]
+    ],
+    "pair": [
+      [
+        0.27,
+        0.46
+      ],
+      [
+        0.73,
+        0.46
+      ]
+    ],
+    "triad": [
+      [
+        0.19,
+        0.46
+      ],
+      [
+        0.5,
+        0.46
+      ],
+      [
+        0.81,
+        0.46
+      ]
+    ],
+    "contextDock": {
+      "x": 0.5,
+      "y": 0.84
+    },
+    "labels": "HTML labels below glyph; captions outside the scene"
+  },
+  "mobile": {
+    "sceneAspect": "1/1",
+    "single": [
+      [
+        0.5,
+        0.4
+      ]
+    ],
+    "pair": [
+      [
+        0.26,
+        0.43
+      ],
+      [
+        0.74,
+        0.43
+      ]
+    ],
+    "triad": [
+      [
+        0.22,
+        0.25
+      ],
+      [
+        0.78,
+        0.25
+      ],
+      [
+        0.5,
+        0.64
+      ]
+    ],
+    "contextDock": {
+      "x": 0.5,
+      "y": 0.88
+    },
+    "labels": "Wrap at up to two lines; 14 CSS px minimum; if width insufficient use sequential pairs."
+  },
+  "infraTopology": {
+    "instruction": "Retain the three named node silhouettes in stable slots; only the current owner/destination and blocking gate are foreground. Controller/storage stay in a labeled separate band in external-control. Never animate client requests through HA controller."
+  },
+  "routePolicy": "One traveling artifact per visible subbeat. Query requests travel requester→store; responses travel back separately. No arrow for mere grouping."
+}

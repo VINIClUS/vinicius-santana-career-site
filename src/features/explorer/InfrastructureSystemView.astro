@@ -7,7 +7,6 @@ import { projectDefinitions } from './projects.ts';
 interface Props { caseStudy: CollectionEntry<'caseStudies'>['data']; }
 const { caseStudy } = Astro.props;
 const { relations } = projectDefinitions.infrastructure;
-const rightCount = Math.ceil(caseStudy.architecture.length / 2);
 const componentFor = (id: string) => caseStudy.architecture.find(component => component.id === id)!;
 const sources = ['image-builds', 'ansible-contracts', 'operations-automation'];
 const topology = 'reference-topology';
@@ -33,8 +32,7 @@ const routes = {
         </ol>
       </div>
     </section>
-    <SystemViewCards components={caseStudy.architecture} visibleComponents={caseStudy.architecture.slice(0, rightCount)} relations={relations} position="right" />
-    <SystemViewCards components={caseStudy.architecture} visibleComponents={caseStudy.architecture.slice(rightCount)} relations={relations} position="bottom" />
+    <SystemViewCards components={caseStudy.architecture} relations={relations} />
   </div>
 </div>
 <style>

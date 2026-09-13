@@ -4,11 +4,21 @@ Astro renders a Systems Atlas overview and three canonical project routes using 
 
 `createExplorerController(projectId)` exposes `getState()`, `dispatch(command)` and `subscribe(listener)`, which returns an unsubscribe function. State holds `projectId`, `selectedComponentId` and the corresponding optional `simulation` (CnesData) or `infrastructureSimulation`. `SELECT_COMPONENT` changes selection independently of simulation. `SELECT_SCENARIO` and `STEP` affect only CnesData; `FAIL_NODE` affects only Infrastructure. `RESET` resets the current project's simulation. LimnoPulse ignores simulation commands. Project switching uses ordinary route navigation and creates a fresh controller with default state, without persistence.
 
-The DOM is a projection of controller state. `SystemView.astro` dispatches each project to a specialized semantic HTML graph. The first `Math.ceil(total / 2)` component cards sit on the right; the rest form a compact horizontal grid below, with all cards stacked on mobile. Each component appears once as a graph button (`data-component-diagram`) and once as a detail article (`data-component-detail`) with a selection button (`data-component-card`). Labeled connectors use the declared relation endpoints; the cards derive **Receives from** and **Sends to** blocks with related-component buttons from those same relations. Statuses remain in Results and evidence rather than the graph or component cards. CnesData branches through Central API; LimnoPulse groups components into observation, telemetry and event bands across operational boundaries; Infrastructure's three inputs converge on Reference topology.
+The DOM is a projection of controller state. `SystemView.astro` dispatches each project to a specialized semantic HTML graph. All component cards form one vertical column beside the diagram on desktop and below it on smaller screens. Each component appears once as a graph button (`data-component-diagram`) and once as a detail article (`data-component-detail`) with a selection button (`data-component-card`). Labeled connectors use the declared relation endpoints; the cards derive **Receives from** and **Sends to** blocks with related-component buttons from those same relations. Statuses remain in Results and evidence rather than the graph or component cards. CnesData branches through Central API; LimnoPulse groups components into observation, telemetry and event bands across operational boundaries; Infrastructure's three inputs converge on Reference topology.
 
-The primary component is selected without changing the URL; a valid initial `#component-{id}` fragment takes precedence. Graph, card and relationship buttons share `data-component-select` and dispatch `SELECT_COMPONENT` through `client.ts`. Mouse, Enter and Space update `aria-pressed` and `data-selected` consistently without changing the URL, hash, scroll position or transferring focus. Repeated selection keeps the component selected and preserves simulation progress. Fragment handling initializes selection only; it does not programmatically focus a detail article. Every description, connector, relation block, evidence status and build-time transcript remains readable without JavaScript, while selection and simulation controls remain disabled. Canonical project pages load no canvases, GLBs or Three.js. The CnesData detail poster is removed; Atlas and Home retain their independent progressive graphics.
+The primary component is selected without changing the URL; a valid initial `#component-{id}` fragment takes precedence. Graph, card and relationship buttons share `data-component-select` and dispatch `SELECT_COMPONENT` through `client.ts`. Mouse, Enter and Space update `aria-pressed` and `data-selected` consistently without changing the URL, hash, scroll position or transferring focus. Repeated selection keeps the component selected and preserves simulation progress. Fragment handling initializes selection and opens technical disclosures for direct component links; it does not programmatically focus a detail article. Every description, connector, relation block, evidence status and build-time transcript remains readable without JavaScript, while selection and simulation controls remain disabled. Canonical project pages load no canvases, GLBs or Three.js. The CnesData detail poster is removed; Atlas and Home retain their independent progressive graphics.
 
-CnesData uses fictional keys/content only. Results are synthetic and illustrative; they do not demonstrate backend calls, authentication, conversion, Parquet generation, latency or the production status of architecture components. Infrastructure relationships are sanitized illustrative references.
+CnesData uses fictional inputs only. Its lifecycle models transformation and authorization guards locally; it does not call a backend, issue real credentials or establish production status for documented architecture components. Infrastructure relationships are sanitized illustrative references.
+
+## Systems Atlas V3 lifecycles
+
+The independent `lifecycle/` modules provide five command-driven tours: Infrastructure exhaustion, quorum and scaling, Limnopulse end-to-end, and CnesData end-to-end. Each has six chapters. Pure reducers own logical time and operation identity; presentation and renderer never determine domain success. The player invalidates old callbacks on replay, scenario replacement and disposal. Manual actions preserve domain state and cancel the remaining tour.
+
+Project pages lead with an HTML/SVG 2.5D lifecycle at `#simulation`. System Views and selection controls remain in native disclosures after the editorial context. All old standalone demonstration UIs have been removed, including CnesData's Synthetic demonstration and Infrastructure's node-failure demo. The lifecycle is the only simulation shown on each project page. Graph/card selection preserves URL, scroll, focus and lifecycle progress; component fragments open the appropriate disclosure. Without JavaScript, all lifecycle transcripts are calculated from engine commands during the build. Reduced-motion, Save-Data and technical fragments suppress autoplay; leaving the viewport or hiding the document pauses without automatic resumption.
+
+The CnesData lifecycle transforms fictional municipal/national samples, compares three rows and models publication and authorization guards. This remains a synthetic documented/planned target, with the old raw-write rules retained only as domain regression tests. No services, credentials or real records are involved. Production service artwork is vendored locally with hashes and licensing records.
+
+See the [V3 implementation and validation report](design/lifecycle-reports/README.md), [immutable briefing](design/systems-atlas-lifecycles-v3/README.md) and [production asset registry](design/systems-atlas-production-assets.json). The integrated scenario tests execute 91 checkpoints and 27 negatives, including the two documented briefing errata.
 
 ## Three project districts
 
@@ -32,11 +42,11 @@ The orthographic camera switches authored layouts at 700px. Desktop orbit is lim
 
 `assets:generate` validates authored district IDs against `projectIds`, rejects unknown scene requests before generation and removes obsolete district metadata even on partial runs. Regenerate the composition with `npm run assets:generate -- overview`: this refreshes all three district GLBs and the hub from source before rendering overview posters, preserving detail assets and metadata. Historical evidence is retained with supersession notices. Retired Home/Work illustrations and their optimizer are removed; the three districts, hub, overview, Infrastructure detail model and failure posters remain available for generation and inspection. See [SA-01 evidence](design/sa-01/README.md) for validation and loading comparison.
 
-## Infrastructure scenario
+## Legacy Infrastructure domain primitive
 
 The pure engine in `simulation/infrastructure.ts` starts with three online nodes, a workload on `node-02`, an available shared layer and an empty timeline. `FAIL_NODE(node-02)` fails only that node, moves the workload to `node-01`, and records failure, transfer and shared-layer availability in that order. Repeating the failure is inert. `RESET` restores the complete initial state; component selection preserves progress.
 
-The separate Simulation section presents a semantic 2D scheme showing the three nodes, workload assignment and shared layer, with a polite announcement and static scenario transcript. Controls start disabled and activate only after initialization. Failover and reset update the scheme and text from the unchanged state machine. There are no timestamps, uptime or recovery metrics, backend calls or operational data.
+This primitive remains covered by domain regression tests. Its standalone UI, failure/reset controls, scheme and transcript disclosure have been removed. Infrastructure now exposes exhaustion, quorum and scaling only through the V3 lifecycle, with engine-generated transcripts for all three cycles. There are no backend calls or operational data.
 
 **Work** opens the canonical Systems Atlas at `/explore/`. The shared shell is
 ordinary HTML; graphics are route-specific progressive enhancements.
@@ -82,19 +92,16 @@ See [SA-05 validation](design/sa-05/validation.md) for measurements and checks.
 
 `/explore/cnesdata/`, `/explore/limnopulse/` and `/explore/infrastructure/`
 combine the complete case-study narrative with their shared System View.
-`ProjectDetail.astro` renders Hero → Context and contribution → System View →
-Simulation (where applicable) → Engineering → Results and evidence, using
+`ProjectDetail.astro` renders Hero → Lifecycle → Context and contribution → System View disclosure →
+Engineering → Results and evidence, using
 collection-backed content at build time. The case-study collection remains
 the authority for facts.
 
-CnesData uses the shared accessible HTML flow and initializes the explorer
-controller once, preserving the synthetic write/replay/conflict API in its
-own Simulation section. Infrastructure similarly preserves failover/reset.
+CnesData uses the shared accessible HTML flow and initializes the explorer controller once. The lifecycle replaces every old standalone demonstration; raw write/replay/conflict and the original Infrastructure failover rules remain covered in domain tests. Each System View distributes all component cards in one vertical column, beside the graph on desktop and below it on mobile.
 
 The canonical routes expose `#overview`, `#system`, `#engineering`, `#results`,
 every `#component-*` fragment, and direct `#evidence` and `#limitations` sections.
-CnesData and Infrastructure also expose `#simulation`. CnesData's three
-transcripts are built HTML; simulation controls start disabled until the controller is initialized.
+All three projects expose the lifecycle at `#simulation`. Complete lifecycle transcripts are built HTML; playback controls start disabled until the player is initialized.
 Full Parquet-to-Gold processing and Kubernetes deployment remain planned.
 
 The legacy `/work/cnesdata/` route is a small compatibility page; the canonical CnesData

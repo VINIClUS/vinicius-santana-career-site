@@ -7,7 +7,6 @@ import { projectDefinitions } from './projects.ts';
 interface Props { caseStudy: CollectionEntry<'caseStudies'>['data']; }
 const { caseStudy } = Astro.props;
 const { relations } = projectDefinitions.cnesdata;
-const rightCount = Math.ceil(caseStudy.architecture.length / 2);
 const componentFor = (id: string) => caseStudy.architecture.find(component => component.id === id)!;
 const graphNodes = [
   { id: 'canonical-contracts', x: 16, y: 16 }, { id: 'edge-agent', x: 16, y: 46 }, { id: 'web-dashboard', x: 16, y: 78 },
@@ -45,8 +44,7 @@ const routes = {
       </section>
 
     </div>
-    <SystemViewCards components={caseStudy.architecture} visibleComponents={caseStudy.architecture.slice(0, rightCount)} relations={relations} position="right" />
-    <SystemViewCards components={caseStudy.architecture} visibleComponents={caseStudy.architecture.slice(rightCount)} relations={relations} position="bottom" />
+    <SystemViewCards components={caseStudy.architecture} relations={relations} />
   </div>
 </div>
 <style>

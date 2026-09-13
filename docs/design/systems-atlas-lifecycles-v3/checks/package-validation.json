@@ -1,0 +1,30 @@
+{
+  "scope": "Reference package validation, not application or backend tests",
+  "fullJsonSchema": true,
+  "scenarios": {
+    "cnesdata-end-to-end": 19,
+    "infra-exhaustion-recovery": 16,
+    "infra-provision-scale": 17,
+    "infra-quorum-recovery": 15,
+    "limnopulse-end-to-end": 24
+  },
+  "checkpointsValidated": 91,
+  "negativeCasesStructurallyValidated": 27,
+  "negativeCasesExecutedAgainstApplication": 0,
+  "svgParsed": 0,
+  "localMarkdownLinksChecked": 6,
+  "sampleTransformationVerified": true,
+  "result": "PASS",
+  "lockedBehaviorFilesUnchanged": 13,
+  "stageCount": 30,
+  "presentationCheckpointCount": 91,
+  "presentationMicrobeatCount": 124,
+  "actorCount": 50,
+  "assetSpecifications": 42,
+  "vendorSvgFilesAcquired": 0,
+  "approvedImages": 3,
+  "pngFilesChecked": 21,
+  "currentMarkdownLinksChecked": 6,
+  "remoteSourceReachabilityChecked": false,
+  "brandUsePermissionGrantedByThisCheck": false
+}

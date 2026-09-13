@@ -5,19 +5,16 @@ export interface ProjectPresentation {
   id: ProjectId;
   visualMode: 'data-flow' | 'telemetry' | 'cluster';
   systemHeading: string;
-  simulation?: 'cnesdata-write' | 'infrastructure-failover';
 }
 
 export const cnesdataPresentation = {
   id: 'cnesdata',
   visualMode: 'data-flow',
   systemHeading: 'System View',
-  simulation: 'cnesdata-write',
 } as const satisfies ProjectPresentation;
 
 export const infrastructurePresentation = {
   id: 'infrastructure', visualMode: 'cluster', systemHeading: 'System View',
-  simulation: 'infrastructure-failover',
 } as const satisfies ProjectPresentation;
 
 export const limnopulsePresentation = {

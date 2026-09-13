@@ -1,0 +1,3562 @@
+{
+  "version": "3.0",
+  "scope": "Presentation plan, not a scenario engine or an independent domain state machine.",
+  "atomicity": "A macro/atomic domain transition may have multiple explanatory shots. Never present them as separately committed domain states unless the engine actually exposes those states and tests prove them.",
+  "notEveryFrameIsAStep": true,
+  "checkpoints": [
+    {
+      "checkpointId": "infra-exhaustion-recovery-00",
+      "scenarioId": "infra-exhaustion-recovery",
+      "chapterId": "infra-exhaustion-recovery:stage-1",
+      "stateRef": "scenarios/infra-exhaustion-recovery.json#/checkpoints/0/expected",
+      "previousCheckpointId": null,
+      "headline": "See the starting state",
+      "motion": "hold",
+      "outcomeFields": [
+        "workloadStatus",
+        "nodeId",
+        "clientAvailable",
+        "blockedReasons"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-exhaustion-recovery-00:beat-1",
+          "label": "See the starting state",
+          "primaryActors": [
+            "infra.node-02",
+            "infra.workload",
+            "infra.client"
+          ],
+          "routeKind": null,
+          "layout": "triad",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-exhaustion-recovery-01",
+      "scenarioId": "infra-exhaustion-recovery",
+      "chapterId": "infra-exhaustion-recovery:stage-2",
+      "stateRef": "scenarios/infra-exhaustion-recovery.json#/checkpoints/1/expected",
+      "previousCheckpointId": "infra-exhaustion-recovery-00",
+      "headline": "The host fails; the instance stops",
+      "motion": "interrupt",
+      "outcomeFields": [
+        "workloadStatus",
+        "nodeId",
+        "clientAvailable",
+        "blockedReasons"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-exhaustion-recovery-01:beat-1",
+          "label": "Stop the instance on node-02",
+          "primaryActors": [
+            "infra.node-02",
+            "infra.workload"
+          ],
+          "routeKind": "control",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-exhaustion-recovery-02",
+      "scenarioId": "infra-exhaustion-recovery",
+      "chapterId": "infra-exhaustion-recovery:stage-2",
+      "stateRef": "scenarios/infra-exhaustion-recovery.json#/checkpoints/2/expected",
+      "previousCheckpointId": "infra-exhaustion-recovery-01",
+      "headline": "Exclude the previous owner",
+      "motion": "guard",
+      "outcomeFields": [
+        "workloadStatus",
+        "nodeId",
+        "clientAvailable",
+        "blockedReasons"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-exhaustion-recovery-02:beat-1",
+          "label": "Confirm exclusion before a restart",
+          "primaryActors": [
+            "infra.controller",
+            "infra.workload"
+          ],
+          "routeKind": "control",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-exhaustion-recovery-03",
+      "scenarioId": "infra-exhaustion-recovery",
+      "chapterId": "infra-exhaustion-recovery:stage-2",
+      "stateRef": "scenarios/infra-exhaustion-recovery.json#/checkpoints/3/expected",
+      "previousCheckpointId": "infra-exhaustion-recovery-02",
+      "headline": "Start a new instance on node-01",
+      "motion": "restart",
+      "outcomeFields": [
+        "workloadStatus",
+        "nodeId",
+        "clientAvailable",
+        "blockedReasons"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-exhaustion-recovery-03:beat-1",
+          "label": "Read the preserved workload definition",
+          "primaryActors": [
+            "infra.controller",
+            "infra.workload"
+          ],
+          "routeKind": "control",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        },
+        {
+          "id": "infra-exhaustion-recovery-03:beat-2",
+          "label": "Start from durable data on the eligible node",
+          "primaryActors": [
+            "infra.storage",
+            "infra.node-01",
+            "infra.workload"
+          ],
+          "routeKind": "restart",
+          "layout": "triad",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-exhaustion-recovery-04",
+      "scenarioId": "infra-exhaustion-recovery",
+      "chapterId": "infra-exhaustion-recovery:stage-2",
+      "stateRef": "scenarios/infra-exhaustion-recovery.json#/checkpoints/4/expected",
+      "previousCheckpointId": "infra-exhaustion-recovery-03",
+      "headline": "Confirm the new instance is healthy",
+      "motion": "confirm",
+      "outcomeFields": [
+        "workloadStatus",
+        "nodeId",
+        "clientAvailable",
+        "blockedReasons"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-exhaustion-recovery-04:beat-1",
+          "label": "Allow traffic only after health is confirmed",
+          "primaryActors": [
+            "infra.workload",
+            "infra.client"
+          ],
+          "routeKind": "traffic",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-exhaustion-recovery-05",
+      "scenarioId": "infra-exhaustion-recovery",
+      "chapterId": "infra-exhaustion-recovery:stage-3",
+      "stateRef": "scenarios/infra-exhaustion-recovery.json#/checkpoints/5/expected",
+      "previousCheckpointId": "infra-exhaustion-recovery-04",
+      "headline": "The host fails; the instance stops",
+      "motion": "interrupt",
+      "outcomeFields": [
+        "workloadStatus",
+        "nodeId",
+        "clientAvailable",
+        "blockedReasons"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-exhaustion-recovery-05:beat-1",
+          "label": "Stop the instance on node-01",
+          "primaryActors": [
+            "infra.node-01",
+            "infra.workload"
+          ],
+          "routeKind": "control",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-exhaustion-recovery-06",
+      "scenarioId": "infra-exhaustion-recovery",
+      "chapterId": "infra-exhaustion-recovery:stage-3",
+      "stateRef": "scenarios/infra-exhaustion-recovery.json#/checkpoints/6/expected",
+      "previousCheckpointId": "infra-exhaustion-recovery-05",
+      "headline": "Exclude the previous owner",
+      "motion": "guard",
+      "outcomeFields": [
+        "workloadStatus",
+        "nodeId",
+        "clientAvailable",
+        "blockedReasons"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-exhaustion-recovery-06:beat-1",
+          "label": "Confirm exclusion before a restart",
+          "primaryActors": [
+            "infra.controller",
+            "infra.workload"
+          ],
+          "routeKind": "control",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-exhaustion-recovery-07",
+      "scenarioId": "infra-exhaustion-recovery",
+      "chapterId": "infra-exhaustion-recovery:stage-3",
+      "stateRef": "scenarios/infra-exhaustion-recovery.json#/checkpoints/7/expected",
+      "previousCheckpointId": "infra-exhaustion-recovery-06",
+      "headline": "Start a new instance on node-03",
+      "motion": "restart",
+      "outcomeFields": [
+        "workloadStatus",
+        "nodeId",
+        "clientAvailable",
+        "blockedReasons"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-exhaustion-recovery-07:beat-1",
+          "label": "Read the preserved workload definition",
+          "primaryActors": [
+            "infra.controller",
+            "infra.workload"
+          ],
+          "routeKind": "control",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        },
+        {
+          "id": "infra-exhaustion-recovery-07:beat-2",
+          "label": "Start from durable data on the eligible node",
+          "primaryActors": [
+            "infra.storage",
+            "infra.node-03",
+            "infra.workload"
+          ],
+          "routeKind": "restart",
+          "layout": "triad",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-exhaustion-recovery-08",
+      "scenarioId": "infra-exhaustion-recovery",
+      "chapterId": "infra-exhaustion-recovery:stage-3",
+      "stateRef": "scenarios/infra-exhaustion-recovery.json#/checkpoints/8/expected",
+      "previousCheckpointId": "infra-exhaustion-recovery-07",
+      "headline": "Confirm the new instance is healthy",
+      "motion": "confirm",
+      "outcomeFields": [
+        "workloadStatus",
+        "nodeId",
+        "clientAvailable",
+        "blockedReasons"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-exhaustion-recovery-08:beat-1",
+          "label": "Allow traffic only after health is confirmed",
+          "primaryActors": [
+            "infra.workload",
+            "infra.client"
+          ],
+          "routeKind": "traffic",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-exhaustion-recovery-09",
+      "scenarioId": "infra-exhaustion-recovery",
+      "chapterId": "infra-exhaustion-recovery:stage-4",
+      "stateRef": "scenarios/infra-exhaustion-recovery.json#/checkpoints/9/expected",
+      "previousCheckpointId": "infra-exhaustion-recovery-08",
+      "headline": "The host fails; the instance stops",
+      "motion": "interrupt",
+      "outcomeFields": [
+        "workloadStatus",
+        "nodeId",
+        "clientAvailable",
+        "blockedReasons"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-exhaustion-recovery-09:beat-1",
+          "label": "Stop the instance on node-03",
+          "primaryActors": [
+            "infra.node-03",
+            "infra.workload"
+          ],
+          "routeKind": "control",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-exhaustion-recovery-10",
+      "scenarioId": "infra-exhaustion-recovery",
+      "chapterId": "infra-exhaustion-recovery:stage-4",
+      "stateRef": "scenarios/infra-exhaustion-recovery.json#/checkpoints/10/expected",
+      "previousCheckpointId": "infra-exhaustion-recovery-09",
+      "headline": "Exclude the previous owner",
+      "motion": "guard",
+      "outcomeFields": [
+        "workloadStatus",
+        "nodeId",
+        "clientAvailable",
+        "blockedReasons"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-exhaustion-recovery-10:beat-1",
+          "label": "Confirm exclusion before a restart",
+          "primaryActors": [
+            "infra.controller",
+            "infra.workload"
+          ],
+          "routeKind": "control",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-exhaustion-recovery-11",
+      "scenarioId": "infra-exhaustion-recovery",
+      "chapterId": "infra-exhaustion-recovery:stage-4",
+      "stateRef": "scenarios/infra-exhaustion-recovery.json#/checkpoints/11/expected",
+      "previousCheckpointId": "infra-exhaustion-recovery-10",
+      "headline": "Wait: NO_CAPACITY",
+      "motion": "blocked",
+      "outcomeFields": [
+        "workloadStatus",
+        "nodeId",
+        "clientAvailable",
+        "blockedReasons"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-exhaustion-recovery-11:beat-1",
+          "label": "No safe destination yet",
+          "primaryActors": [
+            "infra.controller",
+            "infra.workload"
+          ],
+          "routeKind": null,
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-exhaustion-recovery-12",
+      "scenarioId": "infra-exhaustion-recovery",
+      "chapterId": "infra-exhaustion-recovery:stage-5",
+      "stateRef": "scenarios/infra-exhaustion-recovery.json#/checkpoints/12/expected",
+      "previousCheckpointId": "infra-exhaustion-recovery-11",
+      "headline": "Bring the node back into boot",
+      "motion": "boot",
+      "outcomeFields": [
+        "workloadStatus",
+        "nodeId",
+        "clientAvailable",
+        "blockedReasons"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-exhaustion-recovery-12:beat-1",
+          "label": "Bring the node back into boot",
+          "primaryActors": [
+            "infra.node-02"
+          ],
+          "routeKind": null,
+          "layout": "single",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-exhaustion-recovery-13",
+      "scenarioId": "infra-exhaustion-recovery",
+      "chapterId": "infra-exhaustion-recovery:stage-5",
+      "stateRef": "scenarios/infra-exhaustion-recovery.json#/checkpoints/13/expected",
+      "previousCheckpointId": "infra-exhaustion-recovery-12",
+      "headline": "The node passes its readiness checks",
+      "motion": "confirm",
+      "outcomeFields": [
+        "workloadStatus",
+        "nodeId",
+        "clientAvailable",
+        "blockedReasons"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-exhaustion-recovery-13:beat-1",
+          "label": "The node passes its readiness checks",
+          "primaryActors": [
+            "infra.controller",
+            "infra.node-02"
+          ],
+          "routeKind": null,
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-exhaustion-recovery-14",
+      "scenarioId": "infra-exhaustion-recovery",
+      "chapterId": "infra-exhaustion-recovery:stage-6",
+      "stateRef": "scenarios/infra-exhaustion-recovery.json#/checkpoints/14/expected",
+      "previousCheckpointId": "infra-exhaustion-recovery-13",
+      "headline": "Start a new instance on node-02",
+      "motion": "restart",
+      "outcomeFields": [
+        "workloadStatus",
+        "nodeId",
+        "clientAvailable",
+        "blockedReasons"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-exhaustion-recovery-14:beat-1",
+          "label": "Read the preserved workload definition",
+          "primaryActors": [
+            "infra.controller",
+            "infra.workload"
+          ],
+          "routeKind": "control",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        },
+        {
+          "id": "infra-exhaustion-recovery-14:beat-2",
+          "label": "Start from durable data on the eligible node",
+          "primaryActors": [
+            "infra.storage",
+            "infra.node-02",
+            "infra.workload"
+          ],
+          "routeKind": "restart",
+          "layout": "triad",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-exhaustion-recovery-15",
+      "scenarioId": "infra-exhaustion-recovery",
+      "chapterId": "infra-exhaustion-recovery:stage-6",
+      "stateRef": "scenarios/infra-exhaustion-recovery.json#/checkpoints/15/expected",
+      "previousCheckpointId": "infra-exhaustion-recovery-14",
+      "headline": "Confirm the new instance is healthy",
+      "motion": "confirm",
+      "outcomeFields": [
+        "workloadStatus",
+        "nodeId",
+        "clientAvailable",
+        "blockedReasons"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-exhaustion-recovery-15:beat-1",
+          "label": "Allow traffic only after health is confirmed",
+          "primaryActors": [
+            "infra.workload",
+            "infra.client"
+          ],
+          "routeKind": "traffic",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-quorum-recovery-00",
+      "scenarioId": "infra-quorum-recovery",
+      "chapterId": "infra-quorum-recovery:stage-1",
+      "stateRef": "scenarios/infra-quorum-recovery.json#/checkpoints/0/expected",
+      "previousCheckpointId": null,
+      "headline": "See the starting state",
+      "motion": "hold",
+      "outcomeFields": [
+        "workloadStatus",
+        "nodeId",
+        "clientAvailable",
+        "blockedReasons"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-quorum-recovery-00:beat-1",
+          "label": "See the starting state",
+          "primaryActors": [
+            "infra.controller",
+            "infra.node-02"
+          ],
+          "routeKind": null,
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-quorum-recovery-01",
+      "scenarioId": "infra-quorum-recovery",
+      "chapterId": "infra-quorum-recovery:stage-1",
+      "stateRef": "scenarios/infra-quorum-recovery.json#/checkpoints/1/expected",
+      "previousCheckpointId": "infra-quorum-recovery-00",
+      "headline": "The host fails; the instance stops",
+      "motion": "interrupt",
+      "outcomeFields": [
+        "workloadStatus",
+        "nodeId",
+        "clientAvailable",
+        "blockedReasons"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-quorum-recovery-01:beat-1",
+          "label": "Stop the instance on node-02",
+          "primaryActors": [
+            "infra.node-02",
+            "infra.workload"
+          ],
+          "routeKind": "control",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-quorum-recovery-02",
+      "scenarioId": "infra-quorum-recovery",
+      "chapterId": "infra-quorum-recovery:stage-1",
+      "stateRef": "scenarios/infra-quorum-recovery.json#/checkpoints/2/expected",
+      "previousCheckpointId": "infra-quorum-recovery-01",
+      "headline": "Exclude the previous owner",
+      "motion": "guard",
+      "outcomeFields": [
+        "workloadStatus",
+        "nodeId",
+        "clientAvailable",
+        "blockedReasons"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-quorum-recovery-02:beat-1",
+          "label": "Confirm exclusion before a restart",
+          "primaryActors": [
+            "infra.controller",
+            "infra.workload"
+          ],
+          "routeKind": "control",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-quorum-recovery-03",
+      "scenarioId": "infra-quorum-recovery",
+      "chapterId": "infra-quorum-recovery:stage-1",
+      "stateRef": "scenarios/infra-quorum-recovery.json#/checkpoints/3/expected",
+      "previousCheckpointId": "infra-quorum-recovery-02",
+      "headline": "Start a new instance on node-01",
+      "motion": "restart",
+      "outcomeFields": [
+        "workloadStatus",
+        "nodeId",
+        "clientAvailable",
+        "blockedReasons"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-quorum-recovery-03:beat-1",
+          "label": "Read the preserved workload definition",
+          "primaryActors": [
+            "infra.controller",
+            "infra.workload"
+          ],
+          "routeKind": "control",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        },
+        {
+          "id": "infra-quorum-recovery-03:beat-2",
+          "label": "Start from durable data on the eligible node",
+          "primaryActors": [
+            "infra.storage",
+            "infra.node-01",
+            "infra.workload"
+          ],
+          "routeKind": "restart",
+          "layout": "triad",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-quorum-recovery-04",
+      "scenarioId": "infra-quorum-recovery",
+      "chapterId": "infra-quorum-recovery:stage-1",
+      "stateRef": "scenarios/infra-quorum-recovery.json#/checkpoints/4/expected",
+      "previousCheckpointId": "infra-quorum-recovery-03",
+      "headline": "Confirm the new instance is healthy",
+      "motion": "confirm",
+      "outcomeFields": [
+        "workloadStatus",
+        "nodeId",
+        "clientAvailable",
+        "blockedReasons"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-quorum-recovery-04:beat-1",
+          "label": "Allow traffic only after health is confirmed",
+          "primaryActors": [
+            "infra.workload",
+            "infra.client"
+          ],
+          "routeKind": "traffic",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-quorum-recovery-05",
+      "scenarioId": "infra-quorum-recovery",
+      "chapterId": "infra-quorum-recovery:stage-2",
+      "stateRef": "scenarios/infra-quorum-recovery.json#/checkpoints/5/expected",
+      "previousCheckpointId": "infra-quorum-recovery-04",
+      "headline": "The host fails; the instance stops",
+      "motion": "interrupt",
+      "outcomeFields": [
+        "workloadStatus",
+        "nodeId",
+        "clientAvailable",
+        "blockedReasons"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-quorum-recovery-05:beat-1",
+          "label": "Stop the instance on node-01",
+          "primaryActors": [
+            "infra.node-01",
+            "infra.workload"
+          ],
+          "routeKind": "control",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-quorum-recovery-06",
+      "scenarioId": "infra-quorum-recovery",
+      "chapterId": "infra-quorum-recovery:stage-2",
+      "stateRef": "scenarios/infra-quorum-recovery.json#/checkpoints/6/expected",
+      "previousCheckpointId": "infra-quorum-recovery-05",
+      "headline": "Exclude the previous owner",
+      "motion": "guard",
+      "outcomeFields": [
+        "workloadStatus",
+        "nodeId",
+        "clientAvailable",
+        "blockedReasons"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-quorum-recovery-06:beat-1",
+          "label": "Confirm exclusion before a restart",
+          "primaryActors": [
+            "infra.controller",
+            "infra.workload"
+          ],
+          "routeKind": "control",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-quorum-recovery-07",
+      "scenarioId": "infra-quorum-recovery",
+      "chapterId": "infra-quorum-recovery:stage-3",
+      "stateRef": "scenarios/infra-quorum-recovery.json#/checkpoints/7/expected",
+      "previousCheckpointId": "infra-quorum-recovery-06",
+      "headline": "The host fails; the instance stops",
+      "motion": "interrupt",
+      "outcomeFields": [
+        "workloadStatus",
+        "nodeId",
+        "clientAvailable",
+        "blockedReasons"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-quorum-recovery-07:beat-1",
+          "label": "Stop the instance on node-03",
+          "primaryActors": [
+            "infra.node-03",
+            "infra.workload"
+          ],
+          "routeKind": "control",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-quorum-recovery-08",
+      "scenarioId": "infra-quorum-recovery",
+      "chapterId": "infra-quorum-recovery:stage-4",
+      "stateRef": "scenarios/infra-quorum-recovery.json#/checkpoints/8/expected",
+      "previousCheckpointId": "infra-quorum-recovery-07",
+      "headline": "Bring the node back into boot",
+      "motion": "boot",
+      "outcomeFields": [
+        "workloadStatus",
+        "nodeId",
+        "clientAvailable",
+        "blockedReasons"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-quorum-recovery-08:beat-1",
+          "label": "Bring the node back into boot",
+          "primaryActors": [
+            "infra.node-02"
+          ],
+          "routeKind": null,
+          "layout": "single",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-quorum-recovery-09",
+      "scenarioId": "infra-quorum-recovery",
+      "chapterId": "infra-quorum-recovery:stage-4",
+      "stateRef": "scenarios/infra-quorum-recovery.json#/checkpoints/9/expected",
+      "previousCheckpointId": "infra-quorum-recovery-08",
+      "headline": "The node passes its readiness checks",
+      "motion": "confirm",
+      "outcomeFields": [
+        "workloadStatus",
+        "nodeId",
+        "clientAvailable",
+        "blockedReasons"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-quorum-recovery-09:beat-1",
+          "label": "The node passes its readiness checks",
+          "primaryActors": [
+            "infra.controller",
+            "infra.node-02"
+          ],
+          "routeKind": null,
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-quorum-recovery-10",
+      "scenarioId": "infra-quorum-recovery",
+      "chapterId": "infra-quorum-recovery:stage-5",
+      "stateRef": "scenarios/infra-quorum-recovery.json#/checkpoints/10/expected",
+      "previousCheckpointId": "infra-quorum-recovery-09",
+      "headline": "Bring the node back into boot",
+      "motion": "boot",
+      "outcomeFields": [
+        "workloadStatus",
+        "nodeId",
+        "clientAvailable",
+        "blockedReasons"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-quorum-recovery-10:beat-1",
+          "label": "Bring the node back into boot",
+          "primaryActors": [
+            "infra.node-01"
+          ],
+          "routeKind": null,
+          "layout": "single",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-quorum-recovery-11",
+      "scenarioId": "infra-quorum-recovery",
+      "chapterId": "infra-quorum-recovery:stage-5",
+      "stateRef": "scenarios/infra-quorum-recovery.json#/checkpoints/11/expected",
+      "previousCheckpointId": "infra-quorum-recovery-10",
+      "headline": "The node passes its readiness checks",
+      "motion": "confirm",
+      "outcomeFields": [
+        "workloadStatus",
+        "nodeId",
+        "clientAvailable",
+        "blockedReasons"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-quorum-recovery-11:beat-1",
+          "label": "The node passes its readiness checks",
+          "primaryActors": [
+            "infra.controller",
+            "infra.storage"
+          ],
+          "routeKind": null,
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-quorum-recovery-12",
+      "scenarioId": "infra-quorum-recovery",
+      "chapterId": "infra-quorum-recovery:stage-6",
+      "stateRef": "scenarios/infra-quorum-recovery.json#/checkpoints/12/expected",
+      "previousCheckpointId": "infra-quorum-recovery-11",
+      "headline": "Confirm durable data is available",
+      "motion": "guard",
+      "outcomeFields": [
+        "workloadStatus",
+        "nodeId",
+        "clientAvailable",
+        "blockedReasons"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-quorum-recovery-12:beat-1",
+          "label": "Confirm durable data is available",
+          "primaryActors": [
+            "infra.storage"
+          ],
+          "routeKind": null,
+          "layout": "single",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-quorum-recovery-13",
+      "scenarioId": "infra-quorum-recovery",
+      "chapterId": "infra-quorum-recovery:stage-6",
+      "stateRef": "scenarios/infra-quorum-recovery.json#/checkpoints/13/expected",
+      "previousCheckpointId": "infra-quorum-recovery-12",
+      "headline": "Start a new instance on node-01",
+      "motion": "restart",
+      "outcomeFields": [
+        "workloadStatus",
+        "nodeId",
+        "clientAvailable",
+        "blockedReasons"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-quorum-recovery-13:beat-1",
+          "label": "Read the preserved workload definition",
+          "primaryActors": [
+            "infra.controller",
+            "infra.workload"
+          ],
+          "routeKind": "control",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        },
+        {
+          "id": "infra-quorum-recovery-13:beat-2",
+          "label": "Start from durable data on the eligible node",
+          "primaryActors": [
+            "infra.storage",
+            "infra.node-01",
+            "infra.workload"
+          ],
+          "routeKind": "restart",
+          "layout": "triad",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-quorum-recovery-14",
+      "scenarioId": "infra-quorum-recovery",
+      "chapterId": "infra-quorum-recovery:stage-6",
+      "stateRef": "scenarios/infra-quorum-recovery.json#/checkpoints/14/expected",
+      "previousCheckpointId": "infra-quorum-recovery-13",
+      "headline": "Confirm the new instance is healthy",
+      "motion": "confirm",
+      "outcomeFields": [
+        "workloadStatus",
+        "nodeId",
+        "clientAvailable",
+        "blockedReasons"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-quorum-recovery-14:beat-1",
+          "label": "Allow traffic only after health is confirmed",
+          "primaryActors": [
+            "infra.workload",
+            "infra.client"
+          ],
+          "routeKind": "traffic",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-provision-scale-00",
+      "scenarioId": "infra-provision-scale",
+      "chapterId": "infra-provision-scale:stage-1",
+      "stateRef": "scenarios/infra-provision-scale.json#/checkpoints/0/expected",
+      "previousCheckpointId": null,
+      "headline": "See the starting state",
+      "motion": "hold",
+      "outcomeFields": [
+        "desiredReplicas",
+        "readyReplicas",
+        "usedSlots",
+        "reservedSlots"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-provision-scale-00:beat-1",
+          "label": "See the starting state",
+          "primaryActors": [
+            "scale.worker-01",
+            "scale.service"
+          ],
+          "routeKind": null,
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-provision-scale-01",
+      "scenarioId": "infra-provision-scale",
+      "chapterId": "infra-provision-scale:stage-1",
+      "stateRef": "scenarios/infra-provision-scale.json#/checkpoints/1/expected",
+      "previousCheckpointId": "infra-provision-scale-00",
+      "headline": "Observe the changed demand",
+      "motion": "observe",
+      "outcomeFields": [
+        "desiredReplicas",
+        "readyReplicas",
+        "usedSlots",
+        "reservedSlots"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-provision-scale-01:beat-1",
+          "label": "Observe the changed demand",
+          "primaryActors": [
+            "scale.request"
+          ],
+          "routeKind": null,
+          "layout": "single",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-provision-scale-02",
+      "scenarioId": "infra-provision-scale",
+      "chapterId": "infra-provision-scale:stage-1",
+      "stateRef": "scenarios/infra-provision-scale.json#/checkpoints/2/expected",
+      "previousCheckpointId": "infra-provision-scale-01",
+      "headline": "Wait for the logical window",
+      "motion": "wait",
+      "outcomeFields": [
+        "desiredReplicas",
+        "readyReplicas",
+        "usedSlots",
+        "reservedSlots"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-provision-scale-02:beat-1",
+          "label": "Wait for the logical window",
+          "primaryActors": [
+            "scale.request"
+          ],
+          "routeKind": null,
+          "layout": "single",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-provision-scale-03",
+      "scenarioId": "infra-provision-scale",
+      "chapterId": "infra-provision-scale:stage-1",
+      "stateRef": "scenarios/infra-provision-scale.json#/checkpoints/3/expected",
+      "previousCheckpointId": "infra-provision-scale-02",
+      "headline": "Update the desired replica count",
+      "motion": "evaluate",
+      "outcomeFields": [
+        "desiredReplicas",
+        "readyReplicas",
+        "usedSlots",
+        "reservedSlots"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-provision-scale-03:beat-1",
+          "label": "Update the desired replica count",
+          "primaryActors": [
+            "scale.request",
+            "scale.service"
+          ],
+          "routeKind": null,
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-provision-scale-04",
+      "scenarioId": "infra-provision-scale",
+      "chapterId": "infra-provision-scale:stage-2",
+      "stateRef": "scenarios/infra-provision-scale.json#/checkpoints/4/expected",
+      "previousCheckpointId": "infra-provision-scale-03",
+      "headline": "Reserve capacity before creating workers",
+      "motion": "reserve",
+      "outcomeFields": [
+        "desiredReplicas",
+        "readyReplicas",
+        "usedSlots",
+        "reservedSlots"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-provision-scale-04:beat-1",
+          "label": "Reserve capacity before creating workers",
+          "primaryActors": [
+            "scale.capacity"
+          ],
+          "routeKind": null,
+          "layout": "single",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-provision-scale-05",
+      "scenarioId": "infra-provision-scale",
+      "chapterId": "infra-provision-scale:stage-3",
+      "stateRef": "scenarios/infra-provision-scale.json#/checkpoints/5/expected",
+      "previousCheckpointId": "infra-provision-scale-04",
+      "headline": "Create and configure reserved workers",
+      "motion": "provision",
+      "outcomeFields": [
+        "desiredReplicas",
+        "readyReplicas",
+        "usedSlots",
+        "reservedSlots"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-provision-scale-05:beat-1",
+          "label": "Create and configure reserved workers: worker-02",
+          "primaryActors": [
+            "scale.provision",
+            "scale.worker-02"
+          ],
+          "routeKind": "control",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        },
+        {
+          "id": "infra-provision-scale-05:beat-2",
+          "label": "Create and configure reserved workers: worker-03",
+          "primaryActors": [
+            "scale.provision",
+            "scale.worker-03"
+          ],
+          "routeKind": "control",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-provision-scale-06",
+      "scenarioId": "infra-provision-scale",
+      "chapterId": "infra-provision-scale:stage-3",
+      "stateRef": "scenarios/infra-provision-scale.json#/checkpoints/6/expected",
+      "previousCheckpointId": "infra-provision-scale-05",
+      "headline": "Workers finish booting",
+      "motion": "boot",
+      "outcomeFields": [
+        "desiredReplicas",
+        "readyReplicas",
+        "usedSlots",
+        "reservedSlots"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-provision-scale-06:beat-1",
+          "label": "Workers finish booting: worker-02",
+          "primaryActors": [
+            "scale.provision",
+            "scale.worker-02"
+          ],
+          "routeKind": "control",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        },
+        {
+          "id": "infra-provision-scale-06:beat-2",
+          "label": "Workers finish booting: worker-03",
+          "primaryActors": [
+            "scale.provision",
+            "scale.worker-03"
+          ],
+          "routeKind": "control",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-provision-scale-07",
+      "scenarioId": "infra-provision-scale",
+      "chapterId": "infra-provision-scale:stage-3",
+      "stateRef": "scenarios/infra-provision-scale.json#/checkpoints/7/expected",
+      "previousCheckpointId": "infra-provision-scale-06",
+      "headline": "Workers become eligible",
+      "motion": "confirm",
+      "outcomeFields": [
+        "desiredReplicas",
+        "readyReplicas",
+        "usedSlots",
+        "reservedSlots"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-provision-scale-07:beat-1",
+          "label": "Workers become eligible: worker-02",
+          "primaryActors": [
+            "scale.provision",
+            "scale.worker-02"
+          ],
+          "routeKind": "control",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        },
+        {
+          "id": "infra-provision-scale-07:beat-2",
+          "label": "Workers become eligible: worker-03",
+          "primaryActors": [
+            "scale.provision",
+            "scale.worker-03"
+          ],
+          "routeKind": "control",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-provision-scale-08",
+      "scenarioId": "infra-provision-scale",
+      "chapterId": "infra-provision-scale:stage-4",
+      "stateRef": "scenarios/infra-provision-scale.json#/checkpoints/8/expected",
+      "previousCheckpointId": "infra-provision-scale-07",
+      "headline": "Start service instances on ready workers",
+      "motion": "start",
+      "outcomeFields": [
+        "desiredReplicas",
+        "readyReplicas",
+        "usedSlots",
+        "reservedSlots"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-provision-scale-08:beat-1",
+          "label": "Start service instances on ready workers",
+          "primaryActors": [
+            "scale.worker-02",
+            "scale.worker-03",
+            "scale.service"
+          ],
+          "routeKind": "control",
+          "layout": "triad",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-provision-scale-09",
+      "scenarioId": "infra-provision-scale",
+      "chapterId": "infra-provision-scale:stage-4",
+      "stateRef": "scenarios/infra-provision-scale.json#/checkpoints/9/expected",
+      "previousCheckpointId": "infra-provision-scale-08",
+      "headline": "Register healthy replicas for traffic",
+      "motion": "confirm",
+      "outcomeFields": [
+        "desiredReplicas",
+        "readyReplicas",
+        "usedSlots",
+        "reservedSlots"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-provision-scale-09:beat-1",
+          "label": "Register healthy replicas for traffic",
+          "primaryActors": [
+            "scale.worker-02",
+            "scale.worker-03",
+            "scale.service"
+          ],
+          "routeKind": "control",
+          "layout": "triad",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-provision-scale-10",
+      "scenarioId": "infra-provision-scale",
+      "chapterId": "infra-provision-scale:stage-5",
+      "stateRef": "scenarios/infra-provision-scale.json#/checkpoints/10/expected",
+      "previousCheckpointId": "infra-provision-scale-09",
+      "headline": "Observe the changed demand",
+      "motion": "observe",
+      "outcomeFields": [
+        "desiredReplicas",
+        "readyReplicas",
+        "usedSlots",
+        "reservedSlots"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-provision-scale-10:beat-1",
+          "label": "Observe the changed demand",
+          "primaryActors": [
+            "scale.request"
+          ],
+          "routeKind": null,
+          "layout": "single",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-provision-scale-11",
+      "scenarioId": "infra-provision-scale",
+      "chapterId": "infra-provision-scale:stage-5",
+      "stateRef": "scenarios/infra-provision-scale.json#/checkpoints/11/expected",
+      "previousCheckpointId": "infra-provision-scale-10",
+      "headline": "Wait for the logical window",
+      "motion": "wait",
+      "outcomeFields": [
+        "desiredReplicas",
+        "readyReplicas",
+        "usedSlots",
+        "reservedSlots"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-provision-scale-11:beat-1",
+          "label": "Wait for the logical window",
+          "primaryActors": [
+            "scale.request"
+          ],
+          "routeKind": null,
+          "layout": "single",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-provision-scale-12",
+      "scenarioId": "infra-provision-scale",
+      "chapterId": "infra-provision-scale:stage-5",
+      "stateRef": "scenarios/infra-provision-scale.json#/checkpoints/12/expected",
+      "previousCheckpointId": "infra-provision-scale-11",
+      "headline": "Update the desired replica count",
+      "motion": "evaluate",
+      "outcomeFields": [
+        "desiredReplicas",
+        "readyReplicas",
+        "usedSlots",
+        "reservedSlots"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-provision-scale-12:beat-1",
+          "label": "Update the desired replica count",
+          "primaryActors": [
+            "scale.request",
+            "scale.service"
+          ],
+          "routeKind": null,
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-provision-scale-13",
+      "scenarioId": "infra-provision-scale",
+      "chapterId": "infra-provision-scale:stage-6",
+      "stateRef": "scenarios/infra-provision-scale.json#/checkpoints/13/expected",
+      "previousCheckpointId": "infra-provision-scale-12",
+      "headline": "Stop new traffic and drain in-flight work",
+      "motion": "drain",
+      "outcomeFields": [
+        "desiredReplicas",
+        "readyReplicas",
+        "usedSlots",
+        "reservedSlots"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-provision-scale-13:beat-1",
+          "label": "Remove new routing; finish the two in-flight requests",
+          "primaryActors": [
+            "scale.user",
+            "scale.service"
+          ],
+          "routeKind": "traffic",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-provision-scale-14",
+      "scenarioId": "infra-provision-scale",
+      "chapterId": "infra-provision-scale:stage-6",
+      "stateRef": "scenarios/infra-provision-scale.json#/checkpoints/14/expected",
+      "previousCheckpointId": "infra-provision-scale-13",
+      "headline": "In-flight work reaches zero",
+      "motion": "confirm",
+      "outcomeFields": [
+        "desiredReplicas",
+        "readyReplicas",
+        "usedSlots",
+        "reservedSlots"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-provision-scale-14:beat-1",
+          "label": "In-flight work reaches zero",
+          "primaryActors": [
+            "scale.service"
+          ],
+          "routeKind": null,
+          "layout": "single",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-provision-scale-15",
+      "scenarioId": "infra-provision-scale",
+      "chapterId": "infra-provision-scale:stage-6",
+      "stateRef": "scenarios/infra-provision-scale.json#/checkpoints/15/expected",
+      "previousCheckpointId": "infra-provision-scale-14",
+      "headline": "Stop the drained instances",
+      "motion": "stop",
+      "outcomeFields": [
+        "desiredReplicas",
+        "readyReplicas",
+        "usedSlots",
+        "reservedSlots"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-provision-scale-15:beat-1",
+          "label": "Stop the drained instances",
+          "primaryActors": [
+            "scale.service"
+          ],
+          "routeKind": null,
+          "layout": "single",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "infra-provision-scale-16",
+      "scenarioId": "infra-provision-scale",
+      "chapterId": "infra-provision-scale:stage-6",
+      "stateRef": "scenarios/infra-provision-scale.json#/checkpoints/16/expected",
+      "previousCheckpointId": "infra-provision-scale-15",
+      "headline": "Return capacity to the pool",
+      "motion": "release",
+      "outcomeFields": [
+        "desiredReplicas",
+        "readyReplicas",
+        "usedSlots",
+        "reservedSlots"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "infra-provision-scale-16:beat-1",
+          "label": "Virtual workers disappear; physical hosts remain",
+          "primaryActors": [
+            "scale.capacity",
+            "scale.worker-01"
+          ],
+          "routeKind": "control",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "limnopulse-end-to-end-00",
+      "scenarioId": "limnopulse-end-to-end",
+      "chapterId": "limnopulse-end-to-end:stage-1",
+      "stateRef": "scenarios/limnopulse-end-to-end.json#/checkpoints/0/expected",
+      "previousCheckpointId": null,
+      "headline": "See the starting state",
+      "motion": "hold",
+      "outcomeFields": [
+        "incident",
+        "email",
+        "telegram",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "limnopulse-end-to-end-00:beat-1",
+          "label": "See the starting state",
+          "primaryActors": [
+            "limno.sensor",
+            "limno.user"
+          ],
+          "routeKind": null,
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "limnopulse-end-to-end-01",
+      "scenarioId": "limnopulse-end-to-end",
+      "chapterId": "limnopulse-end-to-end:stage-1",
+      "stateRef": "scenarios/limnopulse-end-to-end.json#/checkpoints/1/expected",
+      "previousCheckpointId": "limnopulse-end-to-end-00",
+      "headline": "Choose the rule and its window",
+      "motion": "configure",
+      "outcomeFields": [
+        "incident",
+        "email",
+        "telegram",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "limnopulse-end-to-end-01:beat-1",
+          "label": "Choose the rule and its window",
+          "primaryActors": [
+            "limno.evaluator"
+          ],
+          "routeKind": null,
+          "layout": "single",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "limnopulse-end-to-end-02",
+      "scenarioId": "limnopulse-end-to-end",
+      "chapterId": "limnopulse-end-to-end:stage-1",
+      "stateRef": "scenarios/limnopulse-end-to-end.json#/checkpoints/2/expected",
+      "previousCheckpointId": "limnopulse-end-to-end-01",
+      "headline": "Verify the Telegram destination",
+      "motion": "guard",
+      "outcomeFields": [
+        "incident",
+        "email",
+        "telegram",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "limnopulse-end-to-end-02:beat-1",
+          "label": "Verify the Telegram destination",
+          "primaryActors": [
+            "limno.user",
+            "limno.api"
+          ],
+          "routeKind": null,
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "limnopulse-end-to-end-03",
+      "scenarioId": "limnopulse-end-to-end",
+      "chapterId": "limnopulse-end-to-end:stage-1",
+      "stateRef": "scenarios/limnopulse-end-to-end.json#/checkpoints/3/expected",
+      "previousCheckpointId": "limnopulse-end-to-end-02",
+      "headline": "Enable the verified notification channel",
+      "motion": "configure",
+      "outcomeFields": [
+        "incident",
+        "email",
+        "telegram",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "limnopulse-end-to-end-03:beat-1",
+          "label": "Enable the verified notification channel",
+          "primaryActors": [
+            "limno.api",
+            "limno.user"
+          ],
+          "routeKind": null,
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "limnopulse-end-to-end-04",
+      "scenarioId": "limnopulse-end-to-end",
+      "chapterId": "limnopulse-end-to-end:stage-1",
+      "stateRef": "scenarios/limnopulse-end-to-end.json#/checkpoints/4/expected",
+      "previousCheckpointId": "limnopulse-end-to-end-03",
+      "headline": "Publish one synthetic reading",
+      "motion": "transfer",
+      "outcomeFields": [
+        "incident",
+        "email",
+        "telegram",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "limnopulse-end-to-end-04:beat-1",
+          "label": "Publish the sample to the MQTT topic",
+          "primaryActors": [
+            "limno.sensor",
+            "limno.mqtt"
+          ],
+          "routeKind": "data",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "limnopulse-end-to-end-05",
+      "scenarioId": "limnopulse-end-to-end",
+      "chapterId": "limnopulse-end-to-end:stage-1",
+      "stateRef": "scenarios/limnopulse-end-to-end.json#/checkpoints/5/expected",
+      "previousCheckpointId": "limnopulse-end-to-end-04",
+      "headline": "Collect and store a valid window",
+      "motion": "persist",
+      "outcomeFields": [
+        "incident",
+        "email",
+        "telegram",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "limnopulse-end-to-end-05:beat-1",
+          "label": "Telegraf collects and enriches the samples",
+          "primaryActors": [
+            "limno.mqtt",
+            "limno.telegraf"
+          ],
+          "routeKind": "data",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        },
+        {
+          "id": "limnopulse-end-to-end-05:beat-2",
+          "label": "Persist the complete time window",
+          "primaryActors": [
+            "limno.telegraf",
+            "limno.timeseries"
+          ],
+          "routeKind": "persist",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "limnopulse-end-to-end-06",
+      "scenarioId": "limnopulse-end-to-end",
+      "chapterId": "limnopulse-end-to-end:stage-2",
+      "stateRef": "scenarios/limnopulse-end-to-end.json#/checkpoints/6/expected",
+      "previousCheckpointId": "limnopulse-end-to-end-05",
+      "headline": "Evaluate the window, then commit the incident",
+      "motion": "evaluate",
+      "outcomeFields": [
+        "incident",
+        "email",
+        "telegram",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "limnopulse-end-to-end-06:beat-1",
+          "label": "An external scheduler starts the one-shot evaluator",
+          "primaryActors": [
+            "limno.scheduler",
+            "limno.evaluator"
+          ],
+          "routeKind": "control",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        },
+        {
+          "id": "limnopulse-end-to-end-06:beat-2",
+          "label": "Query the qualified time window",
+          "primaryActors": [
+            "limno.evaluator",
+            "limno.timeseries"
+          ],
+          "routeKind": "query",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        },
+        {
+          "id": "limnopulse-end-to-end-06:beat-3",
+          "label": "Commit the incident transition and outbox together",
+          "primaryActors": [
+            "limno.incident",
+            "limno.outbox",
+            "limno.dynamodb"
+          ],
+          "routeKind": "transaction",
+          "layout": "triad",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "limnopulse-end-to-end-07",
+      "scenarioId": "limnopulse-end-to-end",
+      "chapterId": "limnopulse-end-to-end:stage-3",
+      "stateRef": "scenarios/limnopulse-end-to-end.json#/checkpoints/7/expected",
+      "previousCheckpointId": "limnopulse-end-to-end-06",
+      "headline": "Publish durable work to a queue per channel",
+      "motion": "handoff",
+      "outcomeFields": [
+        "incident",
+        "email",
+        "telegram",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "limnopulse-end-to-end-07:beat-1",
+          "label": "Read already committed outbox work",
+          "primaryActors": [
+            "limno.outbox",
+            "limno.relay"
+          ],
+          "routeKind": "query",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        },
+        {
+          "id": "limnopulse-end-to-end-07:beat-2",
+          "label": "Create a durable Delivery before queue publication",
+          "primaryActors": [
+            "limno.relay",
+            "limno.delivery-record",
+            "limno.dynamodb"
+          ],
+          "routeKind": "persist",
+          "layout": "triad",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        },
+        {
+          "id": "limnopulse-end-to-end-07:beat-3",
+          "label": "Publish durable IDs to email SQS",
+          "primaryActors": [
+            "limno.relay",
+            "limno.sqs-email"
+          ],
+          "routeKind": "data",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        },
+        {
+          "id": "limnopulse-end-to-end-07:beat-4",
+          "label": "Publish durable IDs to telegram SQS",
+          "primaryActors": [
+            "limno.relay",
+            "limno.sqs-telegram"
+          ],
+          "routeKind": "data",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "limnopulse-end-to-end-08",
+      "scenarioId": "limnopulse-end-to-end",
+      "chapterId": "limnopulse-end-to-end:stage-4",
+      "stateRef": "scenarios/limnopulse-end-to-end.json#/checkpoints/8/expected",
+      "previousCheckpointId": "limnopulse-end-to-end-07",
+      "headline": "A dedicated worker attempts delivery",
+      "motion": "transfer",
+      "outcomeFields": [
+        "incident",
+        "email",
+        "telegram",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "limnopulse-end-to-end-08:beat-1",
+          "label": "Claim work from the email queue",
+          "primaryActors": [
+            "limno.sqs-email",
+            "limno.worker-email"
+          ],
+          "routeKind": "query",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        },
+        {
+          "id": "limnopulse-end-to-end-08:beat-2",
+          "label": "Make the email provider call",
+          "primaryActors": [
+            "limno.worker-email",
+            "limno.ses"
+          ],
+          "routeKind": "data",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "limnopulse-end-to-end-09",
+      "scenarioId": "limnopulse-end-to-end",
+      "chapterId": "limnopulse-end-to-end:stage-4",
+      "stateRef": "scenarios/limnopulse-end-to-end.json#/checkpoints/9/expected",
+      "previousCheckpointId": "limnopulse-end-to-end-08",
+      "headline": "Record the provider outcome",
+      "motion": "confirm",
+      "outcomeFields": [
+        "incident",
+        "email",
+        "telegram",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "limnopulse-end-to-end-09:beat-1",
+          "label": "Record the provider outcome",
+          "primaryActors": [
+            "limno.ses",
+            "limno.delivery-record"
+          ],
+          "routeKind": "receipt",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "limnopulse-end-to-end-10",
+      "scenarioId": "limnopulse-end-to-end",
+      "chapterId": "limnopulse-end-to-end:stage-4",
+      "stateRef": "scenarios/limnopulse-end-to-end.json#/checkpoints/10/expected",
+      "previousCheckpointId": "limnopulse-end-to-end-09",
+      "headline": "A dedicated worker attempts delivery",
+      "motion": "transfer",
+      "outcomeFields": [
+        "incident",
+        "email",
+        "telegram",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "limnopulse-end-to-end-10:beat-1",
+          "label": "Claim work from the telegram queue",
+          "primaryActors": [
+            "limno.sqs-telegram",
+            "limno.worker-telegram"
+          ],
+          "routeKind": "query",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        },
+        {
+          "id": "limnopulse-end-to-end-10:beat-2",
+          "label": "Respect the Telegram rate limiter",
+          "primaryActors": [
+            "limno.worker-telegram",
+            "limno.redis"
+          ],
+          "routeKind": "control",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        },
+        {
+          "id": "limnopulse-end-to-end-10:beat-3",
+          "label": "Make the telegram provider call",
+          "primaryActors": [
+            "limno.worker-telegram",
+            "limno.telegram"
+          ],
+          "routeKind": "data",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "limnopulse-end-to-end-11",
+      "scenarioId": "limnopulse-end-to-end",
+      "chapterId": "limnopulse-end-to-end:stage-4",
+      "stateRef": "scenarios/limnopulse-end-to-end.json#/checkpoints/11/expected",
+      "previousCheckpointId": "limnopulse-end-to-end-10",
+      "headline": "Rate limited: keep durable work and wait",
+      "motion": "retry-wait",
+      "outcomeFields": [
+        "incident",
+        "email",
+        "telegram",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "limnopulse-end-to-end-11:beat-1",
+          "label": "Rate limited: keep durable work and wait",
+          "primaryActors": [
+            "limno.telegram",
+            "limno.delivery-record"
+          ],
+          "routeKind": "receipt",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "limnopulse-end-to-end-12",
+      "scenarioId": "limnopulse-end-to-end",
+      "chapterId": "limnopulse-end-to-end:stage-4",
+      "stateRef": "scenarios/limnopulse-end-to-end.json#/checkpoints/12/expected",
+      "previousCheckpointId": "limnopulse-end-to-end-11",
+      "headline": "Wait for the logical window",
+      "motion": "wait",
+      "outcomeFields": [
+        "incident",
+        "email",
+        "telegram",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "limnopulse-end-to-end-12:beat-1",
+          "label": "Wait for the logical window",
+          "primaryActors": [
+            "limno.relay"
+          ],
+          "routeKind": null,
+          "layout": "single",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "limnopulse-end-to-end-13",
+      "scenarioId": "limnopulse-end-to-end",
+      "chapterId": "limnopulse-end-to-end:stage-4",
+      "stateRef": "scenarios/limnopulse-end-to-end.json#/checkpoints/13/expected",
+      "previousCheckpointId": "limnopulse-end-to-end-12",
+      "headline": "A dedicated worker attempts delivery",
+      "motion": "transfer",
+      "outcomeFields": [
+        "incident",
+        "email",
+        "telegram",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "limnopulse-end-to-end-13:beat-1",
+          "label": "Claim work from the telegram queue",
+          "primaryActors": [
+            "limno.sqs-telegram",
+            "limno.worker-telegram"
+          ],
+          "routeKind": "query",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        },
+        {
+          "id": "limnopulse-end-to-end-13:beat-2",
+          "label": "Respect the Telegram rate limiter",
+          "primaryActors": [
+            "limno.worker-telegram",
+            "limno.redis"
+          ],
+          "routeKind": "control",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        },
+        {
+          "id": "limnopulse-end-to-end-13:beat-3",
+          "label": "Make the telegram provider call",
+          "primaryActors": [
+            "limno.worker-telegram",
+            "limno.telegram"
+          ],
+          "routeKind": "data",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "limnopulse-end-to-end-14",
+      "scenarioId": "limnopulse-end-to-end",
+      "chapterId": "limnopulse-end-to-end:stage-4",
+      "stateRef": "scenarios/limnopulse-end-to-end.json#/checkpoints/14/expected",
+      "previousCheckpointId": "limnopulse-end-to-end-13",
+      "headline": "Record the provider outcome",
+      "motion": "confirm",
+      "outcomeFields": [
+        "incident",
+        "email",
+        "telegram",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "limnopulse-end-to-end-14:beat-1",
+          "label": "Record the provider outcome",
+          "primaryActors": [
+            "limno.telegram",
+            "limno.delivery-record"
+          ],
+          "routeKind": "receipt",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "limnopulse-end-to-end-15",
+      "scenarioId": "limnopulse-end-to-end",
+      "chapterId": "limnopulse-end-to-end:stage-5",
+      "stateRef": "scenarios/limnopulse-end-to-end.json#/checkpoints/15/expected",
+      "previousCheckpointId": "limnopulse-end-to-end-14",
+      "headline": "Show the message in the demo device",
+      "motion": "illustrate",
+      "outcomeFields": [
+        "incident",
+        "email",
+        "telegram",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "limnopulse-end-to-end-15:beat-1",
+          "label": "Illustrative message view; not a read receipt",
+          "primaryActors": [
+            "limno.telegram",
+            "limno.user"
+          ],
+          "routeKind": "illustration",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "limnopulse-end-to-end-16",
+      "scenarioId": "limnopulse-end-to-end",
+      "chapterId": "limnopulse-end-to-end:stage-5",
+      "stateRef": "scenarios/limnopulse-end-to-end.json#/checkpoints/16/expected",
+      "previousCheckpointId": "limnopulse-end-to-end-15",
+      "headline": "Open the incident through the authorized API",
+      "motion": "query",
+      "outcomeFields": [
+        "incident",
+        "email",
+        "telegram",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "limnopulse-end-to-end-16:beat-1",
+          "label": "Resolve membership before showing the incident",
+          "primaryActors": [
+            "limno.user",
+            "limno.api",
+            "limno.incident"
+          ],
+          "routeKind": "query",
+          "layout": "triad",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "limnopulse-end-to-end-17",
+      "scenarioId": "limnopulse-end-to-end",
+      "chapterId": "limnopulse-end-to-end:stage-5",
+      "stateRef": "scenarios/limnopulse-end-to-end.json#/checkpoints/17/expected",
+      "previousCheckpointId": "limnopulse-end-to-end-16",
+      "headline": "Acknowledge the incident; it is not yet recovered",
+      "motion": "acknowledge",
+      "outcomeFields": [
+        "incident",
+        "email",
+        "telegram",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "limnopulse-end-to-end-17:beat-1",
+          "label": "The user explicitly acknowledges this incident",
+          "primaryActors": [
+            "limno.user",
+            "limno.api",
+            "limno.incident"
+          ],
+          "routeKind": "user-action",
+          "layout": "triad",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "limnopulse-end-to-end-18",
+      "scenarioId": "limnopulse-end-to-end",
+      "chapterId": "limnopulse-end-to-end:stage-6",
+      "stateRef": "scenarios/limnopulse-end-to-end.json#/checkpoints/18/expected",
+      "previousCheckpointId": "limnopulse-end-to-end-17",
+      "headline": "Store a new, complete clean window",
+      "motion": "persist",
+      "outcomeFields": [
+        "incident",
+        "email",
+        "telegram",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "limnopulse-end-to-end-18:beat-1",
+          "label": "New clean readings use the same ingestion route",
+          "primaryActors": [
+            "limno.sensor",
+            "limno.mqtt",
+            "limno.telegraf"
+          ],
+          "routeKind": "data",
+          "layout": "triad",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        },
+        {
+          "id": "limnopulse-end-to-end-18:beat-2",
+          "label": "A fresh valid window replaces the evaluation input",
+          "primaryActors": [
+            "limno.telegraf",
+            "limno.timeseries"
+          ],
+          "routeKind": "persist",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "limnopulse-end-to-end-19",
+      "scenarioId": "limnopulse-end-to-end",
+      "chapterId": "limnopulse-end-to-end:stage-6",
+      "stateRef": "scenarios/limnopulse-end-to-end.json#/checkpoints/19/expected",
+      "previousCheckpointId": "limnopulse-end-to-end-18",
+      "headline": "Confirm recovery from the clean window",
+      "motion": "evaluate",
+      "outcomeFields": [
+        "incident",
+        "email",
+        "telegram",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "limnopulse-end-to-end-19:beat-1",
+          "label": "An external scheduler starts the one-shot evaluator",
+          "primaryActors": [
+            "limno.scheduler",
+            "limno.evaluator"
+          ],
+          "routeKind": "control",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        },
+        {
+          "id": "limnopulse-end-to-end-19:beat-2",
+          "label": "Query the qualified time window",
+          "primaryActors": [
+            "limno.evaluator",
+            "limno.timeseries"
+          ],
+          "routeKind": "query",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        },
+        {
+          "id": "limnopulse-end-to-end-19:beat-3",
+          "label": "Commit the incident transition and outbox together",
+          "primaryActors": [
+            "limno.incident",
+            "limno.outbox",
+            "limno.dynamodb"
+          ],
+          "routeKind": "transaction",
+          "layout": "triad",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "limnopulse-end-to-end-20",
+      "scenarioId": "limnopulse-end-to-end",
+      "chapterId": "limnopulse-end-to-end:stage-6",
+      "stateRef": "scenarios/limnopulse-end-to-end.json#/checkpoints/20/expected",
+      "previousCheckpointId": "limnopulse-end-to-end-19",
+      "headline": "Publish durable work to a queue per channel",
+      "motion": "handoff",
+      "outcomeFields": [
+        "incident",
+        "email",
+        "telegram",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "limnopulse-end-to-end-20:beat-1",
+          "label": "Read already committed outbox work",
+          "primaryActors": [
+            "limno.outbox",
+            "limno.relay"
+          ],
+          "routeKind": "query",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        },
+        {
+          "id": "limnopulse-end-to-end-20:beat-2",
+          "label": "Create a durable Delivery before queue publication",
+          "primaryActors": [
+            "limno.relay",
+            "limno.delivery-record",
+            "limno.dynamodb"
+          ],
+          "routeKind": "persist",
+          "layout": "triad",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        },
+        {
+          "id": "limnopulse-end-to-end-20:beat-3",
+          "label": "Publish durable IDs to email SQS",
+          "primaryActors": [
+            "limno.relay",
+            "limno.sqs-email"
+          ],
+          "routeKind": "data",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        },
+        {
+          "id": "limnopulse-end-to-end-20:beat-4",
+          "label": "Publish durable IDs to telegram SQS",
+          "primaryActors": [
+            "limno.relay",
+            "limno.sqs-telegram"
+          ],
+          "routeKind": "data",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "limnopulse-end-to-end-21",
+      "scenarioId": "limnopulse-end-to-end",
+      "chapterId": "limnopulse-end-to-end:stage-6",
+      "stateRef": "scenarios/limnopulse-end-to-end.json#/checkpoints/21/expected",
+      "previousCheckpointId": "limnopulse-end-to-end-20",
+      "headline": "Send recovery through each channel",
+      "motion": "handoff",
+      "outcomeFields": [
+        "incident",
+        "email",
+        "telegram",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "limnopulse-end-to-end-21:beat-1",
+          "label": "Recovery uses the same email queue and worker",
+          "primaryActors": [
+            "limno.sqs-email",
+            "limno.worker-email"
+          ],
+          "routeKind": "query",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        },
+        {
+          "id": "limnopulse-end-to-end-21:beat-2",
+          "label": "Send the email recovery message",
+          "primaryActors": [
+            "limno.worker-email",
+            "limno.ses"
+          ],
+          "routeKind": "data",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        },
+        {
+          "id": "limnopulse-end-to-end-21:beat-3",
+          "label": "Recovery uses the same telegram queue and worker",
+          "primaryActors": [
+            "limno.sqs-telegram",
+            "limno.worker-telegram"
+          ],
+          "routeKind": "query",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        },
+        {
+          "id": "limnopulse-end-to-end-21:beat-4",
+          "label": "Apply the same rate gate",
+          "primaryActors": [
+            "limno.worker-telegram",
+            "limno.redis"
+          ],
+          "routeKind": "control",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        },
+        {
+          "id": "limnopulse-end-to-end-21:beat-5",
+          "label": "Send the telegram recovery message",
+          "primaryActors": [
+            "limno.worker-telegram",
+            "limno.telegram"
+          ],
+          "routeKind": "data",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "limnopulse-end-to-end-22",
+      "scenarioId": "limnopulse-end-to-end",
+      "chapterId": "limnopulse-end-to-end:stage-6",
+      "stateRef": "scenarios/limnopulse-end-to-end.json#/checkpoints/22/expected",
+      "previousCheckpointId": "limnopulse-end-to-end-21",
+      "headline": "Record acceptance independently per channel",
+      "motion": "confirm",
+      "outcomeFields": [
+        "incident",
+        "email",
+        "telegram",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "limnopulse-end-to-end-22:beat-1",
+          "label": "email acceptance is recorded independently",
+          "primaryActors": [
+            "limno.ses",
+            "limno.delivery-record"
+          ],
+          "routeKind": "receipt",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        },
+        {
+          "id": "limnopulse-end-to-end-22:beat-2",
+          "label": "telegram acceptance is recorded independently",
+          "primaryActors": [
+            "limno.telegram",
+            "limno.delivery-record"
+          ],
+          "routeKind": "receipt",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "limnopulse-end-to-end-23",
+      "scenarioId": "limnopulse-end-to-end",
+      "chapterId": "limnopulse-end-to-end:stage-6",
+      "stateRef": "scenarios/limnopulse-end-to-end.json#/checkpoints/23/expected",
+      "previousCheckpointId": "limnopulse-end-to-end-22",
+      "headline": "Show the message in the demo device",
+      "motion": "illustrate",
+      "outcomeFields": [
+        "incident",
+        "email",
+        "telegram",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "limnopulse-end-to-end-23:beat-1",
+          "label": "Illustrative message view; not a read receipt",
+          "primaryActors": [
+            "limno.telegram",
+            "limno.user"
+          ],
+          "routeKind": "illustration",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "cnesdata-end-to-end-00",
+      "scenarioId": "cnesdata-end-to-end",
+      "chapterId": "cnesdata-end-to-end:stage-1",
+      "stateRef": "scenarios/cnesdata-end-to-end.json#/checkpoints/0/expected",
+      "previousCheckpointId": null,
+      "headline": "See the starting state",
+      "motion": "hold",
+      "outcomeFields": [
+        "run",
+        "currentVersion",
+        "servedVersion",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "cnesdata-end-to-end-00:beat-1",
+          "label": "See the starting state",
+          "primaryActors": [
+            "cnes.pointer",
+            "cnes.user"
+          ],
+          "routeKind": null,
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "cnesdata-end-to-end-01",
+      "scenarioId": "cnesdata-end-to-end",
+      "chapterId": "cnesdata-end-to-end:stage-1",
+      "stateRef": "scenarios/cnesdata-end-to-end.json#/checkpoints/1/expected",
+      "previousCheckpointId": "cnesdata-end-to-end-00",
+      "headline": "Request this tenant and reporting month",
+      "motion": "configure",
+      "outcomeFields": [
+        "run",
+        "currentVersion",
+        "servedVersion",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "cnesdata-end-to-end-01:beat-1",
+          "label": "Request this tenant and reporting month",
+          "primaryActors": [
+            "cnes.control",
+            "cnes.edge"
+          ],
+          "routeKind": null,
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "cnesdata-end-to-end-02",
+      "scenarioId": "cnesdata-end-to-end",
+      "chapterId": "cnesdata-end-to-end:stage-1",
+      "stateRef": "scenarios/cnesdata-end-to-end.json#/checkpoints/2/expected",
+      "previousCheckpointId": "cnesdata-end-to-end-01",
+      "headline": "Validate identity and claim the job",
+      "motion": "guard",
+      "outcomeFields": [
+        "run",
+        "currentVersion",
+        "servedVersion",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "cnesdata-end-to-end-02:beat-1",
+          "label": "Validate identity and claim the job",
+          "primaryActors": [
+            "cnes.control",
+            "cnes.edge"
+          ],
+          "routeKind": null,
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "cnesdata-end-to-end-03",
+      "scenarioId": "cnesdata-end-to-end",
+      "chapterId": "cnesdata-end-to-end:stage-2",
+      "stateRef": "scenarios/cnesdata-end-to-end.json#/checkpoints/3/expected",
+      "previousCheckpointId": "cnesdata-end-to-end-02",
+      "headline": "Read the municipal source near the edge",
+      "motion": "extract",
+      "outcomeFields": [
+        "run",
+        "currentVersion",
+        "servedVersion",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "cnesdata-end-to-end-03:beat-1",
+          "label": "Read source records without business reconciliation",
+          "primaryActors": [
+            "cnes.local",
+            "cnes.edge"
+          ],
+          "routeKind": "data",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "cnesdata-end-to-end-04",
+      "scenarioId": "cnesdata-end-to-end",
+      "chapterId": "cnesdata-end-to-end:stage-2",
+      "stateRef": "scenarios/cnesdata-end-to-end.json#/checkpoints/4/expected",
+      "previousCheckpointId": "cnesdata-end-to-end-03",
+      "headline": "Create the Parquet artifact",
+      "motion": "transform",
+      "outcomeFields": [
+        "run",
+        "currentVersion",
+        "servedVersion",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "cnesdata-end-to-end-04:beat-1",
+          "label": "Encode faithful typed rows as Parquet",
+          "primaryActors": [
+            "cnes.edge",
+            "cnes.parquet"
+          ],
+          "routeKind": "transform",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "cnesdata-end-to-end-05",
+      "scenarioId": "cnesdata-end-to-end",
+      "chapterId": "cnesdata-end-to-end:stage-3",
+      "stateRef": "scenarios/cnesdata-end-to-end.json#/checkpoints/5/expected",
+      "previousCheckpointId": "cnesdata-end-to-end-04",
+      "headline": "Store immutable raw bytes",
+      "motion": "persist",
+      "outcomeFields": [
+        "run",
+        "currentVersion",
+        "servedVersion",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "cnesdata-end-to-end-05:beat-1",
+          "label": "Store data.parquet in the raw namespace",
+          "primaryActors": [
+            "cnes.parquet",
+            "cnes.raw"
+          ],
+          "routeKind": "persist",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "cnesdata-end-to-end-06",
+      "scenarioId": "cnesdata-end-to-end",
+      "chapterId": "cnesdata-end-to-end:stage-3",
+      "stateRef": "scenarios/cnesdata-end-to-end.json#/checkpoints/6/expected",
+      "previousCheckpointId": "cnesdata-end-to-end-05",
+      "headline": "Accept identical bytes without another object",
+      "motion": "replay",
+      "outcomeFields": [
+        "run",
+        "currentVersion",
+        "servedVersion",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "cnesdata-end-to-end-06:beat-1",
+          "label": "A matching retry leaves the same immutable object",
+          "primaryActors": [
+            "cnes.parquet",
+            "cnes.raw"
+          ],
+          "routeKind": "replay",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "cnesdata-end-to-end-07",
+      "scenarioId": "cnesdata-end-to-end",
+      "chapterId": "cnesdata-end-to-end:stage-3",
+      "stateRef": "scenarios/cnesdata-end-to-end.json#/checkpoints/7/expected",
+      "previousCheckpointId": "cnesdata-end-to-end-06",
+      "headline": "Validate and accept the sibling manifest",
+      "motion": "persist",
+      "outcomeFields": [
+        "run",
+        "currentVersion",
+        "servedVersion",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "cnesdata-end-to-end-07:beat-1",
+          "label": "Validate identity, fence and the manifest references",
+          "primaryActors": [
+            "cnes.manifest",
+            "cnes.control"
+          ],
+          "routeKind": "control",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        },
+        {
+          "id": "cnesdata-end-to-end-07:beat-2",
+          "label": "Keep data.parquet and manifest.json as sibling raw objects",
+          "primaryActors": [
+            "cnes.parquet",
+            "cnes.manifest",
+            "cnes.raw"
+          ],
+          "routeKind": "persist",
+          "layout": "triad",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "cnesdata-end-to-end-08",
+      "scenarioId": "cnesdata-end-to-end",
+      "chapterId": "cnesdata-end-to-end:stage-3",
+      "stateRef": "scenarios/cnesdata-end-to-end.json#/checkpoints/8/expected",
+      "previousCheckpointId": "cnesdata-end-to-end-07",
+      "headline": "Read the requested national PF file",
+      "motion": "extract",
+      "outcomeFields": [
+        "run",
+        "currentVersion",
+        "servedVersion",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "cnesdata-end-to-end-08:beat-1",
+          "label": "National data uses the central adapter, not the edge",
+          "primaryActors": [
+            "cnes.national",
+            "cnes.national-adapter"
+          ],
+          "routeKind": "data",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "cnesdata-end-to-end-09",
+      "scenarioId": "cnesdata-end-to-end",
+      "chapterId": "cnesdata-end-to-end:stage-3",
+      "stateRef": "scenarios/cnesdata-end-to-end.json#/checkpoints/9/expected",
+      "previousCheckpointId": "cnesdata-end-to-end-08",
+      "headline": "Complete the national raw input",
+      "motion": "persist",
+      "outcomeFields": [
+        "run",
+        "currentVersion",
+        "servedVersion",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "cnesdata-end-to-end-09:beat-1",
+          "label": "Prepare the national Parquet artifact",
+          "primaryActors": [
+            "cnes.national-adapter",
+            "cnes.parquet"
+          ],
+          "routeKind": "transform",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        },
+        {
+          "id": "cnesdata-end-to-end-09:beat-2",
+          "label": "Accept its immutable raw object and sibling manifest",
+          "primaryActors": [
+            "cnes.parquet",
+            "cnes.manifest",
+            "cnes.raw"
+          ],
+          "routeKind": "persist",
+          "layout": "triad",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "cnesdata-end-to-end-10",
+      "scenarioId": "cnesdata-end-to-end",
+      "chapterId": "cnesdata-end-to-end:stage-4",
+      "stateRef": "scenarios/cnesdata-end-to-end.json#/checkpoints/10/expected",
+      "previousCheckpointId": "cnesdata-end-to-end-09",
+      "headline": "Start the run only when its inputs are ready",
+      "motion": "guard",
+      "outcomeFields": [
+        "run",
+        "currentVersion",
+        "servedVersion",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "cnesdata-end-to-end-10:beat-1",
+          "label": "All required raw inputs are accepted",
+          "primaryActors": [
+            "cnes.control",
+            "cnes.normalize"
+          ],
+          "routeKind": "control",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "cnesdata-end-to-end-11",
+      "scenarioId": "cnesdata-end-to-end",
+      "chapterId": "cnesdata-end-to-end:stage-4",
+      "stateRef": "scenarios/cnesdata-end-to-end.json#/checkpoints/11/expected",
+      "previousCheckpointId": "cnesdata-end-to-end-10",
+      "headline": "Normalize each source and retain provenance",
+      "motion": "transform",
+      "outcomeFields": [
+        "run",
+        "currentVersion",
+        "servedVersion",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "cnesdata-end-to-end-11:beat-1",
+          "label": "Read accepted raw inputs",
+          "primaryActors": [
+            "cnes.raw",
+            "cnes.normalize"
+          ],
+          "routeKind": "query",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        },
+        {
+          "id": "cnesdata-end-to-end-11:beat-2",
+          "label": "Show a field value before and after normalization",
+          "primaryActors": [
+            "cnes.normalize"
+          ],
+          "routeKind": "transform",
+          "layout": "single",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "cnesdata-end-to-end-12",
+      "scenarioId": "cnesdata-end-to-end",
+      "chapterId": "cnesdata-end-to-end:stage-5",
+      "stateRef": "scenarios/cnesdata-end-to-end.json#/checkpoints/12/expected",
+      "previousCheckpointId": "cnesdata-end-to-end-11",
+      "headline": "Compare the normalized source records",
+      "motion": "transform",
+      "outcomeFields": [
+        "run",
+        "currentVersion",
+        "servedVersion",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "cnesdata-end-to-end-12:beat-1",
+          "label": "Compare records from the two sources",
+          "primaryActors": [
+            "cnes.normalize",
+            "cnes.reconcile"
+          ],
+          "routeKind": "transform",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "cnesdata-end-to-end-13",
+      "scenarioId": "cnesdata-end-to-end",
+      "chapterId": "cnesdata-end-to-end:stage-5",
+      "stateRef": "scenarios/cnesdata-end-to-end.json#/checkpoints/13/expected",
+      "previousCheckpointId": "cnesdata-end-to-end-12",
+      "headline": "Build the small JSON view for the screen",
+      "motion": "transform",
+      "outcomeFields": [
+        "run",
+        "currentVersion",
+        "servedVersion",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "cnesdata-end-to-end-13:beat-1",
+          "label": "Turn the result into screen-oriented JSON",
+          "primaryActors": [
+            "cnes.reconcile",
+            "cnes.serving"
+          ],
+          "routeKind": "transform",
+          "layout": "pair",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "cnesdata-end-to-end-14",
+      "scenarioId": "cnesdata-end-to-end",
+      "chapterId": "cnesdata-end-to-end:stage-6",
+      "stateRef": "scenarios/cnesdata-end-to-end.json#/checkpoints/14/expected",
+      "previousCheckpointId": "cnesdata-end-to-end-13",
+      "headline": "Verify the complete candidate output",
+      "motion": "guard",
+      "outcomeFields": [
+        "run",
+        "currentVersion",
+        "servedVersion",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "cnesdata-end-to-end-14:beat-1",
+          "label": "The previous CURRENT stays active while the candidate is prepared",
+          "primaryActors": [
+            "cnes.serving",
+            "cnes.version",
+            "cnes.pointer"
+          ],
+          "routeKind": "control",
+          "layout": "triad",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "cnesdata-end-to-end-15",
+      "scenarioId": "cnesdata-end-to-end",
+      "chapterId": "cnesdata-end-to-end:stage-6",
+      "stateRef": "scenarios/cnesdata-end-to-end.json#/checkpoints/15/expected",
+      "previousCheckpointId": "cnesdata-end-to-end-14",
+      "headline": "Create an immutable dataset version",
+      "motion": "persist",
+      "outcomeFields": [
+        "run",
+        "currentVersion",
+        "servedVersion",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "cnesdata-end-to-end-15:beat-1",
+          "label": "The previous CURRENT stays active while the candidate is prepared",
+          "primaryActors": [
+            "cnes.serving",
+            "cnes.version",
+            "cnes.pointer"
+          ],
+          "routeKind": "persist",
+          "layout": "triad",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "cnesdata-end-to-end-16",
+      "scenarioId": "cnesdata-end-to-end",
+      "chapterId": "cnesdata-end-to-end:stage-6",
+      "stateRef": "scenarios/cnesdata-end-to-end.json#/checkpoints/16/expected",
+      "previousCheckpointId": "cnesdata-end-to-end-15",
+      "headline": "Switch CURRENT by compare-and-swap",
+      "motion": "publish",
+      "outcomeFields": [
+        "run",
+        "currentVersion",
+        "servedVersion",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "cnesdata-end-to-end-16:beat-1",
+          "label": "Move only CURRENT from v0 to verified v1",
+          "primaryActors": [
+            "cnes.version",
+            "cnes.pointer",
+            "cnes.control"
+          ],
+          "routeKind": "publish",
+          "layout": "triad",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "cnesdata-end-to-end-17",
+      "scenarioId": "cnesdata-end-to-end",
+      "chapterId": "cnesdata-end-to-end:stage-6",
+      "stateRef": "scenarios/cnesdata-end-to-end.json#/checkpoints/17/expected",
+      "previousCheckpointId": "cnesdata-end-to-end-16",
+      "headline": "Authorize access and pin one dataset version",
+      "motion": "query",
+      "outcomeFields": [
+        "run",
+        "currentVersion",
+        "servedVersion",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "cnesdata-end-to-end-17:beat-1",
+          "label": "Authorize the user and pin the selected run",
+          "primaryActors": [
+            "cnes.api",
+            "cnes.pointer",
+            "cnes.user"
+          ],
+          "routeKind": "query",
+          "layout": "triad",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    },
+    {
+      "checkpointId": "cnesdata-end-to-end-18",
+      "scenarioId": "cnesdata-end-to-end",
+      "chapterId": "cnesdata-end-to-end:stage-6",
+      "stateRef": "scenarios/cnesdata-end-to-end.json#/checkpoints/18/expected",
+      "previousCheckpointId": "cnesdata-end-to-end-17",
+      "headline": "Show the consistent result to the user",
+      "motion": "illustrate",
+      "outcomeFields": [
+        "run",
+        "currentVersion",
+        "servedVersion",
+        "userView"
+      ],
+      "defaultPhaseMs": {
+        "orient": 400,
+        "focus": 250,
+        "action": 850,
+        "settle": 1100
+      },
+      "microbeats": [
+        {
+          "id": "cnesdata-end-to-end-18:beat-1",
+          "label": "Show one consistent dataset version",
+          "primaryActors": [
+            "cnes.user"
+          ],
+          "routeKind": "illustration",
+          "layout": "single",
+          "claim": "visual explanation of the referenced domain transition; not a new commit or backend call"
+        }
+      ],
+      "advancePolicy": "Complete all visible explanatory subbeats before the next guided command; this is pacing, never a domain success gate."
+    }
+  ]
+}

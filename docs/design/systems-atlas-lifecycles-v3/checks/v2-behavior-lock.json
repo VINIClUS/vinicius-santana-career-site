@@ -1,0 +1,19 @@
+{
+  "baseline": "systems-atlas-lifecycles-v2.zip",
+  "files": {
+    "contracts/simulation-contract.ts": "e667473cf2c429d9987506931732da2d2f77d2edb6ddb3f34849eb54aa68538a",
+    "design/sample-data.json": "e6ddc00c56c64854bbf71b2273eacac12fe014dfbb23ef51772fc24da32a5ee3",
+    "domains/CNESDATA.md": "fb42a04510a3bd1f63da20978a7a52cc1325fda6450cf6425cd223ac198ba57f",
+    "domains/INFRASTRUCTURE.md": "c4243513a8a334f6c28fa0fd28f5b3f17040dd1cbdb49eddef5d121c8783a1e4",
+    "domains/LIMNOPULSE.md": "3a4a30a1dbc5d06b2376d9524e87d4b076ae2cdceaca1a1b2855ee6ef8df0b15",
+    "scenarios/cnesdata-end-to-end.json": "fede007cc151bbe90d39e2ec3f2d9361e23b0527dbbd9590a505961107067615",
+    "scenarios/infra-exhaustion-recovery.json": "c662d5eee1fdcba527a1e94b74833ff233b741c4757f773b7a8690f2cd2d424c",
+    "scenarios/infra-provision-scale.json": "01e57bf72c6f0fc4d135a4b2384e861d94493597997f1152f8bfdcc63b14aa6a",
+    "scenarios/infra-quorum-recovery.json": "f550817376ff2987a2d1fabdb2a70905ba563eb5d0a05df68f744edfb818332d",
+    "scenarios/limnopulse-end-to-end.json": "78697b5e5b55d130392ace394de949eca059dfd5b54d1e49ce951609885630b1",
+    "scenarios/negative-cases.json": "f7b9c3269a59e27ca738593fe01028a4cf373dd394ce31a55e369d22148cf4be",
+    "schemas/negative-cases.schema.json": "dc5839a22b776998985d797ca411310631b43644e0dde408cdf51c286f5f521d",
+    "schemas/scenario.schema.json": "965cab7b49864761dffbd8a2b34c99e168b354ba5a87057a7c17e2a02998e22c"
+  },
+  "purpose": "Byte-for-byte behavior preservation; not proof of implemented reducers."
+}

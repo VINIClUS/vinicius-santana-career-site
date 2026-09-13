@@ -1,0 +1,46 @@
+{
+  "synthetic": true,
+  "competencia": "2026-07",
+  "local": [
+    {
+      "establishment": " EST-A ",
+      "professional": "PROF-A",
+      "hours": "040 "
+    },
+    {
+      "establishment": "EST-B",
+      "professional": "PROF-B",
+      "hours": "020"
+    },
+    {
+      "establishment": "EST-C",
+      "professional": "PROF-C",
+      "hours": "030"
+    }
+  ],
+  "national": [
+    {
+      "establishment": "EST-A",
+      "professional": "PROF-A",
+      "hours": "20"
+    },
+    {
+      "establishment": "EST-B",
+      "professional": "PROF-B",
+      "hours": "20"
+    },
+    {
+      "establishment": "EST-C",
+      "professional": "PROF-C",
+      "hours": "30"
+    }
+  ],
+  "expected": {
+    "comparedRows": 3,
+    "differentRows": 1,
+    "sameRows": 2,
+    "run_id": "run-demo-01",
+    "version": "v-demo-01"
+  },
+  "rule": "Illustrative comparison of hours; no claim of a validated SUS billing rule. Strip surrounding spaces in synthetic IDs; convert numeric hours to integer; preserve identity and source."
+}

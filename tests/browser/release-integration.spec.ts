@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
+import { openTechnicalDetails } from './support/technical-details';
 
 const viewports = [
   { width: 1440, height: 900 },
@@ -77,13 +78,14 @@ for (const viewport of viewports) {
     await page.locator('#district-infrastructure a[href="/explore/infrastructure/"]').click();
     await expect(page).toHaveURL(/\/explore\/infrastructure\/$/);
 
-    const simulation = page.locator('[data-infrastructure-simulation]');
-    await simulation.getByRole('button', { name: 'Fail node-02', exact: true }).click();
-    await expect(simulation.locator('[data-infra-node="node-02"]')).toContainText('failed');
-    await expect(simulation.locator('[data-infra-workload]')).toContainText('node-01');
-    await simulation.getByRole('button', { name: 'Reset simulation', exact: true }).click();
-    await expect(simulation.locator('[data-infra-node="node-02"]')).toContainText('online');
-    await expect(simulation.locator('[data-infra-workload]')).toContainText('node-02');
+    const lifecycle = page.locator('#simulation[data-lifecycle]');
+    await openTechnicalDetails(page);
+    await lifecycle.locator('[data-life-chapter="1"]').click();
+    await expect(lifecycle.locator('[data-current-stage]')).toHaveAttribute('data-life-chapter', '1');
+    await expect(lifecycle.locator('[data-life-outcome]')).not.toBeEmpty();
+    await lifecycle.locator('[data-life-replay]').click();
+    await expect(lifecycle.locator('[data-current-stage]')).toHaveAttribute('data-life-chapter', '0');
+    await expect(lifecycle.locator('[data-life-progress]')).toContainText('operation 1 / 16');
     await expectLoadedImagesAndNoHorizontalOverflow(page);
 
     await page.getByRole('navigation', { name: 'Case study navigation', exact: true }).getByRole('link', { name: 'Back to Atlas', exact: false }).click();

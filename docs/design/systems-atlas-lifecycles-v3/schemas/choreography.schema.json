@@ -1,0 +1,187 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "V3 presentation choreography",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "scope",
+    "atomicity",
+    "notEveryFrameIsAStep",
+    "checkpoints"
+  ],
+  "properties": {
+    "version": {
+      "const": "3.0"
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "atomicity": {
+      "type": "string",
+      "minLength": 1
+    },
+    "notEveryFrameIsAStep": {
+      "const": true
+    },
+    "checkpoints": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "checkpointId",
+          "scenarioId",
+          "chapterId",
+          "stateRef",
+          "previousCheckpointId",
+          "headline",
+          "motion",
+          "outcomeFields",
+          "defaultPhaseMs",
+          "microbeats",
+          "advancePolicy"
+        ],
+        "properties": {
+          "checkpointId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "scenarioId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "chapterId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "stateRef": {
+            "type": "string",
+            "minLength": 1
+          },
+          "headline": {
+            "type": "string",
+            "minLength": 1
+          },
+          "motion": {
+            "type": "string",
+            "minLength": 1
+          },
+          "advancePolicy": {
+            "type": "string",
+            "minLength": 1
+          },
+          "previousCheckpointId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "outcomeFields": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "defaultPhaseMs": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "orient",
+              "focus",
+              "action",
+              "settle"
+            ],
+            "properties": {
+              "orient": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "focus": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "action": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "settle": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "microbeats": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "label",
+                "primaryActors",
+                "routeKind",
+                "layout",
+                "claim"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "primaryActors": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 3,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "routeKind": {
+                  "enum": [
+                    null,
+                    "data",
+                    "control",
+                    "query",
+                    "persist",
+                    "transaction",
+                    "restart",
+                    "traffic",
+                    "receipt",
+                    "illustration",
+                    "user-action",
+                    "transform",
+                    "replay",
+                    "publish"
+                  ]
+                },
+                "layout": {
+                  "enum": [
+                    "single",
+                    "pair",
+                    "triad"
+                  ]
+                },
+                "claim": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

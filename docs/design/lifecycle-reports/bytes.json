@@ -1,0 +1,54 @@
+{
+  "domainPlayerWorstCaseGzipBytes": 19238,
+  "budgetGzipBytes": 81920,
+  "files": [
+    {
+      "file": "Lifecycle.astro_astro_type_script_index_0_lang.wwM4rEKR.js",
+      "bytes": 17206,
+      "gzipBytes": 6531
+    },
+    {
+      "file": "cnesdata.UutgdEKE.js",
+      "bytes": 14252,
+      "gzipBytes": 5053
+    },
+    {
+      "file": "infrastructure.Dm3brhK6.js",
+      "bytes": 4189,
+      "gzipBytes": 1475
+    },
+    {
+      "file": "limnopulse.LLpDpUZv.js",
+      "bytes": 9090,
+      "gzipBytes": 3391
+    },
+    {
+      "file": "preload-helper.CxFQXtKk.js",
+      "bytes": 1342,
+      "gzipBytes": 729
+    },
+    {
+      "file": "scaling.BjQVn6AU.js",
+      "bytes": 6192,
+      "gzipBytes": 2059
+    }
+  ],
+  "routes": {
+    "infrastructure": {
+      "htmlBytes": 113543,
+      "htmlGzipBytes": 17154,
+      "tourDataGzipBytes": 6968
+    },
+    "limnopulse": {
+      "htmlBytes": 97675,
+      "htmlGzipBytes": 15738,
+      "tourDataGzipBytes": 5597
+    },
+    "cnesdata": {
+      "htmlBytes": 82618,
+      "htmlGzipBytes": 14969,
+      "tourDataGzipBytes": 5026
+    }
+  },
+  "homeAtlasNewLifecycleAssets": false
+}

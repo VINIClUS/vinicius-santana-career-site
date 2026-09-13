@@ -7,16 +7,14 @@ type Component = CollectionEntry<'caseStudies'>['data']['architecture'][number];
 interface Props {
   components: readonly Component[];
   relations: readonly ProjectRelation[];
-  visibleComponents: readonly Component[];
-  position: 'right' | 'bottom';
 }
-const { components, visibleComponents, relations, position } = Astro.props;
+const { components, relations } = Astro.props;
 const componentFor = (id: string) => components.find(component => component.id === id)!;
 ---
-<section class={`component-panel component-cards component-cards-${position}`} data-component-cards aria-label={position === 'bottom' ? 'More component details' : undefined} aria-labelledby={position === 'right' ? 'details-title' : undefined}>
-  {position === 'right' && <h3 id="details-title">Component details</h3>}
+<section class="component-panel component-cards component-cards-right" data-component-cards aria-labelledby="details-title">
+  <h3 id="details-title">Component details</h3>
   <div class="component-card-list">
-    {visibleComponents.map(component => {
+    {components.map(component => {
       const receives = relations.filter(relation => relation.to === component.id);
       const sends = relations.filter(relation => relation.from === component.id);
       return <article id={`component-${component.id}`} data-component-detail={component.id} data-selected="false">
@@ -39,7 +37,7 @@ const componentFor = (id: string) => components.find(component => component.id =
 <style>
   .component-cards { min-width: 0; }
   .component-cards > h3 { margin-top: 0; }
-  .component-card-list { display: grid; gap: 12px; }
+  .component-card-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
   .component-cards article { position: relative; scroll-margin-top: calc(var(--header-height) + 24px); border: 1px solid var(--line); border-radius: 10px; background: var(--surface-soft); padding: 18px; }
   .component-cards article[data-selected="true"] { border-color: var(--graph-accent); background: color-mix(in srgb, var(--graph-accent) 8%, var(--surface-soft)); box-shadow: 0 0 16px color-mix(in srgb, var(--graph-accent) 10%, transparent); }
   button { color: inherit; font: inherit; text-align: left; border: 0; background: none; padding: 0; cursor: pointer; }
@@ -47,11 +45,6 @@ const componentFor = (id: string) => components.find(component => component.id =
   .component-card-select { width: 100%; }
   .component-card-select::after { content: ""; position: absolute; inset: 0; border-radius: 10px; }
   .card-relationships button { position: relative; z-index: 1; text-decoration: underline; text-underline-offset: 3px; font-weight: 700; }
-  .component-cards-bottom { grid-column: 1 / -1; }
-  .component-cards-bottom .component-card-list { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
-  .component-cards-bottom article { padding: 14px; }
-  .component-cards-bottom .card-relationships { margin-top: 12px; gap: 8px; }
-  @media (max-width: 760px) { .component-cards-bottom .component-card-list { grid-template-columns: 1fr; } }
   .component-cards article:focus { outline: 3px solid var(--accent); outline-offset: 4px; }
   .component-cards h4 { margin: 0; font-size: .96rem; }
   .component-cards p { margin: 10px 0 0; color: var(--muted-strong); font-size: .82rem; line-height: 1.6; }

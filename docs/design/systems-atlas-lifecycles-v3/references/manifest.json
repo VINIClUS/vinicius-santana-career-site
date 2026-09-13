@@ -1,0 +1,232 @@
+{
+  "version": "3.0",
+  "approval": "Visual direction accepted in conversation; not approval of generated logos, technical topology or slogans.",
+  "images": [
+    {
+      "id": "limnopulse",
+      "file": "references/approved/limnopulse-storyboard.png",
+      "originalFileName": "ciclo_de_alertas_do_limnopulse.png",
+      "sha256": "501c213eb3fbd1a11a2c9656870efd4962371716d8df4719503157c3f3f14cc9",
+      "size": [
+        1672,
+        941
+      ],
+      "authority": "visual-direction-only",
+      "corrections": "design/REFERENCE-CORRECTIONS.md",
+      "productionUse": false,
+      "crops": [
+        {
+          "path": "references/crops/limnopulse-01.png",
+          "panel": 1,
+          "bbox": [
+            12,
+            132,
+            548,
+            509
+          ]
+        },
+        {
+          "path": "references/crops/limnopulse-02.png",
+          "panel": 2,
+          "bbox": [
+            563,
+            132,
+            1106,
+            509
+          ]
+        },
+        {
+          "path": "references/crops/limnopulse-03.png",
+          "panel": 3,
+          "bbox": [
+            1120,
+            132,
+            1665,
+            509
+          ]
+        },
+        {
+          "path": "references/crops/limnopulse-04.png",
+          "panel": 4,
+          "bbox": [
+            12,
+            523,
+            548,
+            912
+          ]
+        },
+        {
+          "path": "references/crops/limnopulse-05.png",
+          "panel": 5,
+          "bbox": [
+            563,
+            523,
+            1106,
+            912
+          ]
+        },
+        {
+          "path": "references/crops/limnopulse-06.png",
+          "panel": 6,
+          "bbox": [
+            1120,
+            523,
+            1665,
+            912
+          ]
+        }
+      ]
+    },
+    {
+      "id": "infrastructure",
+      "file": "references/approved/infrastructure-storyboard.png",
+      "originalFileName": "ciclo_de_infraestrutura_autogerenciável.png",
+      "sha256": "0da37b95455a6076ddd0cb34ec34c2b6cbcf7d802a5b654cfa24957c1268b07f",
+      "size": [
+        1672,
+        941
+      ],
+      "authority": "visual-direction-only",
+      "corrections": "design/REFERENCE-CORRECTIONS.md",
+      "productionUse": false,
+      "crops": [
+        {
+          "path": "references/crops/infrastructure-01.png",
+          "panel": 1,
+          "bbox": [
+            12,
+            102,
+            548,
+            493
+          ]
+        },
+        {
+          "path": "references/crops/infrastructure-02.png",
+          "panel": 2,
+          "bbox": [
+            563,
+            102,
+            1106,
+            493
+          ]
+        },
+        {
+          "path": "references/crops/infrastructure-03.png",
+          "panel": 3,
+          "bbox": [
+            1120,
+            102,
+            1665,
+            493
+          ]
+        },
+        {
+          "path": "references/crops/infrastructure-04.png",
+          "panel": 4,
+          "bbox": [
+            12,
+            510,
+            548,
+            926
+          ]
+        },
+        {
+          "path": "references/crops/infrastructure-05.png",
+          "panel": 5,
+          "bbox": [
+            563,
+            510,
+            1106,
+            926
+          ]
+        },
+        {
+          "path": "references/crops/infrastructure-06.png",
+          "panel": 6,
+          "bbox": [
+            1120,
+            510,
+            1665,
+            926
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cnesdata",
+      "file": "references/approved/cnesdata-storyboard.png",
+      "originalFileName": "cnesdata_da_extração_à_publicação.png",
+      "sha256": "4981900366b1014a1df07247f3ae8cf7711520216e659b24504d47a221d02b1a",
+      "size": [
+        1672,
+        941
+      ],
+      "authority": "visual-direction-only",
+      "corrections": "design/REFERENCE-CORRECTIONS.md",
+      "productionUse": false,
+      "crops": [
+        {
+          "path": "references/crops/cnesdata-01.png",
+          "panel": 1,
+          "bbox": [
+            12,
+            165,
+            548,
+            523
+          ]
+        },
+        {
+          "path": "references/crops/cnesdata-02.png",
+          "panel": 2,
+          "bbox": [
+            563,
+            165,
+            1106,
+            523
+          ]
+        },
+        {
+          "path": "references/crops/cnesdata-03.png",
+          "panel": 3,
+          "bbox": [
+            1120,
+            165,
+            1665,
+            523
+          ]
+        },
+        {
+          "path": "references/crops/cnesdata-04.png",
+          "panel": 4,
+          "bbox": [
+            12,
+            534,
+            548,
+            883
+          ]
+        },
+        {
+          "path": "references/crops/cnesdata-05.png",
+          "panel": 5,
+          "bbox": [
+            563,
+            534,
+            1106,
+            883
+          ]
+        },
+        {
+          "path": "references/crops/cnesdata-06.png",
+          "panel": 6,
+          "bbox": [
+            1120,
+            534,
+            1665,
+            883
+          ]
+        }
+      ]
+    }
+  ],
+  "videoStyle": "Original supplied video contact sheets; briefing only, no production redistribution."
+}

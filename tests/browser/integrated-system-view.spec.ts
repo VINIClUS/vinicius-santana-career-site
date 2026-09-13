@@ -1,3 +1,4 @@
+import { openTechnicalDetails } from './support/technical-details';
 import { test, expect } from '@playwright/test';
 import { projectDefinitions } from '../../src/features/explorer/projects.ts';
 
@@ -15,6 +16,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
 
       for (const [project, components] of projects) {
         await page.goto(`/explore/${project}/`);
+        await openTechnicalDetails(page);
         const view = page.locator('[data-integrated-system-view]');
         await expect(view).toBeVisible();
         await expect(view.locator('[data-component-diagram]')).toHaveCount(components);

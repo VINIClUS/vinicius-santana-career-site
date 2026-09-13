@@ -64,7 +64,7 @@ The smoke command validates files in `dist/`, so always run the build first.
 
 `npm test` checks the pure simulation TypeScript modules and runs the focused
 Node tests. The [CnesData simulation API](docs/cnesdata-simulation.md) documents
-the synthetic engine and generated transcripts used by the canonical CnesData project.
+the legacy raw-write primitive retained for regression tests; the canonical page uses the complete lifecycle tour.
 
 ## Project structure
 
@@ -210,10 +210,12 @@ preview. Its small launcher waits for page load, actual viewport intersection,
 document visibility and an idle opportunity before downloading Three.js or models.
 One 15-second deadline covers activation through the first complete draw; failure
 retains the responsive poster. The only Home work CTA is **Explore my work** →
-`/explore/`. The Atlas and project pages do not load the Home preview. CnesData and LimnoPulse use HTML/SVG System Views; Infrastructure optionally projects its controller state in 3D.
+`/explore/`. The Atlas and project pages do not load the Home preview. All three project pages lead with HTML/SVG lifecycle tours and retain their technical System Views in disclosures.
 See [SA-05 validation](docs/design/sa-05/validation.md) for loading and performance evidence.
 
 `npm test` checks the simulation and explorer TypeScript modules and runs the focused Node tests. After `npm run build`, run `npm run smoke` and `npm run test:explorer`. Install the browser once with `npx playwright install --with-deps chromium`. Playwright 1.63.0 runs the Chromium browser suites with one worker; screenshots and traces are retained only on failure. To run the same smoke against a deployment, set `EXPLORER_BASE_URL` to its origin.
+
+The five Systems Atlas V3 tours cover 91 command checkpoints and 27 negative cases. See the [V3 report, captures and recordings](docs/design/lifecycle-reports/README.md).
 
 See [the explorer contract](docs/explorer.md) for interaction and fallback
 details, and [the SA-01 evidence](docs/design/sa-01/README.md) for the

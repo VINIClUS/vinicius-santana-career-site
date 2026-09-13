@@ -1,0 +1,71 @@
+---
+import { scenarios } from './catalog.ts';
+import { loadEngine } from './engine.ts';
+import { execute, type Scenario } from './types.ts';
+import { describeOutcome } from './presentation.ts';
+import './lifecycle.css';
+const { project } = Astro.props;
+const tours = scenarios.filter(s => s.project === project);
+const scenario = tours[0];
+const transcripts = await Promise.all(tours.map(async (tour: Scenario) => {
+  const adapter = await loadEngine(tour.id);
+  let state = adapter.initialize();
+  const frames = tour.checkpoints.map(cp => {
+    state = execute(adapter, state, cp.command).state;
+    return { title: cp.title, caption: cp.caption, outcome: describeOutcome(project, adapter.project(state)),
+      samples: ['EXTRACT_LOCAL','EXTRACT_NATIONAL_PF','NORMALIZE_SOURCES','RECONCILE_COMPETENCIA','MATERIALIZE_SERVING','SHOW_SERVING'].includes(cp.command.type) ? adapter.samples?.(state) : undefined };
+  });
+  return { title: tour.title, frames };
+}));
+const first = scenario?.checkpoints[0];
+const beat = first?.plan.microbeats[0];
+---
+{scenario && <section id="simulation" class="lifecycle" data-lifecycle data-project={project} aria-label="System lifecycle">
+  <div class="lifecycle-topline"><span class="eyebrow">Systems Atlas / Lifecycle</span><span class="lifecycle-evidence">Synthetic · {project === 'cnesdata' ? 'documented / planned target' : 'illustrative'}</span></div>
+  <header class="lifecycle-heading">
+    <p data-stage-number>01 / 06</p>
+    <h2 data-life-title>{first!.plan.headline}</h2>
+    <p data-life-caption>{first!.caption}</p>
+  </header>
+  <figure class="lifecycle-figure">
+    <div class="lifecycle-stage" data-life-stage data-phase="settle" data-playing="false">
+      <svg class="lifecycle-route" viewBox="0 0 1000 360" preserveAspectRatio="none" aria-hidden="true"><path data-life-path d="M 230 150 C 390 150 390 150 500 150" /></svg>
+      <div class="lifecycle-actors" data-life-actors>
+        {beat!.primaryActors.map((id,index) => { const actor = scenario.actors.find(a => a.id === id)!; return <div class="life-actor" data-primary-actor={id} style={`--slot:${index}`}><div class="life-plinth"><img src={`/assets/services/${actor.assetId}.svg`} width="64" height="64" alt="" /></div><strong>{actor.label}</strong><span class="life-actor-status">Ready to explore</span></div>; })}
+      </div>
+      <div class="life-artifact" data-life-artifact hidden><span data-artifact-label>Record</span></div>
+      <p class="life-beat-label" data-life-beat>{beat!.label}</p>
+    </div>
+    <div class="life-records" data-life-records aria-label="Persisted state"></div>
+    {project==='cnesdata' && <div class="life-samples" data-life-samples hidden><h3 data-life-sample-title>Source captures</h3><table><thead data-life-sample-head></thead><tbody data-life-sample-body></tbody></table><p data-life-sample-provenance></p></div>}
+    {project!=='infrastructure' && <aside class="life-recipient" data-life-recipient hidden aria-label="Synthetic user view"><p class="eyebrow">User view · proposed mock</p><h3 data-life-recipient-title></h3><p data-life-recipient-message></p>{project==='limnopulse'&&<div><button type="button" data-life-recipient-open disabled>View incident</button><button type="button" data-life-recipient-ack disabled>Acknowledge</button></div>}</aside>}
+    <figcaption><span class="life-result-tag">Result</span><p data-life-outcome>{transcripts[0].frames[0].outcome}</p></figcaption>
+  </figure>
+  <div class="life-controls" aria-label="Playback controls">
+    <button type="button" data-life-previous disabled>Previous</button>
+    <button type="button" data-life-play disabled>Play</button>
+    <button type="button" data-life-next disabled>Next</button>
+    <button type="button" data-life-replay disabled>Replay</button>
+    <span data-life-progress>Paused · operation 1 / {scenario.checkpoints.length}</span>
+  </div>
+  <nav class="life-chapters" data-life-chapters aria-label="Lifecycle chapters">
+    {scenario.chapters.map((chapter, index) => <button type="button" data-life-chapter={index} data-current-stage={index === 0 ? chapter.id : undefined} aria-current={index === 0 ? 'step' : undefined} disabled><span>{String(chapter.number).padStart(2,'0')}</span>{chapter.title}</button>)}
+  </nav>
+  <div class="life-options">
+    <label>Cycle <select data-life-scenario disabled>{tours.map(tour => <option value={tour.id}>{tour.title}</option>)}</select></label>
+    {project === 'cnesdata' && <label>Storage profile <select data-life-profile disabled><option value="aws">AWS target</option><option value="local">Local · filesystem / SQLite</option></select></label>}
+    <details class="life-try"><summary>Try a scenario</summary><p>Actions preserve the current state and stop the guided tour. Replay starts over.</p><div data-life-actions></div><label>Operation <select data-life-operation disabled></select></label><button type="button" data-life-apply disabled>Apply operation</button></details>
+  </div>
+  <p class="life-context" data-life-context>{scenario.assumptions.join(' ')}</p>
+  <details class="life-transcripts"><summary>Read the complete lifecycle transcript</summary>
+    <p>Calculated from the engine during the build. Available without JavaScript.</p>
+    {transcripts.map(transcript => <section><h3>{transcript.title}</h3><ol>{transcript.frames.map(frame => <li><h4>{frame.title}</h4><p>{frame.caption}</p><p>{frame.outcome}</p>{frame.samples&&<div class="life-samples"><h4>{frame.samples.title}</h4><table><thead><tr>{frame.samples.columns.map(column=><th scope="col">{column}</th>)}</tr></thead><tbody>{frame.samples.rows.map(row=><tr>{row.map(value=><td>{value}</td>)}</tr>)}</tbody></table><p>{frame.samples.provenance}</p></div>}</li>)}</ol></section>)}
+  </details>
+  <details class="life-technical"><summary>Current state and operation</summary><pre data-life-technical>{JSON.stringify(first!.command,null,2)}</pre></details>
+  <p class="visually-hidden" aria-live="polite" data-life-announcement></p>
+  <script type="application/json" data-life-data set:html={JSON.stringify(tours).replaceAll('<','\\u003c')} />
+</section>}
+<script>
+  import { initializeLifecycles } from './client.ts';
+  initializeLifecycles();
+</script>

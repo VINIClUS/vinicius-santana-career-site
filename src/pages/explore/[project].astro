@@ -3,8 +3,6 @@ import { getCollection } from 'astro:content';
 import ProjectDetail from '../../components/ProjectDetail.astro';
 import SystemView from '../../features/explorer/SystemView.astro';
 import { cnesdataPresentation, limnopulsePresentation, infrastructurePresentation } from '../../features/explorer/presentation.ts';
-import Infrastructure from '../../features/explorer/Infrastructure.astro';
-import Walkthrough from '../../features/explorer/Walkthrough.astro';
 import { projectDefinitions, projectIds } from '../../features/explorer/projects.ts';
 import '../../features/explorer/explorer.css';
 import '../../features/explorer/system-graph.css';
@@ -20,10 +18,8 @@ const { project, projects } = Astro.props;
 ---
 {project.id === 'cnesdata' ? <ProjectDetail caseStudy={project} presentation={cnesdataPresentation} projects={projects}>
   <SystemView slot="system-view" caseStudy={project} definition={projectDefinitions.cnesdata} />
-  <Walkthrough slot="simulation" />
 </ProjectDetail> : project.id === 'infrastructure' ? <ProjectDetail caseStudy={project} presentation={infrastructurePresentation} projects={projects}>
   <SystemView slot="system-view" caseStudy={project} definition={projectDefinitions.infrastructure} />
-  <Infrastructure slot="simulation" />
 </ProjectDetail> : project.id === 'limnopulse' ? <ProjectDetail caseStudy={project} presentation={limnopulsePresentation} projects={projects}>
   <SystemView slot="system-view" caseStudy={project} definition={projectDefinitions.limnopulse} />
 </ProjectDetail> : null}

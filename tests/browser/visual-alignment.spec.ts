@@ -1,3 +1,4 @@
+import { openTechnicalDetails } from './support/technical-details';
 import { test, expect, type Page } from '@playwright/test';
 import { mkdir } from 'node:fs/promises';
 
@@ -26,6 +27,7 @@ for (const width of [1121, 1440]) {
   test(`About cards remain below the copy in two full-width columns at ${width}`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto('/');
+    await openTechnicalDetails(page);
     const homeLayout = await getAboutLayout(page);
     expect(homeLayout.columns).toBe(2);
     expect(homeLayout.cards.y - homeLayout.copy.bottom).toBeGreaterThanOrEqual(32);
@@ -34,6 +36,7 @@ for (const width of [1121, 1440]) {
     expect(Math.abs(homeLayout.cardBoxes[0].width - homeLayout.cardBoxes[1].width)).toBeLessThanOrEqual(1);
 
     await page.goto('/about/');
+    await openTechnicalDetails(page);
     const aboutCards = page.locator('.role-fit-cards');
     await expect(aboutCards.locator('.role-card')).toHaveCount(2);
     const aboutWidths = await aboutCards.locator('.role-card').evaluateAll((cards) => cards.map((card) => card.getBoundingClientRect().width));
@@ -45,6 +48,7 @@ for (const width of [1121, 1440]) {
 test('About cards stack in one column on mobile', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
+  await openTechnicalDetails(page);
   const layout = await getAboutLayout(page);
   expect(layout.columns).toBe(1);
   expect(layout.cardBoxes[1].y).toBeGreaterThan(layout.cardBoxes[0].y);
@@ -59,6 +63,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     test(`${experiencePage.name} experience timeline connects both role markers at ${viewport.width}`, async ({ page }) => {
       await page.setViewportSize(viewport);
       await page.goto(experiencePage.path);
+      await openTechnicalDetails(page);
 
     const card = page.locator(`.timeline-card[aria-labelledby="${experiencePage.headingId}"]`);
     await expect(card.locator('h3')).toHaveText('Prefeitura de Presidente Epitácio');
@@ -116,6 +121,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     const requests: string[] = [];
     page.on('request', request => requests.push(request.url()));
     await page.goto('/');
+    await openTechnicalDetails(page);
     await expect(page.locator('h1')).toHaveText('ViniciusSantana');
     await expect(page.locator('.header-social')).toBeVisible();
     for (const id of ['about', 'experience', 'projects', 'stack', 'contact', 'case-cnesdata', 'case-aquafarm', 'case-esus-pec-bootstrap', 'case-infra-ansible', 'case-packer-proxmox-templates']) {
@@ -151,6 +157,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     await capture('atlas');
     for (const slug of ['cnesdata', 'limnopulse', 'infrastructure']) {
       await page.goto(`/explore/${slug}/`);
+      await openTechnicalDetails(page);
       await expect(page).toHaveURL(new RegExp(`/explore/${slug}/$`));
       await expect(page.locator('.header-social')).toBeVisible();
       for (const anchor of ['overview', 'system', 'engineering', 'results']) {
@@ -165,6 +172,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       await expect(page).toHaveURL(/\/explore\/$/);
     }
     await page.goto('/');
+    await openTechnicalDetails(page);
     const homeActions = page.locator('.contact-actions a');
     await expect(homeActions).toHaveText(['me@vinisantana.com', 'Resume', 'LinkedIn', 'GitHub']);
     await expect(homeActions.nth(1)).toHaveAttribute('href', '/assets/vinicius-santana-resume.pdf');
@@ -172,29 +180,11 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
   });
 }
 
-test('CnesData detail write, replay, conflict and reset', async ({ page }) => {
-  await page.goto('/explore/cnesdata/#simulation');
-  const scenario = page.getByLabel('Scenario');
-  const step = page.getByRole('button', { name: 'Advance one attempt' });
-  for (const [id, result] of [['raw-first-write', 'stored'], ['raw-identical-replay', 'replayed'], ['raw-content-conflict', 'conflict']]) {
-    await scenario.selectOption(id);
-    await step.click();
-    if (id !== 'raw-first-write') await step.click();
-    await expect(page.locator('[data-result]')).toContainText(result);
-    await expect(page.locator('[data-objects] li')).toHaveCount(1);
-    await expect(page.locator('[data-objects]')).toContainText('synthetic-content-A');
-    await expect(page.locator('[data-objects]')).not.toContainText('synthetic-content-B');
-    await expect(step).toBeDisabled();
-    await page.getByRole('button', { name: 'Reset scenario' }).click();
-    await expect(page.locator('[data-progress]')).toContainText('ready');
-    await expect(page.locator('[data-objects]')).toHaveText('No objects stored.');
-  }
-});
-
 test('header socials, Home actions, and detail transcripts remain usable without JavaScript', async ({ browser, baseURL }) => {
   const context = await browser.newContext({ baseURL, javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
   const page = await context.newPage();
   await page.goto('/');
+  await openTechnicalDetails(page);
   const linkedIn = page.locator('.header-social');
   const gitHub = page.locator('nav[aria-label="Primary navigation"] a[href="https://github.com/VINIClUS"]');
   await expect(linkedIn).toBeVisible();
@@ -212,10 +202,11 @@ test('header socials, Home actions, and detail transcripts remain usable without
     await expect(social).toHaveAttribute('rel', 'noopener noreferrer');
   }
   await page.goto('/explore/cnesdata/');
+  await openTechnicalDetails(page);
   await page.locator('.section-nav a[href="#simulation"]').click();
-  for (const id of ['raw-first-write', 'raw-identical-replay', 'raw-content-conflict']) {
-    await expect(page.locator(`#transcript-${id}`)).toContainText('synthetic-content-A');
-  }
-  await expect(page.getByRole('button', { name: 'Advance one attempt' })).toBeDisabled();
+  await page.locator('.life-transcripts > summary').click();
+  await expect(page.locator('.life-transcripts li')).toHaveCount(19);
+  await expect(page.locator('.life-transcripts li').last()).toBeVisible();
+  await expect(page.locator('[data-life-next]')).toBeDisabled();
   await context.close();
 });

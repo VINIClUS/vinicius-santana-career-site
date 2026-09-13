@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { openTechnicalDetails } from './support/technical-details';
 
 for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
   for (const { javaScriptEnabled, reducedMotion } of [
@@ -18,9 +19,11 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       page.on('request', request => { if (/\.(glb|gltf|ktx2)(?:\?|$)/.test(request.url())) models.push(request.url()); });
       // Reload with the listener attached to cover initial project requests too.
       await page.reload();
+      await openTechnicalDetails(page);
       await expect(page.locator('[data-component-detail]')).toHaveCount(7);
       await expect(page.locator('a[href="/work/limnopulse/"]')).toHaveCount(0);
-      await expect(page.locator('canvas, [data-simulation], #simulation')).toHaveCount(0);
+      await expect(page.locator('canvas, [data-simulation]')).toHaveCount(0);
+      await expect(page.locator('#simulation[data-lifecycle]')).toHaveCount(1);
       for (const id of ['overview', 'system', 'engineering', 'results', 'evidence', 'limitations']) {
         await page.locator(`a[href="#${id}"]`).first().click();
         await expect(page).toHaveURL(new RegExp(`#${id}$`));
