@@ -9,6 +9,7 @@ interface Props {
   noIndex?: boolean;
   preloadPortrait?: boolean;
   observatory?: boolean;
+  analyticsPageView?: boolean;
 }
 
 const {
@@ -16,7 +17,8 @@ const {
   description = siteMetadata.description,
   canonicalPath = '/',
   noIndex = false,
-  preloadPortrait = false
+  preloadPortrait = false,
+  analyticsPageView = true
 } = Astro.props;
 const socialDescription = Astro.props.description === undefined ? undefined : description;
 if (!Astro.site) {
@@ -25,6 +27,14 @@ if (!Astro.site) {
 const canonicalUrl = new URL(canonicalPath, Astro.site).href;
 const imageUrl = new URL(siteMetadata.imagePath, Astro.site).href;
 const personStructuredData = createPersonStructuredData(Astro.site);
+const analyticsSnippet = `
+  window.dataLayer = window.dataLayer || [];
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+  gtag('js', new Date());
+  gtag('config', 'G-2DY87DZC90'${analyticsPageView ? '' : ', { send_page_view: false }'});
+`;
 ---
 
 <!doctype html>
@@ -69,14 +79,7 @@ const personStructuredData = createPersonStructuredData(Astro.site);
     {import.meta.env.PROD && (
       <>
         <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-2DY87DZC90"></script>
-        <script is:inline>
-          window.dataLayer = window.dataLayer || [];
-          function gtag() {
-            dataLayer.push(arguments);
-          }
-          gtag('js', new Date());
-          gtag('config', 'G-2DY87DZC90');
-        </script>
+        <script is:inline set:html={analyticsSnippet}></script>
       </>
     )}
     <title>{title}</title>

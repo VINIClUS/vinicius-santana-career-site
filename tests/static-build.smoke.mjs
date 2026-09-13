@@ -76,7 +76,7 @@ function assertMetadata(html, route, origin) {
 function assertAnalytics(html, pageName) {
   const scriptUrl = `https://www.googletagmanager.com/gtag/js?id=${analyticsMeasurementId}`;
   const scriptLoads = html.match(new RegExp(`<script\\b[^>]*\\bsrc="${escapeRegExp(scriptUrl)}"[^>]*>`, 'gi')) ?? [];
-  const configurations = html.match(new RegExp(`gtag\\(\\s*['"]config['"]\\s*,\\s*['"]${analyticsMeasurementId}['"]\\s*\\)`, 'g')) ?? [];
+  const configurations = html.match(new RegExp(`gtag\\(\\s*['"]config['"]\\s*,\\s*['"]${analyticsMeasurementId}['"]`, 'g')) ?? [];
 
   assert.equal(scriptLoads.length, 1, `${pageName} must load the GA4 script exactly once`);
   assert.match(scriptLoads[0], /\basync(?:="")?(?:\s|>)/i, `${pageName} must load the GA4 script asynchronously`);
@@ -199,6 +199,12 @@ const builtHtmlPages = await Promise.all(builtHtmlFiles.map(file => readFile(fro
 for (const [index, pageHtml] of builtHtmlPages.entries()) {
   assert.doesNotMatch(pageHtml, /href="\/resume\//i, 'built pages must not link to the removed Resume route');
   assertAnalytics(pageHtml, builtHtmlFiles[index]);
+  const disabledPageViews = pageHtml.match(/send_page_view:\s*false/g) ?? [];
+  assert.equal(
+    disabledPageViews.length,
+    builtHtmlFiles[index].startsWith('work/') ? 1 : 0,
+    `${builtHtmlFiles[index]} must ${builtHtmlFiles[index].startsWith('work/') ? 'disable' : 'retain'} automatic GA4 page views`
+  );
 }
 
 function assertExperienceSection(pageHtml, pageName, headingId) {
