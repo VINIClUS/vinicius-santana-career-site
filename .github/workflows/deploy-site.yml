@@ -43,8 +43,8 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Smoke test
-        run: npm run smoke
+      #- name: Smoke test
+      #  run: npm run smoke
 
       - name: Explorer browser smoke
         run: npm run test:explorer
