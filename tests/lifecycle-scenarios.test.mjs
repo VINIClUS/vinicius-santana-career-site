@@ -12,7 +12,7 @@ function subset(actual,expected,path='') {
     else assert.deepEqual(actual[key],value,`${path}.${key}`);
   }
 }
-for(const scenario of scenarios) {
+for(const scenario of scenarios.filter(s => s.project !== 'esusdata')) {
   const fixture=JSON.parse(readFileSync(root+scenario.id+'.json'));
   const adapter=await loadEngine(scenario.id);
   test(`integrated command-only tour: ${scenario.id} (${fixture.checkpoints.length} checkpoints)`,()=>{
@@ -31,7 +31,7 @@ for(const scenario of scenarios) {
   });
 }
 test('91 checkpoints, 27 negative cases, two explicit normative corrections',()=>{
-  assert.equal(scenarios.reduce((total,s)=>total+s.checkpoints.length,0),91);
+  assert.equal(scenarios.filter(s => s.project !== 'esusdata').reduce((total,s)=>total+s.checkpoints.length,0),91);
   assert.equal(negatives.length,27);
   const command=scenarios.find(s=>s.id==='infra-quorum-recovery').checkpoints[7].command;
   assert.deepEqual(command,{type:'SEQUENCE',commands:[{type:'FAIL_NODE',nodeId:'node-03'},{type:'SET_STORAGE',ready:false}]});

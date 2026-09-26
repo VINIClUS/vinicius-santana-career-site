@@ -1,6 +1,6 @@
 import { openTechnicalDetails } from './support/technical-details';
 import { test, expect } from '@playwright/test';
-for (const project of ['cnesdata', 'limnopulse', 'infrastructure']) {
+for (const project of ['cnesdata', 'limnopulse', 'infrastructure', 'esusdata']) {
   test(`${project}: vertical cards and selection without navigation`, async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto(`/explore/${project}/`);

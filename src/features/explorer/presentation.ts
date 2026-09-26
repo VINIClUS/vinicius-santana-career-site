@@ -3,7 +3,7 @@ import type { ProjectId } from './projects.ts';
 /** Presentation choices only. Project facts and evidence belong to caseStudies. */
 export interface ProjectPresentation {
   id: ProjectId;
-  visualMode: 'data-flow' | 'telemetry' | 'cluster';
+  visualMode: 'data-flow' | 'telemetry' | 'cluster' | 'observatory';
   systemHeading: string;
 }
 
@@ -21,4 +21,8 @@ export const limnopulsePresentation = {
   id: 'limnopulse',
   visualMode: 'telemetry',
   systemHeading: 'System View',
+} as const satisfies ProjectPresentation;
+
+export const esusdataPresentation = {
+  id: 'esusdata', visualMode: 'observatory', systemHeading: 'System View',
 } as const satisfies ProjectPresentation;

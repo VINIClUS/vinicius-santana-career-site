@@ -238,3 +238,85 @@
       status: implemented
       url: https://github.com/VINIClUS/esus-pec-bootstrap
       description: System-specific automation, validators, and public runbooks for application operations.
+
+- id: esusdata
+  order: 4
+  title: Esusdata
+  eyebrow: Observatório APS · local primary-care observatory
+  summary: >-
+    A local, read-only path from e-SUS PEC acquisition to verifiable extracts and versioned primary-care indicators, with publication controlled by evidence and methodology.
+  technologies:
+    - Java 21
+    - Spring Boot
+    - Rust
+    - SQLite
+    - React
+    - PostgreSQL
+  problem: >-
+    A primary-care indicator needs reproducible source counts and a clear authorization boundary. A technically successful calculation cannot become an official result while its methodological interpretation remains unvalidated.
+  context: >-
+    The public repository implements a local service with its own SQLite store, a Rust child process for bounded PEC reads and extract generation, and a Java indicator and result path. It describes tests against specific PEC versions; this page does not display municipal data or imply that the C1 methodology has been released.
+  contribution:
+    - Separated the PEC read-only source from the local service and kept acquisition inside an ephemeral Rust execution plane.
+    - Implemented bounded acquisition, extract validation, hashes, manifests, and reproducible calculation without reconnecting to the PEC.
+    - Built local Java/SQLite coordination for runs, authorization, result staging, evidence, and controlled publication.
+    - Encoded the C1 Mais Acesso rule while recording unresolved methodological gates rather than presenting it as an approved indicator.
+    - Developed an authorized web client for local results and scope-aware access.
+  architecture:
+    - id: pec-source
+      title: PEC source boundary
+      status: implemented
+      description: The municipal PEC remains a separate PostgreSQL source, accessed with a read-only identity and no application writes.
+    - id: execution-plane
+      title: Rust execution plane
+      status: implemented
+      description: An ephemeral child process probes source compatibility, enforces read budgets, streams rows, and creates the extract data file.
+    - id: verified-extract
+      title: Verifiable extract
+      status: implemented
+      description: Local data files, record validation, byte limits, checksums, and manifests make calculation repeatable after the PEC connection closes.
+    - id: local-coordination
+      title: Java and SQLite coordination
+      status: implemented
+      description: One local service owns run state, locking, grants, manifest reconciliation, and atomic result publication in its own SQLite store.
+    - id: c1-rule
+      title: C1 Mais Acesso rule
+      status: implemented
+      description: The pure Java rule computes a versioned technical candidate. Methodological validation is still required before treating C1 as a released indicator.
+    - id: results
+      title: Conditional result publication
+      status: implemented
+      description: Staging, evidence, history, and an atomic publication path exist; real C1 publication remains blocked by incomplete methodological gates.
+    - id: authorized-dashboard
+      title: Authorized dashboard
+      status: implemented
+      description: The local web client requests scoped results through the service; municipal grants constrain aggregate result access.
+  decisions:
+    - Keep the PEC immutable and isolate database access in a bounded execution plane rather than handing the dashboard source credentials.
+    - Preserve a checked extract and manifest so the same input can be recalculated without a live PEC connection.
+    - Stage technical results separately from publication and require both evidence and methodological approval.
+    - Recheck municipal grants when serving results, including after a grant is revoked.
+  reliability:
+    - Source compatibility and read budgets fail closed before an unbounded or mismatched acquisition can become a result.
+    - Extract validation and checksums protect the calculation from partial or modified local files.
+    - Local tests and documented PEC-version checks exercise acquisition and recomputation; they do not substitute for methodological sign-off.
+  outcomes:
+    - The public code connects source diagnosis, bounded acquisition, verifiable local extracts, indicator calculation, and scoped result access.
+    - The illustrative 3 scheduled and 2 walk-in encounters yield 60% / Ótimo only in a hypothetical target flow with all gates completed.
+  limitations:
+    - Real C1 publication remains blocked while methodological source, interpretation, review, and approval gates are incomplete.
+    - The six-chapter tour uses fictional counts and a hypothetical approved target. It is not a patient record, production result, or claim of current C1 release.
+    - Public tests against documented PEC versions do not establish compatibility with every installation or a live deployment shown in this portfolio.
+  evidence:
+    - label: Esusdata public repository
+      status: implemented
+      url: https://github.com/VINIClUS/esusdata/tree/c879dff09adc41d8c2d8f0baa472fa3c0bba0489
+      description: Pinned source for the Rust execution plane, Java/SQLite service, web client, tests, and current README.
+    - label: C1 methodology and implementation status
+      status: documented
+      url: https://github.com/VINIClUS/esusdata/blob/c879dff09adc41d8c2d8f0baa472fa3c0bba0489/docs/RELATORIO_FINAL_2026-09-19.md
+      description: Documents the technical C1 proof and the methodological gates that still block release.
+    - label: PEC compatibility evidence
+      status: documented
+      url: https://github.com/VINIClUS/esusdata/blob/c879dff09adc41d8c2d8f0baa472fa3c0bba0489/docs/discovery/2026-09-24-pec-5528.md
+      description: Version-specific acquisition and differential-check evidence; not a blanket compatibility claim.

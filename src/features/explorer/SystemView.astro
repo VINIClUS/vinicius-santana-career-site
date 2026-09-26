@@ -3,6 +3,7 @@ import type { CollectionEntry } from 'astro:content';
 import CnesDataSystemView from './CnesDataSystemView.astro';
 import InfrastructureSystemView from './InfrastructureSystemView.astro';
 import LimnopulseSystemView from './LimnopulseSystemView.astro';
+import EsusdataSystemView from './EsusdataSystemView.astro';
 import { projectDefinitions, projectIds, type ProjectDefinition } from './projects.ts';
 
 interface Props {
@@ -19,6 +20,7 @@ if (!projectId) throw new Error('SystemView requires a canonical project definit
   {projectId === 'cnesdata' && <CnesDataSystemView {caseStudy} />}
   {projectId === 'limnopulse' && <LimnopulseSystemView {caseStudy} />}
   {projectId === 'infrastructure' && <InfrastructureSystemView {caseStudy} />}
+  {projectId === 'esusdata' && <EsusdataSystemView {caseStudy} />}
 </div>
 
 

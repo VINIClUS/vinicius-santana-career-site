@@ -1,0 +1,42 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import SystemViewCards from './SystemViewCards.astro';
+import { projectDefinitions } from './projects.ts';
+interface Props { caseStudy: CollectionEntry<'caseStudies'>['data']; }
+const { caseStudy } = Astro.props;
+const { componentIds, relations } = projectDefinitions.esusdata;
+const componentFor = (id: string) => caseStudy.architecture.find(component => component.id === id)!;
+---
+<div class="integrated-system-view esusdata-system-view" data-integrated-system-view>
+  <p class="explorer-note">Conceptual local observatory. The PEC is a separate read-only source. C1 publication remains blocked by methodological gates in the current product.</p>
+  <div class="system-view-layout">
+    <section class="system-graph" data-system-graph aria-labelledby="system-map-title">
+      <div class="graph-heading"><h3 id="system-map-title">Local observatory path</h3><p>Follow a bounded source read into a verifiable extract, a gated result and an authorized view.</p></div>
+      <ol class="esus-flow" aria-label="Esusdata system components">
+        {componentIds.map((id, index) => { const component = componentFor(id); const relation = relations[index]; return <li data-graph-node={id}>
+          <button type="button" data-component-diagram={id} data-component-select={id} data-selected="false" aria-pressed="false" disabled>
+            <span class="graph-node-kicker">{index === 0 ? 'Separate source' : index === 5 ? 'Publication gate' : index === 6 ? 'Scoped read' : `Stage ${index + 1}`}</span>
+            <strong>{component.title}</strong><span class="selection-marker" aria-hidden="true">Selected</span>
+          </button>
+          {relation && <span class="esus-relation" data-graph-connector role="img" aria-label={`Connection from ${component.title} to ${componentFor(relation.to).title}: ${relation.label}`}><span aria-hidden="true">↓</span>{relation.shortLabel}</span>}
+        </li>; })}
+      </ol>
+    </section>
+    <SystemViewCards components={caseStudy.architecture} relations={relations} />
+  </div>
+</div>
+<style>
+  .esusdata-system-view { --graph-accent: #e9bd88; }
+  .system-graph { background: linear-gradient(150deg, rgba(233,189,136,.09), rgba(7,18,31,.35)); }
+  .esus-flow { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 0 20px; margin: 20px 0 0; padding: 0; list-style: none; }
+  .esus-flow li { display: flex; flex-direction: column; align-items: stretch; min-width: 0; }
+  .esus-flow li:first-child { grid-column: 1 / -1; }
+  .esus-flow button { display: flex; flex-direction: column; gap: 4px; width: 100%; min-height: 82px; padding: 12px; color: var(--text); background: rgba(4,14,25,.92); border: 1px solid var(--line-strong); border-radius: 8px; text-align: left; font: inherit; cursor: pointer; }
+  .esus-flow button:disabled { opacity: 1; cursor: default; }
+  .esus-flow button[data-selected="true"] { border-color: var(--graph-accent); background: rgba(233,189,136,.09); }
+  .esus-flow button[data-selected="true"] .selection-marker { visibility: visible; }
+  .esus-flow strong { font-size: .82rem; }
+  .esus-relation { display: flex; align-items: center; gap: 8px; min-height: 42px; color: var(--muted-strong); font-size: .68rem; }
+  .esus-relation span { color: var(--graph-accent); font-size: 1.2rem; }
+  @media (max-width: 540px) { .esus-flow { grid-template-columns: 1fr; } .esus-flow li:first-child { grid-column: auto; } }
+</style>

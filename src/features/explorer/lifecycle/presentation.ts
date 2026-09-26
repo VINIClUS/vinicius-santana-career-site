@@ -9,6 +9,7 @@ const value = (state: Projection, key: string) => {
   return Array.isArray(item) ? item.join(', ') || 'none' : item === null || item === undefined ? 'none' : String(item).replaceAll('_', ' ');
 };
 export function describeOutcome(project: string, state: Projection): string {
+  if (project === 'esusdata') return `Read: ${value(state,'rowsRead')} fictional encounters. Illustrative target C1 candidate: ${state.calculated ? `${value(state,'percentage')}% / ${value(state,'classification')}` : 'pending'}. Publication: ${state.published ? 'hypothetical target only' : 'blocked in the current product'}. Consultation: ${state.grantActive ? 'municipal grant active' : 'grant revoked; access blocked'}. Dashboard: ${value(state,'dashboard')}.`;
   if (project === 'limnopulse') return `Incident: ${value(state,'incident')}. Email: ${value(state,'email')}; Telegram: ${value(state,'telegram')}. User: ${value(state,'userView')}.`;
   if (project === 'cnesdata') return `CURRENT: ${value(state,'currentVersion')}. Candidate: ${value(state,'candidateVersion')}. User reads: ${value(state,'servedVersion')}. Run: ${value(state,'run')}.`;
   if ('desiredReplicas' in state) return `Target: ${value(state,'desiredReplicas')} replicas. Ready: ${value(state,'readyReplicas')}. Capacity: ${value(state,'usedSlots')} used, ${value(state,'reservedSlots')} reserved across ${value(state,'physicalHosts')} physical hosts.`;
@@ -21,7 +22,7 @@ export function planEvent(project: string, event: DomainEvent, previous: Project
     ? { ...matching.plan,headline:event.description,motion:'hold',microbeats:[{...matching.plan.microbeats[0]!,label:event.description,routeKind:null}] }
     : { ...matching.plan, headline: event.description };
   const primaryActors = project === 'limnopulse' ? ['limno.delivery-record','limno.user']
-    : project === 'cnesdata' ? ['cnes.pointer','cnes.api'] : ['infra.controller','infra.workload'];
+    : project === 'cnesdata' ? ['cnes.pointer','cnes.api'] : project === 'esusdata' ? ['esus.core','esus.panel'] : ['infra.controller','infra.workload'];
   return { checkpointId:'manual',scenarioId:'manual',chapterId:'manual',headline:event.description,
     motion: JSON.stringify(previous) === JSON.stringify(current) ? 'hold' : 'confirm',outcomeFields:[],
     defaultPhaseMs:{orient:400,focus:250,action:850,settle:1100},

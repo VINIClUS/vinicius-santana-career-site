@@ -11,6 +11,7 @@ const pickableNames = new Set([
   'gateway-pier', 'gateway-header', 'entry-module', 'entry-surface',
   'shore-station', 'shore-roof', 'station-aperture',
   'node-volume', 'node-top', 'node-face', 'shared-layer', 'shared-surface',
+  'pec-source', 'read-only-link', 'rust-acquisition', 'verified-extract', 'java-core', 'indicator-result', 'authorized-panel',
 ]);
 const materials = Object.fromEntries(Object.entries(visual.palette).map(([name, color]) => [name,
   new T.MeshStandardMaterial({ color, roughness: name === 'water' ? 0.45 : 0.82, metalness: 0.08 }),
@@ -31,6 +32,7 @@ for (const [name, color, roughness, metalness] of [
 for (const [name, color, intensity] of [
   ['cnesLight', '#a1fff0', 1.8], ['stationLight', '#ffdb9d', 1.5],
   ['infraLight', '#c5bbff', 1.6], ['waterLight', '#8ccddd', 0.45],
+  ['esusLight', '#e9bd88', 0.6],
 ]) materials[name] = new T.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: intensity, roughness: 0.5 });
 function mesh(parent, name, geometry, material, position = [0, 0, 0], scale = [1, 1, 1]) {
   const object = new T.Mesh(geometry, materials[material]);
@@ -368,6 +370,28 @@ export function makeAtlasLandmark(id) {
       detail.rock('stone', [x - 0.12, 0.2, z + 0.18], [0.14, 0.08, 0.12]);
     }
     for (const x of [-1.8, -0.9, 0, 0.9, 1.8]) detail.box('metal', [x, 0.17, -1.86], [0.54, 0.04, 0.24]);
+  }
+  if (id === 'esusdata') {
+    // A disconnected PEC source feeds one read-only bridge into the local observatory.
+    box(g, 'pec-source', 'equipment', [-2.45, 0.55, -0.95], [1.45, 0.72, 1.55]);
+    box(g, 'pec-source-roof', 'metal', [-2.45, 0.94, -0.95], [1.58, 0.08, 1.68]);
+    for (const z of [-1.45, -1.05, -0.65]) detail.box('esusLight', [-1.68, 0.59, z], [0.03, 0.09, 0.17]);
+    box(g, 'read-only-link', 'esusdata', [-1.35, 0.2, -0.95], [0.75, 0.045, 0.07]);
+    box(g, 'read-only-gate', 'dark', [-1.35, 0.37, -0.95], [0.12, 0.34, 0.26]);
+    beveledBox(g, 'rust-acquisition', 'metal', [-0.3, 0.61, -0.95], [1.32, 0.8, 1.25]);
+    detail.box('esusLight', [-0.3, 0.83, -0.305], [0.9, 0.07, 0.03]);
+    box(g, 'verified-extract', 'glass', [1.2, 0.34, -0.95], [1.1, 0.21, 1.08]);
+    box(g, 'extract-seal', 'esusdata', [1.2, 0.47, -0.95], [0.65, 0.04, 0.65]);
+    box(g, 'local-path', 'esusdata', [1.15, 0.2, -0.15], [0.07, 0.035, 1.1]);
+    beveledBox(g, 'java-core', 'equipment', [0.3, 0.76, 1.35], [2.7, 1.06, 1.65]);
+    detail.box('metal', [0.3, 1.32, 1.35], [2.82, 0.08, 1.78]);
+    for (const x of [-0.6, -0.15, 0.3, 0.75, 1.2]) detail.box('esusLight', [x, 0.88, 2.19], [0.24, 0.2, 0.025]);
+    box(g, 'indicator-result', 'esusdata', [2.45, 0.58, 1.18], [0.58, 0.68, 0.75]);
+    box(g, 'authorized-panel', 'glass', [2.4, 0.84, 2.25], [1.3, 1.13, 0.18]);
+    detail.box('metal', [2.4, 0.2, 2.25], [1.55, 0.15, 0.7]);
+    detail.box('esusLight', [2.4, 1.08, 2.36], [0.86, 0.075, 0.025]);
+    for (const x of [2.05, 2.34, 2.63]) detail.box('esusdata', [x, 0.76, 2.36], [0.15, 0.2, 0.025]);
+    for (const [x, z] of [[-3.15, 1.2], [-2.9, 2.15], [3.1, -1.5]]) detail.rock('foliage', [x, 0.3, z], [0.22, 0.25, 0.2]);
   }
   detail.finish();
   return g;

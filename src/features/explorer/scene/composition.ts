@@ -18,7 +18,7 @@ export function createOverviewComposition(world = new Group()) {
       signal.throwIfAborted();
       composition = createAtlasWorld({
         world, visual,
-        models: { hub: models.get('hub')!, cnesdata: models.get('cnesdata')!, limnopulse: models.get('limnopulse')!, infrastructure: models.get('infrastructure')! },
+        models: { hub: models.get('hub')!, cnesdata: models.get('cnesdata')!, limnopulse: models.get('limnopulse')!, infrastructure: models.get('infrastructure')!, esusdata: models.get('esusdata')! },
       });
     },
     applyLayout(layout: OverviewLayout) { composition?.applyLayout(layout); },

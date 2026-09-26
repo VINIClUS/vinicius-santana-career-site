@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { openTechnicalDetails } from './support/technical-details';
 
-for (const project of ['cnesdata', 'limnopulse', 'infrastructure']) {
+for (const project of ['cnesdata', 'limnopulse', 'infrastructure', 'esusdata']) {
   test(`${project}: lifecycle replaces every retired standalone demonstration`, async ({ page }) => {
     await page.goto(`/explore/${project}/#simulation`);
     await expect(page.locator('[data-lifecycle]')).toHaveCount(1);
@@ -16,7 +16,7 @@ for (const project of ['cnesdata', 'limnopulse', 'infrastructure']) {
 for (const width of [1440, 390, 320]) {
   test(`all System View cards form one vertical column at ${width}px`, async ({ page }, testInfo) => {
     await page.setViewportSize({ width, height: width === 1440 ? 1000 : width === 320 ? 740 : 844 });
-    for (const project of ['cnesdata', 'limnopulse', 'infrastructure']) {
+    for (const project of ['cnesdata', 'limnopulse', 'infrastructure', 'esusdata']) {
       await page.goto(`/explore/${project}/#system`);
       await openTechnicalDetails(page);
       await expect(page.locator('[data-component-cards]')).toHaveCount(1);

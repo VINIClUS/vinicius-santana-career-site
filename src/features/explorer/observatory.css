@@ -14,15 +14,19 @@
 .district-link-cnesdata, [data-region="cnesdata"] { --region-accent: #78dcce; }
 .district-link-limnopulse, [data-region="limnopulse"] { --region-accent: #8dcaff; }
 .district-link-infrastructure, [data-region="infrastructure"] { --region-accent: #c4b8f7; }
+.district-link-esusdata, [data-region="esusdata"] { --region-accent: #e9bd88; }
 .observatory-map:has(.district-link-cnesdata:hover) [data-region="cnesdata"] .region-highlight,
 .observatory-map:has(.district-link-limnopulse:hover) [data-region="limnopulse"] .region-highlight,
-.observatory-map:has(.district-link-infrastructure:hover) [data-region="infrastructure"] .region-highlight { opacity: 1; }
+.observatory-map:has(.district-link-infrastructure:hover) [data-region="infrastructure"] .region-highlight,
+.observatory-map:has(.district-link-esusdata:hover) [data-region="esusdata"] .region-highlight { opacity: 1; }
 .observatory-map:has(.district-link-cnesdata:focus-visible) [data-region="cnesdata"] .region-highlight,
 .observatory-map:has(.district-link-limnopulse:focus-visible) [data-region="limnopulse"] .region-highlight,
-.observatory-map:has(.district-link-infrastructure:focus-visible) [data-region="infrastructure"] .region-highlight { opacity: 1; stroke: #f4e5a6; }
+.observatory-map:has(.district-link-infrastructure:focus-visible) [data-region="infrastructure"] .region-highlight,
+.observatory-map:has(.district-link-esusdata:focus-visible) [data-region="esusdata"] .region-highlight { opacity: 1; stroke: #f4e5a6; }
 [data-observatory]:not([data-controller-ready]):has(#district-cnesdata:target) [data-region="cnesdata"] .region-selection,
 [data-observatory]:not([data-controller-ready]):has(#district-limnopulse:target) [data-region="limnopulse"] .region-selection,
-[data-observatory]:not([data-controller-ready]):has(#district-infrastructure:target) [data-region="infrastructure"] .region-selection { opacity: 1; }
+[data-observatory]:not([data-controller-ready]):has(#district-infrastructure:target) [data-region="infrastructure"] .region-selection,
+[data-observatory]:not([data-controller-ready]):has(#district-esusdata:target) [data-region="esusdata"] .region-selection { opacity: 1; }
 .observatory-controls { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .observatory-controls[hidden] { display: none; }
 .observatory-controls button { min-height: 44px; padding: 9px 14px; color: var(--text); background: #0a1927; border: 1px solid #627f91; border-radius: 8px; cursor: pointer; font: inherit; }
@@ -70,18 +74,25 @@
     transform: none !important; justify-self: center; pointer-events: auto;
   }
   [data-observatory]:has(.district-details article[data-selected="true"]) .district-link-cnesdata,
-  [data-observatory]:not([data-controller-ready]):has(.district-details article:target) .district-link-cnesdata { grid-column: 1 / -1; grid-row: 1; }
+  [data-observatory]:not([data-controller-ready]):has(.district-details article:target) .district-link-cnesdata { grid-column: 1; grid-row: 1; }
   [data-observatory]:has(.district-details article[data-selected="true"]) .district-link-infrastructure,
-  [data-observatory]:not([data-controller-ready]):has(.district-details article:target) .district-link-infrastructure { grid-column: 1; grid-row: 2; }
+  [data-observatory]:not([data-controller-ready]):has(.district-details article:target) .district-link-infrastructure { grid-column: 2; grid-row: 1; }
   [data-observatory]:has(.district-details article[data-selected="true"]) .district-link-limnopulse,
-  [data-observatory]:not([data-controller-ready]):has(.district-details article:target) .district-link-limnopulse { grid-column: 2; grid-row: 2; }
+  [data-observatory]:not([data-controller-ready]):has(.district-details article:target) .district-link-limnopulse { grid-column: 1; grid-row: 2; }
+  [data-observatory]:has(.district-details article[data-selected="true"]) .district-link-esusdata,
+  [data-observatory]:not([data-controller-ready]):has(.district-details article:target) .district-link-esusdata { grid-column: 2; grid-row: 2; }
+}
+@media (min-width: 701px) and (max-width: 900px) {
+  .district-link-infrastructure { width: 178px; white-space: normal; }
 }
 @media (max-width: 700px) {
   .region-layout-desktop { display: none; }
   .region-layout-mobile { display: block; }
   .district-link, .observatory-hub { left: var(--mobile-x); top: var(--mobile-y); }
-  .district-link { width: 35%; min-height: 44px; padding: 7px 9px; gap: 6px; font-size: .875rem; white-space: normal; }
-  .district-link-infrastructure { transform: translate(-50%, -6px); }
+  .district-link { width: 35%; min-height: 44px; padding: 7px 9px; gap: 6px; font-size: .875rem; white-space: normal; transform: translate(-100%, 0); }
+  .district-link-cnesdata { transform: translate(-100%, -10px); }
+  .district-link-infrastructure { transform: translate(20%, 8px); }
+  .district-link-esusdata { transform: translate(-70%, 10px); }
   .district-number { font-size: .65rem; }
   .district-details article {
     inset: auto 0 0; width: 100%; max-height: 60%; padding: 22px;
@@ -92,12 +103,12 @@
   [data-observatory]:has(.district-details article[data-selected="true"]) .district-selectors,
   [data-observatory]:not([data-controller-ready]):has(.district-details article:target) .district-selectors {
     position: absolute; z-index: 4; top: calc(40% + 8px); right: 2px; left: 2px;
-    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px;
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px;
   }
   [data-observatory]:has(.district-details article[data-selected="true"]) .district-link,
   [data-observatory]:not([data-controller-ready]):has(.district-details article:target) .district-link {
-    position: relative !important; left: auto !important; top: auto !important; width: 100%; height: 70px;
-    min-height: 70px; padding: 4px; transform: none !important; flex-direction: column; justify-content: center; gap: 1px;
+    position: relative !important; left: auto !important; top: auto !important; width: 100%; height: 60px;
+    min-height: 60px; padding: 4px; transform: none !important; flex-direction: column; justify-content: center; gap: 1px;
     font-size: .875rem; text-align: center; white-space: normal;
   }
   [data-observatory]:has(.district-details article[data-selected="true"]) .district-link > span:last-child,
@@ -105,8 +116,9 @@
     min-width: 0; overflow-wrap: anywhere;
   }
   [data-observatory]:has(.district-details article[data-selected="true"]) .district-details article[data-selected="true"],
-  [data-observatory]:not([data-controller-ready]):has(.district-details article:target) .district-details article:target { padding-top: 104px; }
+  [data-observatory]:not([data-controller-ready]):has(.district-details article:target) .district-details article:target { padding-top: 150px; }
 }
 :where([data-observatory]:not([data-controller-ready]):has(#district-cnesdata:target)) .district-link-cnesdata { border-color: var(--region-accent); outline: 2px solid var(--region-accent); outline-offset: 2px; background: #12333e; }
 :where([data-observatory]:not([data-controller-ready]):has(#district-infrastructure:target)) .district-link-infrastructure { border-color: var(--region-accent); outline: 2px solid var(--region-accent); outline-offset: 2px; background: #12333e; }
 :where([data-observatory]:not([data-controller-ready]):has(#district-limnopulse:target)) .district-link-limnopulse { border-color: var(--region-accent); outline: 2px solid var(--region-accent); outline-offset: 2px; background: #12333e; }
+:where([data-observatory]:not([data-controller-ready]):has(#district-esusdata:target)) .district-link-esusdata { border-color: var(--region-accent); outline: 2px solid var(--region-accent); outline-offset: 2px; background: #12333e; }

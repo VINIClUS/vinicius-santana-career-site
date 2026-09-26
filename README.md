@@ -167,7 +167,7 @@ Shared profile, navigation, experience and stack content is defined in:
 src/data/content.js
 ```
 
-The three selected case studies and their evidence links are defined in:
+The four selected case studies and their evidence links are defined in:
 
 ```txt
 src/content/case-studies.yaml
@@ -197,7 +197,7 @@ There is no backend, database, authentication or contact form. Contact actions u
 ## Systems Atlas
 
 **Work** in the primary navigation opens Systems Atlas. Open `/explore/` for the
-three-project Systems Atlas, or `/explore/{cnesdata,limnopulse,infrastructure}/`
+four-project Systems Atlas, or `/explore/{cnesdata,limnopulse,infrastructure,esusdata}/`
 for the individual project walkthroughs.
 
 The overview is progressively enhanced: capable browsers load an on-demand
@@ -205,33 +205,39 @@ Three.js view after the immediate HTML and 2D poster are already usable. The
 poster remains visible while the scene loads. Save-Data, unavailable WebGL,
 renderer/model failures, a 15-second loading deadline, context loss, and **View 2D** (available during loading) all
 keep or restore the same 2D HTML/poster experience with working district links.
-Home uses the same four overview models through a separate fixed, decorative
+Home uses the same five overview models through a separate fixed, decorative
 preview. Its small launcher waits for page load, actual viewport intersection,
 document visibility and an idle opportunity before downloading Three.js or models.
 One 15-second deadline covers activation through the first complete draw; failure
 retains the responsive poster. The only Home work CTA is **Explore my work** →
-`/explore/`. The Atlas and project pages do not load the Home preview. All three project pages lead with HTML/SVG lifecycle tours and retain their technical System Views in disclosures.
+`/explore/`. The Atlas and project pages do not load the Home preview. All four project pages lead with HTML/SVG lifecycle tours and retain their technical System Views in disclosures.
 See [SA-05 validation](docs/design/sa-05/validation.md) for loading and performance evidence.
 
 `npm test` checks the simulation and explorer TypeScript modules and runs the focused Node tests. After `npm run build`, run `npm run smoke` and `npm run test:explorer`. Install the browser once with `npx playwright install --with-deps chromium`. Playwright 1.63.0 runs the Chromium browser suites with one worker; screenshots and traces are retained only on failure. To run the same smoke against a deployment, set `EXPLORER_BASE_URL` to its origin.
 
-The five Systems Atlas V3 tours cover 91 command checkpoints and 27 negative cases. See the [V3 report, captures and recordings](docs/design/lifecycle-reports/README.md).
+The original five Systems Atlas V3 tours cover 91 command checkpoints and 27 negative cases; Esusdata adds a sixth, fictional C1 tour. See the [V3 report, captures and recordings](docs/design/lifecycle-reports/README.md).
 
 See [the explorer contract](docs/explorer.md) for interaction and fallback
 details, and [the SA-01 evidence](docs/design/sa-01/README.md) for the
 release evidence.
 
+Esusdata's local observatory walkthrough is pinned to the public repository at
+`c879dff09adc41d8c2d8f0baa472fa3c0bba0489`. Its six-step C1 example uses
+fictional encounters; **60% / Ótimo** describes only a hypothetical target
+with methodological gates completed. Real C1 publication remains blocked by
+those pending gates.
+
 ## Canonical work navigation
 
 The primary Work link opens `/explore/` (Systems Atlas). Project narratives,
 System Views, simulations and evidence live at `/explore/cnesdata/`,
-`/explore/limnopulse/` and `/explore/infrastructure/`.
+`/explore/limnopulse/`, `/explore/infrastructure/` and `/explore/esusdata/`.
 
 The four former `/work/` routes are static compatibility documents with a
 canonical destination, `noindex`, a normal HTML link and `location.replace`.
 The explicit route map preserves query strings and fragments, including
 `#architecture`; query parameters never select a redirect destination. Without
 JavaScript, the HTML link opens the canonical page. These are not HTTP 301/308
-responses. The sitemap contains only the seven canonical pages.
+responses. The sitemap contains only the eight canonical pages.
 
 HTML owns content and navigation; deterministic controllers own selection and simulation. Optional renderers project that state without replacing evidence, focus or static fallbacks. See [SA-07 validation](docs/design/sa-07/validation.md) for migration cleanup and release evidence.

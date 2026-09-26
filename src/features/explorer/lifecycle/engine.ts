@@ -14,6 +14,18 @@ export function normalizeLimnopulseCommand(state: LimnopulseState, command: Comm
 }
 
 export async function loadEngine(scenarioId: string): Promise<DomainAdapter> {
+  if (scenarioId === 'esusdata-c1-target') {
+    const engine = await import('./esusdata.ts');
+    return {
+      initialize: engine.createEsusdataState,
+      dispatch: (state, command) => engine.reduceEsusdata(state as ReturnType<typeof engine.createEsusdataState>, command as Parameters<typeof engine.reduceEsusdata>[1]),
+      project: state => engine.projectEsusdata(state as ReturnType<typeof engine.createEsusdataState>),
+      samples: state => {
+        const current = state as ReturnType<typeof engine.createEsusdataState>;
+        return { title: 'Fictional encounter counts', columns: ['Modality', 'Count', 'C1 treatment'], rows: current.rowsRead ? [['Scheduled', '3', 'Numerator'], ['Walk-in', '2', 'Denominator only'], ['Unmapped', '1', 'Excluded']] : [], provenance: 'Synthetic six-row fixture · no patient or municipal records' };
+      },
+    };
+  }
   if (scenarioId === 'cnesdata-end-to-end') {
     const engine = await import('./cnesdata.ts');
     return {

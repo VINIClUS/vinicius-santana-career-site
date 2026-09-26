@@ -146,7 +146,7 @@ test('system views retain components, connectors, evidence status and transcript
   const context = await browser.newContext({ baseURL, viewport: { width: 360, height: 844 }, javaScriptEnabled: false });
   const page = await context.newPage();
 
-  for (const project of ['cnesdata', 'limnopulse', 'infrastructure']) {
+  for (const project of ['cnesdata', 'limnopulse', 'infrastructure', 'esusdata']) {
     await page.goto(`/explore/${project}/`);
     await openTechnicalDetails(page);
     await expect(page.locator('[data-component-detail]')).not.toHaveCount(0);

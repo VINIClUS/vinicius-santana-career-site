@@ -7,7 +7,7 @@ import { projectDefinitions } from '../src/features/explorer/projects.ts';
 
 const root = new URL('../', import.meta.url);
 const fromRoot = (...segments) => new URL(segments.join('/'), root);
-const expectedResumeHash = 'b2cca4eac1313462b8ff44eb0c42a3143e5bd1a3ac02a2d756b1b38bc16b769e';
+const expectedResumeHash = '04fdebdb717496a46af5490b1b97acd6a5f431db5f9d6bcd5504fb6be4628dc7';
 const expectedOrigin = 'https://vinisantana.com';
 const analyticsMeasurementId = 'G-2DY87DZC90';
 
@@ -235,7 +235,7 @@ function assertExperienceSection(pageHtml, pageName, headingId) {
   assert.match(municipalArticle, /Nov 2021 — Present/);
 
   const municipalRoles = [
-    ['Health Informatics Analyst &amp; Data Engineer', 'Oct 2023 — Present'],
+    ['Software Engineering &amp; Health Data Systems', 'Oct 2023 — Present'],
     ['IT Infrastructure &amp; Systems Support · Internship', 'Nov 2021 — Oct 2023']
   ];
   for (const [title, period] of municipalRoles) {
@@ -257,15 +257,15 @@ function assertExperienceSection(pageHtml, pageName, headingId) {
 
   const internshipMarkup = municipalArticle.slice(municipalRoleOffsets[1]);
   assert.equal((internshipMarkup.match(/<li>/g) || []).length, 3, `${pageName} internship must expose exactly three highlights`);
-  assert.match(internshipMarkup, /Maintained rotating snapshots plus incremental and weekly full backups/);
+  assert.match(internshipMarkup, /backup checkpoints, certificate and credential rotation, and rollback procedures/);
 
   assert.match(articles[1], /<h3[^>]*>Irmãos Santana<\/h3>/i);
   assert.match(articles[1], /<h4[^>]*>Business Analyst &amp; Operations Manager<\/h4>/i);
 
-  for (const evidence of ['21,000+', '12%+', 'below 1%', '240+', 'about 4 hours', '10,000+', 'Proxmox/Linux', 'Ceph', '26%', '11%', 'Python', 'MQTT']) {
+  for (const evidence of ['21,000+', '12%+', 'below 1%', '240+', '4 per cycle', '9 GB', 'Python', 'Nginx']) {
     assert.ok(section.includes(evidence), `${pageName} experience must include ${evidence}`);
   }
-  assert.match(section, /Java and Spring/, `${pageName} must identify Java and Spring as current-role technologies`);
+  assert.match(section, /Java\/Spring/, `${pageName} must identify Java and Spring as current-role technologies`);
 }
 
 assertExperienceSection(html, 'home', 'experience-title');
@@ -358,6 +358,13 @@ const caseStudies = [
       'esus-pec-bootstrap public repository'
     ],
     statuses: ['Implemented', 'Illustrative']
+  },
+  {
+    slug: 'esusdata',
+    title: 'Esusdata',
+    repositoryUrls: ['https://github.com/VINIClUS/esusdata/tree/c879dff09adc41d8c2d8f0baa472fa3c0bba0489'],
+    evidenceLabels: ['Esusdata public repository', 'C1 methodology and implementation status', 'PEC compatibility evidence'],
+    statuses: ['Implemented', 'Documented']
   }
 ];
 
@@ -450,9 +457,9 @@ const sitemapEntry = await readFile(fromRoot('dist/sitemap.xml'), 'utf8');
 assert.match(sitemapEntry, new RegExp(`<loc>${escapeRegExp(new URL('/sitemap-index.xml', origin).href)}</loc>`), 'public sitemap must reference the generated sitemap index');
 assert.match(sitemapIndex, new RegExp(`<loc>${escapeRegExp(new URL('/sitemap-0.xml', origin).href)}</loc>`), 'sitemap index must reference the generated page sitemap');
 
-const indexableRoutes = ['/explore/', '/explore/cnesdata/', '/explore/limnopulse/', '/explore/infrastructure/', '/', '/about/', '/privacy/'];
+const indexableRoutes = ['/explore/', '/explore/cnesdata/', '/explore/limnopulse/', '/explore/infrastructure/', '/explore/esusdata/', '/', '/about/', '/privacy/'];
 const sitemapLocations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]).sort();
-assert.deepEqual(sitemapLocations, indexableRoutes.map((route) => new URL(route, origin).href).sort(), 'sitemap must contain exactly the seven canonical indexable routes');
+assert.deepEqual(sitemapLocations, indexableRoutes.map((route) => new URL(route, origin).href).sort(), 'sitemap must contain exactly the eight canonical indexable routes');
 assert.doesNotMatch(sitemap, /\/resume\//i, 'sitemap must exclude the removed Resume route');
 assert.doesNotMatch(sitemap, /\/work(?:\/|<)/i, 'sitemap must exclude compatibility routes');
 assert.doesNotMatch(sitemap, /\/404(?:\.html|\/)?<\/loc>/i, 'sitemap must exclude the 404 page');
@@ -487,14 +494,16 @@ const districtDestinations = {
   cnesdata: '/explore/cnesdata/',
   infrastructure: '/explore/infrastructure/',
   limnopulse: '/explore/limnopulse/',
+  esusdata: '/explore/esusdata/',
 };
 const explorerProjects = yaml.load(await readFile(fromRoot('src/content/case-studies.yaml'), 'utf8'));
 const expectedTechnologies = {
   cnesdata: ['Python', 'FastAPI', 'Go', 'PostgreSQL', 'Parquet', 'Docker', 'React'],
   limnopulse: ['Python', 'FastAPI', 'Go', 'DynamoDB', 'InfluxDB', 'SQS', 'OpenTofu'],
   infrastructure: ['Ansible', 'Packer', 'Proxmox VE', 'Python', 'PowerShell', 'Bash', 'Docker'],
+  esusdata: ['Java 21', 'Spring Boot', 'Rust', 'SQLite', 'React', 'PostgreSQL'],
 };
-assert.equal([...overview.matchAll(/<article\b[^>]*data-district-detail=/g)].length, 3, 'overview renders exactly three project articles');
+assert.equal([...overview.matchAll(/<article\b[^>]*data-district-detail=/g)].length, 4, 'overview renders exactly four project articles');
 for (const [id, href] of Object.entries(districtDestinations)) {
   assert.match(overview, new RegExp(`href="#district-${id}"`));
   const article = overview.match(new RegExp(`<article[^>]*id="district-${id}"[^>]*>[\\s\\S]*?</article>`))?.[0];
@@ -522,7 +531,7 @@ for (const [id, href] of Object.entries(districtDestinations)) {
     `${project.title} overview technologies must sit between the description and button`
   );
 }
-assert.equal([...overview.matchAll(/data-district-link=/g)].length, 3);
+assert.equal([...overview.matchAll(/data-district-link=/g)].length, 4);
 assert.doesNotMatch(overview, /district-(?:public-health|observability)|atlas-context/, 'retired districts must be absent without compatibility redirects');
 assert.doesNotMatch(overview, /href="#district-hub"|data-district-(?:link|detail)="hub"/);
 assert.doesNotMatch(overview, /<canvas|<astro-island|\.(glb|gltf|ktx2)["']/i);
@@ -590,6 +599,7 @@ const publishedPages = [
       [`/explore/${slug}/`, await readBuiltPage(`dist/explore/${slug}/index.html`)]
     ])
   )).flat(),
+  ['/explore/esusdata/', await readBuiltPage('dist/explore/esusdata/index.html')],
   ['/explore/', overview]
 ];
 for (const [route, pageHtml] of publishedPages) {

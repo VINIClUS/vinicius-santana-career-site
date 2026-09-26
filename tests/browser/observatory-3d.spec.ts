@@ -5,7 +5,7 @@ import { projectToPoster } from '../../src/features/explorer/observatory-project
 
 test.use({ hasTouch: true });
 
-const projectIds = ['cnesdata', 'limnopulse', 'infrastructure'] as const;
+const projectIds = ['cnesdata', 'limnopulse', 'infrastructure', 'esusdata'] as const;
 const stage = (page: Page) => page.locator('[data-observatory]');
 const canvas = (page: Page) => page.locator('canvas[data-observatory-canvas]');
 const selected = (page: Page, id: string) => page.locator(`[data-district-link="${id}"]`);
@@ -79,7 +79,7 @@ async function clickHub(page: Page) {
   await page.mouse.click(box.x + box.width / 2, box.y - 15);
 }
 
-test('readiness waits for all four models, then ambient motion can pause', async ({ page }) => {
+test('readiness waits for all five models, then ambient motion can pause', async ({ page }) => {
   await page.addInitScript(() => {
     const state = window as typeof window & { observatoryDraws: number };
     state.observatoryDraws = 0;
@@ -96,7 +96,7 @@ test('readiness waits for all four models, then ambient motion can pause', async
   await page.goto('/explore/');
   await ready(page);
   expect(models.map(url => url.split('/').at(-1)).sort()).toEqual([
-    'district-cnesdata.glb', 'district-infrastructure.glb', 'district-limnopulse.glb', 'hub.glb',
+    'district-cnesdata.glb', 'district-esusdata.glb', 'district-infrastructure.glb', 'district-limnopulse.glb', 'hub.glb',
   ]);
   expect(await canvas(page).evaluate(element => Boolean((element as HTMLCanvasElement).getContext('webgl2')))).toBe(true);
   expect(await page.evaluate(() => (window as typeof window & { observatoryDraws: number }).observatoryDraws)).toBeGreaterThan(0);
@@ -128,7 +128,7 @@ test('readable labels match the poster and stay inside the map at the camera lim
     const boxes = await rectangles();
     const outlines = await regionOutlines(page);
     measurements.push({ width, state, boxes, outlines });
-    expect(outlines).toHaveLength(3);
+    expect(outlines).toHaveLength(4);
     for (let a = 0; a < outlines.length; a++) for (let b = a + 1; b < outlines.length; b++) {
       expect(disjoint(outlines[a]!, outlines[b]!), `${width} ${state}: region footprints overlap`).toBe(true);
     }
@@ -241,7 +241,7 @@ test('all project selections update state and history without requesting detail 
   page.on('request', request => { if (request.url().endsWith('.glb')) models.push(request.url()); });
   await page.goto('/explore/');
   await ready(page);
-  expect(models).toHaveLength(4);
+  expect(models).toHaveLength(5);
   for (const [index, id] of projectIds.entries()) {
     await page.locator('.observatory-map').scrollIntoViewIfNeeded();
     const scroll = await page.evaluate(() => scrollY);
@@ -253,15 +253,15 @@ test('all project selections update state and history without requesting detail 
     expect(Math.abs(await page.evaluate(() => scrollY) - scroll)).toBeLessThanOrEqual(1);
   }
   await frames(page, 12);
-  expect(models).toHaveLength(4);
+  expect(models).toHaveLength(5);
   expect(models.some(url => url.includes('/detail-'))).toBe(false);
   await page.goBack();
-  await expect(selected(page, 'limnopulse')).toHaveAttribute('aria-current', 'true');
+  await expect(selected(page, 'infrastructure')).toHaveAttribute('aria-current', 'true');
   await page.goForward();
-  await expect(selected(page, 'infrastructure')).toHaveAttribute('aria-current', 'true');
+  await expect(selected(page, 'esusdata')).toHaveAttribute('aria-current', 'true');
   await clickHub(page);
-  await expect(selected(page, 'infrastructure')).toHaveAttribute('aria-current', 'true');
-  await expect(page).toHaveURL(/#district-infrastructure$/);
+  await expect(selected(page, 'esusdata')).toHaveAttribute('aria-current', 'true');
+  await expect(page).toHaveURL(/#district-esusdata$/);
 });
 
 test('dragging away and back over a maquette does not activate it', async ({ page }) => {

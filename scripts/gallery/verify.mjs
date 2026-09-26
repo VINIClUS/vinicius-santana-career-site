@@ -5,7 +5,7 @@ import { mkdir } from 'node:fs/promises';
 import { chromium } from '@playwright/test';
 
 const expectedIds = [
-  'district-cnesdata', 'district-limnopulse', 'district-infrastructure', 'hub',
+  'district-cnesdata', 'district-limnopulse', 'district-infrastructure', 'district-esusdata', 'hub',
   'detail-infrastructure', 'overview', 'detail-infrastructure-failed',
 ];
 

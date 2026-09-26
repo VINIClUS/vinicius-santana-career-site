@@ -18,10 +18,11 @@ function layout(value: { districtPositions: Record<DistrictId, number[]>; distri
       cnesdata: vector(value.districtPositions.cnesdata),
       limnopulse: vector(value.districtPositions.limnopulse),
       infrastructure: vector(value.districtPositions.infrastructure),
+      esusdata: vector(value.districtPositions.esusdata),
     },
-    rotations: { cnesdata: vector(value.rotations.cnesdata), limnopulse: vector(value.rotations.limnopulse), infrastructure: vector(value.rotations.infrastructure) },
-    labelPositions: { cnesdata: vector(value.labelPositions.cnesdata), limnopulse: vector(value.labelPositions.limnopulse), infrastructure: vector(value.labelPositions.infrastructure) },
-    regionOutlines: { cnesdata: value.regionOutlines.cnesdata.map(vector), limnopulse: value.regionOutlines.limnopulse.map(vector), infrastructure: value.regionOutlines.infrastructure.map(vector) },
+    rotations: { cnesdata: vector(value.rotations.cnesdata), limnopulse: vector(value.rotations.limnopulse), infrastructure: vector(value.rotations.infrastructure), esusdata: vector(value.rotations.esusdata) },
+    labelPositions: { cnesdata: vector(value.labelPositions.cnesdata), limnopulse: vector(value.labelPositions.limnopulse), infrastructure: vector(value.labelPositions.infrastructure), esusdata: vector(value.labelPositions.esusdata) },
+    regionOutlines: { cnesdata: value.regionOutlines.cnesdata.map(vector), limnopulse: value.regionOutlines.limnopulse.map(vector), infrastructure: value.regionOutlines.infrastructure.map(vector), esusdata: value.regionOutlines.esusdata.map(vector) },
     terrainOutline: value.terrainOutline,
     interaction: value.interaction,
     districtScale: value.districtScale,
@@ -56,6 +57,7 @@ export const districts = {
   cnesdata: scene('district-cnesdata', 'Stepped horizontal data layers and an open gateway on low cartographic terrain.'),
   limnopulse: scene('district-limnopulse', 'Water basin with sensing buoys and illustrative telemetry instruments.'),
   infrastructure: scene('district-infrastructure', 'Three illustrative compute nodes with a lower shared layer on angular terrain.'),
+  esusdata: scene('district-esusdata', 'A separated PEC source, read-only bridge, Rust acquisition, local Java and SQLite core, indicator and authorized panel on conceptual terrain.'),
 } as const satisfies Record<DistrictId, SceneAsset>;
 export const hub = scene('hub', 'Small decorative cartographic origin ring and registration cross.');
 export const details = {
@@ -69,7 +71,7 @@ const overviewLayouts = {
 } as const;
 export const overview = {
   id: 'overview',
-  poster: poster('overview', 'CnesData layers, an irregular LimnoPulse basin and three Infrastructure nodes share one continuous conceptual terrain.'),
+  poster: poster('overview', 'CnesData, LimnoPulse, Infrastructure and Esusdata landmarks share one continuous conceptual terrain.'),
   layouts: overviewLayouts,
   placements: overviewLayouts.desktop.placements,
   districtScale: overviewLayouts.desktop.districtScale,

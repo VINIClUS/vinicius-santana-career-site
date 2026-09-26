@@ -13,7 +13,7 @@ const transcripts = await Promise.all(tours.map(async (tour: Scenario) => {
   const frames = tour.checkpoints.map(cp => {
     state = execute(adapter, state, cp.command).state;
     return { title: cp.title, caption: cp.caption, outcome: describeOutcome(project, adapter.project(state)),
-      samples: ['EXTRACT_LOCAL','EXTRACT_NATIONAL_PF','NORMALIZE_SOURCES','RECONCILE_COMPETENCIA','MATERIALIZE_SERVING','SHOW_SERVING'].includes(cp.command.type) ? adapter.samples?.(state) : undefined };
+      samples: project === 'esusdata' || ['EXTRACT_LOCAL','EXTRACT_NATIONAL_PF','NORMALIZE_SOURCES','RECONCILE_COMPETENCIA','MATERIALIZE_SERVING','SHOW_SERVING'].includes(cp.command.type) ? adapter.samples?.(state) : undefined };
   });
   return { title: tour.title, frames };
 }));
@@ -21,7 +21,7 @@ const first = scenario?.checkpoints[0];
 const beat = first?.plan.microbeats[0];
 ---
 {scenario && <section id="simulation" class="lifecycle" data-lifecycle data-project={project} aria-label="System lifecycle">
-  <div class="lifecycle-topline"><span class="eyebrow">Systems Atlas / Lifecycle</span><span class="lifecycle-evidence">Synthetic · {project === 'cnesdata' ? 'documented / planned target' : 'illustrative'}</span></div>
+  <div class="lifecycle-topline"><span class="eyebrow">Systems Atlas / Lifecycle</span><span class="lifecycle-evidence">Synthetic · {project === 'cnesdata' ? 'documented / planned target' : project === 'esusdata' ? 'hypothetical approved target; real C1 blocked' : 'illustrative'}</span></div>
   <header class="lifecycle-heading">
     <p data-stage-number>01 / 06</p>
     <h2 data-life-title>{first!.plan.headline}</h2>
@@ -37,7 +37,7 @@ const beat = first?.plan.microbeats[0];
       <p class="life-beat-label" data-life-beat>{beat!.label}</p>
     </div>
     <div class="life-records" data-life-records aria-label="Persisted state"></div>
-    {project==='cnesdata' && <div class="life-samples" data-life-samples hidden><h3 data-life-sample-title>Source captures</h3><table><thead data-life-sample-head></thead><tbody data-life-sample-body></tbody></table><p data-life-sample-provenance></p></div>}
+    {(project==='cnesdata'||project==='esusdata') && <div class="life-samples" data-life-samples hidden><h3 data-life-sample-title>Source captures</h3><table><thead data-life-sample-head></thead><tbody data-life-sample-body></tbody></table><p data-life-sample-provenance></p></div>}
     {project!=='infrastructure' && <aside class="life-recipient" data-life-recipient hidden aria-label="Synthetic user view"><p class="eyebrow">User view · proposed mock</p><h3 data-life-recipient-title></h3><p data-life-recipient-message></p>{project==='limnopulse'&&<div><button type="button" data-life-recipient-open disabled>View incident</button><button type="button" data-life-recipient-ack disabled>Acknowledge</button></div>}</aside>}
     <figcaption><span class="life-result-tag">Result</span><p data-life-outcome>{transcripts[0].frames[0].outcome}</p></figcaption>
   </figure>
@@ -61,6 +61,7 @@ const beat = first?.plan.microbeats[0];
     <p>Calculated from the engine during the build. Available without JavaScript.</p>
     {transcripts.map(transcript => <section><h3>{transcript.title}</h3><ol>{transcript.frames.map(frame => <li><h4>{frame.title}</h4><p>{frame.caption}</p><p>{frame.outcome}</p>{frame.samples&&<div class="life-samples"><h4>{frame.samples.title}</h4><table><thead><tr>{frame.samples.columns.map(column=><th scope="col">{column}</th>)}</tr></thead><tbody>{frame.samples.rows.map(row=><tr>{row.map(value=><td>{value}</td>)}</tr>)}</tbody></table><p>{frame.samples.provenance}</p></div>}</li>)}</ol></section>)}
   </details>
+  {project === 'esusdata' && <details class="life-transcripts"><summary>Read the four publication blockers</summary><ul><li>A read budget below six rows stops acquisition.</li><li>An invalid extract cannot reach calculation.</li><li>A revoked municipal grant blocks publication and result reads.</li><li>Incomplete methodology gates A, B, D and E block real C1 publication, even when a technical candidate exists.</li></ul></details>}
   <details class="life-technical"><summary>Current state and operation</summary><pre data-life-technical>{JSON.stringify(first!.command,null,2)}</pre></details>
   <p class="visually-hidden" aria-live="polite" data-life-announcement></p>
   <script type="application/json" data-life-data set:html={JSON.stringify(tours).replaceAll('<','\\u003c')} />
