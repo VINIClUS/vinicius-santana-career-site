@@ -7,11 +7,14 @@ const viewports = [
 ];
 
 async function expectLoadedImagesAndNoHorizontalOverflow(page: Page) {
-  for (const image of await page.locator('main img').all()) {
-    await image.scrollIntoViewIfNeeded();
-    await expect(image).toHaveJSProperty('complete', true);
-    expect(await image.evaluate((element: HTMLImageElement) => element.naturalWidth)).toBeGreaterThan(0);
-  }
+  const images = page.locator('main img');
+  await expect(images.first()).toBeAttached();
+  await images.evaluateAll(elements => {
+    for (const element of elements) (element as HTMLImageElement).loading = 'eager';
+  });
+  await expect.poll(() => images.evaluateAll(elements =>
+    elements.length > 0 && elements.every(element => (element as HTMLImageElement).complete && (element as HTMLImageElement).naturalWidth > 0)
+  )).toBe(true);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 }
 
