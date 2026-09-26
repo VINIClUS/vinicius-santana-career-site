@@ -39,3 +39,18 @@ test('Esusdata transcript identifies target publication and current C1 blocker w
   await expect(transcript).toContainText(/real C1 publication remains blocked/i);
   await context.close();
 });
+
+test('revoking a municipal grant hides the hypothetical panel and labels consultation as blocked', async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'connection', { value: { saveData: true } });
+  });
+  await page.goto('/explore/esusdata/');
+  await page.locator('[data-life-chapter="5"]').click();
+  await page.locator('[data-life-next]').click();
+  await expect(page.locator('[data-life-recipient]')).toBeVisible();
+  await page.locator('.life-try summary').click();
+  await page.getByRole('button', { name: 'Revoke municipal grant' }).click();
+  await expect(page.locator('[data-life-recipient]')).toBeHidden();
+  await expect(page.locator('[data-life-records]')).toContainText('municipal grant revoked; consultation blocked');
+  await expect(page.locator('[data-life-outcome]')).toContainText('grant revoked; access blocked');
+});

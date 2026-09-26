@@ -116,7 +116,7 @@ export async function initializeLifecycles() {
     if(scenario.id==='infra-provision-scale') records=['Host 01 · physical','Host 02 · physical','Host 03 · physical',`Routing · ${p.readyReplicas} ready replicas`, `In flight · ${p.inFlight}`];
     else if(scenario.project==='infrastructure') records=Object.entries(p.nodes as Record<string,string>).map(([id,status])=>`${id} · ${status}`).concat([`Definition · ${p.desired}`,`Durable data · ${p.storageReady?'available':'unavailable'}`]);
     else if(scenario.project==='limnopulse') records=[`Telemetry · ${p.samples} persisted samples`,`Outbox · ${p.outboxCount} records`,`Queues · ${p.queueCount} jobs`, `Recipient · ${String(p.userView).replaceAll('_',' ')}`];
-    else if(scenario.project==='esusdata') records=[`Read · ${p.rowsRead} fictional rows`,`Extract · ${p.extractValid?'verified':'pending'}`,`C1 · ${p.calculated?'technical candidate':'pending'}`,`Methodology · ${p.targetGatesCompleted?'hypothetical target gates complete':'real gates incomplete'}`,`Publication · ${p.published?'target only':'blocked'}`];
+    else if(scenario.project==='esusdata') records=[`Read · ${p.rowsRead} fictional rows`,`Extract · ${p.extractValid?'verified':'pending'}`,`C1 · ${p.calculated?'technical candidate':'pending'}`,`Methodology · ${p.targetGatesCompleted?'hypothetical target gates complete':'real gates incomplete'}`,`Publication · ${p.published?'target only':'blocked'}`,`Access · ${p.grantActive?'municipal grant active':'municipal grant revoked; consultation blocked'}`];
     else records=[`Raw · ${p.rawObjects} objects`,`Normalized · ${p.normalized} sources`,`CURRENT · ${p.currentVersion}`,`Recipient · ${p.servedVersion??'previous version'}`];
     get('records').replaceChildren(...records.map(text=>{const item=document.createElement('span');item.textContent=text;return item;}));
   }
@@ -148,6 +148,12 @@ export async function initializeLifecycles() {
     }
   }
   function actorStatus(id:string,p:Record<string,unknown>):string {
+    if(id==='esus.pec')return p.grantActive?'Separate read-only source':'Grant revoked';
+    if(id==='esus.rust')return p.rowsRead?`${p.rowsRead} fictional rows read`:'Within read budget';
+    if(id==='esus.extract')return p.extractValid?'Verified local extract':'Awaiting verification';
+    if(id==='esus.rule')return p.calculated?'Technical C1 candidate':'Awaiting calculation';
+    if(id==='esus.core')return p.published?'Hypothetical target published':'Publication gated';
+    if(id==='esus.panel')return !p.grantActive?'Consultation blocked':p.dashboard?'Hypothetical result visible':'Awaiting authorized query';
     if(id.startsWith('scale.worker-'))return String((p.workers as Record<string,unknown>|undefined)?.[id.replace('scale.','')]??'absent');
     if(id==='scale.service')return `${p.readyReplicas??0} ready / ${p.desiredReplicas??0} desired`;
     if(id==='cnes.pointer')return String(p.currentVersion??'none');

@@ -29,6 +29,15 @@ const expectedDiagrams = {
       ['Operations automation', 'flow', ['operations-automation']],
       ['Reference topology', 'flow', ['reference-topology']]
     ]
+  },
+  esusdata: {
+    primaryComponentId: 'local-coordination',
+    stages: [
+      ['Read-only source', 'flow', ['pec-source']],
+      ['Bounded acquisition', 'flow', ['execution-plane', 'verified-extract']],
+      ['Local computation', 'flow', ['local-coordination', 'c1-rule']],
+      ['Conditional publication', 'flow', ['results', 'authorized-dashboard']]
+    ]
   }
 };
 
@@ -60,3 +69,5 @@ assert.equal(projectDefinitions.limnopulse.relations.find(relation => relation.f
 assert.equal(projectDefinitions.limnopulse.relations.find(relation => relation.from === 'alert-rules' && relation.to === 'notifications')?.shortLabel, 'Delivery work');
 assert.equal(projectDefinitions.infrastructure.relations.find(relation => relation.from === 'ansible-contracts' && relation.to === 'reference-topology')?.shortLabel, 'Configuration');
 assert.equal(projectDefinitions.infrastructure.relations.find(relation => relation.from === 'image-builds' && relation.to === 'reference-topology')?.shortLabel, 'Base images');
+assert.equal(projectDefinitions.esusdata.relations.length, 6);
+assert.equal(projectDefinitions.esusdata.relations.find(relation => relation.from === 'results' && relation.to === 'authorized-dashboard')?.shortLabel, 'Authorized evidence');

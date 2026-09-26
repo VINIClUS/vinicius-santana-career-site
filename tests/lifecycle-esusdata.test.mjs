@@ -4,6 +4,7 @@ import { createEsusdataState, reduceEsusdata, projectEsusdata } from '../src/fea
 import scenario from '../src/features/explorer/lifecycle/data/esusdata-c1-target.json' with { type: 'json' };
 import { loadEngine } from '../src/features/explorer/lifecycle/engine.ts';
 import { execute } from '../src/features/explorer/lifecycle/types.ts';
+import { describeOutcome } from '../src/features/explorer/lifecycle/presentation.ts';
 
 const apply = (state, command) => reduceEsusdata(state, command).state;
 function ready() {
@@ -30,6 +31,11 @@ test('publication requires complete methodology and a live grant', () => {
   const published = apply(target, { type: 'PUBLISH_C1' });
   assert.equal(projectEsusdata(published).published, true);
   assert.equal(projectEsusdata(apply(published, { type: 'QUERY_RESULT' })).dashboard, '60% / Ótimo · hypothetical target');
+  const revoked = apply(apply(published, { type: 'QUERY_RESULT' }), { type: 'REVOKE_GRANT' });
+  assert.equal(projectEsusdata(revoked).published, true, 'revocation does not erase the published artifact');
+  assert.equal(projectEsusdata(revoked).dashboard, null, 'revocation hides the authorized view');
+  assert.equal(reduceEsusdata(revoked, { type: 'QUERY_RESULT' }).rejection, 'GRANT_REVOKED');
+  assert.match(describeOutcome('esusdata', projectEsusdata(revoked)), /grant revoked; access blocked/);
   assert.equal(reduceEsusdata(apply(target, { type: 'REVOKE_GRANT' }), { type: 'PUBLISH_C1' }).rejection, 'GRANT_REVOKED');
   const incompleteBranch = apply(published, { type: 'RESET_METHOD_GATES' });
   assert.equal(projectEsusdata(incompleteBranch).published, false);
