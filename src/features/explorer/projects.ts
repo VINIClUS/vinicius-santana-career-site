@@ -1,4 +1,4 @@
-export const projectIds = ['cnesdata', 'limnopulse', 'infrastructure'] as const;
+export const projectIds = ['cnesdata', 'limnopulse', 'infrastructure', 'esusdata'] as const;
 export type ProjectId = (typeof projectIds)[number];
 export interface ProjectRelation { readonly from: string; readonly to: string; readonly label: string; readonly shortLabel: string; }
 export interface ProjectDiagramStage { readonly id: string; readonly label: string; readonly kind: 'flow' | 'support'; readonly componentIds: readonly string[]; }
@@ -72,6 +72,25 @@ export const projectDefinitions: Readonly<Record<ProjectId, ProjectDefinition>> 
       { from: 'image-builds', to: 'reference-topology', label: 'Provides repeatable base images', shortLabel: 'Base images' },
       { from: 'ansible-contracts', to: 'reference-topology', label: 'Configures target systems', shortLabel: 'Configuration' },
       { from: 'operations-automation', to: 'reference-topology', label: 'Operates target systems', shortLabel: 'Operations' }
+    ]
+  },
+  esusdata: {
+    area: 'Primary care observatory',
+    componentIds: ['pec-source', 'execution-plane', 'verified-extract', 'local-coordination', 'c1-rule', 'results', 'authorized-dashboard'],
+    primaryComponentId: 'local-coordination',
+    diagram: { stages: [
+      { id: 'source', label: 'Read-only source', kind: 'flow', componentIds: ['pec-source'] },
+      { id: 'acquisition', label: 'Bounded acquisition', kind: 'flow', componentIds: ['execution-plane', 'verified-extract'] },
+      { id: 'local-core', label: 'Local computation', kind: 'flow', componentIds: ['local-coordination', 'c1-rule'] },
+      { id: 'publication', label: 'Conditional publication', kind: 'flow', componentIds: ['results', 'authorized-dashboard'] }
+    ] },
+    relations: [
+      { from: 'pec-source', to: 'execution-plane', label: 'Provides read-only source rows within a budget', shortLabel: 'Bounded source rows' },
+      { from: 'execution-plane', to: 'verified-extract', label: 'Writes and hashes a local extract', shortLabel: 'Verified extract' },
+      { from: 'verified-extract', to: 'local-coordination', label: 'Supplies a checked data file and manifest', shortLabel: 'Data file and manifest' },
+      { from: 'local-coordination', to: 'c1-rule', label: 'Invokes the versioned indicator rule', shortLabel: 'Versioned calculation' },
+      { from: 'c1-rule', to: 'results', label: 'Stages a result subject to methodological gates', shortLabel: 'Gated result' },
+      { from: 'results', to: 'authorized-dashboard', label: 'Serves published evidence under a municipal grant', shortLabel: 'Authorized evidence' }
     ]
   }
 };

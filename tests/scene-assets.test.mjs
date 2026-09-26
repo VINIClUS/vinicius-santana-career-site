@@ -35,13 +35,13 @@ function webpSize(bytes) {
   throw new Error('WebP dimensions not found');
 }
 
-test('scene contract covers the three routable projects and preserves infrastructure detail artwork', () => {
-  assert.deepEqual(projectIds, ['cnesdata', 'limnopulse', 'infrastructure']);
+test('scene contract covers the four routable projects and preserves infrastructure detail artwork', () => {
+  assert.deepEqual(projectIds, ['cnesdata', 'limnopulse', 'infrastructure', 'esusdata']);
   assert.deepEqual([...districtIds], projectIds);
   assert.deepEqual(Object.keys(districts).sort(), [...districtIds].sort());
   assert.deepEqual(Object.keys(overview.placements).sort(), [...districtIds].sort());
   assert.deepEqual(Object.keys(details).sort(), ['infrastructure']);
-  assert.equal(sceneAssets.length, 5);
+  assert.equal(sceneAssets.length, 6);
   assert.equal(new Set(sceneAssets.map(asset => asset.id)).size, sceneAssets.length);
   assert.equal(new Set(sceneAssets.map(asset => asset.model.src)).size, sceneAssets.length);
   for (const vector of [...Object.values(overview.placements), overview.hubPosition, overview.camera.position, overview.camera.target, overview.camera.up]) assert.ok(vector.length === 3 && vector.every(Number.isFinite));
@@ -179,7 +179,7 @@ test('asset generator rejects obsolete and unknown scene IDs before launching Ch
 
 test('every responsive fallback exists with its declared dimensions and alternative text', async () => {
   const images = allPosters.flatMap(poster => [poster.desktop, poster.mobile]);
-  assert.equal(images.length, 14);
+  assert.equal(images.length, 16);
   assert.equal(new Set(images.map(image => image.src)).size, images.length);
   assert.deepEqual((await readdir(new URL('assets/posters/', publicRoot))).sort(), images.map(image => image.src.split('/').at(-1)).sort());
   for (const image of images) {

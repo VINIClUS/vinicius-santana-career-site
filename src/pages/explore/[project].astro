@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import ProjectDetail from '../../components/ProjectDetail.astro';
 import SystemView from '../../features/explorer/SystemView.astro';
-import { cnesdataPresentation, limnopulsePresentation, infrastructurePresentation } from '../../features/explorer/presentation.ts';
+import { cnesdataPresentation, limnopulsePresentation, infrastructurePresentation, esusdataPresentation } from '../../features/explorer/presentation.ts';
 import { projectDefinitions, projectIds } from '../../features/explorer/projects.ts';
 import '../../features/explorer/explorer.css';
 import '../../features/explorer/system-graph.css';
@@ -22,6 +22,8 @@ const { project, projects } = Astro.props;
   <SystemView slot="system-view" caseStudy={project} definition={projectDefinitions.infrastructure} />
 </ProjectDetail> : project.id === 'limnopulse' ? <ProjectDetail caseStudy={project} presentation={limnopulsePresentation} projects={projects}>
   <SystemView slot="system-view" caseStudy={project} definition={projectDefinitions.limnopulse} />
+</ProjectDetail> : project.id === 'esusdata' ? <ProjectDetail caseStudy={project} presentation={esusdataPresentation} projects={projects}>
+  <SystemView slot="system-view" caseStudy={project} definition={projectDefinitions.esusdata} />
 </ProjectDetail> : null}
 <script>
   import { initializeExplorer } from '../../features/explorer/client.ts';

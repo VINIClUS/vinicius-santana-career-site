@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 
-const projects = ['cnesdata', 'limnopulse', 'infrastructure'];
+const projects = ['cnesdata', 'limnopulse', 'infrastructure', 'esusdata'];
 const link = (page: Page, id: string) => page.locator(`[data-district-link="${id}"]`);
 const panel = (page: Page, id: string) => page.locator(`[data-district-detail="${id}"]`);
 
@@ -8,7 +8,7 @@ test('project panel selection, replacement, closing and history stay coherent', 
   await page.goto('/explore/');
   await expect(page.locator('[data-district-link][aria-current]')).toHaveCount(0);
   expect(await page.locator('[data-district-link]').evaluateAll(links => links.map(item => (item as HTMLElement).dataset.districtLink))).toEqual([
-    'cnesdata', 'infrastructure', 'limnopulse',
+    'cnesdata', 'infrastructure', 'limnopulse', 'esusdata',
   ]);
 
   await link(page, 'cnesdata').focus();
@@ -150,7 +150,7 @@ test('mobile supports touch, project changes, closing, repeated activation and h
   await context.close();
 });
 
-test('direct and invalid fragments synchronize only the three project panels', async ({ page }) => {
+test('direct and invalid fragments synchronize only the four project panels', async ({ page }) => {
   for (const id of projects) {
     await page.goto(`/explore/#district-${id}`);
     await expect(panel(page, id)).toBeVisible();

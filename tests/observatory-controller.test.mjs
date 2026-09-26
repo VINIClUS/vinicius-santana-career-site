@@ -6,11 +6,11 @@ import { projectIds } from '../src/features/explorer/projects.ts';
 import { createObservatoryController } from '../src/features/explorer/observatory-controller.ts';
 import { projectToPoster } from '../src/features/explorer/observatory-projection.ts';
 
-test('Atlas exposes exactly three project identities and canonical destinations', () => {
-  assert.deepEqual(districtIds, ['cnesdata', 'limnopulse', 'infrastructure']);
+test('Atlas exposes exactly four project identities and canonical destinations', () => {
+  assert.deepEqual(districtIds, ['cnesdata', 'limnopulse', 'infrastructure', 'esusdata']);
   assert.deepEqual(districtIds, manifestIds);
-  assert.deepEqual(districtIds.map(id => districtRegistry[id].href), ['/explore/cnesdata/', '/explore/limnopulse/', '/explore/infrastructure/']);
-  assert.deepEqual(projectIds, ['cnesdata', 'limnopulse', 'infrastructure']);
+  assert.deepEqual(districtIds.map(id => districtRegistry[id].href), ['/explore/cnesdata/', '/explore/limnopulse/', '/explore/infrastructure/', '/explore/esusdata/']);
+  assert.deepEqual(projectIds, ['cnesdata', 'limnopulse', 'infrastructure', 'esusdata']);
   for (const id of districtIds) {
     assert.equal(districtRegistry[id].id, id);
     assert.ok(districtRegistry[id].description.length > 0);
@@ -28,21 +28,21 @@ test('district selection starts empty, rejects invalid IDs and toggles repeated 
     controller.dispatch({ type: 'SELECT_DISTRICT', districtId });
     assert.equal(controller.getState().selectedDistrictId, districtId);
   }
-  assert.equal(changes, 3);
-  const selected = controller.getState();
-  for (const districtId of ['infrastructure', 'public-health', 'observability', 'hub', 'unknown', 'toString', '__proto__']) controller.dispatch({ type: 'SELECT_DISTRICT', districtId });
-  assert.equal(controller.getState(), selected);
-  assert.equal(changes, 3);
-  controller.dispatch({ type: 'ACTIVATE_DISTRICT', districtId: 'infrastructure' });
-  assert.equal(controller.getState().selectedDistrictId, null);
   assert.equal(changes, 4);
+  const selected = controller.getState();
+  for (const districtId of ['public-health', 'observability', 'hub', 'unknown', 'toString', '__proto__']) controller.dispatch({ type: 'SELECT_DISTRICT', districtId });
+  assert.equal(controller.getState(), selected);
+  assert.equal(changes, 4);
+  controller.dispatch({ type: 'ACTIVATE_DISTRICT', districtId: 'esusdata' });
+  assert.equal(controller.getState().selectedDistrictId, null);
+  assert.equal(changes, 5);
   controller.dispatch({ type: 'ACTIVATE_DISTRICT', districtId: 'cnesdata' });
   controller.dispatch({ type: 'ACTIVATE_DISTRICT', districtId: 'cnesdata' });
   assert.equal(controller.getState().selectedDistrictId, null);
-  assert.equal(changes, 6);
+  assert.equal(changes, 7);
   unsubscribe();
   controller.dispatch({ type: 'SELECT_DISTRICT', districtId: 'cnesdata' });
-  assert.equal(changes, 6);
+  assert.equal(changes, 7);
   assert.equal(createObservatoryController().getState().selectedDistrictId, null);
 });
 

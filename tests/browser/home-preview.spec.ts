@@ -58,7 +58,7 @@ test('starts as a meaningful poster and exposes one keyboard-operable Explore li
   renderer.release();
 });
 
-test('loads exactly the four overview models, animates, and stays idle when paused', async ({ page }) => {
+test('loads exactly the five overview models, animates, and stays idle when paused', async ({ page }) => {
   await installDrawCounter(page);
   const models: string[] = [];
   page.on('request', request => {
@@ -68,6 +68,7 @@ test('loads exactly the four overview models, animates, and stays idle when paus
   await ready(page);
   expect(models.sort()).toEqual([
     'district-cnesdata.glb',
+    'district-esusdata.glb',
     'district-infrastructure.glb',
     'district-limnopulse.glb',
     'hub.glb',

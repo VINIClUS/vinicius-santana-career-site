@@ -153,9 +153,9 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     await page.getByRole('link', { name: 'Explore my work', exact: true }).focus();
     await page.keyboard.press('Enter');
     await expect(page).toHaveURL(/\/explore\/$/);
-    await expect(page.locator('[data-district-link]')).toHaveCount(3);
+    await expect(page.locator('[data-district-link]')).toHaveCount(4);
     await capture('atlas');
-    for (const slug of ['cnesdata', 'limnopulse', 'infrastructure']) {
+    for (const slug of ['cnesdata', 'limnopulse', 'infrastructure', 'esusdata']) {
       await page.goto(`/explore/${slug}/`);
       await openTechnicalDetails(page);
       await expect(page).toHaveURL(new RegExp(`/explore/${slug}/$`));

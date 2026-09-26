@@ -33,7 +33,7 @@
       const layout = overviewLayouts[height > width ? "mobile" : "desktop"];
       // Load the actual published artifacts, after the generator has written the four GLBs.
       const loader = new GLTFLoader();
-      const models = Object.fromEntries(await Promise.all(["cnesdata", "limnopulse", "infrastructure", "hub"].map(async id => {
+      const models = Object.fromEntries(await Promise.all(["cnesdata", "limnopulse", "infrastructure", "esusdata", "hub"].map(async id => {
         const response = await fetch(`/public/assets/scenes/${id === "hub" ? id : `district-${id}`}.glb`, { cache: "no-store" });
         if (!response.ok) throw new Error(`Missing exported overview model: ${id}`);
         return [id, (await loader.parseAsync(await response.arrayBuffer(), "")).scene];

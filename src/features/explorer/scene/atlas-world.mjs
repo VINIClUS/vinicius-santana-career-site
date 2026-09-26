@@ -148,7 +148,7 @@ export function createAtlasWorld({ models, visual, world = new Group() }) {
     const outline = layout.terrainOutline;
     const group = new Group();
     group.name = 'continuous-territory';
-    // The same low relief and true height contours cross all three regions.
+    // The same low relief and true height contours cross all four regions.
     const terrain = atlasTerrainGeometry(contourPoints(outline).slice(0, -1), layout, visual);
     const edge = new Mesh(terrain.rim, rim);
     const surface = new Mesh(terrain.surface, ground);

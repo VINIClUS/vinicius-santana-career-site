@@ -48,7 +48,7 @@ for (const viewport of viewports) {
     await page.getByRole('link', { name: 'Explore my work', exact: true }).focus();
     await page.keyboard.press('Enter');
     await expect(page).toHaveURL(/\/explore\/$/);
-    for (const slug of ['cnesdata', 'limnopulse', 'infrastructure']) {
+    for (const slug of ['cnesdata', 'limnopulse', 'infrastructure', 'esusdata']) {
       const project = page.locator(`[data-district-link="${slug}"]`);
       await project.focus();
       await page.keyboard.press('Enter');

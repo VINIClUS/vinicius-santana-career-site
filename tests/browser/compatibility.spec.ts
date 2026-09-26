@@ -77,7 +77,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     await page.setViewportSize(viewport);
     const mobile = viewport.width === 390;
 
-    for (const path of ['/explore/', '/explore/cnesdata/', '/explore/limnopulse/', '/explore/infrastructure/']) {
+    for (const path of ['/explore/', '/explore/cnesdata/', '/explore/limnopulse/', '/explore/infrastructure/', '/explore/esusdata/']) {
       await page.goto(path);
       const navigation = page.getByRole('navigation', { name: 'Primary navigation' });
       if (mobile) {

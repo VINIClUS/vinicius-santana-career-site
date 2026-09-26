@@ -272,6 +272,7 @@ export const districtIds = [
   "cnesdata",
   "limnopulse",
   "infrastructure",
+  "esusdata",
 ];
 export const overviewPositions = atlasVisual.layouts.desktop.placements;
 export const overviewLayouts = atlasVisual.layouts;

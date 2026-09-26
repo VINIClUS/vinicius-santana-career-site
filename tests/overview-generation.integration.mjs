@@ -11,7 +11,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const run = promisify(execFile);
-const overviewModels = ['district-cnesdata', 'district-limnopulse', 'district-infrastructure', 'hub'];
+const overviewModels = ['district-cnesdata', 'district-limnopulse', 'district-infrastructure', 'district-esusdata', 'hub'];
 
 async function snapshot(directory) {
   const assets = {};

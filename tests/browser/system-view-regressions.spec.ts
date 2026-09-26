@@ -1,7 +1,7 @@
 import { openTechnicalDetails } from './support/technical-details';
 import { test, expect } from '@playwright/test';
 
-const projects = ['cnesdata', 'limnopulse', 'infrastructure'] as const;
+const projects = ['cnesdata', 'limnopulse', 'infrastructure', 'esusdata'] as const;
 
 for (const project of projects) {
   test(`${project}: desktop graph and component cards remain side by side`, async ({ page }, testInfo) => {

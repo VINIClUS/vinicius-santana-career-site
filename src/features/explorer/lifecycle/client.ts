@@ -116,6 +116,7 @@ export async function initializeLifecycles() {
     if(scenario.id==='infra-provision-scale') records=['Host 01 · physical','Host 02 · physical','Host 03 · physical',`Routing · ${p.readyReplicas} ready replicas`, `In flight · ${p.inFlight}`];
     else if(scenario.project==='infrastructure') records=Object.entries(p.nodes as Record<string,string>).map(([id,status])=>`${id} · ${status}`).concat([`Definition · ${p.desired}`,`Durable data · ${p.storageReady?'available':'unavailable'}`]);
     else if(scenario.project==='limnopulse') records=[`Telemetry · ${p.samples} persisted samples`,`Outbox · ${p.outboxCount} records`,`Queues · ${p.queueCount} jobs`, `Recipient · ${String(p.userView).replaceAll('_',' ')}`];
+    else if(scenario.project==='esusdata') records=[`Read · ${p.rowsRead} fictional rows`,`Extract · ${p.extractValid?'verified':'pending'}`,`C1 · ${p.calculated?'technical candidate':'pending'}`,`Methodology · ${p.targetGatesCompleted?'hypothetical target gates complete':'real gates incomplete'}`,`Publication · ${p.published?'target only':'blocked'}`];
     else records=[`Raw · ${p.rawObjects} objects`,`Normalized · ${p.normalized} sources`,`CURRENT · ${p.currentVersion}`,`Recipient · ${p.servedVersion??'previous version'}`];
     get('records').replaceChildren(...records.map(text=>{const item=document.createElement('span');item.textContent=text;return item;}));
   }
@@ -133,9 +134,9 @@ export async function initializeLifecycles() {
   function renderRecipient(p:Record<string,unknown>) {
     const panel=root.querySelector<HTMLElement>('[data-life-recipient]');if(!panel)return;
     const limno=scenario.project==='limnopulse';
-    panel.hidden=limno?p.userView==='idle':p.servedVersion===null;
-    get('recipient-title').textContent=limno?'Limnopulse · synthetic recipient':'CnesData · authorized dashboard';
-    get('recipient-message').textContent=limno?
+    panel.hidden=scenario.project==='esusdata'?p.dashboard===null:limno?p.userView==='idle':p.servedVersion===null;
+    get('recipient-title').textContent=scenario.project==='esusdata'?'Esusdata · hypothetical authorized panel':limno?'Limnopulse · synthetic recipient':'CnesData · authorized dashboard';
+    get('recipient-message').textContent=scenario.project==='esusdata'?`${p.dashboard}. This is an illustrative target with completed gates; real C1 publication remains blocked.`:limno?
       p.userView==='recovery_shown'?'Water condition recovered. This notification belongs to the same incident.':
       p.userView==='acknowledged'?'Acknowledged. The low condition remains active until a valid clean window confirms recovery.':
       p.userView==='incident_opened'?`Incident ${p.incidentId} · ${p.condition} condition · version ${p.incidentVersion}`:
@@ -172,6 +173,7 @@ export async function initializeLifecycles() {
       ['Advance clock',{type:'ADVANCE_CLOCK',ticks:3}],['Retry Telegram',{type:'ATTEMPT_DELIVERY',kind:'opening',channel:'telegram'}],['Revoke membership',{type:'SET_MEMBERSHIP',active:false}],
     ]:scenario.id==='infra-provision-scale'?[['Sustained high load',{type:'SET_LOAD',value:0.9}],['Advance clock',{type:'ADVANCE_CLOCK',ticks:3}],['Evaluate scaling policy',{type:'EVALUATE_SCALE_POLICY'}]]:
     scenario.project==='infrastructure'?[['Fail node 02',{type:'FAIL_NODE',nodeId:'node-02'}],['Confirm fencing',{type:'CONFIRM_FENCE',nodeId:'node-02'}],['Restore node 02',{type:'RESTORE_NODE',nodeId:'node-02'}],['Storage unavailable',{type:'SET_STORAGE',ready:false}],['Advance clock',{type:'ADVANCE_CLOCK',ticks:3}],['Reconcile',{type:'RECONCILE'}]]:
+    scenario.project==='esusdata'?[['Exceed read budget',{type:'READ_PEC',budget:5}],['Invalidate extract',{type:'SEQUENCE',commands:[{type:'READ_PEC',budget:6},{type:'SEAL_EXTRACT',valid:false}]}],['Revoke municipal grant',{type:'REVOKE_GRANT'}],['Try real C1 publication',{type:'SEQUENCE',commands:[{type:'READ_PEC',budget:6},{type:'SEAL_EXTRACT',valid:true},{type:'CALCULATE_C1'},{type:'RESET_METHOD_GATES'},{type:'PUBLISH_C1'}]}]]:
     [['Advance clock',{type:'ADVANCE_CLOCK',ticks:3}],['Revoke membership',{type:'REVOKE_MEMBERSHIP'}]];
     get('actions').replaceChildren(...commands.map(([label,command])=>{const button=document.createElement('button');button.type='button';button.textContent=label;
       button.onclick=()=>applyManual(label,command);return button;}));
