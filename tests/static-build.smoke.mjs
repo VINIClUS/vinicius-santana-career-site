@@ -209,10 +209,10 @@ assert.deepEqual(homeSectionOrder, [...homeSectionOrder].sort((left, right) => l
 
 const homeAbout = html.match(/<section[^>]*id="about"[\s\S]*?<\/section>/i)?.[0];
 assert.ok(homeAbout, 'home must render the About section');
-assert.match(homeAbout, /I build backend systems for data-heavy, operational work\./);
+assert.match(homeAbout, /I build backend and full-stack systems for data-heavy, operational work\./);
 assert.match(
   homeAbout,
-  /I’m Vinicius Santana, a Python backend engineer in Brazil\. I build FastAPI and PostgreSQL services, validation workflows and automation for municipal public-health operations—work that validates 21,000\+ records each month and reduced a municipality-wide reconciliation cycle from 240\+ person-hours to about four\./
+  /I’m Vinicius Santana, a Software Engineer in Brazil working across Python, Java, TypeScript and AWS\. I build FastAPI and Spring Boot services on PostgreSQL for municipal public-health operations—work that cut monthly manual review by 95% \(21,000 to about 1,000 records across 17 facilities\) and reduced workforce reconciliation from 240\+ person-hours to about four per cycle\./
 );
 assert.equal((homeAbout.match(/class="role-card"/g) || []).length, 2, 'home About must render exactly two role cards');
 assert.doesNotMatch(homeAbout, /Platform \/ DevOps/, 'home About must not render the removed Platform / DevOps card');
@@ -291,12 +291,12 @@ assert.match(editorialPages.about, /<section[^>]*id="experience"[^>]*aria-labell
 
 const homeExperience = html.match(/<section[^>]*id="experience"[\s\S]*?<\/section>/i)?.[0];
 assert.ok(homeExperience, 'home must render a compact experience section');
-assert.equal((homeExperience.match(/<li\b/g) || []).length, 4, 'home experience must show exactly four curated highlights');
-for (const evidence of ['Java/Spring', '12%+', 'below 1%', '240+', 'N+1']) {
+assert.equal((homeExperience.match(/<li\b/g) || []).length, 6, 'home experience must show exactly six curated highlights');
+for (const evidence of ['Java/Spring', '12%+', 'below 1%', '240+', 'N+1', 'garbage-collection', 'Windows Registry']) {
   assert.ok(homeExperience.includes(evidence), `home experience must include ${evidence}`);
 }
 assert.match(homeExperience, /href="\/about\/#experience"/, 'home experience must link to the full trajectory');
-for (const aboutOnly of ['timeline-card', '9 GB', 'Nginx', 'Irmãos Santana', 'Windows Registry']) {
+for (const aboutOnly of ['timeline-card', '9 GB', 'Nginx', 'Irmãos Santana']) {
   assert.ok(!homeExperience.includes(aboutOnly), `home experience must leave ${aboutOnly} to the About page`);
 }
 assert.doesNotMatch(html, /class="stack-grid"|Platform &amp; Reliability/, 'home must leave the full stack list to the About page');
