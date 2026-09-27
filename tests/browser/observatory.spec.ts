@@ -112,6 +112,16 @@ test('project index reveals the bottom sheet on a short mobile viewport', async 
   await expect(panel(page, 'esusdata').getByRole('heading', { name: 'Esusdata' })).toBeInViewport();
 });
 
+test('returning to a directly loaded fragment restores focus to its map label', async ({ page }) => {
+  await page.goto('/explore/#district-cnesdata');
+  await expect(panel(page, 'cnesdata')).toBeVisible();
+  await page.locator('[data-district-select="limnopulse"]').click();
+  await panel(page, 'limnopulse').getByRole('link', { name: 'Explore Limnopulse' }).focus();
+  await page.goBack();
+  await expect(panel(page, 'cnesdata')).toBeVisible();
+  await expect(link(page, 'cnesdata')).toBeFocused();
+});
+
 test('closing a pushed panel returns to the base history entry and modified clicks stay native', async ({ page }) => {
   await page.goto('/about/');
   await page.goto('/explore/');
