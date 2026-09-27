@@ -1,7 +1,7 @@
 .observatory-stage { --district-panel-width: clamp(20rem, 26vw, 26rem); position: relative; isolation: isolate; }
 .observatory-map { position: relative; border: 1px solid var(--line); border-radius: 16px; background: #050a11; }
 .observatory-map picture, .observatory-map img { display: block; width: 100%; height: auto; border-radius: inherit; }
-.observatory-map canvas { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: inherit; visibility: hidden; touch-action: pan-y; }
+.observatory-map canvas { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: inherit; visibility: hidden; touch-action: pan-y pinch-zoom; }
 [data-scene-state="ready"] .observatory-map canvas { visibility: visible; }
 [data-scene-state="ready"] .observatory-map picture { visibility: hidden; }
 .district-link, .observatory-hub { z-index: 2; }

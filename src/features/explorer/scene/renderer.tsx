@@ -246,8 +246,8 @@ export function mountObservatoryScene(options: Options): ObservatoryScene {
     configureOverviewRenderer(gl);
     controls = new OrbitControls(camera, canvas);
     // OrbitControls connects with touch-action:none. Restore native vertical scrolling
-    // after connection; horizontal gestures still orbit and taps still reach picking.
-    canvas.style.touchAction = 'pan-y';
+    // and pinch zoom after connection; horizontal gestures still orbit and taps still reach picking.
+    canvas.style.touchAction = 'pan-y pinch-zoom';
     controls.enablePan = false;
     controls.enableDamping = false;
     controls.autoRotate = false;
