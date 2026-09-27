@@ -40,7 +40,7 @@ try {
       assert.ok(brief.includes(text), `${caseStudy.id} brief includes: ${text}`);
     }
     assert.match(html, /data-component-disclosure/);
-    assert.match(html, /<div id="system"/, `${caseStudy.id} keeps the System View anchor inside the details chapter`);
+    assert.match(html, /<section id="system"/, `${caseStudy.id} keeps the System View anchor inside the details chapter`);
 
     for (const text of [
       caseStudy.problem,
