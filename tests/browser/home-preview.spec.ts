@@ -131,15 +131,18 @@ for (const viewport of [
 
 test('the preview activation requires load, a real viewport intersection and idle time', async ({ page }) => {
   await page.addInitScript(() => {
-    const state = window as typeof window & { runHomeIdle?: () => void };
+    const state = window as typeof window & { runHomeIdle?: () => void; homeIdlePending?: () => number };
     const callbacks: IdleRequestCallback[] = [];
     window.requestIdleCallback = callback => { callbacks.push(callback); return callbacks.length; };
     window.cancelIdleCallback = id => { callbacks[id - 1] = () => {}; };
     state.runHomeIdle = () => callbacks.splice(0).forEach(callback => callback({ didTimeout: false, timeRemaining: () => 50 }));
+    state.homeIdlePending = () => callbacks.length;
   });
   const previewRequests: string[] = [];
   page.on('request', request => { if (/\/preview\.[^/]+\.js(?:\?|$)/.test(request.url())) previewRequests.push(request.url()); });
   await page.goto('/');
+  // Scheduling waits for the asynchronous intersection callback, so wait for it before running idle work.
+  await expect.poll(() => page.evaluate(() => (window as typeof window & { homeIdlePending: () => number }).homeIdlePending())).toBeGreaterThan(0);
   await expect(preview(page)).toHaveAttribute('data-preview-state', 'poster');
   expect(previewRequests).toEqual([]);
   await page.evaluate(() => (window as typeof window & { runHomeIdle: () => void }).runHomeIdle());
