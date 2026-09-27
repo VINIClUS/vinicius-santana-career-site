@@ -60,7 +60,7 @@ if (root) {
     controller.dispatch({ type: 'SELECT_DISTRICT', districtId: null });
     if (restoreFocus) links.find(link => link.dataset.districtLink === selectedDistrictId)?.focus({ preventScroll: true });
   };
-  const selectDistrict = (districtId: DistrictId, source: 'label' | 'scene') => {
+  const selectDistrict = (districtId: DistrictId, source: 'label' | 'index' | 'scene') => {
     const repeated = controller.getState().selectedDistrictId === districtId;
     if (repeated) { closePanel(); return; }
     trackJourney('project_select', { project_id: districtId, source, atlas_mode: root.dataset.sceneState === 'ready' ? '3d' : '2d' });
@@ -115,7 +115,7 @@ if (root) {
       event.preventDefault();
       const districtId = districtIds.find(id => id === selector.dataset.districtSelect);
       if (!districtId) return;
-      selectDistrict(districtId);
+      selectDistrict(districtId, 'index');
       if (controller.getState().selectedDistrictId === districtId) map.scrollIntoView({ block: 'nearest' });
     }, { signal });
     for (const closeLink of closeLinks) closeLink.addEventListener('click', event => {
