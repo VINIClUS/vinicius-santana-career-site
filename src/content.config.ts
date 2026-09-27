@@ -2,6 +2,7 @@ import { defineCollection } from 'astro:content';
 import { file } from 'astro/loaders';
 import { z } from 'astro/zod';
 import { publicEvidenceUrl } from './content/publicEvidenceUrl.js';
+import { isPublicRepository } from './content/publicRepository.js';
 
 const capabilityStatus = z.enum(['implemented', 'documented', 'planned', 'historical', 'illustrative']);
 const nonEmptyText = z.string().trim().min(1);
@@ -29,6 +30,7 @@ const caseStudies = defineCollection({
     eyebrow: nonEmptyText,
     summary: nonEmptyText,
     currentStatus: nonEmptyText,
+    brief: z.object({ contribution: nonEmptyText, decision: nonEmptyText }),
     technologies: z.array(nonEmptyText).min(1),
     problem: nonEmptyText,
     context: nonEmptyText,
@@ -38,7 +40,7 @@ const caseStudies = defineCollection({
     reliability: z.array(nonEmptyText).min(1),
     outcomes: z.array(nonEmptyText).min(1),
     limitations: z.array(nonEmptyText).min(1),
-    evidence: z.array(evidenceItem).min(1)
+    evidence: z.array(evidenceItem).min(1).refine(items => items.some(isPublicRepository), 'Evidence must include a public repository')
   })
 });
 

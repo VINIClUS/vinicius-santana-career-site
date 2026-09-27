@@ -4,6 +4,7 @@ import ExternalLink from './ExternalLink.astro';
 import EditorialLayout from '../layouts/EditorialLayout.astro';
 import type { ProjectPresentation } from '../features/explorer/presentation.ts';
 import Lifecycle from '../features/explorer/lifecycle/Lifecycle.astro';
+import { isPublicRepository } from '../content/publicRepository.js';
 
 interface Props {
   caseStudy: CollectionEntry<'caseStudies'>['data'];
@@ -17,6 +18,7 @@ const statusLabels = {
   historical: 'Historical', illustrative: 'Illustrative'
 } as const;
 const sections = [{ id: 'simulation', label: 'Lifecycle' }, { id: 'overview', label: 'Context & contribution' }, { id: 'system', label: 'System View' }, { id: 'engineering', label: 'Engineering' }, { id: 'results', label: 'Results' }, { id: 'evidence', label: 'Evidence' }, { id: 'limitations', label: 'Limitations' }];
+const repositories = caseStudy.evidence.filter(isPublicRepository);
 const engineeringChapter = 3;
 const resultsChapter = engineeringChapter + 1;
 const evidenceChapter = resultsChapter + 1;
@@ -42,6 +44,16 @@ const evidenceChapter = resultsChapter + 1;
         {caseStudy.evidence.slice(0, 2).map(item => <ExternalLink href={item.url} ariaLabel={`Open ${item.label} in a new tab`}>{item.label} ↗</ExternalLink>)}
       </div>
     </header>
+
+    <section id="case-brief" aria-label={`${caseStudy.title} at a glance`}>
+      <dl class="case-brief">
+        <div><dt>Problem</dt><dd>{caseStudy.problem}</dd></div>
+        <div><dt>Contribution</dt><dd>{caseStudy.brief.contribution}</dd></div>
+        <div><dt>Key decision</dt><dd>{caseStudy.brief.decision}</dd></div>
+        <div><dt>Status</dt><dd>{caseStudy.currentStatus}</dd></div>
+        <div><dt>Repository</dt><dd class="brief-repositories">{repositories.map(item => <ExternalLink href={item.url} ariaLabel={`Open ${item.label} in a new tab`}>{item.label} ↗</ExternalLink>)}</dd></div>
+      </dl>
+    </section>
 
     <nav class="section-nav" aria-label="Project sections">
       {sections.map(section => <a href={`#${section.id}`}>{section.label}</a>)}
@@ -109,6 +121,12 @@ const evidenceChapter = resultsChapter + 1;
   .detail-list { padding: 0; list-style: none; }
   .hero-evidence { display: flex; flex-wrap: wrap; gap: 12px 24px; font-size: .82rem; }
   .hero-evidence :global(a) { color: var(--accent); text-underline-offset: 4px; }
+  .case-brief { display: grid; gap: 14px; max-width: 920px; margin: 0 0 28px; padding: 22px 24px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-soft); }
+  .case-brief div { display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 20px; }
+  .case-brief dt { padding-top: .3em; color: var(--accent); font-size: .66rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+  .case-brief dd { margin: 0; color: var(--muted-strong); font-size: .9rem; line-height: 1.65; }
+  .brief-repositories { display: flex; flex-wrap: wrap; gap: 6px 20px; }
+  .brief-repositories :global(a) { color: var(--accent); text-underline-offset: 4px; }
   .section-nav { display: flex; flex-wrap: wrap; gap: 0 28px; border-bottom: 1px solid var(--line); margin-bottom: 24px; }
   .section-nav a { display: block; flex-shrink: 0; padding: 16px 0; font-size: .83rem; color: var(--muted-strong); }
   .section-nav a:hover { color: var(--accent); }
@@ -137,6 +155,8 @@ const evidenceChapter = resultsChapter + 1;
   @media (max-width: 600px) {
     .overview-grid, .evidence-grid { grid-template-columns: 1fr; }
     .case-hero { padding-top: 12px; }
+    .case-brief { padding: 18px; }
+    .case-brief div { grid-template-columns: 1fr; gap: 4px; }
     .section-nav { gap: 22px; }
     .chapter { padding-block: 32px; }
   }
