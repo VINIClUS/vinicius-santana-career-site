@@ -65,6 +65,8 @@ export const experience = {
   ]
 };
 
+export const homeHighlights = [0, 4, 5, 2].map((index) => experience.roles[0].highlights[index]);
+
 export const familyBusinessExperience = {
   organization: 'Irmãos Santana',
   period: 'Feb 2021 — Jan 2026 · Part-time',

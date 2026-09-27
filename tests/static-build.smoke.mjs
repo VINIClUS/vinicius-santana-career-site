@@ -282,11 +282,23 @@ function assertExperienceSection(pageHtml, pageName, headingId) {
   assert.match(section, /Java\/Spring/, `${pageName} must identify Java and Spring as current-role technologies`);
 }
 
-assertExperienceSection(html, 'home', 'experience-title');
 assertExperienceSection(editorialPages.about, 'about', 'experience-heading');
+assert.match(editorialPages.about, /<section[^>]*id="experience"[^>]*aria-labelledby="experience-heading"/, 'about must expose #experience for the home trajectory link');
 
+const homeExperience = html.match(/<section[^>]*id="experience"[\s\S]*?<\/section>/i)?.[0];
+assert.ok(homeExperience, 'home must render a compact experience section');
+assert.equal((homeExperience.match(/<li\b/g) || []).length, 4, 'home experience must show exactly four curated highlights');
+for (const evidence of ['Java/Spring', '12%+', 'below 1%', '240+', 'N+1']) {
+  assert.ok(homeExperience.includes(evidence), `home experience must include ${evidence}`);
+}
+assert.match(homeExperience, /href="\/about\/#experience"/, 'home experience must link to the full trajectory');
+for (const aboutOnly of ['timeline-card', '9 GB', 'Nginx', 'Irmãos Santana', 'Windows Registry']) {
+  assert.ok(!homeExperience.includes(aboutOnly), `home experience must leave ${aboutOnly} to the About page`);
+}
+assert.doesNotMatch(html, /class="stack-grid"|Platform &amp; Reliability/, 'home must leave the full stack list to the About page');
+
+for (const item of ['Java', 'Spring', 'AWS', 'Redis', 'Platform &amp; Reliability']) assert.ok(editorialPages.about.includes(item));
 for (const pageHtml of [html, editorialPages.about]) {
-  for (const item of ['Java', 'Spring', 'AWS', 'Redis', 'Platform &amp; Reliability']) assert.ok(pageHtml.includes(item));
   for (const retiredItem of ['Firebird', 'DevOps / Infra', 'Observability']) assert.doesNotMatch(pageHtml, new RegExp(`>${escapeRegExp(retiredItem)}<`));
 }
 
@@ -593,7 +605,7 @@ console.log('Explorer static routes and transcripts passed.');
 const journeyLinks = (page, event) => [...page.matchAll(new RegExp(`<a\\b[^>]*data-journey="${event}"[^>]*>`, 'g'))].map(match => match[0]);
 const journeyLocations = (page, event) => journeyLinks(page, event).map(link => link.match(/data-journey-location="([^"]+)"/)?.[1]);
 assert.deepEqual(journeyLocations(html, 'email_click'), ['home_contact', 'footer'], 'home tags every email link');
-assert.deepEqual(journeyLocations(html, 'resume_click'), ['home_contact', 'footer'], 'home tags every resume link');
+assert.deepEqual(journeyLocations(html, 'resume_click'), ['home_hero', 'home_contact', 'footer'], 'home tags every resume link');
 assert.deepEqual(journeyLocations(editorialPages.about, 'email_click'), ['about', 'footer'], 'About tags every email link');
 for (const [file, pageHtml] of builtHtmlFiles.map((file, index) => [file, builtHtmlPages[index]])) {
   const untagged = [...pageHtml.matchAll(/<a\b[^>]*href="(?:mailto:|\/assets\/vinicius-santana-resume\.pdf)[^"]*"[^>]*>/g)].filter(match => !match[0].includes('data-journey='));

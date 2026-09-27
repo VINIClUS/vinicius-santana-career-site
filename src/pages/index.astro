@@ -1,11 +1,9 @@
 ---
 import ExternalLink from '../components/ExternalLink.astro';
-import ExperienceCard from '../components/ExperienceCard.astro';
 import PracticeCards from '../components/PracticeCards.astro';
 import ResponsivePoster from '../components/ResponsivePoster.astro';
 import { overview } from '../content/scenes';
-import StackGrid from '../components/StackGrid.astro';
-import { experience, familyBusinessExperience, profile } from '../data/content.js';
+import { experience, homeHighlights, profile } from '../data/content.js';
 import EditorialLayout from '../layouts/EditorialLayout.astro';
 
 const legacyAnchors = ['case-cnesdata', 'case-aquafarm', 'case-esus-pec-bootstrap', 'case-infra-ansible', 'case-packer-proxmox-templates'];
@@ -86,23 +84,14 @@ const legacyAnchors = ['case-cnesdata', 'case-aquafarm', 'case-esus-pec-bootstra
       <div class="section-heading sticky-heading">
         <p class="eyebrow">Experience</p>
         <h2 id="experience-title">Software, data, infrastructure and operations in practice.</h2>
-        <p>{experience.summary}</p>
+        <p>{experience.roles[0].title} at {experience.organization}, {experience.roles[0].period}.</p>
       </div>
-      <div class="experience-roles">
-        <ExperienceCard experience={experience} headingId="home-municipal-experience" />
-        <ExperienceCard experience={familyBusinessExperience} headingId="home-family-business-experience" />
+      <div class="experience-highlights">
+        <ul class="check-list">{homeHighlights.map((item) => <li>{item}</li>)}</ul>
+        <p><a class="text-link" href="/about/#experience">Full trajectory, incidents and working style</a></p>
       </div>
     </div>
-  </section>
-
-  <section class="section" id="stack" aria-labelledby="stack-title">
-    <div class="shell">
-      <div class="section-heading">
-        <p class="eyebrow">Stack</p>
-        <h2 id="stack-title">Tools used across backend, data, reliability and frontend work.</h2>
-      </div>
-      <StackGrid />
-    </div>
+    <span id="stack" aria-hidden="true"></span>
   </section>
 </EditorialLayout>
 
