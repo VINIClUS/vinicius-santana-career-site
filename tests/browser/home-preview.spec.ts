@@ -58,6 +58,19 @@ test('starts as a meaningful poster and exposes one keyboard-operable View proje
   renderer.release();
 });
 
+test('makes the atlas preview a named link to the Explorer by pointer and keyboard', async ({ page }) => {
+  await page.goto('/');
+  const atlas = page.getByRole('link', { name: 'Explore the atlas: CnesData, Esusdata, Infrastructure and LimnoPulse', exact: true });
+  await expect(atlas).toHaveAttribute('href', '/explore/');
+  await expect(atlas).toContainText('Explore the atlas');
+  await poster(page).click();
+  await expect(page).toHaveURL(/\/explore\/$/);
+  await page.goto('/');
+  await atlas.focus();
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/\/explore\/$/);
+});
+
 test('loads exactly the five overview models, animates, and stays idle when paused', async ({ page }) => {
   await installDrawCounter(page);
   const models: string[] = [];

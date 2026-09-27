@@ -143,7 +143,11 @@ const heroLinks = [...hero.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/gi)].map(([, at
   attributes,
   label: label.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
 }));
-assert.deepEqual(heroLinks.map(({ label }) => label), ['View projects →', 'Resume', 'Contact'], 'hero must expose View projects, Resume and Contact');
+assert.deepEqual(heroLinks.slice(0, 3).map(({ label }) => label), ['View projects →', 'Resume', 'Contact'], 'hero must expose View projects, Resume and Contact');
+assert.equal(heroLinks.length, 4, 'hero must add only the atlas preview link to its primary actions');
+assert.match(heroLinks[3].attributes, /href="\/explore\/"/, 'the atlas preview must lead to the Explorer');
+assert.match(heroLinks[3].attributes, /aria-label="Explore the atlas: CnesData, Esusdata, Infrastructure and LimnoPulse"/);
+assert.match(heroLinks[3].label, /Explore the atlas →$/, 'the atlas caption must state its action');
 assert.match(heroLinks[0].attributes, /href="\/explore\/"/);
 assert.match(heroLinks[1].attributes, /href="\/assets\/vinicius-santana-resume\.pdf"/, 'hero Resume must use the canonical PDF');
 assert.match(heroLinks[1].attributes, /\bdownload\b/i, 'hero Resume must download the PDF');
@@ -152,7 +156,7 @@ assert.match(hero, /overview-desktop\.webp/);
 assert.match(hero, /overview-mobile\.webp/);
 assert.match(hero, /data-home-preview/);
 assert.doesNotMatch(html, /home-globe|project-grid|Selected work|Browse all selected work/);
-for (const name of ['CnesData', 'LimnoPulse', 'Infrastructure']) assert.ok(hero.includes(name));
+for (const name of ['CnesData', 'Esusdata', 'LimnoPulse', 'Infrastructure']) assert.ok(hero.includes(name));
 assert.match(hero, /fetchpriority="high"/);
 assert.doesNotMatch(html, /<link[^>]*rel="preload"[^>]*vinicius-(?:hero|portrait)/);
 assert.doesNotMatch(html, /<link[^>]+(?:preload|modulepreload)[^>]+(?:preview\.|renderer\.|\.glb)/i, 'graphics must not preload');
