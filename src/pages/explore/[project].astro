@@ -26,6 +26,8 @@ const { project, projects } = Astro.props;
   <SystemView slot="system-view" caseStudy={project} definition={projectDefinitions.esusdata} />
 </ProjectDetail> : null}
 <script>
+  import { trackJourney } from '../../features/analytics/journey.ts';
   import { initializeExplorer } from '../../features/explorer/client.ts';
   initializeExplorer();
+  trackJourney('case_study_open', { project_id: document.querySelector<HTMLElement>('[data-explorer][data-project]')?.dataset.project });
 </script>

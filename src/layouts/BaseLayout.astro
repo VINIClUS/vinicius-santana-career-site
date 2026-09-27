@@ -34,6 +34,15 @@ const analyticsSnippet = `
   }
   gtag('js', new Date());
   gtag('config', 'G-2DY87DZC90'${analyticsPageView ? '' : ', { send_page_view: false }'});
+  function trackJourneyLink(event) {
+    var link = event.target instanceof Element ? event.target.closest('[data-journey]') : null;
+    if (!link) return;
+    var params = { link_location: link.dataset.journeyLocation, project_id: link.dataset.journeyProject, evidence_label: link.dataset.journeyEvidence };
+    for (var key in params) if (!params[key]) delete params[key];
+    gtag('event', link.dataset.journey, params);
+  }
+  document.addEventListener('click', trackJourneyLink, true);
+  document.addEventListener('auxclick', function (event) { if (event.button === 1) trackJourneyLink(event); }, true);
 `;
 ---
 
