@@ -705,13 +705,13 @@
         "src": "/assets/posters/overview-desktop.webp",
         "width": 1200,
         "height": 800,
-        "bytes": 73210
+        "bytes": 73254
       },
       "mobile": {
         "src": "/assets/posters/overview-mobile.webp",
         "width": 720,
         "height": 900,
-        "bytes": 40734
+        "bytes": 40768
       }
     },
     "cameras": {
@@ -2756,13 +2756,13 @@
         "src": "/assets/posters/district-esusdata-desktop.webp",
         "width": 1200,
         "height": 800,
-        "bytes": 34612
+        "bytes": 35324
       },
       "mobile": {
         "src": "/assets/posters/district-esusdata-mobile.webp",
         "width": 720,
         "height": 900,
-        "bytes": 19390
+        "bytes": 19648
       }
     },
     "cameras": {

@@ -420,8 +420,8 @@ export function makeAtlasLandmark(id) {
     // PEC source: an external depot with a loading dock, rooftop chiller and uplink mast.
     box(g, 'pec-source', 'equipment', [-2.45, 0.55, -0.95], [1.45, 0.72, 1.55]);
     box(g, 'pec-source-roof', 'metal', [-2.45, 0.94, -0.95], [1.58, 0.08, 1.68]);
-    detail.face('esusLight', [-2.45, 0.93, -0.12], [1.5, 0.018, 0.012]);
-    detail.face('esusLight', [-1.67, 0.93, -0.95], [0.012, 0.018, 1.6]);
+    detail.face('esusLight', [-2.45, 0.93, -0.11], [1.5, 0.018, 0.012]);
+    detail.face('esusLight', [-1.66, 0.93, -0.95], [0.012, 0.018, 1.6]);
     for (const z of [-1.45, -1.05, -0.65]) detail.box('esusLight', [-1.68, 0.59, z], [0.03, 0.09, 0.17]);
     for (let row = 0; row < 4; row++) detail.box('dark', [-1.715, 0.3 + row * 0.05, -1.05], [0.02, 0.022, 0.9]);
     detail.face('dark', [-2.8, 0.39, -0.165], [0.56, 0.4, 0.025]);
@@ -434,7 +434,7 @@ export function makeAtlasLandmark(id) {
     detail.box('equipment', [-2.1, 1.07, -1.25], [0.62, 0.18, 0.5]);
     detail.face('metal', [-2.1, 1.165, -1.25], [0.66, 0.02, 0.54]);
     detail.cylinder('dark', [-2.1, 1.18, -1.25], [0.17, 0.012, 0.17]);
-    fanRotor(g, 'pec-fan', [-2.1, 1.19, -1.25], 1.2, 0.15);
+    fanRotor(g, 'pec-fan', [-2.1, 1.195, -1.25], 1.2, 0.15);
     detail.box('metal', [-3.0, 1.35, -1.4], [0.035, 0.78, 0.035]);
     detail.box('metal', [-3.0, 1.4, -1.4], [0.18, 0.015, 0.015]);
     detail.box('metal', [-3.0, 0.99, -1.4], [0.14, 0.03, 0.14]);
@@ -481,7 +481,7 @@ export function makeAtlasLandmark(id) {
     detail.box('equipment', [-0.55, 1.1, -1.15], [0.56, 0.17, 0.46]);
     detail.face('metal', [-0.55, 1.19, -1.15], [0.6, 0.02, 0.5]);
     detail.cylinder('dark', [-0.55, 1.205, -1.15], [0.15, 0.012, 0.15]);
-    fanRotor(g, 'acquisition-fan', [-0.55, 1.215, -1.15], -1.5, 0.13);
+    fanRotor(g, 'acquisition-fan', [-0.55, 1.22, -1.15], -1.5, 0.13);
     for (const x of [0.02, 0.18]) detail.box('metal', [x, 1.09, -0.62], [0.06, 0.14, 0.06]);
 
     // Verified extract: a sealed vault framed in steel on a dark plinth.
