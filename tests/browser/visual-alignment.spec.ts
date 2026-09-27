@@ -57,7 +57,6 @@ test('About cards stack in one column on mobile', async ({ page }) => {
 
 for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
   for (const experiencePage of [
-    { name: 'Home', path: '/#experience', headingId: 'home-municipal-experience' },
     { name: 'About', path: '/about/', headingId: 'about-municipal-experience' }
   ]) {
     test(`${experiencePage.name} experience timeline connects both role markers at ${viewport.width}`, async ({ page }) => {

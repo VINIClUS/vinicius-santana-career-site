@@ -546,6 +546,7 @@ h3 {
 .role-card,
 .metric-card,
 .timeline-card,
+.experience-highlights,
 .stack-card,
 .contact-card {
   border: 1px solid rgba(255, 255, 255, 0.11);
@@ -656,10 +657,15 @@ h3 {
   gap: 18px;
 }
 
-.timeline-card {
+.timeline-card,
+.experience-highlights {
   position: relative;
   padding: clamp(24px, 4vw, 36px);
   border-radius: var(--radius-lg);
+}
+
+.experience-highlights .text-link {
+  margin-top: 24px;
 }
 
 .experience-card-header {
@@ -1137,6 +1143,7 @@ h3 {
   }
 
   .timeline-card,
+  .experience-highlights,
   .contact-card {
     border-radius: 24px;
   }
