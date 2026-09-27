@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import EditorialLayout from '../../layouts/EditorialLayout.astro';
+import ExternalLink from '../../components/ExternalLink.astro';
 import { districtIds } from '../../features/explorer/districts.ts';
 import { overview } from '../../content/scenes/index.ts';
 import { projectToPoster } from '../../features/explorer/observatory-projection.ts';
@@ -10,6 +11,7 @@ const { poster, layouts } = overview;
 const entries = await getCollection('caseStudies');
 const projects = districtIds.map(id => entries.find(entry => entry.id === id)!.data);
 const selectorProjects = ['cnesdata', 'infrastructure', 'limnopulse', 'esusdata'].map(id => projects.find(project => project.id === id)!);
+const accessProjects = ['cnesdata', 'esusdata', 'infrastructure', 'limnopulse'].map(id => projects.find(project => project.id === id)!);
 const positionStyle = (desktop: { x: number; y: number }, mobile: { x: number; y: number }) => `--desktop-x:${desktop.x}%;--desktop-y:${desktop.y}%;--mobile-x:${mobile.x}%;--mobile-y:${mobile.y}%;`;
 ---
 <EditorialLayout title="Systems Atlas — Vinicius Santana" description="Explore CnesData, LimnoPulse, Infrastructure and Esusdata: four projects spanning data platforms, telemetry, systems operations and primary care." canonicalPath="/explore/" currentPath="/explore/" observatory>
@@ -69,6 +71,27 @@ const positionStyle = (desktop: { x: number; y: number }, mobile: { x: number; y
       <button type="button" data-scene-action="fallback">View 2D</button>
     </div>
     <p class="observatory-instruction">Choose a project on the map to open its preview. Every project stays available in both 2D and 3D.</p>
+    <section class="project-access" aria-labelledby="project-access-title">
+      <h2 id="project-access-title">Go straight to a project</h2>
+      <div class="project-access-grid">
+        {accessProjects.map(project => <article class={`project-card project-card-${project.id}`} data-project-card={project.id} aria-labelledby={`project-card-title-${project.id}`}>
+          <p class="eyebrow">{project.eyebrow}</p>
+          <h3 id={`project-card-title-${project.id}`}>{project.title}</h3>
+          <ul class="project-card-stack" aria-label="Stack">
+            {project.technologies.slice(0, 5).map(technology => <li>{technology}</li>)}
+          </ul>
+          <dl>
+            <dt>Built</dt>
+            <dd>{project.summary}</dd>
+            <dt>Status</dt>
+            <dd>{project.currentStatus}</dd>
+            <dt>Public proof</dt>
+            <dd><ExternalLink href={project.evidence[0].url} class="project-card-proof">{project.evidence[0].label}</ExternalLink></dd>
+          </dl>
+          <a class="button button-primary" href={`/explore/${project.id}/`}>Open {project.title}</a>
+        </article>)}
+      </div>
+    </section>
   </div>
 </EditorialLayout>
 <script>

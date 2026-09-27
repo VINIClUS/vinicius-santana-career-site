@@ -11,10 +11,10 @@
 .region-selection, .region-highlight { opacity: 0; stroke: var(--region-accent); stroke-width: 2; stroke-linejoin: round; fill: var(--region-accent); fill-opacity: .035; }
 .region-highlight { stroke-dasharray: 5 4; stroke-width: 1.5; fill-opacity: .025; }
 [data-region][data-selected="true"] .region-selection, [data-region][data-hovered="true"] .region-highlight { opacity: 1; }
-.district-link-cnesdata, [data-region="cnesdata"] { --region-accent: #78dcce; }
-.district-link-limnopulse, [data-region="limnopulse"] { --region-accent: #8dcaff; }
-.district-link-infrastructure, [data-region="infrastructure"] { --region-accent: #c4b8f7; }
-.district-link-esusdata, [data-region="esusdata"] { --region-accent: #e9bd88; }
+.district-link-cnesdata, .project-card-cnesdata, [data-region="cnesdata"] { --region-accent: #78dcce; }
+.district-link-limnopulse, .project-card-limnopulse, [data-region="limnopulse"] { --region-accent: #8dcaff; }
+.district-link-infrastructure, .project-card-infrastructure, [data-region="infrastructure"] { --region-accent: #c4b8f7; }
+.district-link-esusdata, .project-card-esusdata, [data-region="esusdata"] { --region-accent: #e9bd88; }
 .observatory-map:has(.district-link-cnesdata:hover) [data-region="cnesdata"] .region-highlight,
 .observatory-map:has(.district-link-limnopulse:hover) [data-region="limnopulse"] .region-highlight,
 .observatory-map:has(.district-link-infrastructure:hover) [data-region="infrastructure"] .region-highlight,
@@ -44,6 +44,18 @@
 .district-number { color: var(--region-accent); font-size: .75rem; font-variant-numeric: tabular-nums; }
 .observatory-hub { color: #b8c8d8; white-space: nowrap; font-size: .65rem; padding: 5px; opacity: .65; pointer-events: none; }
 .observatory-instruction { color: var(--muted-strong); margin-block: 18px 28px; }
+.project-access-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 18px; }
+.project-card { display: flex; flex-direction: column; padding: 22px; border: 1px solid var(--line); border-top: 3px solid var(--region-accent); border-radius: 12px; background: var(--surface); }
+.project-card h3 { margin-block: 4px 0; }
+.project-card-stack { display: flex; flex-wrap: wrap; gap: 6px; padding: 0; margin: 14px 0 4px; list-style: none; }
+.project-card-stack li { padding: 4px 9px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted-strong); font-size: .78rem; }
+.project-card dl { margin: 12px 0 20px; }
+.project-card dt { margin-top: 12px; color: var(--region-accent); font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; }
+.project-card dd { margin: 4px 0 0; color: var(--muted-strong); overflow-wrap: anywhere; }
+.project-card-proof { display: inline-flex; align-items: center; min-height: 44px; text-decoration: underline; text-underline-offset: 3px; }
+.project-card .button { min-height: 44px; margin-top: auto; align-self: flex-start; }
+@media (max-width: 1100px) { .project-access-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 700px) { .project-access-grid { grid-template-columns: 1fr; } }
 .district-details { position: absolute; z-index: 3; inset: 0; pointer-events: none; overflow: hidden; border-radius: 16px; }
 .district-details article {
   position: absolute; inset: 12px 12px 12px auto; box-sizing: border-box; width: var(--district-panel-width); padding: 22px;
