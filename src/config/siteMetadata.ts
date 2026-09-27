@@ -1,13 +1,13 @@
 export const siteMetadata = {
-  title: 'Vinicius Santana — Data Engineer & Software Engineer',
+  title: 'Vinicius Santana — Software Engineer, Backend & Full Stack',
   description:
-    'Vinicius Santana is a Data Engineer and Software Engineer focused on Python, SQL, PostgreSQL, FastAPI, Go, data platforms, backend APIs, automation and public-health information systems.',
+    'Vinicius Santana is a backend and full-stack Software Engineer building Python/FastAPI and Java/Spring services, PostgreSQL data workflows and React interfaces for public-health information systems.',
   openGraphDescription:
-    'Reliable data pipelines, backend APIs and automation for public-health and operational systems.',
+    'Python/FastAPI and Java/Spring services for public-health systems: claim rejections cut from 12%+ to below 1%.',
   twitterDescription:
-    'Python, SQL, PostgreSQL, FastAPI, Go, data platforms, APIs, automation and public-health systems.',
+    'Python, Java, TypeScript, FastAPI, Spring Boot, PostgreSQL, React and AWS for public-health systems.',
   imagePath: '/assets/images/og-image.jpg',
-  imageAlt: 'Professional profile card for Vinicius Santana, Data Engineer and Software Engineer'
+  imageAlt: 'Professional profile card for Vinicius Santana'
 } as const;
 
 export const createPersonStructuredData = (site: URL) =>
@@ -17,7 +17,7 @@ export const createPersonStructuredData = (site: URL) =>
     name: 'Vinicius Santana',
     url: site.origin,
     image: new URL(siteMetadata.imagePath, site).href,
-    jobTitle: 'Data Engineer & Software Engineer',
+    jobTitle: 'Software Engineer — Backend & Full Stack',
     email: 'mailto:me@vinisantana.com',
     address: {
       '@type': 'PostalAddress',
@@ -30,19 +30,17 @@ export const createPersonStructuredData = (site: URL) =>
     ],
     knowsAbout: [
       'Python',
-      'SQL',
-      'PostgreSQL',
+      'Java',
+      'TypeScript',
       'FastAPI',
-      'Go',
-      'Data Engineering',
-      'ETL',
-      'Data Quality',
+      'Spring Boot',
+      'PostgreSQL',
+      'React',
+      'AWS',
       'REST APIs',
+      'Data Quality',
       'Public-health information systems',
-      'Linux',
       'Docker',
-      'Kubernetes',
-      'DevOps',
-      'Observability'
+      'Kubernetes'
     ]
   }) as const;

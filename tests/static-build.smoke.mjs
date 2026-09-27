@@ -7,7 +7,7 @@ import { projectDefinitions } from '../src/features/explorer/projects.ts';
 
 const root = new URL('../', import.meta.url);
 const fromRoot = (...segments) => new URL(segments.join('/'), root);
-const expectedResumeHash = '04fdebdb717496a46af5490b1b97acd6a5f431db5f9d6bcd5504fb6be4628dc7';
+const expectedResumeHash = '9cb50b3c57397777c60297b017030b525c90d224274823bb0603d052dc2864d2';
 const expectedOrigin = 'https://vinisantana.com';
 const analyticsMeasurementId = 'G-2DY87DZC90';
 
@@ -127,13 +127,27 @@ const html = await readFile(fromRoot('dist/index.html'), 'utf8');
 
 assert.match(html, /<main\b[^>]*id="main"/i, 'home must render its main content as static HTML');
 assert.match(html, /<h1[^>]*>Vinicius\s*<br[^>]*>Santana<\/h1>/i, 'home must lead with identity');
-assert.match(html, /Software &amp; Data Engineer/, 'home must show the professional title');
-assert.match(html, /reliable systems where software, data and infrastructure meet/, 'home must explain systems positioning');
-for (const pillar of ['Data Systems', 'Distributed Infrastructure', 'Backend Engineering', 'Public Health']) assert.ok(html.includes(pillar));
 const hero = html.match(/<section[^>]*id="top"[\s\S]*?<\/section>/)[0];
-assert.equal((hero.match(/<a /g) || []).length, 1, 'hero must have exactly one work discovery action');
+const heroRole = hero.indexOf('Software Engineer — Backend &amp; Full Stack');
+const heroPositioning = hero.indexOf('Backend engineer building Python/FastAPI and Java/Spring services for municipal public-health systems.');
+const heroProof = hero.indexOf('<ul class="hero-proof"');
+const heroActions = hero.indexOf('<div class="hero-actions"');
+assert.ok(heroRole >= 0, 'home must show the professional title');
+assert.ok(heroPositioning >= 0, 'home must present Python/FastAPI, Java/Spring and public-health work');
+assert.ok(hero.includes('Claim rejections cut from 12%+ to below 1% across 8 billing cycles'), 'home must prove the claim rejection result');
+assert.ok(hero.includes('Workforce reconciliation cut from 240+ to about 4 person-hours per cycle'), 'home must prove the reconciliation result');
+assert.deepEqual([heroRole, heroPositioning, heroProof, heroActions], [heroRole, heroPositioning, heroProof, heroActions].sort((left, right) => left - right), 'hero must lead with title, positioning, proof and then actions');
+assert.doesNotMatch(html, /domain-pillars|reliable systems where software, data and infrastructure meet/, 'home must not render the generic positioning or domain pillars');
 
-assert.match(hero, /href="\/explore\/"[^>]*>Explore my work/);
+const heroLinks = [...hero.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/gi)].map(([, attributes, label]) => ({
+  attributes,
+  label: label.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
+}));
+assert.deepEqual(heroLinks.map(({ label }) => label), ['View projects →', 'Resume', 'Contact'], 'hero must expose View projects, Resume and Contact');
+assert.match(heroLinks[0].attributes, /href="\/explore\/"/);
+assert.match(heroLinks[1].attributes, /href="\/assets\/vinicius-santana-resume\.pdf"/, 'hero Resume must use the canonical PDF');
+assert.match(heroLinks[1].attributes, /\bdownload\b/i, 'hero Resume must download the PDF');
+assert.match(heroLinks[2].attributes, /href="#contact"/, 'hero Contact must jump to the contact section');
 assert.match(hero, /overview-desktop\.webp/);
 assert.match(hero, /overview-mobile\.webp/);
 assert.match(hero, /data-home-preview/);

@@ -109,7 +109,7 @@ for (const presentation of ['Home', 'Atlas']) {
     });
     await expect(page.locator(canvasSelector)).toHaveCount(0);
     await expect(page.locator('[data-motion-control]')).toHaveCount(0);
-    if (presentation === 'Home') await expect(page.getByRole('link', { name: 'Explore my work', exact: true })).toBeFocused();
+    if (presentation === 'Home') await expect(page.getByRole('link', { name: 'View projects', exact: true })).toBeFocused();
     else await expect(page.locator('[data-district-link]').first()).toBeFocused();
     const stopped = await frames(page);
     await page.emulateMedia({ reducedMotion: 'reduce' });

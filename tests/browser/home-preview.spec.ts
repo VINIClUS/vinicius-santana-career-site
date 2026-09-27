@@ -42,14 +42,14 @@ async function installDrawCounter(page: Page) {
   });
 }
 
-test('starts as a meaningful poster and exposes one keyboard-operable Explore link', async ({ page }) => {
+test('starts as a meaningful poster and exposes one keyboard-operable View projects link', async ({ page }) => {
   const renderer = holdRequest(page, '**/_astro/preview.*.js');
   await renderer.installed;
   await page.goto('/');
   await expect(preview(page)).toHaveAttribute('data-preview-state', 'loading');
   await expect(poster(page)).toBeVisible();
   await expect(canvas(page)).toHaveCount(0);
-  const links = page.getByRole('link', { name: 'Explore my work', exact: true });
+  const links = page.getByRole('link', { name: 'View projects', exact: true });
   await expect(links).toHaveCount(1);
   await expect(links).toHaveAttribute('href', '/explore/');
   await links.focus();
@@ -131,15 +131,18 @@ for (const viewport of [
 
 test('the preview activation requires load, a real viewport intersection and idle time', async ({ page }) => {
   await page.addInitScript(() => {
-    const state = window as typeof window & { runHomeIdle?: () => void };
+    const state = window as typeof window & { runHomeIdle?: () => void; homeIdlePending?: () => number };
     const callbacks: IdleRequestCallback[] = [];
     window.requestIdleCallback = callback => { callbacks.push(callback); return callbacks.length; };
     window.cancelIdleCallback = id => { callbacks[id - 1] = () => {}; };
     state.runHomeIdle = () => callbacks.splice(0).forEach(callback => callback({ didTimeout: false, timeRemaining: () => 50 }));
+    state.homeIdlePending = () => callbacks.length;
   });
   const previewRequests: string[] = [];
   page.on('request', request => { if (/\/preview\.[^/]+\.js(?:\?|$)/.test(request.url())) previewRequests.push(request.url()); });
   await page.goto('/');
+  // Scheduling waits for the asynchronous intersection callback, so wait for it before running idle work.
+  await expect.poll(() => page.evaluate(() => (window as typeof window & { homeIdlePending: () => number }).homeIdlePending())).toBeGreaterThan(0);
   await expect(preview(page)).toHaveAttribute('data-preview-state', 'poster');
   expect(previewRequests).toEqual([]);
   await page.evaluate(() => (window as typeof window & { runHomeIdle: () => void }).runHomeIdle());
@@ -254,7 +257,7 @@ for (const failure of ['import', 'model'] as const) {
     await expect(preview(page)).toHaveAttribute('data-preview-state', 'fallback');
     await expect(poster(page)).toBeVisible();
     await expect(canvas(page)).toHaveCount(0);
-    await page.getByRole('link', { name: 'Explore my work', exact: true }).click();
+    await page.getByRole('link', { name: 'View projects', exact: true }).click();
     await expect(page).toHaveURL(/\/explore\/$/);
   });
 }
@@ -342,7 +345,7 @@ test('context loss falls back to the poster without affecting navigation', async
   await expect(preview(page)).toHaveAttribute('data-preview-state', 'fallback');
   await expect(canvas(page)).toHaveCount(0);
   await expect(poster(page)).toBeVisible();
-  await page.getByRole('link', { name: 'Explore my work', exact: true }).click();
+  await page.getByRole('link', { name: 'View projects', exact: true }).click();
   await expect(page).toHaveURL(/\/explore\/$/);
 });
 
@@ -385,6 +388,7 @@ test('mobile touch scrolling works over the decorative preview with reduced moti
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   await ready(page);
+  await host(page).scrollIntoViewIfNeeded();
   const bounds = await host(page).boundingBox();
   expect(bounds).not.toBeNull();
   const client = await page.context().newCDPSession(page);
@@ -407,7 +411,7 @@ test('legacy Home fragments redirect to their Explore destinations', async ({ pa
     'case-packer-proxmox-templates': '/explore/infrastructure/',
   } as const;
   await page.goto('/');
-  await expect(page.locator('#projects .hero-actions')).toHaveCount(1);
+  await expect(page.locator('#top .hero-actions')).toHaveCount(1);
   for (const [fragment, destination] of Object.entries(destinations)) {
     await page.goto(`/#${fragment}`);
     await expect(page).toHaveURL(new RegExp(`${destination.replaceAll('/', '\\/')}$`));
@@ -419,7 +423,7 @@ test('the Home introduction and destinations remain meaningful without JavaScrip
   const page = await context.newPage();
   await page.goto('/');
   await expect(page.locator('#projects')).toContainText(/work|systems|projects/i);
-  await expect(page.getByRole('link', { name: 'Explore my work', exact: true })).toHaveAttribute('href', '/explore/');
+  await expect(page.getByRole('link', { name: 'View projects', exact: true })).toHaveAttribute('href', '/explore/');
   for (const id of ['case-cnesdata', 'case-aquafarm', 'case-esus-pec-bootstrap', 'case-infra-ansible', 'case-packer-proxmox-templates']) {
     await expect(page.locator(`#${id}`)).toHaveCount(1);
   }
