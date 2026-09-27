@@ -43,8 +43,8 @@ body.observatory {
   .observatory .section { padding-block: 40px; }
 }
 @media (max-width: 560px) {
-  .observatory .hero-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .observatory .hero-actions .button:first-child { grid-column: 1 / -1; }
+  .observatory-hero .hero-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .observatory-hero .hero-actions .button:first-child { grid-column: 1 / -1; }
 }
 
 .observatory .contact-card { border-radius: 8px; background: #101c25; box-shadow: none; }
