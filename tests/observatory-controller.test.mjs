@@ -14,6 +14,8 @@ test('Atlas exposes exactly four project identities and canonical destinations',
   for (const id of districtIds) {
     assert.equal(districtRegistry[id].id, id);
     assert.ok(districtRegistry[id].description.length > 0);
+    assert.ok(districtRegistry[id].area.length > 0);
+    assert.ok(districtRegistry[id].stack.length > 0);
     assert.ok(districts[id]);
     assert.equal(districtRegistry[id].kind, 'project');
   }

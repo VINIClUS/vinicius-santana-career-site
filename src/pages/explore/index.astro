@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import EditorialLayout from '../../layouts/EditorialLayout.astro';
 import ExternalLink from '../../components/ExternalLink.astro';
-import { districtIds } from '../../features/explorer/districts.ts';
+import { districtIds, districtRegistry, type DistrictId } from '../../features/explorer/districts.ts';
 import { overview } from '../../content/scenes/index.ts';
 import { projectToPoster } from '../../features/explorer/observatory-projection.ts';
 import '../../features/explorer/explorer.css';
@@ -22,6 +22,18 @@ const positionStyle = (desktop: { x: number; y: number }, mobile: { x: number; y
       <p>Four projects. From data contracts and primary-care indicators to environmental telemetry and repeatable infrastructure. Choose a project to explore its architecture.</p>
       <p class="explorer-note">Conceptual portfolio map — not a deployed network.</p>
     </header>
+    <nav class="atlas-index" aria-label="Projects at a glance">
+      <ol>
+        {selectorProjects.map((project, index) => <li class={`atlas-index-item atlas-index-${project.id}`}>
+          <a class="atlas-index-select" href={`#district-${project.id}`} data-district-select={project.id} aria-controls={`district-${project.id}`}>
+            <span class="district-number" aria-hidden="true">0{index + 1}</span>
+            <span class="atlas-index-title">{project.title}</span>
+            <span class="atlas-index-area">{districtRegistry[project.id as DistrictId].area} · {districtRegistry[project.id as DistrictId].stack.join(', ')}</span>
+          </a>
+          <a class="atlas-index-case" href={`/explore/${project.id}/`} aria-label={`Case study: ${project.title}`}>Case study →</a>
+        </li>)}
+      </ol>
+    </nav>
     <div class="observatory-stage">
       <nav class="observatory-map" aria-label="Select a project">
         <picture>

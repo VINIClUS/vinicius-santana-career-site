@@ -7,6 +7,7 @@ const root = document.querySelector<HTMLElement>('[data-observatory]');
 if (root) {
   const controller = createObservatoryController();
   const links = [...root.querySelectorAll<HTMLAnchorElement>('[data-district-link]')];
+  const selectors = [...root.querySelectorAll<HTMLAnchorElement>('[data-district-select]')];
   const articles = [...root.querySelectorAll<HTMLElement>('[data-district-detail]')];
   const closeLinks = [...root.querySelectorAll<HTMLAnchorElement>('[data-district-close]')];
   const map = root.querySelector<HTMLElement>('.observatory-map')!;
@@ -29,6 +30,12 @@ if (root) {
       link.setAttribute('aria-expanded', String(selected));
       if (selected) link.setAttribute('aria-current', 'true');
       else link.removeAttribute('aria-current');
+    }
+    for (const selector of selectors) {
+      const selected = selector.dataset.districtSelect === selectedDistrictId;
+      selector.setAttribute('aria-expanded', String(selected));
+      if (selected) selector.setAttribute('aria-current', 'true');
+      else selector.removeAttribute('aria-current');
     }
     for (const article of articles) article.dataset.selected = String(article.dataset.districtDetail === selectedDistrictId);
     for (const region of regions) region.dataset.selected = String(region.dataset.region === selectedDistrictId);
@@ -101,6 +108,15 @@ if (root) {
       event.preventDefault();
       const districtId = districtIds.find(id => id === link.dataset.districtLink);
       if (districtId) selectDistrict(districtId, 'label');
+    }, { signal });
+    // The index sits above the map, so bring the opened panel into view.
+    for (const selector of selectors) selector.addEventListener('click', event => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();
+      const districtId = districtIds.find(id => id === selector.dataset.districtSelect);
+      if (!districtId) return;
+      selectDistrict(districtId);
+      if (controller.getState().selectedDistrictId === districtId) map.scrollIntoView({ block: 'nearest' });
     }, { signal });
     for (const closeLink of closeLinks) closeLink.addEventListener('click', event => {
       if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;

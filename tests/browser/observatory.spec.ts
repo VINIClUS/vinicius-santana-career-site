@@ -59,6 +59,30 @@ test('project panel selection, replacement, closing and history stay coherent', 
   await expect(page).toHaveURL(/\/explore\/$/);
 });
 
+test('project index sits above the fold, selects on the map and links to case studies', async ({ page }) => {
+  await page.setViewportSize({ width: 1348, height: 900 });
+  await page.goto('/explore/');
+  const index = page.getByRole('navigation', { name: 'Projects at a glance' });
+  const items = index.locator('li');
+  await expect(items).toHaveCount(4);
+  for (const box of await items.evaluateAll(elements => elements.map(element => element.getBoundingClientRect().bottom))) {
+    expect(box).toBeLessThanOrEqual(900);
+  }
+
+  await index.locator('[data-district-select="esusdata"]').click();
+  await expect(page).toHaveURL(/#district-esusdata$/);
+  await expect(panel(page, 'esusdata')).toBeVisible();
+  await expect(panel(page, 'esusdata')).toBeInViewport();
+  await expect(index.locator('[data-district-select="esusdata"]')).toHaveAttribute('aria-current', 'true');
+  await expect(link(page, 'esusdata')).toHaveAttribute('aria-current', 'true');
+  await page.keyboard.press('Escape');
+  await expect(panel(page, 'esusdata')).toBeHidden();
+  await expect(index.locator('[aria-current]')).toHaveCount(0);
+
+  await index.getByRole('link', { name: 'Case study: Limnopulse' }).click();
+  await expect(page).toHaveURL(/\/explore\/limnopulse\/$/);
+});
+
 test('closing a pushed panel returns to the base history entry and modified clicks stay native', async ({ page }) => {
   await page.goto('/about/');
   await page.goto('/explore/');
