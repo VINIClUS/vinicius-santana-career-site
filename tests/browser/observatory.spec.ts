@@ -78,6 +78,15 @@ test('project index sits above the fold, selects on the map and links to case st
   await page.keyboard.press('Escape');
   await expect(panel(page, 'esusdata')).toBeHidden();
   await expect(index.locator('[aria-current]')).toHaveCount(0);
+  await expect(index.locator('[data-district-select="esusdata"]')).toBeFocused();
+
+  await index.locator('[data-district-select="cnesdata"]').focus();
+  await page.keyboard.press('Enter');
+  await panel(page, 'cnesdata').getByRole('link', { name: 'Close CnesData panel' }).click();
+  await expect(index.locator('[data-district-select="cnesdata"]')).toBeFocused();
+  await link(page, 'cnesdata').click();
+  await page.keyboard.press('Escape');
+  await expect(link(page, 'cnesdata')).toBeFocused();
 
   await index.getByRole('link', { name: 'Case study: Limnopulse' }).click();
   await expect(page).toHaveURL(/\/explore\/limnopulse\/$/);

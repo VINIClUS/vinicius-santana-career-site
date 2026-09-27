@@ -21,6 +21,11 @@ if (root) {
   let stopped = false;
   let loadingDeadline: ReturnType<typeof setTimeout> | undefined;
   let focusedPanelDistrictId: DistrictId | null = null;
+  // Closing returns focus to the control family that opened the panel.
+  let selectedFromIndex = false;
+  const triggerFor = (districtId: DistrictId | null) => selectedFromIndex
+    ? selectors.find(selector => selector.dataset.districtSelect === districtId)
+    : links.find(link => link.dataset.districtLink === districtId);
   const pending = new AbortController();
 
   const render = () => {
@@ -45,7 +50,7 @@ if (root) {
     const previousDistrictId = controller.getState().selectedDistrictId;
     const restoreFocus = focusedPanelDistrictId === previousDistrictId && districtId !== previousDistrictId;
     controller.dispatch({ type: 'SELECT_DISTRICT', districtId });
-    if (restoreFocus) links.find(link => link.dataset.districtLink === (districtId ?? previousDistrictId))?.focus({ preventScroll: true });
+    if (restoreFocus) triggerFor(districtId ?? previousDistrictId)?.focus({ preventScroll: true });
   };
   const historyDepth = () => {
     const value = (history.state as { __atlasPanelDepth?: unknown } | null)?.__atlasPanelDepth;
@@ -58,7 +63,7 @@ if (root) {
     if (depth > 0) history.go(-depth);
     else history.replaceState(history.state, '', `${location.pathname}${location.search}`);
     controller.dispatch({ type: 'SELECT_DISTRICT', districtId: null });
-    if (restoreFocus) links.find(link => link.dataset.districtLink === selectedDistrictId)?.focus({ preventScroll: true });
+    if (restoreFocus) triggerFor(selectedDistrictId)?.focus({ preventScroll: true });
   };
   const selectDistrict = (districtId: DistrictId, source: 'label' | 'index' | 'scene') => {
     const repeated = controller.getState().selectedDistrictId === districtId;
@@ -107,7 +112,9 @@ if (root) {
       if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       event.preventDefault();
       const districtId = districtIds.find(id => id === link.dataset.districtLink);
-      if (districtId) selectDistrict(districtId, 'label');
+      if (!districtId) return;
+      selectedFromIndex = false;
+      selectDistrict(districtId, 'label');
     }, { signal });
     // The index sits above the map, so bring the opened panel into view.
     for (const selector of selectors) selector.addEventListener('click', event => {
@@ -115,6 +122,7 @@ if (root) {
       event.preventDefault();
       const districtId = districtIds.find(id => id === selector.dataset.districtSelect);
       if (!districtId) return;
+      selectedFromIndex = true;
       selectDistrict(districtId, 'index');
       if (controller.getState().selectedDistrictId === districtId) map.scrollIntoView({ block: 'nearest' });
     }, { signal });
@@ -172,6 +180,7 @@ if (root) {
       scene = mountObservatoryScene({
         host: map, controller,
         onSelect(districtId: DistrictId) {
+          selectedFromIndex = false;
           selectDistrict(districtId, 'scene');
         },
         onReady() {
