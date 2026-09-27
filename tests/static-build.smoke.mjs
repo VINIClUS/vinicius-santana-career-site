@@ -147,7 +147,7 @@ assert.deepEqual(heroLinks.slice(0, 3).map(({ label }) => label), ['View project
 assert.equal(heroLinks.length, 4, 'hero must add only the atlas preview link to its primary actions');
 assert.match(heroLinks[3].attributes, /href="\/explore\/"/, 'the atlas preview must lead to the Explorer');
 assert.match(heroLinks[3].attributes, /aria-label="Explore the atlas: CnesData, Esusdata, Infrastructure and LimnoPulse"/);
-assert.match(heroLinks[3].label, /Explore the atlas →$/, 'the atlas caption must state its action');
+assert.equal(heroLinks[3].label, 'Explore the atlas →', 'the atlas link must be the caption action alone, leaving the motion control outside it');
 assert.match(heroLinks[0].attributes, /href="\/explore\/"/);
 assert.match(heroLinks[1].attributes, /href="\/assets\/vinicius-santana-resume\.pdf"/, 'hero Resume must use the canonical PDF');
 assert.match(heroLinks[1].attributes, /\bdownload\b/i, 'hero Resume must download the PDF');
