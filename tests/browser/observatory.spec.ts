@@ -90,7 +90,7 @@ test('project index sits above the fold, selects on the map and links to case st
 
   await link(page, 'cnesdata').click();
   await index.locator('[data-district-select="limnopulse"]').click();
-  await panel(page, 'limnopulse').getByRole('link', { name: 'Explore Limnopulse' }).focus();
+  await panel(page, 'limnopulse').getByRole('link', { name: 'Limnopulse case study' }).focus();
   await page.goBack();
   await expect(panel(page, 'cnesdata')).toBeVisible();
   await expect(link(page, 'cnesdata')).toBeFocused();
@@ -119,7 +119,7 @@ test('returning to a directly loaded fragment restores focus to its map label', 
   await page.goto('/explore/#district-cnesdata');
   await expect(panel(page, 'cnesdata')).toBeVisible();
   await page.locator('[data-district-select="limnopulse"]').click();
-  await panel(page, 'limnopulse').getByRole('link', { name: 'Explore Limnopulse' }).focus();
+  await panel(page, 'limnopulse').getByRole('link', { name: 'Limnopulse case study' }).focus();
   await page.goBack();
   await expect(panel(page, 'cnesdata')).toBeVisible();
   await expect(link(page, 'cnesdata')).toBeFocused();
@@ -129,7 +129,7 @@ test('returning to a directly loaded fragment restores focus to its map label', 
   await expect(panel(page, 'limnopulse')).toBeHidden();
   await page.goBack();
   await expect(panel(page, 'cnesdata')).toBeVisible();
-  await panel(page, 'cnesdata').getByRole('link', { name: 'Explore CnesData' }).focus();
+  await panel(page, 'cnesdata').getByRole('link', { name: 'CnesData case study' }).focus();
   await page.goForward();
   await expect(panel(page, 'cnesdata')).toBeHidden();
   await expect(link(page, 'cnesdata')).toBeFocused();
