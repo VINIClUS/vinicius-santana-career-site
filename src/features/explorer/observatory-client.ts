@@ -28,9 +28,10 @@ if (root) {
     const value = (history.state as { __atlasTrigger?: unknown } | null)?.__atlasTrigger;
     return value === 'index' || value === 'map' ? value : undefined;
   };
-  const triggerFor = (districtId: DistrictId | null) => activeTrigger === 'index'
-    ? selectors.find(selector => selector.dataset.districtSelect === districtId)
-    : links.find(link => link.dataset.districtLink === districtId);
+  // Index activation scrolls away from the index, so only map labels keep their scroll position.
+  const focusTrigger = (districtId: DistrictId | null) => activeTrigger === 'index'
+    ? selectors.find(selector => selector.dataset.districtSelect === districtId)?.focus()
+    : links.find(link => link.dataset.districtLink === districtId)?.focus({ preventScroll: true });
   const pending = new AbortController();
 
   const render = () => {
@@ -57,7 +58,7 @@ if (root) {
     // Untagged fragments come from the map; fragment-free entries keep the family being left.
     if (districtId) activeTrigger = entryTrigger() ?? 'map';
     controller.dispatch({ type: 'SELECT_DISTRICT', districtId });
-    if (restoreFocus) triggerFor(districtId ?? previousDistrictId)?.focus({ preventScroll: true });
+    if (restoreFocus) focusTrigger(districtId ?? previousDistrictId);
   };
   const historyDepth = () => {
     const value = (history.state as { __atlasPanelDepth?: unknown } | null)?.__atlasPanelDepth;
@@ -70,7 +71,7 @@ if (root) {
     if (depth > 0) history.go(-depth);
     else history.replaceState(history.state, '', `${location.pathname}${location.search}`);
     controller.dispatch({ type: 'SELECT_DISTRICT', districtId: null });
-    if (restoreFocus) triggerFor(selectedDistrictId)?.focus({ preventScroll: true });
+    if (restoreFocus) focusTrigger(selectedDistrictId);
   };
   const selectDistrict = (districtId: DistrictId, source: 'label' | 'index' | 'scene') => {
     activeTrigger = source === 'index' ? 'index' : 'map';

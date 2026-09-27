@@ -110,6 +110,9 @@ test('project index reveals the bottom sheet on a short mobile viewport', async 
   await expect(panel(page, 'esusdata')).toBeVisible();
   await expect(panel(page, 'esusdata')).toBeInViewport({ ratio: 0.3 });
   await expect(panel(page, 'esusdata').getByRole('heading', { name: 'Esusdata' })).toBeInViewport();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('[data-district-select="esusdata"]')).toBeFocused();
+  await expect(page.locator('[data-district-select="esusdata"]')).toBeInViewport();
 });
 
 test('returning to a directly loaded fragment restores focus to its map label', async ({ page }) => {
