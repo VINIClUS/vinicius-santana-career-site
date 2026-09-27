@@ -407,12 +407,6 @@
           "far": 200
         },
         "zoom": 1
-      },
-      "interaction": {
-        "horizontalDegrees": 10,
-        "verticalDegrees": 3,
-        "minZoom": 0.9,
-        "maxZoom": 1.1
       }
     },
     "mobile": {
@@ -554,12 +548,6 @@
           "far": 200
         },
         "zoom": 1
-      },
-      "interaction": {
-        "horizontalDegrees": 5,
-        "verticalDegrees": 2.5,
-        "minZoom": 0.9,
-        "maxZoom": 1.05
       }
     }
   },

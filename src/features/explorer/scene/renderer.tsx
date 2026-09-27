@@ -13,7 +13,7 @@ import { applyOverviewCamera, atlasVisual, configureOverviewRenderer, createOver
 import { regionPoints } from './atlas-world.mjs';
 import { createMotionPlayback } from './motion-playback.ts';
 
-export interface ObservatoryScene { dispose(): void; zoom(direction: 1 | -1): void; reset(): void; }
+export interface ObservatoryScene { dispose(): void; reset(): void; }
 interface Options {
   host: HTMLElement;
   controller: ObservatoryController;
@@ -179,13 +179,10 @@ export function mountObservatoryScene(options: Options): ObservatoryScene {
       controls.minPolarAngle = 0;
       controls.maxPolarAngle = Math.PI;
       controls.update();
-      const azimuth = controls.getAzimuthalAngle(), polar = controls.getPolarAngle();
-      controls.minAzimuthAngle = azimuth - layout.interaction.horizontalDegrees * Math.PI / 180;
-      controls.maxAzimuthAngle = azimuth + layout.interaction.horizontalDegrees * Math.PI / 180;
-      controls.minPolarAngle = polar - layout.interaction.verticalDegrees * Math.PI / 180;
-      controls.maxPolarAngle = polar + layout.interaction.verticalDegrees * Math.PI / 180;
-      controls.minZoom = preset.zoom * layout.interaction.minZoom;
-      controls.maxZoom = preset.zoom * layout.interaction.maxZoom;
+      // Free horizontal orbit with the authored tilt fixed. The narrow layout's labels
+      // only fit its authored angle, so mobile does not orbit.
+      controls.minPolarAngle = controls.maxPolarAngle = controls.getPolarAngle();
+      controls.enableRotate = layout !== overview.layouts.mobile;
       controls.saveState();
     }
     invalidate();
@@ -254,8 +251,8 @@ export function mountObservatoryScene(options: Options): ObservatoryScene {
     controls.enablePan = false;
     controls.enableDamping = false;
     controls.autoRotate = false;
+    controls.enableZoom = false;
     controls.rotateSpeed = 0.5;
-    controls.zoomSpeed = 0.5;
     controls.addEventListener('change', invalidate);
     applyLayout(layout);
     // This camera uses the authored frustum rather than Fiber's automatic aspect adjustment.
@@ -328,13 +325,6 @@ export function mountObservatoryScene(options: Options): ObservatoryScene {
   void initialize().catch(() => { if (!disposed) options.onFailure(); });
   return {
     dispose,
-    zoom(direction) {
-      if (disposed) return;
-      camera.zoom = Math.max(layout.camera.zoom * layout.interaction.minZoom, Math.min(layout.camera.zoom * layout.interaction.maxZoom, camera.zoom + direction * 0.1 * layout.camera.zoom));
-      camera.updateProjectionMatrix();
-      controls?.update();
-      invalidate();
-    },
     reset() { if (!disposed) resetCamera(); },
   };
 }

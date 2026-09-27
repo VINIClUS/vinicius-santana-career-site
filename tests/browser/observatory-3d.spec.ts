@@ -111,9 +111,9 @@ test('readiness waits for all five models, then ambient motion can pause', async
   expect(await page.evaluate(() => (window as typeof window & { observatoryDraws: number }).observatoryDraws)).toBe(paused);
 });
 
-test('readable labels match the poster and stay inside the map at the camera limits', async ({ page }, testInfo) => {
+test('readable labels match the poster and stay inside the map around a full horizontal orbit', async ({ page }, testInfo) => {
   test.setTimeout(120_000);
-  // This matrix compares authored geometry and camera limits; ambient playback has
+  // This matrix compares authored geometry around the orbit; ambient playback has
   // dedicated running/paused coverage and should not add draws to every orbit step.
   await page.emulateMedia({ reducedMotion: 'reduce' });
   const measurements = [];
@@ -163,19 +163,19 @@ test('readable labels match the poster and stay inside the map at the camera lim
         expect(Math.abs(poster[i]!.left - runtime[i]!.left)).toBeLessThanOrEqual(2);
         expect(Math.abs(poster[i]!.top - runtime[i]!.top)).toBeLessThanOrEqual(2);
       }
-      for (const zoom of ['zoom-out', 'zoom-in']) {
-        await page.locator(`[data-scene-action="${zoom}"]`).evaluate(button => { for (let i = 0; i < 8; i++) (button as HTMLButtonElement).click(); });
-        for (const horizontal of [-1, 1]) for (const vertical of [-1, 1]) {
-          await page.locator('.observatory-map').scrollIntoViewIfNeeded();
-          const box = (await canvas(page).boundingBox())!;
-          const x = box.x + 12, y = box.y + 12;
-          await page.mouse.move(x, y);
-          await page.mouse.down();
-          await page.mouse.move(x + horizontal * box.width * 3, y + vertical * box.height * 3, { steps: 3 });
-          await page.mouse.up();
-          await frames(page, 2);
-          await check(width, `${zoom}/${horizontal}/${vertical}`);
-        }
+      // OrbitControls turns π radians per canvas height at rotateSpeed 0.5: each drag is 45°.
+      // The mobile layout does not orbit, so one drag must leave its framing unchanged.
+      for (let step = 1; step < (width < 701 ? 2 : 8); step++) {
+        await page.locator('.observatory-map').scrollIntoViewIfNeeded();
+        const box = (await canvas(page).boundingBox())!;
+        const x = box.x + 12, y = box.y + box.height / 2;
+        await page.mouse.move(x, y);
+        await page.mouse.down();
+        await page.mouse.move(x + box.height / 4, y, { steps: 3 });
+        await page.mouse.up();
+        await frames(page, 2);
+        const orbited = await check(width, `orbit-${step * 45}`);
+        if (width < 701) for (let i = 0; i < runtime.length; i++) expect(orbited[i]!.left).toBeCloseTo(runtime[i]!.left, 0);
       }
       await page.locator('[data-scene-action="reset"]').evaluate(button => (button as HTMLButtonElement).click());
       const reset = await check(width, 'reset');
@@ -207,7 +207,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     }
     await expect(outline).toHaveCSS('opacity', '1');
     await page.locator('.observatory-map').screenshot({ path: testInfo.outputPath(`fragment-first-3d-${viewport.width}.png`) });
-    await page.getByRole('button', { name: 'Zoom in', exact: true }).click();
+    await page.getByRole('button', { name: 'Reset view', exact: true }).click();
     await page.getByRole('button', { name: 'View 2D', exact: true }).click();
     const fallback = await regionOutlines(page);
     expect(await page.locator('[data-region-points]').evaluateAll(polygons => polygons.map(polygon => polygon.getAttribute('points')))).toEqual(authoredPoints);
@@ -227,12 +227,12 @@ test('View 2D and the poster remain visible while models load, with 3D controls 
   await expect(stage(page)).toHaveAttribute('data-scene-state', 'loading');
   await expect(page.locator('.observatory-map picture')).toBeVisible();
   await expect(page.getByRole('button', { name: 'View 2D', exact: true })).toBeVisible();
-  for (const name of ['Zoom in', 'Zoom out', 'Reset view']) await expect(page.getByRole('button', { name, exact: true })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Reset view', exact: true })).toBeDisabled();
   await selected(page, 'limnopulse').click();
   await expect(page.locator('#district-limnopulse')).toBeVisible();
   hub.release();
   await ready(page);
-  for (const name of ['Zoom in', 'Zoom out', 'Reset view']) await expect(page.getByRole('button', { name, exact: true })).toBeEnabled();
+  await expect(page.getByRole('button', { name: 'Reset view', exact: true })).toBeEnabled();
   await expect(selected(page, 'limnopulse')).toHaveAttribute('aria-current', 'true');
 });
 
@@ -427,7 +427,11 @@ test('Atlas stays interactive and bounds-suspends redraws without IntersectionOb
     y: (link as HTMLElement).offsetTop,
   })));
   const initial = await positions();
-  await page.getByRole('button', { name: 'Zoom in', exact: true }).click();
+  const box = (await canvas(page).boundingBox())!;
+  await page.mouse.move(box.x + 12, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(box.x + 12 + box.height / 4, box.y + box.height / 2, { steps: 3 });
+  await page.mouse.up();
   await expect.poll(positions).not.toEqual(initial);
 
   await page.setViewportSize({ width: 390, height: 844 });
@@ -473,7 +477,7 @@ test('context loss restores focus only when the focused 3D control disappears', 
   await page.goto('/explore/');
   await ready(page);
   await clickMaquette(page, 'infrastructure');
-  await page.getByRole('button', { name: 'Zoom in', exact: true }).focus();
+  await page.getByRole('button', { name: 'Reset view', exact: true }).focus();
   await canvas(page).evaluate(element => (element as HTMLCanvasElement).getContext('webgl2')!.getExtension('WEBGL_lose_context')!.loseContext());
   await expect(stage(page)).toHaveAttribute('data-scene-state', 'fallback');
   await expect(selected(page, 'infrastructure')).toBeFocused();
@@ -491,7 +495,7 @@ test('View 2D restores poster labels while preserving selection, focus and histo
   await page.goto('/explore/');
   await ready(page);
   await clickMaquette(page, 'limnopulse');
-  await page.getByRole('button', { name: 'Zoom in', exact: true }).focus();
+  await page.getByRole('button', { name: 'Reset view', exact: true }).focus();
   await page.getByRole('button', { name: 'View 2D', exact: true }).click();
   await expect(stage(page)).toHaveAttribute('data-scene-state', 'fallback');
   await expect(selected(page, 'limnopulse')).toBeFocused();
@@ -601,26 +605,32 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     await page.locator('.observatory-map').scrollIntoViewIfNeeded();
     const positions = () => page.locator('[data-district-link]').evaluateAll(links => links.map(link => ({ x: (link as HTMLElement).offsetLeft, y: (link as HTMLElement).offsetTop })));
     const initial = await positions();
-    const zoomIn = page.getByRole('button', { name: 'Zoom in', exact: true });
-    for (let i = 0; i < 8 && await zoomIn.isEnabled(); i++) await zoomIn.click();
-    await frames(page);
-    const zoomed = await positions();
-    expect(zoomed).not.toEqual(initial);
-    expect((zoomed[1]!.x - zoomed[0]!.x) / (initial[1]!.x - initial[0]!.x)).toBeCloseTo(viewport.width === 390 ? 1.05 : 1.1, 1);
-    await zoomIn.evaluate(button => (button as HTMLButtonElement).click());
-    await frames(page);
-    expect(await positions()).toEqual(zoomed);
-    await page.getByRole('button', { name: 'Reset view', exact: true }).click();
-    await expect.poll(positions).toEqual(initial);
+    await expect(page.getByRole('button', { name: /zoom/i })).toHaveCount(0);
     await page.locator('.observatory-map').scrollIntoViewIfNeeded();
-    const bounds = await canvas(page).boundingBox();
+    let bounds = await canvas(page).boundingBox();
+    // The wheel never zooms; the page may scroll instead.
+    await page.mouse.move(bounds!.x + bounds!.width / 2, bounds!.y + bounds!.height / 2);
+    await page.mouse.wheel(0, -200);
+    await page.mouse.wheel(0, 200);
+    await frames(page);
+    await page.locator('.observatory-map').scrollIntoViewIfNeeded();
+    expect(await positions()).toEqual(initial);
+    bounds = await canvas(page).boundingBox();
+    // A purely vertical drag cannot tilt the camera.
+    await page.mouse.move(bounds!.x + bounds!.width / 2, bounds!.y + 12);
+    await page.mouse.down();
+    await page.mouse.move(bounds!.x + bounds!.width / 2, bounds!.y + bounds!.height - 12, { steps: 12 });
+    await page.mouse.up();
+    await frames(page);
+    expect(await positions()).toEqual(initial);
     await page.mouse.move(bounds!.x + 12, bounds!.y + 12);
     await page.mouse.down();
     await page.mouse.move(bounds!.x + bounds!.width * .6, bounds!.y + bounds!.height * .6, { steps: 12 });
     await page.mouse.up();
     await frames(page);
     const orbited = await positions();
-    expect(orbited).not.toEqual(initial);
+    if (viewport.width === 390) expect(orbited).toEqual(initial);
+    else expect(orbited).not.toEqual(initial);
     await page.getByRole('button', { name: 'Reset view', exact: true }).click();
     await expect.poll(positions).toEqual(initial);
     if (viewport.width === 390) {

@@ -123,8 +123,6 @@ if (root) {
   toolbar.addEventListener('click', event => {
     const action = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-scene-action]')?.dataset.sceneAction;
     if (action === 'fallback') use2D();
-    if (action === 'zoom-in') scene?.zoom(1);
-    if (action === 'zoom-out') scene?.zoom(-1);
     if (action === 'reset') scene?.reset();
   }, { signal: pending.signal });
   window.addEventListener('pagehide', () => {
