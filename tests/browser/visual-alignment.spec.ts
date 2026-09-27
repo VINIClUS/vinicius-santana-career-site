@@ -159,7 +159,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       await openTechnicalDetails(page);
       await expect(page).toHaveURL(new RegExp(`/explore/${slug}/$`));
       await expect(page.locator('.header-social')).toBeVisible();
-      for (const anchor of ['overview', 'system', 'engineering', 'results']) {
+      for (const anchor of ['overview', 'engineering', 'results', 'evidence', 'system']) {
         const link = page.locator(`.section-nav a[href="#${anchor}"]`);
         await link.focus();
         await page.keyboard.press('Enter');

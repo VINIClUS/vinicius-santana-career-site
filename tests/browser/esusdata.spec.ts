@@ -28,7 +28,7 @@ for (const width of [320, 390, 1440]) {
   });
 }
 
-test('Esusdata transcript identifies target publication and current C1 blocker without JavaScript', async ({ browser }) => {
+test('Esusdata transcript shows the illustrative target without a C1 release caveat without JavaScript', async ({ browser }) => {
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
   await page.goto('/explore/esusdata/');
@@ -36,7 +36,7 @@ test('Esusdata transcript identifies target publication and current C1 blocker w
   const transcript = page.locator('.life-transcripts').first();
   await transcript.locator('summary').click();
   await expect(transcript).toContainText('60% / Ótimo');
-  await expect(transcript).toContainText(/real C1 publication remains blocked/i);
+  await expect(page.locator('#simulation')).not.toContainText(/real C1/i);
   await context.close();
 });
 

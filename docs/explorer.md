@@ -14,7 +14,7 @@ CnesData uses fictional inputs only. Its lifecycle models transformation and aut
 
 The independent `lifecycle/` modules provide six command-driven tours: Infrastructure exhaustion, quorum and scaling, Limnopulse end-to-end, CnesData end-to-end, and the fictional Esusdata C1 target. Each has six chapters. Pure reducers own logical time and operation identity; presentation and renderer never determine domain success. The player invalidates old callbacks on replay, scenario replacement and disposal. Manual actions preserve domain state and cancel the remaining tour.
 
-After a short case brief, project pages lead with an HTML/SVG 2.5D lifecycle at `#simulation`. System Views and selection controls remain in native disclosures after the editorial context. All old standalone demonstration UIs have been removed, including CnesData's Synthetic demonstration and Infrastructure's node-failure demo. The lifecycle is the only simulation shown on each project page. Graph/card selection preserves URL, scroll, focus and lifecycle progress; component fragments open the appropriate disclosure. Without JavaScript, all lifecycle transcripts are calculated from engine commands during the build. Reduced-motion, Save-Data and technical fragments suppress autoplay; leaving the viewport or hiding the document pauses without automatic resumption.
+Project pages put the case brief, engineering decisions, current state and public evidence first; the HTML/SVG 2.5D lifecycle follows at `#simulation` as an optional walkthrough. System Views and selection controls remain in native disclosures in the closing Limitations & details chapter. All old standalone demonstration UIs have been removed, including CnesData's Synthetic demonstration and Infrastructure's node-failure demo. The lifecycle is the only simulation shown on each project page. Graph/card selection preserves URL, scroll, focus and lifecycle progress; component fragments open the appropriate disclosure. Without JavaScript, all lifecycle transcripts are calculated from engine commands during the build. The lifecycle always starts paused: playback begins only from Play, Next or a chapter control. Leaving the viewport or hiding the document pauses without automatic resumption.
 
 The CnesData lifecycle transforms fictional municipal/national samples, compares three rows and models publication and authorization guards. This remains a synthetic documented/planned target, with the old raw-write rules retained only as domain regression tests. No services, credentials or real records are involved. Production service artwork is vendored locally with hashes and licensing records.
 
@@ -94,8 +94,9 @@ See [SA-05 validation](design/sa-05/validation.md) for measurements and checks.
 
 `/explore/cnesdata/`, `/explore/limnopulse/`, `/explore/infrastructure/` and `/explore/esusdata/`
 combine the complete case-study narrative with their shared System View.
-`ProjectDetail.astro` renders Hero → Brief (problem, contribution, key decision, status, repositories) → Lifecycle → Context and contribution → System View disclosure →
-Engineering → Results and evidence, using
+`ProjectDetail.astro` renders Hero → Brief (problem, contribution, key decision, status, repositories) → Context and contribution →
+Engineering decisions (three problem/decision/evidence entries) → Current state (outcomes and components by status) → Public evidence →
+optional Lifecycle → Limitations & details (limitations, reliability, System View disclosure), using
 collection-backed content at build time. The case-study collection remains
 the authority for facts.
 

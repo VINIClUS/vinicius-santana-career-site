@@ -210,7 +210,7 @@ preview. Its small launcher waits for page load, actual viewport intersection,
 document visibility and an idle opportunity before downloading Three.js or models.
 One 15-second deadline covers activation through the first complete draw; failure
 retains the responsive poster. The only Home work CTA is **Explore my work** →
-`/explore/`. The Atlas and project pages do not load the Home preview. All four project pages lead with HTML/SVG lifecycle tours and retain their technical System Views in disclosures.
+`/explore/`. The Atlas and project pages do not load the Home preview. All four project pages lead with the brief, engineering decisions, current state and evidence, then offer an optional, initially paused HTML/SVG lifecycle tour; technical System Views stay in disclosures.
 See [SA-05 validation](docs/design/sa-05/validation.md) for loading and performance evidence.
 
 `npm test` checks the simulation and explorer TypeScript modules and runs the focused Node tests. After `npm run build`, run `npm run smoke` and `npm run test:explorer`. Install the browser once with `npx playwright install --with-deps chromium`. Playwright 1.63.0 runs the Chromium browser suites with one worker; screenshots and traces are retained only on failure. To run the same smoke against a deployment, set `EXPLORER_BASE_URL` to its origin.

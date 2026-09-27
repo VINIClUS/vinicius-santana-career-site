@@ -15,7 +15,7 @@ const caseStudies = yaml.load(await readFile(new URL('../src/content/case-studie
 const outputDirectory = await mkdtemp(path.join(rootPath, '.canonical-project-experiences-'));
 
 function sectionOrder(html) {
-  return [...html.matchAll(/<section id="(overview|system|simulation|engineering|results|evidence)"/g)].map(([, id]) => id);
+  return [...html.matchAll(/<section id="(overview|simulation|engineering|results|evidence|limitations)"/g)].map(([, id]) => id);
 }
 
 try {
@@ -26,8 +26,8 @@ try {
     assert.equal((html.match(/<[^>]+\bdata-system-view\b/g) ?? []).length, 1, `${caseStudy.id} has exactly one shared System View`);
     assert.deepEqual(
       sectionOrder(html),
-      ['simulation', 'overview', 'system', 'engineering', 'results', 'evidence'],
-      `${caseStudy.id} leads with its lifecycle and preserves the canonical editorial content`
+      ['overview', 'engineering', 'results', 'evidence', 'simulation', 'limitations'],
+      `${caseStudy.id} puts decisions, state and evidence before the optional lifecycle`
     );
     assert.equal((html.match(/\bid="simulation"/g) ?? []).length, 1);
 
@@ -40,12 +40,13 @@ try {
       assert.ok(brief.includes(text), `${caseStudy.id} brief includes: ${text}`);
     }
     assert.match(html, /data-component-disclosure/);
+    assert.match(html, /<section id="system"/, `${caseStudy.id} keeps the System View anchor inside the details chapter`);
 
     for (const text of [
       caseStudy.problem,
       caseStudy.context,
       ...caseStudy.contribution,
-      ...caseStudy.decisions,
+      ...caseStudy.decisions.flatMap(item => [item.problem, item.decision]),
       ...caseStudy.reliability,
       ...caseStudy.outcomes,
       ...caseStudy.limitations,

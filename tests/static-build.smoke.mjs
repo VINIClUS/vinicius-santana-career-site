@@ -417,7 +417,7 @@ for (const caseStudy of caseStudies) {
     'Problem',
     'Context',
     'Contribution',
-    'Decisions',
+    'Engineering decisions',
     'Reliability',
     'Outcomes',
     'Public evidence'
@@ -692,7 +692,7 @@ for (const id of ['overview', 'system', 'engineering', 'simulation', 'results', 
 assert.match(canonicalCnes, /<title>CnesData — Vinicius Santana<\/title>/);
 assert.match(canonicalCnes, /System View/);
 assert.match(canonicalCnes, /id="system-title"/, 'canonical System View fragment remains a target');
-for (const text of [cnes.eyebrow, cnes.summary, cnes.problem, cnes.context, ...cnes.contribution, ...cnes.decisions, ...cnes.reliability, ...cnes.outcomes, ...cnes.limitations]) {
+for (const text of [cnes.eyebrow, cnes.summary, cnes.problem, cnes.context, ...cnes.contribution, ...cnes.decisions.flatMap(item => [item.problem, item.decision]), ...cnes.reliability, ...cnes.outcomes, ...cnes.limitations]) {
   assert.ok(canonicalCnes.includes(escapeHtml(text)), `canonical HTML retains: ${text}`);
 }
 for (const component of cnes.architecture) {
@@ -717,7 +717,7 @@ const infra = yaml.load(await readFile(fromRoot('src/content/case-studies.yaml')
 for (const id of ['overview', 'system', 'system-title', 'engineering', 'simulation', 'results', 'evidence', 'limitations', 'details-title']) {
   assert.equal([...canonicalInfra.matchAll(new RegExp(`id="${id}"`, 'g'))].length, 1, `unique Infrastructure #${id}`);
 }
-for (const text of [infra.eyebrow, infra.summary, infra.problem, infra.context, ...infra.contribution, ...infra.decisions, ...infra.reliability, ...infra.outcomes, ...infra.limitations]) {
+for (const text of [infra.eyebrow, infra.summary, infra.problem, infra.context, ...infra.contribution, ...infra.decisions.flatMap(item => [item.problem, item.decision]), ...infra.reliability, ...infra.outcomes, ...infra.limitations]) {
   assert.ok(canonicalInfra.includes(escapeHtml(text)), `Infrastructure retains: ${text}`);
 }
 for (const component of infra.architecture) {
@@ -733,7 +733,7 @@ for (const evidence of infra.evidence) {
 }
 assert.equal([...canonicalInfra.matchAll(/id="([^" ]+)"/g)].length, new Set([...canonicalInfra.matchAll(/id="([^" ]+)"/g)].map(match => match[1])).size);
 assert.match(canonicalInfra, /data-visual-mode="cluster"/);
-assert.ok(canonicalInfra.indexOf('id="simulation"') < canonicalInfra.indexOf('id="engineering"'));
+assert.ok(canonicalInfra.indexOf('id="evidence"') < canonicalInfra.indexOf('id="simulation"'));
 console.log('Canonical Infrastructure content equivalence passed.');
 
 // SA-03: all public facts remain available in the canonical HTML without a runtime.
@@ -746,11 +746,11 @@ for (const id of ['overview', 'system', 'engineering', 'results', 'evidence', 'l
   assert.ok(canonicalLimno.includes(`href="#${id}"`));
 }
 assert.match(canonicalLimno, /id="system-title"/);
-for (const heading of ['Operational map', 'Component details', 'Problem', 'Context', 'Contribution', 'Decisions', 'Reliability', 'Outcomes', 'Public evidence']) {
+for (const heading of ['Operational map', 'Component details', 'Problem', 'Context', 'Contribution', 'Engineering decisions', 'Reliability', 'Outcomes', 'Public evidence']) {
   assert.match(canonicalLimno, new RegExp(`<h[234][^>]*>${heading}</h[234]>`));
 }
 assert.doesNotMatch(canonicalLimno, />Relationships</, 'Limnopulse has no standalone Relationships heading');
-for (const value of [limno.eyebrow, limno.summary, limno.problem, limno.context, ...limno.technologies, ...limno.contribution, ...limno.decisions, ...limno.reliability, ...limno.outcomes, ...limno.limitations]) {
+for (const value of [limno.eyebrow, limno.summary, limno.problem, limno.context, ...limno.technologies, ...limno.contribution, ...limno.decisions.flatMap(item => [item.problem, item.decision]), ...limno.reliability, ...limno.outcomes, ...limno.limitations]) {
   assert.ok(canonicalLimno.includes(escapeHtml(value)), `canonical Limnopulse retains: ${value}`);
 }
 assert.equal(limno.architecture.length, 7);

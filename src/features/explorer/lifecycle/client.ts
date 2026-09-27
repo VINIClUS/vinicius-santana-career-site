@@ -21,8 +21,6 @@ export async function initializeLifecycles() {
   let animationKey = '';
   let generation = 0;
   let profile = 'aws';
-  let interacted = false;
-  let autoConsumed = false;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const artifact = get('artifact');
   const stage = get('stage');
@@ -116,7 +114,7 @@ export async function initializeLifecycles() {
     if(scenario.id==='infra-provision-scale') records=['Host 01 · physical','Host 02 · physical','Host 03 · physical',`Routing · ${p.readyReplicas} ready replicas`, `In flight · ${p.inFlight}`];
     else if(scenario.project==='infrastructure') records=Object.entries(p.nodes as Record<string,string>).map(([id,status])=>`${id} · ${status}`).concat([`Definition · ${p.desired}`,`Durable data · ${p.storageReady?'available':'unavailable'}`]);
     else if(scenario.project==='limnopulse') records=[`Telemetry · ${p.samples} persisted samples`,`Outbox · ${p.outboxCount} records`,`Queues · ${p.queueCount} jobs`, `Recipient · ${String(p.userView).replaceAll('_',' ')}`];
-    else if(scenario.project==='esusdata') records=[`Read · ${p.rowsRead} fictional rows`,`Extract · ${p.extractValid?'verified':'pending'}`,`C1 · ${p.calculated?'technical candidate':'pending'}`,`Methodology · ${p.targetGatesCompleted?'hypothetical target gates complete':'real gates incomplete'}`,`Publication · ${p.published?'target only':'blocked'}`,`Access · ${p.grantActive?'municipal grant active':'municipal grant revoked; consultation blocked'}`];
+    else if(scenario.project==='esusdata') records=[`Read · ${p.rowsRead} fictional rows`,`Extract · ${p.extractValid?'verified':'pending'}`,`C1 · ${p.calculated?'technical candidate':'pending'}`,`Methodology · ${p.targetGatesCompleted?'hypothetical target gates complete':'gates pending'}`,`Publication · ${p.published?'target only':'not published'}`,`Access · ${p.grantActive?'municipal grant active':'municipal grant revoked; consultation blocked'}`];
     else records=[`Raw · ${p.rawObjects} objects`,`Normalized · ${p.normalized} sources`,`CURRENT · ${p.currentVersion}`,`Recipient · ${p.servedVersion??'previous version'}`];
     get('records').replaceChildren(...records.map(text=>{const item=document.createElement('span');item.textContent=text;return item;}));
   }
@@ -136,7 +134,7 @@ export async function initializeLifecycles() {
     const limno=scenario.project==='limnopulse';
     panel.hidden=scenario.project==='esusdata'?p.dashboard===null:limno?p.userView==='idle':p.servedVersion===null;
     get('recipient-title').textContent=scenario.project==='esusdata'?'Esusdata · hypothetical authorized panel':limno?'Limnopulse · synthetic recipient':'CnesData · authorized dashboard';
-    get('recipient-message').textContent=scenario.project==='esusdata'?`${p.dashboard}. This is an illustrative target with completed gates; real C1 publication remains blocked.`:limno?
+    get('recipient-message').textContent=scenario.project==='esusdata'?`${p.dashboard}. This is an illustrative target with completed gates.`:limno?
       p.userView==='recovery_shown'?'Water condition recovered. This notification belongs to the same incident.':
       p.userView==='acknowledged'?'Acknowledged. The low condition remains active until a valid clean window confirms recovery.':
       p.userView==='incident_opened'?`Incident ${p.incidentId} · ${p.condition} condition · version ${p.incidentVersion}`:
@@ -169,7 +167,7 @@ export async function initializeLifecycles() {
     return '';
   }
   function applyManual(label:string,command:Command) {
-    interacted=true;player.interrupt();cancelMotion();previousState=state;previous=adapter.project(state);
+    player.interrupt();cancelMotion();previousState=state;previous=adapter.project(state);
     const result=execute(adapter,state,command);state=result.state;
     const description=result.rejection?`Blocked · ${String(result.rejection).toLowerCase().replaceAll('_',' ')}`:label;
     manualCommand=command;manual=planEvent(scenario.project,{type:command.type,description},previous,adapter.project(state),scenario,command);render();
@@ -190,33 +188,28 @@ export async function initializeLifecycles() {
     get<HTMLButtonElement>('apply').disabled=false;get('apply').onclick=()=>{const operation=operations[Number(select.value)]!;applyManual(operation.label,operation.command);};
   }
   for(const name of buttons)get<HTMLButtonElement>(name).disabled=false;
-  get('previous').onclick=()=>{interacted=true;player.previous();};
-  get('next').onclick=()=>{interacted=true;player.next();};
-  get('play').onclick=()=>{interacted=true;player.snapshot().playing?player.pause():player.play();};
-  get('replay').onclick=()=>{interacted=true;cancelMotion();player.reset();};
-  get('chapters').onclick=event=>{const target=(event.target as Element).closest<HTMLElement>('[data-life-chapter]');if(!target)return;interacted=true;const chapter=scenario.chapters[Number(target.dataset.lifeChapter)]!;player.seek(scenario.checkpoints.findIndex(cp=>cp.id===chapter.checkpointIds[0]));};
+  get('previous').onclick=()=>{player.previous();};
+  get('next').onclick=()=>{player.next();};
+  get('play').onclick=()=>{player.snapshot().playing?player.pause():player.play();};
+  get('replay').onclick=()=>{cancelMotion();player.reset();};
+  get('chapters').onclick=event=>{const target=(event.target as Element).closest<HTMLElement>('[data-life-chapter]');if(!target)return;const chapter=scenario.chapters[Number(target.dataset.lifeChapter)]!;player.seek(scenario.checkpoints.findIndex(cp=>cp.id===chapter.checkpointIds[0]));};
   get<HTMLSelectElement>('scenario').disabled=false;
   get<HTMLSelectElement>('scenario').onchange=async event=>{
-    interacted=true;player.dispose();cancelMotion();const token=++generation;
+    player.dispose();cancelMotion();const token=++generation;
     const next=tours.find(s=>s.id===(event.target as HTMLSelectElement).value)!;const engine=await loadEngine(next.id);
     if(token!==generation)return;scenario=next;adapter=engine;manual=undefined;manualCommand=undefined;state=reconstruct(adapter,scenario,0);previousState=state;previous=adapter.project(state);player=makePlayer();
     const nav=get('chapters');nav.replaceChildren(...scenario.chapters.map((ch,i)=>{const b=document.createElement('button');b.type='button';b.dataset.lifeChapter=String(i);b.textContent=`${String(ch.number).padStart(2,'0')} ${ch.title}`;return b;}));
     get('context').textContent=scenario.assumptions.join(' ');actions();render();
   };
   const profileControl=root.querySelector<HTMLSelectElement>('[data-life-profile]');
-  if(profileControl){profileControl.disabled=false;profileControl.onchange=()=>{interacted=true;player.pause();profile=profileControl.value;render();};}
+  if(profileControl){profileControl.disabled=false;profileControl.onchange=()=>{player.pause();profile=profileControl.value;render();};}
   if(scenario.project==='limnopulse'){
     get('recipient-open').onclick=()=>applyManual('Open the authorized incident',{type:'OPEN_INCIDENT',tenantId:'tenant-demo-A'});
     get('recipient-ack').onclick=()=>applyManual('Acknowledge the incident',{type:'ACKNOWLEDGE',expectedVersion:adapter.project(state).incidentVersion});
   }
   document.addEventListener('visibilitychange',()=>{if(document.hidden)player.pause();});
   reduced.addEventListener('change',()=>{player.pause();cancelMotion();});
-  new IntersectionObserver(entries=>{
-    const visible=entries[0]?.isIntersecting;
-    if(!visible){player.pause();return;}
-    const saveData=(navigator as Navigator&{connection?:{saveData?:boolean}}).connection?.saveData;
-    if(!autoConsumed&&!interacted&&!document.hidden&&!reduced.matches&&!saveData&&(!location.hash||location.hash==='#simulation')){autoConsumed=true;player.play();}
-  },{threshold:0}).observe(stage);
+  new IntersectionObserver(entries=>{if(!entries[0]?.isIntersecting)player.pause();},{threshold:0}).observe(stage);
   window.addEventListener('pagehide',event=>{
     if(event.persisted){player.pause();cancelMotion();return;}
     generation++;player.dispose();cancelMotion();
