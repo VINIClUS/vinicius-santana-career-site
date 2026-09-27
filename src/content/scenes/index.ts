@@ -12,7 +12,7 @@ function camera(value: { projection: string; position: number[]; target: number[
   if (value.projection !== 'orthographic' || !Object.values(value.frustum).every(Number.isFinite) || !Number.isFinite(value.zoom)) throw new Error('Invalid generated scene camera');
   return { projection: 'orthographic', position: vector(value.position), target: vector(value.target), up: vector(value.up), frustum: value.frustum, zoom: value.zoom };
 }
-function layout(value: { districtPositions: Record<DistrictId, number[]>; districtScale: number; hubPosition: number[]; rotations: Record<DistrictId, number[]>; labelPositions: Record<DistrictId, number[]>; regionOutlines: Record<DistrictId, number[][]>; terrainOutline: number[][]; interaction: OverviewLayout['interaction'] }, sceneCamera: SceneCamera): OverviewLayout {
+function layout(value: { districtPositions: Record<DistrictId, number[]>; districtScale: number; hubPosition: number[]; rotations: Record<DistrictId, number[]>; labelPositions: Record<DistrictId, number[]>; regionOutlines: Record<DistrictId, number[][]>; terrainOutline: number[][] }, sceneCamera: SceneCamera): OverviewLayout {
   return {
     placements: {
       cnesdata: vector(value.districtPositions.cnesdata),
@@ -24,7 +24,6 @@ function layout(value: { districtPositions: Record<DistrictId, number[]>; distri
     labelPositions: { cnesdata: vector(value.labelPositions.cnesdata), limnopulse: vector(value.labelPositions.limnopulse), infrastructure: vector(value.labelPositions.infrastructure), esusdata: vector(value.labelPositions.esusdata) },
     regionOutlines: { cnesdata: value.regionOutlines.cnesdata.map(vector), limnopulse: value.regionOutlines.limnopulse.map(vector), infrastructure: value.regionOutlines.infrastructure.map(vector), esusdata: value.regionOutlines.esusdata.map(vector) },
     terrainOutline: value.terrainOutline,
-    interaction: value.interaction,
     districtScale: value.districtScale,
     hubPosition: vector(value.hubPosition),
     camera: sceneCamera,

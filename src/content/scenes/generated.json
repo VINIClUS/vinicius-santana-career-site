@@ -816,12 +816,6 @@
             0
           ]
         },
-        "interaction": {
-          "horizontalDegrees": 10,
-          "verticalDegrees": 3,
-          "minZoom": 0.9,
-          "maxZoom": 1.1
-        },
         "districtScale": 0.86,
         "hubPosition": [
           0,
@@ -1731,12 +1725,6 @@
             0.08,
             0
           ]
-        },
-        "interaction": {
-          "horizontalDegrees": 5,
-          "verticalDegrees": 2.5,
-          "minZoom": 0.9,
-          "maxZoom": 1.05
         },
         "districtScale": 0.68,
         "hubPosition": [
