@@ -549,7 +549,9 @@ for (const [id, href] of Object.entries(districtDestinations)) {
     return offset;
   });
   assert.deepEqual(offsets, [...offsets].sort((left, right) => left - right), `${project.title} must preserve technology order`);
-  assert.ok(article.includes(`>Explore ${escapeHtmlText(project.title)}</a>`), `${id} must use the canonical CTA label`);
+  assert.ok(article.includes(`aria-label="${escapeHtmlText(project.title)} case study">Case study</a>`), `${id} must use the canonical CTA label`);
+  assert.ok(article.includes(`href="${project.evidence.find(entry => entry.label.endsWith('public repository')).url}"`), `${id} preview must link to its code`);
+  assert.ok(article.includes(`<p class="district-status">Built: ${escapeHtmlText(project.preview.built)}`), `${id} preview must state what is built`);
   const technologyOffset = article.indexOf(technologyList);
   assert.ok(
     (article.slice(0, technologyOffset).match(/<\/p>/g) || []).length === 2

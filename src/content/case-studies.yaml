@@ -11,6 +11,9 @@
       Built the edge-to-central path: Go extraction agent, manifest registration, central API and dashboard on shared generated contracts.
     decision: >-
       Generate contracts from source models and keep tenant context at the storage boundary, not only in application filters.
+  preview:
+    built: edge extraction, central API and dashboard
+    next: full processing path
   technologies:
     - Python
     - FastAPI
@@ -97,6 +100,9 @@
       Built tenant-scoped telemetry access, versioned alert rules, a replayable Go evaluator and separate email/Telegram delivery.
     decision: >-
       Treat durable domain state as the authority and queues as at-least-once transports, with a one-shot evaluator so replay stays observable.
+  preview:
+    built: telemetry API, alert rules and notifications
+    next: production device and broker layer
   technologies:
     - Python
     - FastAPI
@@ -196,6 +202,8 @@
       Wrote reusable Ansible roles, Packer image templates with validation, and e-SUS PEC bootstrap runbooks.
     decision: >-
       Separate generic infrastructure contracts from system-specific bootstraps and rebuild images through Packer instead of manual changes.
+  preview:
+    built: Ansible contracts and reproducible images
   technologies:
     - Ansible
     - Packer
@@ -273,6 +281,9 @@
       Built a bounded Rust acquisition plane, a reproducible C1 calculation, and Java/SQLite coordination for authorization and staged publication.
     decision: >-
       Keep the PEC immutable and stage technical results apart from publication, which needs both evidence and methodological approval.
+  preview:
+    built: PEC extract, C1 rule and authorized dashboard
+    next: approved C1 publication
   technologies:
     - Java 21
     - Spring Boot

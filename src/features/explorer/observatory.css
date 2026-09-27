@@ -71,28 +71,31 @@
 .district-panel-close { float: right; display: grid; place-items: center; width: 44px; height: 44px; margin: -10px -10px 8px 12px; border: 1px solid var(--line); border-radius: 999px; font-size: 1.6rem; line-height: 1; text-decoration: none; }
 .district-details h2 { font-size: 1.5rem; }
 .district-details .button { min-height: 44px; }
-.district-technologies { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 20px 0 28px; list-style: none; }
+.district-technologies { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 20px 0 16px; list-style: none; }
 .district-technologies li { padding: 6px 10px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted-strong); font-size: .85rem; }
+.district-selectors-title { display: none; }
+.observatory-map::after { content: ""; position: absolute; inset: 0; z-index: 1; border-radius: inherit; background: #050a11b8; opacity: 0; pointer-events: none; transition: opacity 160ms ease; }
+[data-observatory]:has(.district-details article[data-selected="true"]) .observatory-map::after,
+[data-observatory]:not([data-controller-ready]):has(.district-details article:target) .observatory-map::after { opacity: 1; }
+[data-observatory]:has(.district-details article[data-selected="true"]) .observatory-regions,
+[data-observatory]:not([data-controller-ready]):has(.district-details article:target) .observatory-regions { z-index: 2; }
+[data-observatory]:has(.district-details article[data-selected="true"]) .observatory-hub,
+[data-observatory]:not([data-controller-ready]):has(.district-details article:target) .observatory-hub { opacity: 0; }
+.district-status { margin: 0 0 20px; color: var(--muted-strong); font-size: .9rem; line-height: 1.5; }
+.district-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 @media (min-width: 701px) {
   [data-observatory]:has(.district-details article[data-selected="true"]) .district-selectors,
   [data-observatory]:not([data-controller-ready]):has(.district-details article:target) .district-selectors {
-    position: absolute; z-index: 4; inset: 12px calc(var(--district-panel-width) + 36px) 12px 12px;
-    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-content: space-around;
-    pointer-events: none;
+    position: absolute; z-index: 4; top: 12px; left: 12px; box-sizing: border-box; width: clamp(12rem, 18vw, 15rem);
+    display: flex; flex-direction: column; gap: 8px; padding: 16px;
+    border: 1px solid var(--line); border-radius: 12px; background: var(--surface); box-shadow: 16px 0 42px #000b;
   }
+  [data-observatory]:has(.district-details article[data-selected="true"]) .district-selectors-title,
+  [data-observatory]:not([data-controller-ready]):has(.district-details article:target) .district-selectors-title { display: block; margin-bottom: 4px; }
   [data-observatory]:has(.district-details article[data-selected="true"]) .district-link,
   [data-observatory]:not([data-controller-ready]):has(.district-details article:target) .district-link {
-    position: relative !important; left: auto !important; top: auto !important; width: min(188px, 100%);
-    transform: none !important; justify-self: center; pointer-events: auto;
+    position: static !important; box-sizing: border-box; width: 100%; transform: none !important; white-space: normal;
   }
-  [data-observatory]:has(.district-details article[data-selected="true"]) .district-link-cnesdata,
-  [data-observatory]:not([data-controller-ready]):has(.district-details article:target) .district-link-cnesdata { grid-column: 1; grid-row: 1; }
-  [data-observatory]:has(.district-details article[data-selected="true"]) .district-link-infrastructure,
-  [data-observatory]:not([data-controller-ready]):has(.district-details article:target) .district-link-infrastructure { grid-column: 2; grid-row: 1; }
-  [data-observatory]:has(.district-details article[data-selected="true"]) .district-link-limnopulse,
-  [data-observatory]:not([data-controller-ready]):has(.district-details article:target) .district-link-limnopulse { grid-column: 1; grid-row: 2; }
-  [data-observatory]:has(.district-details article[data-selected="true"]) .district-link-esusdata,
-  [data-observatory]:not([data-controller-ready]):has(.district-details article:target) .district-link-esusdata { grid-column: 2; grid-row: 2; }
 }
 @media (min-width: 701px) and (max-width: 900px) {
   .district-link-infrastructure { width: 178px; white-space: normal; }

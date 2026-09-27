@@ -20,7 +20,7 @@ test('project panel selection, replacement, closing and history stay coherent', 
   await expect(panel(page, 'cnesdata')).toBeVisible();
   await expect(link(page, 'cnesdata')).toBeFocused();
 
-  await panel(page, 'cnesdata').getByRole('link', { name: 'Explore CnesData' }).focus();
+  await panel(page, 'cnesdata').getByRole('link', { name: 'CnesData case study' }).focus();
   await page.goBack();
   await expect(panel(page, 'cnesdata')).toBeHidden();
   await expect(link(page, 'cnesdata')).toBeFocused();
@@ -31,7 +31,7 @@ test('project panel selection, replacement, closing and history stay coherent', 
   await expect(page).toHaveURL(/#district-limnopulse$/);
   await expect(panel(page, 'cnesdata')).toBeHidden();
   await expect(panel(page, 'limnopulse')).toBeVisible();
-  await panel(page, 'limnopulse').getByRole('link', { name: 'Explore Limnopulse' }).focus();
+  await panel(page, 'limnopulse').getByRole('link', { name: 'Limnopulse case study' }).focus();
   await page.goBack();
   await expect(panel(page, 'cnesdata')).toBeVisible();
   await expect(link(page, 'cnesdata')).toBeFocused();
@@ -156,7 +156,7 @@ test('direct and invalid fragments synchronize only the four project panels', as
     await expect(panel(page, id)).toBeVisible();
     await expect(link(page, id)).toHaveAttribute('aria-current', 'true');
     await expect(link(page, id)).toHaveAttribute('aria-expanded', 'true');
-    await expect(panel(page, id).getByRole('link', { name: /^Explore/ })).toHaveAttribute('href', `/explore/${id}/`);
+    await expect(panel(page, id).getByRole('link', { name: / case study$/ })).toHaveAttribute('href', `/explore/${id}/`);
   }
   for (const id of ['unknown', 'public-health', 'observability']) {
     await page.goto(`/explore/#district-${id}`);
@@ -188,8 +188,8 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     else expect(Number.parseFloat(geometry.width)).toBeGreaterThanOrEqual(320);
     expect(geometry.overflowY).toBe('auto');
     expect(geometry.transitionDuration.split(',').every(value => value.trim() === '0s')).toBe(true);
-    await panel(page, 'infrastructure').getByRole('link', { name: /^Explore/ }).scrollIntoViewIfNeeded();
-    await expect(panel(page, 'infrastructure').getByRole('link', { name: /^Explore/ })).toBeVisible();
+    await panel(page, 'infrastructure').getByRole('link', { name: / case study$/ }).scrollIntoViewIfNeeded();
+    await expect(panel(page, 'infrastructure').getByRole('link', { name: / case study$/ })).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     expect(models).toEqual([]);
     await context.close();
@@ -205,7 +205,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       await expect(panel(page, id)).toHaveCSS('pointer-events', 'auto');
       await expect(page.locator(`.observatory-regions:visible [data-region="${id}"] .region-selection`)).toHaveCSS('opacity', '1');
       await expect(panel(page, id).locator('li')).toHaveCount(4);
-      await expect(panel(page, id).getByRole('link', { name: /^Explore/ })).toHaveAttribute('href', `/explore/${id}/`);
+      await expect(panel(page, id).getByRole('link', { name: / case study$/ })).toHaveAttribute('href', `/explore/${id}/`);
       await panel(page, id).getByRole('link', { name: /Close/ }).focus();
       await page.keyboard.press('Enter');
       await expect(page).toHaveURL(/\/explore\/$/);
@@ -237,3 +237,21 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     await context.close();
   });
 }
+test('an open preview turns the map labels into a projects list and states what is built', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/explore/');
+  await expect(page.locator('.district-selectors-title')).toBeHidden();
+
+  await link(page, 'cnesdata').click();
+  await expect(panel(page, 'cnesdata')).toBeVisible();
+  await expect(page.locator('.district-selectors-title')).toBeVisible();
+  const boxes = await Promise.all(projects.map(id => link(page, id).boundingBox()));
+  const xs = boxes.map(box => Math.round(box!.x));
+  expect(new Set(xs).size).toBe(1);
+  const ys = [...boxes.map(box => box!.y)].sort((left, right) => left - right);
+  for (let index = 1; index < ys.length; index += 1) expect(ys[index]).toBeGreaterThan(ys[index - 1]);
+
+  await expect(panel(page, 'cnesdata').locator('.district-status')).toHaveText('Built: edge extraction, central API and dashboard · Next: full processing path');
+  await expect(panel(page, 'cnesdata').getByRole('link', { name: 'CnesData code on GitHub' })).toHaveAttribute('href', 'https://github.com/VINIClUS/CnesData');
+  await expect(panel(page, 'cnesdata').getByRole('link', { name: 'CnesData case study' })).toHaveAttribute('href', '/explore/cnesdata/');
+});
