@@ -88,10 +88,11 @@ test('CnesData recipient renders counts from the response pinned before candidat
   await expect(control(page, 'recipient-message')).toHaveText('0 records compared · 0 different · 0 equal. Every row belongs to v-demo-00.');
 });
 
-test('autoplay stays silent until completion while manual actions announce', async ({ page }) => {
+test('guided playback stays silent until completion while manual actions announce', async ({ page }) => {
   await page.clock.install();
   await ready(page);
   const announcement = control(page, 'announcement');
+  await control(page, 'play').click();
   await expect(stage(page)).toHaveAttribute('data-playing', 'true');
   await expect(announcement).toHaveText('');
 
@@ -238,19 +239,17 @@ test('manual Telegram provider result focuses Telegram and reports the applied c
   await noMotion(page);
 });
 
-for (const reason of ['reduced-motion', 'save-data', 'technical-fragment']) {
-  test(`${reason} suppresses autoplay even when the stage becomes visible`, async ({ page }) => {
-    if (reason === 'reduced-motion') await page.emulateMedia({ reducedMotion: 'reduce' });
-    if (reason === 'save-data') await page.addInitScript(() => Object.defineProperty(navigator, 'connection', { configurable: true, value: { saveData: true } }));
-    await ready(page, 'limnopulse', reason === 'technical-fragment' ? '#component-mqtt' : '#simulation');
-    await page.waitForTimeout(1000);
-    await noMotion(page);
-    await expect(control(page, 'progress')).toContainText('operation 1 /');
-  });
-}
-
-test('leaving the viewport pauses autoplay and returning does not resume it', async ({ page }) => {
+test('the stage starts paused and never plays on its own when it becomes visible', async ({ page }) => {
   await ready(page);
+  await page.waitForTimeout(1000);
+  await noMotion(page);
+  await expect(control(page, 'play')).toHaveText('Play');
+  await expect(control(page, 'progress')).toContainText('operation 1 /');
+});
+
+test('leaving the viewport pauses playback and returning does not resume it', async ({ page }) => {
+  await ready(page);
+  await control(page, 'play').click();
   await expect(stage(page)).toHaveAttribute('data-playing', 'true');
   await page.evaluate(() => scrollTo(0, document.body.scrollHeight));
   await expect(stage(page)).toHaveAttribute('data-playing', 'false');
@@ -263,6 +262,7 @@ test('leaving the viewport pauses autoplay and returning does not resume it', as
 
 test('visibilitychange pauses presentation and becoming visible does not resume', async ({ page }) => {
   await ready(page);
+  await control(page, 'play').click();
   await expect(stage(page)).toHaveAttribute('data-playing', 'true');
   await page.evaluate(() => {
     Object.defineProperty(document, 'hidden', { configurable: true, value: true });
@@ -281,6 +281,7 @@ test('visibilitychange pauses presentation and becoming visible does not resume'
 
 test('persisted pagehide keeps the paused player usable after pageshow while real unload disposes it', async ({ page }) => {
   await ready(page);
+  await control(page, 'play').click();
   await expect(stage(page)).toHaveAttribute('data-playing', 'true');
   await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent('pagehide', { persisted: true })));
   await noMotion(page);

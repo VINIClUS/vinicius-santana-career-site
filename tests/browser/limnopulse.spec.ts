@@ -24,7 +24,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       await expect(page.locator('a[href="/work/limnopulse/"]')).toHaveCount(0);
       await expect(page.locator('canvas, [data-simulation]')).toHaveCount(0);
       await expect(page.locator('#simulation[data-lifecycle]')).toHaveCount(1);
-      for (const id of ['overview', 'system', 'engineering', 'results', 'evidence', 'limitations']) {
+      for (const id of ['overview', 'engineering', 'results', 'evidence', 'simulation', 'limitations', 'system']) {
         await page.locator(`a[href="#${id}"]`).first().click();
         await expect(page).toHaveURL(new RegExp(`#${id}$`));
         await expect(page.locator(`#${id}`)).toBeVisible();
@@ -51,9 +51,9 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       await expect(systemView.locator('.component-status')).toHaveCount(0);
       await expect(page.locator('#component-cloud-infrastructure')).toContainText('Sends to');
       await expect(page.locator('#component-production-device-layer')).toContainText('Sends to');
-      await expect(page.locator('#engineering .eyebrow')).toHaveText('03 / Technical choices');
-      await expect(page.locator('#results .eyebrow')).toHaveText('04 / Outcomes');
-      await expect(page.locator('#evidence .eyebrow')).toHaveText('05 / Public record');
+      await expect(page.locator('#engineering .eyebrow')).toHaveText('02 / Technical choices');
+      await expect(page.locator('#results .eyebrow')).toHaveText('03 / Current state');
+      await expect(page.locator('#evidence .eyebrow')).toHaveText('04 / Public record');
       const evidence = page.locator('#evidence a[href^="https://github.com/VINIClUS/limnopulse"]');
       await expect(evidence).toHaveCount(5);
       await evidence.last().scrollIntoViewIfNeeded();

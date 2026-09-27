@@ -21,6 +21,12 @@ const evidenceItem = z.object({
   description: nonEmptyText
 });
 
+const decisionItem = z.object({
+  problem: nonEmptyText,
+  decision: nonEmptyText,
+  evidenceUrl: publicEvidenceUrl.optional()
+});
+
 const previewItem = z.object({
   built: nonEmptyText,
   next: nonEmptyText.optional()
@@ -42,7 +48,7 @@ const caseStudies = defineCollection({
     context: nonEmptyText,
     contribution: z.array(nonEmptyText).min(1),
     architecture: z.array(architectureItem).min(1),
-    decisions: z.array(nonEmptyText).min(1),
+    decisions: z.array(decisionItem).length(3),
     reliability: z.array(nonEmptyText).min(1),
     outcomes: z.array(nonEmptyText).min(1),
     limitations: z.array(nonEmptyText).min(1),

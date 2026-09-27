@@ -17,11 +17,11 @@ const statusLabels = {
   implemented: 'Implemented', documented: 'Documented', planned: 'Planned',
   historical: 'Historical', illustrative: 'Illustrative'
 } as const;
-const sections = [{ id: 'simulation', label: 'Lifecycle' }, { id: 'overview', label: 'Context & contribution' }, { id: 'system', label: 'System View' }, { id: 'engineering', label: 'Engineering' }, { id: 'results', label: 'Results' }, { id: 'evidence', label: 'Evidence' }, { id: 'limitations', label: 'Limitations' }];
+const sections = [{ id: 'overview', label: 'Context & contribution' }, { id: 'engineering', label: 'Engineering' }, { id: 'results', label: 'Current state' }, { id: 'evidence', label: 'Evidence' }, { id: 'simulation', label: 'Lifecycle' }, { id: 'limitations', label: 'Limitations & details' }, { id: 'system', label: 'System View' }];
 const repositories = caseStudy.evidence.filter(isPublicRepository);
-const engineeringChapter = 3;
-const resultsChapter = engineeringChapter + 1;
-const evidenceChapter = resultsChapter + 1;
+const statusGroups = (['implemented', 'documented', 'planned', 'illustrative', 'historical'] as const)
+  .map(status => ({ status, items: caseStudy.architecture.filter(item => item.status === status) }))
+  .filter(group => group.items.length > 0);
 ---
 
 <EditorialLayout title={`${caseStudy.title} — Vinicius Santana`} description={caseStudy.summary} canonicalPath={canonicalPath} currentPath={canonicalPath} observatory>
@@ -59,7 +59,6 @@ const evidenceChapter = resultsChapter + 1;
       {sections.map(section => <a href={`#${section.id}`}>{section.label}</a>)}
     </nav>
 
-    <Lifecycle project={presentation.id} />
     <div class="case-body">
       <section id="overview" tabindex="-1" class="chapter" aria-labelledby="overview-heading">
         <div class="chapter-heading"><p class="eyebrow">01 / Context</p><h2 id="overview-heading">Context & contribution</h2></div>
@@ -69,36 +68,59 @@ const evidenceChapter = resultsChapter + 1;
         </div>
       </section>
 
-      <section id="system" tabindex="-1" class="chapter" aria-labelledby="system-title">
-        <div class="chapter-heading"><p class="eyebrow">02 / System boundaries</p><h2 id="system-title">{presentation.systemHeading}</h2></div>
-        <div class="chapter-content"><details class="explorer-technical-disclosure" data-component-disclosure><summary>Architecture and component details</summary><slot name="system-view" /></details></div>
-      </section>
-
       <section id="engineering" tabindex="-1" class="chapter" aria-labelledby="engineering-heading">
-        <div class="chapter-heading"><p class="eyebrow">{String(engineeringChapter).padStart(2, '0')} / Technical choices</p><h2 id="engineering-heading">Engineering</h2></div>
-        <div class="chapter-content overview-grid">
-          <div><h3 id="decisions-heading">Decisions</h3><ul class="detail-list">{caseStudy.decisions.map(item => <li>{item}</li>)}</ul></div>
-          <div><h3 id="reliability-heading">Reliability</h3><ul class="detail-list">{caseStudy.reliability.map(item => <li>{item}</li>)}</ul></div>
+        <div class="chapter-heading"><p class="eyebrow">02 / Technical choices</p><h2 id="engineering-heading">Engineering decisions</h2></div>
+        <div class="chapter-content decision-grid">
+          {caseStudy.decisions.map((item, index) => <article class="decision-card">
+            <h3>Problem</h3><p>{item.problem}</p>
+            <h3>Decision</h3><p>{item.decision}</p>
+            {item.evidenceUrl && <ExternalLink class="decision-link" href={item.evidenceUrl} ariaLabel={`Open the code behind decision ${index + 1} in a new tab`} data-journey="evidence_click" data-journey-location="case_study_decision" data-journey-project={caseStudy.id} data-journey-evidence={`Decision ${index + 1}`}>See in the code ↗</ExternalLink>}
+          </article>)}
         </div>
       </section>
 
       <section id="results" tabindex="-1" class="chapter" aria-labelledby="results-heading">
-        <div class="chapter-heading"><p class="eyebrow">{String(resultsChapter).padStart(2, '0')} / Outcomes</p><h2 id="results-heading">Results</h2></div>
+        <div class="chapter-heading"><p class="eyebrow">03 / Current state</p><h2 id="results-heading">Current state</h2></div>
         <div class="chapter-content">
           <h3 id="outcomes-heading">Outcomes</h3><ul class="detail-list">{caseStudy.outcomes.map(item => <li>{item}</li>)}</ul>
+          <div class="status-groups">
+            {statusGroups.map(group => <div class="status-group">
+              <span class={`status status-${group.status}`}>{statusLabels[group.status]}</span>
+              <ul class="detail-list">{group.items.map(item => <li>{item.title}</li>)}</ul>
+            </div>)}
+          </div>
         </div>
       </section>
+
       <section id="evidence" tabindex="-1" class="chapter" aria-labelledby="evidence-section-heading">
-        <div class="chapter-heading"><p class="eyebrow">{String(evidenceChapter).padStart(2, '0')} / Public record</p><h2 id="evidence-section-heading">Evidence & limitations</h2></div>
+        <div class="chapter-heading"><p class="eyebrow">04 / Public record</p><h2 id="evidence-section-heading">Public evidence</h2></div>
         <div class="chapter-content">
-          <div id="limitations" class="limitations" tabindex="-1"><h3 id="limitations-heading">{presentation.id === 'infrastructure' ? <span id="limits-title">Limitations</span> : 'Limitations'}</h3><ul class="detail-list">{caseStudy.limitations.map(item => <li>{item}</li>)}</ul></div>
-          <h3 id="evidence-heading">Public evidence</h3>
           <div class="evidence-grid">
             {caseStudy.evidence.map(item => <article class="evidence-card">
               <span class={`status status-${item.status}`}>{statusLabels[item.status]}</span>
-              <h4>{item.label}</h4><p>{item.description}</p>
+              <h3>{item.label}</h3><p>{item.description}</p>
               <ExternalLink class="evidence-link" href={item.url} ariaLabel={`Open ${item.label} in a new tab`} data-journey="evidence_click" data-journey-location="case_study_evidence" data-journey-project={caseStudy.id} data-journey-evidence={item.label}>Open public evidence ↗</ExternalLink>
             </article>)}
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="simulation-intro">
+      <p class="eyebrow">05 / Optional walkthrough</p>
+      <p>A paused, synthetic lifecycle of the system. Press Play or step through the chapters to explore states, failures and limits.</p>
+    </div>
+    <Lifecycle project={presentation.id} />
+
+    <div class="case-body">
+      <section id="limitations" tabindex="-1" class="chapter" aria-labelledby="limitations-heading">
+        <div class="chapter-heading"><p class="eyebrow">06 / Limits & details</p><h2 id="limitations-heading">{presentation.id === 'infrastructure' ? <span id="limits-title">Limitations & details</span> : 'Limitations & details'}</h2></div>
+        <div class="chapter-content">
+          <div class="limitations"><h3>Limitations</h3><ul class="detail-list">{caseStudy.limitations.map(item => <li>{item}</li>)}</ul></div>
+          <h3 id="reliability-heading">Reliability</h3><ul class="detail-list">{caseStudy.reliability.map(item => <li>{item}</li>)}</ul>
+          <div id="system" tabindex="-1" class="system-details" aria-labelledby="system-title">
+            <h3 id="system-title">{presentation.systemHeading}</h3>
+            <details class="explorer-technical-disclosure" data-component-disclosure><summary>Architecture and component details</summary><slot name="system-view" /></details>
           </div>
         </div>
       </section>
@@ -114,7 +136,7 @@ const evidenceChapter = resultsChapter + 1;
   .limitations { margin-bottom: 32px; }
   .case-study { padding-bottom: 36px; }
   .case-nav { display: flex; justify-content: space-between; gap: 16px; padding-block: 24px; font-size: .8rem; color: var(--muted-strong); }
-  .back-link, .evidence-link { color: var(--accent); }
+  .back-link, .evidence-link, .decision-link { color: var(--accent); }
   .case-hero { padding-block: 22px 30px; max-width: 920px; }
   .case-hero h1 { font-size: clamp(2.4rem, 5.3vw, 4.7rem); margin-bottom: 18px; line-height: 1.08; }
   .summary { max-width: 780px; color: var(--muted-strong); font-size: clamp(1.05rem, 1.6vw, 1.2rem); line-height: 1.65; }
@@ -134,9 +156,17 @@ const evidenceChapter = resultsChapter + 1;
   .case-study :global([id]) { scroll-margin-top: calc(var(--header-height) + 28px); }
   .chapter h2 { font-size: clamp(1.6rem, 2.2vw, 2rem); }
   .chapter h3 { font-size: 1rem; letter-spacing: -.015em; }
-  .chapter h4 { font-size: .95rem; }
   .chapter p, .detail-list li { color: var(--muted-strong); font-size: .88rem; line-height: 1.75; }
   .chapter .eyebrow { font-size: .66rem; color: var(--accent); }
+  .decision-grid { display: grid; gap: 12px; }
+  .decision-card { display: flex; flex-direction: column; padding: 20px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-soft); }
+  .decision-card h3 { margin-block: 0 4px; color: var(--accent); font-size: .66rem; letter-spacing: .06em; text-transform: uppercase; }
+  .decision-card p { margin-top: 0; }
+  .status-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; margin-top: 32px; }
+  .status-group .detail-list { margin-top: 14px; }
+  .simulation-intro { max-width: 780px; padding-top: 48px; }
+  .simulation-intro p:last-child { color: var(--muted-strong); font-size: .88rem; line-height: 1.75; }
+  .system-details { margin-top: 32px; }
   .overview-grid, .evidence-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
   .evidence-card { padding: 20px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-soft); }
   .status { display: inline-flex; width: fit-content; flex: 0 0 auto; padding: 5px 7px; border: 1px solid var(--line-strong); border-radius: 4px; color: var(--accent); background: rgba(132,244,230,.06); font-size: .6rem; font-weight: 700; letter-spacing: .06em; line-height: 1; text-transform: uppercase; }
@@ -148,8 +178,8 @@ const evidenceChapter = resultsChapter + 1;
   .limitations { padding-left: 20px; border-left: 2px solid rgba(232,201,144,.35); }
   .evidence-grid { gap: 12px; }
   .evidence-card { display: flex; align-items: flex-start; flex-direction: column; }
-  .evidence-card h4 { margin-block: 14px 0; }
-  .evidence-link { margin-top: auto; font-size: .8rem; }
+  .evidence-card h3 { margin-block: 14px 0; }
+  .evidence-link, .decision-link { margin-top: auto; font-size: .8rem; }
   .case-footer { display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between; padding-block: 32px; font-size: .85rem; }
   @media (max-width: 900px) { .chapter { grid-template-columns: 1fr; gap: 18px; } }
   @media (max-width: 600px) {

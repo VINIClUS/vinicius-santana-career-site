@@ -62,14 +62,20 @@
       status: planned
       description: Kubernetes is a target deployment shape rather than a published production claim.
   decisions:
-    - Use generated contracts to reduce drift between services instead of allowing each application to define payloads independently.
-    - Register a manifest for a complete extraction so file membership and storage references remain explicit.
-    - Preserve tenant context at the storage boundary rather than relying only on application-level filtering.
-    - Keep audit-rule execution outside this repository and expose stable data contracts for downstream consumers.
+    - problem: "Hand-written JSON Schema and OpenAPI contracts drift from the Pydantic models that actually define the data."
+      decision: "Generate the JSON Schema and OpenAPI contracts from the shared Pydantic models instead of maintaining them by hand."
+      evidenceUrl: https://github.com/VINIClUS/CnesData/blob/main/scripts/gen_contracts.py
+    - problem: "Multi-source ingestion must distinguish a complete extraction from a partial or inconsistent set of uploaded files."
+      decision: "Give every file a raw manifest (source, competência, snapshot mode, SHA-256) and register the full set as one extraction unit."
+      evidenceUrl: https://github.com/VINIClUS/CnesData/blob/main/docs/contracts/schemas/raw_manifest.json
+    - problem: "A shared multi-tenant database cannot depend on every query remembering to filter by tenant."
+      decision: "Set the tenant as a transaction-local PostgreSQL setting and enforce it with row-level security policies."
+      evidenceUrl: https://github.com/VINIClUS/CnesData/blob/main/packages/cnes_infra/src/cnes_infra/storage/rls.py
   reliability:
     - Contract and OpenAPI artifacts can be regenerated from source models and checked for drift.
     - Landing work has explicit states and ownership boundaries so incomplete processing is visible.
     - Local development composes the API, object storage, identity provider, database, agent, and dashboard without implying production deployment.
+    - Keep audit-rule execution outside this repository and expose stable data contracts for downstream consumers.
   outcomes:
     - The public implementation provides a coherent path from edge extraction to tenant-scoped landing records.
     - Shared contracts make incomplete and planned portions visible instead of hiding them behind broad platform claims.
@@ -151,14 +157,20 @@
       status: planned
       description: A hardened broker, device credentials, fleet operations, and production sensor hardware remain outside the verified implementation.
   decisions:
-    - Authorize telemetry through the API so clients never receive direct time-series database access.
-    - Keep the evaluator one-shot so retries, backfill, and scheduling remain observable operational concerns.
-    - Use durable domain state as the authority while treating queues as at-least-once transports.
-    - Separate Telegram and email delivery contracts to avoid leaking channel-specific identity into shared jobs.
+    - problem: "A long-lived evaluator carries idle overhead and failure state from one check cycle into the next."
+      decision: "Run the alert evaluator as a one-shot process per cycle and leave scheduling, retries and backfill to an external scheduler."
+      evidenceUrl: https://github.com/VINIClUS/limnopulse/blob/main/docs/architecture.md
+    - problem: "Asynchronous consumers need durable backpressure and retry isolation without reimplementing an event bus."
+      decision: "Treat SQS with dead-letter queues as the durable work boundary and keep domain state correct under at-least-once, out-of-order delivery."
+      evidenceUrl: https://github.com/VINIClUS/limnopulse/blob/main/docs/adr/ADR-016-eventbridge-is-selective-sqs-is-durable.md
+    - problem: "Telegram and email have different limits, credentials and failure modes; a shared path lets one channel degrade the other."
+      decision: "Give Telegram its own queue, dead-letter queue, worker and least-privilege IAM policy, isolated from email delivery."
+      evidenceUrl: https://github.com/VINIClUS/limnopulse/blob/main/tests/unit/test_phase3cb_telegram_boundaries.py
   reliability:
     - Optimistic versions and idempotency keys make conflicting rule changes and replacement replays explicit.
     - Durable outboxes connect alert transitions to notification work without treating queue delivery as authoritative state.
     - Local fakes and emulators exercise integration boundaries without being represented as hosted services.
+    - Telemetry is authorized through the API, so clients never receive direct time-series database access.
   outcomes:
     - The implementation connects authorized readings, configurable rules, durable incidents, and delivery workers through explicit tenant boundaries.
     - Channel isolation and replay-oriented operations make failure modes inspectable in code and documentation.
@@ -239,14 +251,20 @@
       status: illustrative
       description: The relationship among automation control, image building, target systems, monitoring, and backup is deliberately generalized.
   decisions:
-    - Separate generic infrastructure contracts from system-specific bootstraps so each lifecycle can evolve independently.
-    - Rebuild immutable templates through Packer instead of depending on undocumented manual image changes.
-    - Pair operational scripts with validation and runbook updates so maintenance knowledge stays near the automation.
-    - Publish examples and interfaces while keeping all environment-specific configuration outside the portfolio content.
+    - problem: "Generic server operations and system-specific bootstraps change at different rates and couple unrelated work when kept together."
+      decision: "Scope infra-ansible to reusable Ansible code; inventory, secrets, image builds and each bootstrap live in their own repositories, consumed by pinned ref."
+      evidenceUrl: https://github.com/VINIClUS/infra-ansible/blob/main/docs/architecture.md
+    - problem: "Hand-edited VM templates make it hard to know what changed between images or to reproduce one exactly."
+      decision: "Define templates as code and rebuild them: Packer HCL2 for Windows, versioned import scripts from official cloud images for Linux."
+      evidenceUrl: https://github.com/VINIClUS/packer-proxmox-templates/blob/main/README.md
+    - problem: "An operational script without a runbook or example configuration becomes unclear about what it changes and what it depends on."
+      decision: "Ship each operational script with a paired runbook and example configuration, and statically check that all three are present."
+      evidenceUrl: https://github.com/VINIClUS/esus-pec-bootstrap/blob/main/tests/Validate-EsusPecWalGBackupsDocs.ps1
   reliability:
     - Static validation, syntax checks, and preflight scripts provide cheap feedback before infrastructure code reaches a target.
     - Runbooks cover prerequisites, verification, rollback, and evidence expectations for operational changes.
     - Backup and monitoring concerns are represented as reusable contracts without exposing live destinations or endpoints.
+    - Examples and interfaces are published while all environment-specific configuration stays outside the portfolio content.
   outcomes:
     - The public repositories demonstrate repeatable infrastructure practices across configuration, image, and application-operation layers.
     - Explicit repository boundaries reduce duplication and make ownership of automation and documentation clearer.
@@ -331,14 +349,20 @@
       status: implemented
       description: The local web client requests scoped results through the service; municipal grants constrain aggregate result access.
   decisions:
-    - Keep the PEC immutable and isolate database access in a bounded execution plane rather than handing the dashboard source credentials.
-    - Preserve a checked extract and manifest so the same input can be recalculated without a live PEC connection.
-    - Stage technical results separately from publication and require both evidence and methodological approval.
-    - Recheck municipal grants when serving results, including after a grant is revoked.
+    - problem: "A live PEC read can hang or misbehave inside the process that owns the job queue and calculation."
+      decision: "Run live acquisition in an ephemeral Rust child process per job, with its own fault and resource boundary, while Java keeps the queue and calculation."
+      evidenceUrl: https://github.com/VINIClUS/esusdata/blob/c879dff09adc41d8c2d8f0baa472fa3c0bba0489/docs/adr/0010-plano-de-execucao-fora-do-processo.md
+    - problem: "Recomputing or verifying a past result would otherwise require reconnecting to a PEC that may be unreachable or changed."
+      decision: "Treat a finalized extract and its checksummed manifest as a self-contained input, and reject anything with a missing or mismatched manifest."
+      evidenceUrl: https://github.com/VINIClUS/esusdata/blob/c879dff09adc41d8c2d8f0baa472fa3c0bba0489/apps/agent/src/main/java/esusdata/run/extract/ExtractReader.java
+    - problem: "Access can be revoked after the first authorization check of a job but before acquisition or publication runs."
+      decision: "Revalidate the grant of the requesting user before acquisition and again before publication, so a revoked account stops the next step without erasing history."
+      evidenceUrl: https://github.com/VINIClUS/esusdata/blob/c879dff09adc41d8c2d8f0baa472fa3c0bba0489/apps/agent/src/main/java/esusdata/auth/GrantRevalidator.java
   reliability:
     - Source compatibility and read budgets fail closed before an unbounded or mismatched acquisition can become a result.
     - Extract validation and checksums protect the calculation from partial or modified local files.
     - Local tests and documented PEC-version checks exercise acquisition and recomputation; they do not substitute for methodological sign-off.
+    - Technical results are staged separately from publication, which requires both evidence and methodological approval.
   outcomes:
     - The public code connects source diagnosis, bounded acquisition, verifiable local extracts, indicator calculation, and scoped result access.
     - The illustrative 3 scheduled and 2 walk-in encounters yield 60% / Ótimo only in a hypothetical target flow with all gates completed.

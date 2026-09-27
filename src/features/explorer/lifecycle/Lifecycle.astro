@@ -21,7 +21,7 @@ const first = scenario?.checkpoints[0];
 const beat = first?.plan.microbeats[0];
 ---
 {scenario && <section id="simulation" class="lifecycle" data-lifecycle data-project={project} aria-label="System lifecycle">
-  <div class="lifecycle-topline"><span class="eyebrow">Systems Atlas / Lifecycle</span><span class="lifecycle-evidence">Synthetic · {project === 'cnesdata' ? 'documented / planned target' : project === 'esusdata' ? 'hypothetical approved target; real C1 blocked' : 'illustrative'}</span></div>
+  <div class="lifecycle-topline"><span class="eyebrow">Systems Atlas / Lifecycle</span><span class="lifecycle-evidence">Synthetic · {project === 'cnesdata' ? 'documented / planned target' : project === 'esusdata' ? 'hypothetical approved target' : 'illustrative'}</span></div>
   <header class="lifecycle-heading">
     <p data-stage-number>01 / 06</p>
     <h2 data-life-title>{first!.plan.headline}</h2>
@@ -61,7 +61,7 @@ const beat = first?.plan.microbeats[0];
     <p>Calculated from the engine during the build. Available without JavaScript.</p>
     {transcripts.map(transcript => <section><h3>{transcript.title}</h3><ol>{transcript.frames.map(frame => <li><h4>{frame.title}</h4><p>{frame.caption}</p><p>{frame.outcome}</p>{frame.samples&&<div class="life-samples"><h4>{frame.samples.title}</h4><table><thead><tr>{frame.samples.columns.map(column=><th scope="col">{column}</th>)}</tr></thead><tbody>{frame.samples.rows.map(row=><tr>{row.map(value=><td>{value}</td>)}</tr>)}</tbody></table><p>{frame.samples.provenance}</p></div>}</li>)}</ol></section>)}
   </details>
-  {project === 'esusdata' && <details class="life-transcripts"><summary>Read the four publication blockers</summary><ul><li>A read budget below six rows stops acquisition.</li><li>An invalid extract cannot reach calculation.</li><li>A revoked municipal grant blocks publication and result reads.</li><li>Incomplete methodology gates A, B, D and E block real C1 publication, even when a technical candidate exists.</li></ul></details>}
+  {project === 'esusdata' && <details class="life-transcripts"><summary>Read the three publication blockers</summary><ul><li>A read budget below six rows stops acquisition.</li><li>An invalid extract cannot reach calculation.</li><li>A revoked municipal grant blocks publication and result reads.</li></ul></details>}
   <details class="life-technical"><summary>Current state and operation</summary><pre data-life-technical>{JSON.stringify(first!.command,null,2)}</pre></details>
   <p class="visually-hidden" aria-live="polite" data-life-announcement></p>
   <script type="application/json" data-life-data set:html={JSON.stringify(tours).replaceAll('<','\\u003c')} />
