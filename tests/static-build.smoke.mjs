@@ -532,6 +532,17 @@ for (const [id, href] of Object.entries(districtDestinations)) {
   );
 }
 assert.equal([...overview.matchAll(/data-district-link=/g)].length, 4);
+const projectCards = [...overview.matchAll(/<article class="project-card project-card-([a-z]+)"[\s\S]*?<\/article>/g)];
+assert.deepEqual(projectCards.map(match => match[1]), ['cnesdata', 'esusdata', 'infrastructure', 'limnopulse'], 'overview renders direct project cards in order');
+for (const [card, id] of projectCards) {
+  const project = explorerProjects.find(entry => entry.id === id);
+  assert.ok(card.includes(escapeHtmlText(project.currentStatus)), `${id} card shows its current status`);
+  assert.ok(card.includes(`href="${escapeHtmlText(project.evidence[0].url)}"`), `${id} card links its public proof`);
+  assert.match(card, new RegExp(`href="/explore/${id}/"`), `${id} card links its project page`);
+  const stack = card.match(/<ul class="project-card-stack"[^>]*>[\s\S]*?<\/ul>/)?.[0];
+  assert.ok(stack, `${id} card lists its stack`);
+  assert.equal((stack.match(/<li>/g) || []).length, Math.min(5, project.technologies.length), `${id} card lists at most five stack tags`);
+}
 assert.doesNotMatch(overview, /district-(?:public-health|observability)|atlas-context/, 'retired districts must be absent without compatibility redirects');
 assert.doesNotMatch(overview, /href="#district-hub"|data-district-(?:link|detail)="hub"/);
 assert.doesNotMatch(overview, /<canvas|<astro-island|\.(glb|gltf|ktx2)["']/i);

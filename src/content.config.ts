@@ -28,6 +28,7 @@ const caseStudies = defineCollection({
     title: nonEmptyText,
     eyebrow: nonEmptyText,
     summary: nonEmptyText,
+    currentStatus: nonEmptyText,
     technologies: z.array(nonEmptyText).min(1),
     problem: nonEmptyText,
     context: nonEmptyText,

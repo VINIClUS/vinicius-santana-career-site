@@ -4,6 +4,8 @@
   eyebrow: Distributed health-data platform
   summary: >-
     A contract-led platform for moving municipal source extracts from edge environments into a tenant-isolated central data layer.
+  currentStatus: >-
+    Edge extraction, central API, tenant isolation and dashboard are implemented; Parquet-to-Gold processing and Kubernetes deployment remain planned.
   technologies:
     - Python
     - FastAPI
@@ -83,6 +85,8 @@
   eyebrow: Tenant-scoped telemetry and alerting
   summary: >-
     An API and evaluation runtime for authorized telemetry reads, alert rules, durable incidents, and notification delivery.
+  currentStatus: >-
+    API, evaluator and notification workers are implemented with a local MQTT scaffold; the cloud path is documented as OpenTofu and the production device layer remains planned.
   technologies:
     - Python
     - FastAPI
@@ -175,6 +179,8 @@
   eyebrow: Reusable automation and operational contracts
   summary: >-
     Public infrastructure work that separates reusable automation, image-building, and system runbooks from private runtime configuration.
+  currentStatus: >-
+    Reusable Ansible roles, Packer templates and runbooks are public; the topology is illustrative, with no live environment state published.
   technologies:
     - Ansible
     - Packer
@@ -245,6 +251,8 @@
   eyebrow: Observatório APS · local primary-care observatory
   summary: >-
     A local, read-only path from e-SUS PEC acquisition to verifiable extracts and versioned primary-care indicators, with publication controlled by evidence and methodology.
+  currentStatus: >-
+    The local acquisition-to-result path is implemented and tested against documented PEC versions; real C1 publication is blocked pending methodological validation.
   technologies:
     - Java 21
     - Spring Boot

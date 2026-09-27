@@ -214,3 +214,26 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     await context.close();
   });
 }
+
+for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+  test(`direct project cards are reachable without the map at ${viewport.width}px`, async ({ browser, baseURL }) => {
+    const context = await browser.newContext({ baseURL, viewport });
+    const page = await context.newPage();
+    await page.goto('/explore/');
+    const cards = page.locator('[data-project-card]');
+    expect(await cards.evaluateAll(items => items.map(item => (item as HTMLElement).dataset.projectCard))).toEqual([
+      'cnesdata', 'esusdata', 'infrastructure', 'limnopulse',
+    ]);
+    for (const id of ['cnesdata', 'esusdata', 'infrastructure', 'limnopulse']) {
+      const card = page.locator(`[data-project-card="${id}"]`);
+      await card.scrollIntoViewIfNeeded();
+      await expect(card).toBeVisible();
+      expect(await card.locator('.project-card-stack li').count()).toBeLessThanOrEqual(5);
+      await expect(card.getByRole('link', { name: /^Open / })).toHaveAttribute('href', `/explore/${id}/`);
+      await expect(card.locator('.project-card-proof')).toHaveAttribute('href', /^https:\/\/github\.com\/VINIClUS\//);
+    }
+    await expect(page.locator('[data-district-detail]:visible')).toHaveCount(0);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await context.close();
+  });
+}
