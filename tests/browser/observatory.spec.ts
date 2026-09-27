@@ -103,6 +103,15 @@ test('project index sits above the fold, selects on the map and links to case st
   await expect(page).toHaveURL(/\/explore\/limnopulse\/$/);
 });
 
+test('project index reveals the bottom sheet on a short mobile viewport', async ({ page }) => {
+  await page.setViewportSize({ width: 690, height: 360 });
+  await page.goto('/explore/');
+  await page.locator('[data-district-select="esusdata"]').click();
+  await expect(panel(page, 'esusdata')).toBeVisible();
+  await expect(panel(page, 'esusdata')).toBeInViewport({ ratio: 0.3 });
+  await expect(panel(page, 'esusdata').getByRole('heading', { name: 'Esusdata' })).toBeInViewport();
+});
+
 test('closing a pushed panel returns to the base history entry and modified clicks stay native', async ({ page }) => {
   await page.goto('/about/');
   await page.goto('/explore/');

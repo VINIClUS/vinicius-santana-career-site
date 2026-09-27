@@ -122,14 +122,14 @@ if (root) {
       const districtId = districtIds.find(id => id === link.dataset.districtLink);
       if (districtId) selectDistrict(districtId, 'label');
     }, { signal });
-    // The index sits above the map, so bring the opened panel into view.
+    // The index sits above the map, so bring the opened panel itself into view.
     for (const selector of selectors) selector.addEventListener('click', event => {
       if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       event.preventDefault();
       const districtId = districtIds.find(id => id === selector.dataset.districtSelect);
       if (!districtId) return;
       selectDistrict(districtId, 'index');
-      if (controller.getState().selectedDistrictId === districtId) map.scrollIntoView({ block: 'nearest' });
+      if (controller.getState().selectedDistrictId === districtId) articles.find(article => article.dataset.districtDetail === districtId)?.scrollIntoView({ block: 'start' });
     }, { signal });
     for (const closeLink of closeLinks) closeLink.addEventListener('click', event => {
       if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
