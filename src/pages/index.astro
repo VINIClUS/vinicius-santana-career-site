@@ -37,8 +37,9 @@ const legacyAnchors = ['case-cnesdata', 'case-aquafarm', 'case-esus-pec-bootstra
           <ResponsivePoster poster={overview.poster} priority />
           <div data-preview-host aria-hidden="true"></div>
         </div>
-        <figcaption><strong>CnesData · LimnoPulse · Infrastructure · Esusdata</strong><br />
-          Four systems. A conceptual map of the work, not a live network.</figcaption>
+        <figcaption><strong>CnesData · Esusdata · Infrastructure · LimnoPulse</strong><br />
+          Four systems. A conceptual map of the work, not a live network.<br />
+          <a class="home-atlas-link" href="/explore/" aria-label="Explore the atlas: CnesData, Esusdata, Infrastructure and LimnoPulse">Explore the atlas <span aria-hidden="true">→</span></a></figcaption>
       </figure>
     </div>
   </section>
@@ -104,8 +105,8 @@ const legacyAnchors = ['case-cnesdata', 'case-aquafarm', 'case-esus-pec-bootstra
   .atlas-introduction .eyebrow { margin-bottom: 8px; }
   .atlas-introduction > p:not(.eyebrow) { color: var(--muted); max-width: 430px; font-size: .9rem; }
   .atlas-legacy-anchor { position: absolute; top: 0; scroll-margin-top: 100px; }
-  .home-atlas-preview { margin: 0; min-width: 0; width: 100%; }
-  .home-atlas-stage { position: relative; aspect-ratio: 4 / 5; background: #050a11; overflow: hidden; border-radius: 8px; }
+  .home-atlas-preview { position: relative; margin: 0; min-width: 0; width: 100%; }
+  .home-atlas-stage { position: relative; aspect-ratio: 4 / 5; background: #050a11; overflow: hidden; border-radius: 8px; transition: box-shadow .2s ease; }
   .home-atlas-stage :global(picture), .home-atlas-stage :global(img), [data-preview-host] {
     position: absolute; inset: 0; display: block; width: 100%; height: 100%;
   }
@@ -115,6 +116,16 @@ const legacyAnchors = ['case-cnesdata', 'case-aquafarm', 'case-esus-pec-bootstra
   [data-preview-state="ready"] :global(picture) { visibility: hidden; }
   .home-atlas-preview figcaption { color: var(--muted); font-size: .75rem; line-height: 1.6; margin-top: 14px; }
   .home-atlas-preview figcaption strong { color: var(--text); font-weight: 500; }
+  /* The link's overlay makes the whole preview clickable; the motion control (z-index 2) stays above it. */
+  .home-atlas-link { display: inline-block; margin-top: 6px; color: var(--text); font-weight: 500; text-decoration: none; }
+  .home-atlas-link::after { content: ''; position: absolute; inset: 0; z-index: 1; border-radius: 8px; }
+  .home-atlas-link span { display: inline-block; }
+  .home-atlas-preview:has(.home-atlas-link:hover) .home-atlas-stage, .home-atlas-preview:has(.home-atlas-link:focus-visible) .home-atlas-stage { box-shadow: 0 0 0 1px var(--line-strong); }
+  .home-atlas-link:hover, .home-atlas-link:focus-visible { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+  @media (prefers-reduced-motion: no-preference) {
+    .home-atlas-link span { transition: transform .2s ease; }
+    .home-atlas-link:hover span, .home-atlas-link:focus-visible span { transform: translateX(3px); }
+  }
   @media (min-width: 780px) { .home-atlas-stage { aspect-ratio: 3 / 2; } }
   @media (max-width: 779px) { .home-atlas-preview { max-width: 480px; justify-self: center; } }
 </style>
