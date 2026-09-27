@@ -1,3 +1,12 @@
+.atlas-index ol { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; padding: 0; margin: 0 0 16px; list-style: none; }
+.atlas-index-item { display: flex; flex-direction: column; border: 1px solid var(--line); border-top: 3px solid var(--region-accent); border-radius: 10px; background: #0a1927; }
+.atlas-index-select { display: grid; grid-template-columns: auto 1fr; column-gap: 8px; align-items: baseline; align-content: start; flex-grow: 1; min-height: 44px; padding: 12px 14px 6px; border-radius: 8px 8px 0 0; color: var(--text); text-decoration: none; }
+.atlas-index-select:hover, .atlas-index-select[aria-current="true"] { background: #12333e; }
+.atlas-index-select[aria-current="true"] { outline: 2px solid var(--region-accent); outline-offset: -2px; }
+.atlas-index-title { font-weight: 700; line-height: 1.3; }
+.atlas-index-area { grid-column: 1 / -1; margin-top: 4px; color: var(--muted-strong); font-size: .85rem; line-height: 1.4; }
+.atlas-index-case { display: flex; align-items: center; min-height: 44px; padding: 0 14px; color: var(--muted-strong); font-size: .85rem; text-decoration: underline; text-underline-offset: 3px; }
+.atlas-index-case:hover { color: var(--text); }
 .observatory-stage { --district-panel-width: clamp(20rem, 26vw, 26rem); position: relative; isolation: isolate; }
 .observatory-map { position: relative; border: 1px solid var(--line); border-radius: 16px; background: #050a11; }
 .observatory-map picture, .observatory-map img { display: block; width: 100%; height: auto; border-radius: inherit; }
@@ -11,10 +20,10 @@
 .region-selection, .region-highlight { opacity: 0; stroke: var(--region-accent); stroke-width: 2; stroke-linejoin: round; fill: var(--region-accent); fill-opacity: .035; }
 .region-highlight { stroke-dasharray: 5 4; stroke-width: 1.5; fill-opacity: .025; }
 [data-region][data-selected="true"] .region-selection, [data-region][data-hovered="true"] .region-highlight { opacity: 1; }
-.district-link-cnesdata, .project-card-cnesdata, [data-region="cnesdata"] { --region-accent: #78dcce; }
-.district-link-limnopulse, .project-card-limnopulse, [data-region="limnopulse"] { --region-accent: #8dcaff; }
-.district-link-infrastructure, .project-card-infrastructure, [data-region="infrastructure"] { --region-accent: #c4b8f7; }
-.district-link-esusdata, .project-card-esusdata, [data-region="esusdata"] { --region-accent: #e9bd88; }
+.district-link-cnesdata, .atlas-index-cnesdata, .project-card-cnesdata, [data-region="cnesdata"] { --region-accent: #78dcce; }
+.district-link-limnopulse, .atlas-index-limnopulse, .project-card-limnopulse, [data-region="limnopulse"] { --region-accent: #8dcaff; }
+.district-link-infrastructure, .atlas-index-infrastructure, .project-card-infrastructure, [data-region="infrastructure"] { --region-accent: #c4b8f7; }
+.district-link-esusdata, .atlas-index-esusdata, .project-card-esusdata, [data-region="esusdata"] { --region-accent: #e9bd88; }
 .observatory-map:has(.district-link-cnesdata:hover) [data-region="cnesdata"] .region-highlight,
 .observatory-map:has(.district-link-limnopulse:hover) [data-region="limnopulse"] .region-highlight,
 .observatory-map:has(.district-link-infrastructure:hover) [data-region="infrastructure"] .region-highlight,
@@ -34,7 +43,7 @@
 .explorer .observatory-controls button:focus-visible { outline: 3px solid #f4e5a6; outline-offset: 3px; }
 .observatory-controls button:disabled { opacity: .45; cursor: default; }
 @media (prefers-reduced-motion: reduce) {
-  .observatory-map *, .observatory-controls *, .district-details * { transition: none !important; animation: none !important; }
+  .atlas-index *, .observatory-map *, .observatory-controls *, .district-details * { transition: none !important; animation: none !important; }
 }
 .district-link, .observatory-hub { position: absolute; left: var(--desktop-x); top: var(--desktop-y); transform: translate(-50%, 0); }
 .district-link { display: flex; align-items: center; gap: 8px; width: max-content; min-height: 48px; padding: 9px 11px; border: 1px solid #627f91; border-radius: 8px; color: var(--text); background: #0a1927f5; font-size: clamp(.875rem, 1.1vw, 1rem); line-height: 1.3; box-shadow: 0 5px 20px #0009; text-decoration: none; }
@@ -97,6 +106,9 @@
     position: static !important; box-sizing: border-box; width: 100%; transform: none !important; white-space: normal;
   }
 }
+@media (max-width: 900px) {
+  .atlas-index ol { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 @media (min-width: 701px) and (max-width: 900px) {
   .district-link-infrastructure { width: 178px; white-space: normal; }
 }
@@ -137,3 +149,7 @@
 :where([data-observatory]:not([data-controller-ready]):has(#district-infrastructure:target)) .district-link-infrastructure { border-color: var(--region-accent); outline: 2px solid var(--region-accent); outline-offset: 2px; background: #12333e; }
 :where([data-observatory]:not([data-controller-ready]):has(#district-limnopulse:target)) .district-link-limnopulse { border-color: var(--region-accent); outline: 2px solid var(--region-accent); outline-offset: 2px; background: #12333e; }
 :where([data-observatory]:not([data-controller-ready]):has(#district-esusdata:target)) .district-link-esusdata { border-color: var(--region-accent); outline: 2px solid var(--region-accent); outline-offset: 2px; background: #12333e; }
+:where([data-observatory]:not([data-controller-ready]):has(#district-cnesdata:target)) .atlas-index-cnesdata .atlas-index-select { outline: 2px solid var(--region-accent); outline-offset: -2px; background: #12333e; }
+:where([data-observatory]:not([data-controller-ready]):has(#district-infrastructure:target)) .atlas-index-infrastructure .atlas-index-select { outline: 2px solid var(--region-accent); outline-offset: -2px; background: #12333e; }
+:where([data-observatory]:not([data-controller-ready]):has(#district-limnopulse:target)) .atlas-index-limnopulse .atlas-index-select { outline: 2px solid var(--region-accent); outline-offset: -2px; background: #12333e; }
+:where([data-observatory]:not([data-controller-ready]):has(#district-esusdata:target)) .atlas-index-esusdata .atlas-index-select { outline: 2px solid var(--region-accent); outline-offset: -2px; background: #12333e; }

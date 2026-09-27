@@ -571,6 +571,16 @@ for (const [card, id] of projectCards) {
   assert.ok(stack, `${id} card lists its stack`);
   assert.equal((stack.match(/<li>/g) || []).length, Math.min(5, project.technologies.length), `${id} card lists at most five stack tags`);
 }
+const atlasIndex = overview.match(/<nav class="atlas-index" aria-label="Projects at a glance">[\s\S]*?<\/nav>/)?.[0];
+assert.ok(atlasIndex, 'overview exposes a compact project index');
+assert.ok(overview.indexOf(atlasIndex) < overview.indexOf('class="observatory-stage"'), 'project index precedes the Atlas map');
+assert.equal((atlasIndex.match(/<li\b/g) || []).length, 4, 'project index lists all four projects');
+for (const [id, href] of Object.entries(districtDestinations)) {
+  const project = explorerProjects.find(entry => entry.id === id);
+  assert.match(atlasIndex, new RegExp(`href="#district-${id}"[^>]*data-district-select="${id}"`));
+  assert.match(atlasIndex, new RegExp(`href="${escapeRegExp(href)}"`), `${id} index links directly to its case study`);
+  assert.ok(atlasIndex.includes(`>${escapeHtmlText(project.title)}</span>`), `${id} index shows the editorial title`);
+}
 assert.doesNotMatch(overview, /district-(?:public-health|observability)|atlas-context/, 'retired districts must be absent without compatibility redirects');
 assert.doesNotMatch(overview, /href="#district-hub"|data-district-(?:link|detail)="hub"/);
 assert.doesNotMatch(overview, /<canvas|<astro-island|\.(glb|gltf|ktx2)["']/i);

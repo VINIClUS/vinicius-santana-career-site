@@ -59,6 +59,82 @@ test('project panel selection, replacement, closing and history stay coherent', 
   await expect(page).toHaveURL(/\/explore\/$/);
 });
 
+test('project index sits above the fold, selects on the map and links to case studies', async ({ page }) => {
+  await page.setViewportSize({ width: 1348, height: 900 });
+  await page.goto('/explore/');
+  const index = page.getByRole('navigation', { name: 'Projects at a glance' });
+  const items = index.locator('li');
+  await expect(items).toHaveCount(4);
+  for (const box of await items.evaluateAll(elements => elements.map(element => element.getBoundingClientRect().bottom))) {
+    expect(box).toBeLessThanOrEqual(900);
+  }
+
+  await index.locator('[data-district-select="esusdata"]').click();
+  await expect(page).toHaveURL(/#district-esusdata$/);
+  await expect(panel(page, 'esusdata')).toBeVisible();
+  await expect(panel(page, 'esusdata')).toBeInViewport();
+  await expect(index.locator('[data-district-select="esusdata"]')).toHaveAttribute('aria-current', 'true');
+  await expect(link(page, 'esusdata')).toHaveAttribute('aria-current', 'true');
+  await page.keyboard.press('Escape');
+  await expect(panel(page, 'esusdata')).toBeHidden();
+  await expect(index.locator('[aria-current]')).toHaveCount(0);
+  await expect(index.locator('[data-district-select="esusdata"]')).toBeFocused();
+
+  await index.locator('[data-district-select="cnesdata"]').focus();
+  await page.keyboard.press('Enter');
+  await panel(page, 'cnesdata').getByRole('link', { name: 'Close CnesData panel' }).click();
+  await expect(index.locator('[data-district-select="cnesdata"]')).toBeFocused();
+  await link(page, 'cnesdata').click();
+  await page.keyboard.press('Escape');
+  await expect(link(page, 'cnesdata')).toBeFocused();
+
+  await link(page, 'cnesdata').click();
+  await index.locator('[data-district-select="limnopulse"]').click();
+  await panel(page, 'limnopulse').getByRole('link', { name: 'Explore Limnopulse' }).focus();
+  await page.goBack();
+  await expect(panel(page, 'cnesdata')).toBeVisible();
+  await expect(link(page, 'cnesdata')).toBeFocused();
+  await page.goForward();
+  await expect(panel(page, 'limnopulse')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(index.locator('[data-district-select="limnopulse"]')).toBeFocused();
+
+  await index.getByRole('link', { name: 'Case study: Limnopulse' }).click();
+  await expect(page).toHaveURL(/\/explore\/limnopulse\/$/);
+});
+
+test('project index reveals the bottom sheet on a short mobile viewport', async ({ page }) => {
+  await page.setViewportSize({ width: 690, height: 360 });
+  await page.goto('/explore/');
+  await page.locator('[data-district-select="esusdata"]').click();
+  await expect(panel(page, 'esusdata')).toBeVisible();
+  await expect(panel(page, 'esusdata')).toBeInViewport({ ratio: 0.3 });
+  await expect(panel(page, 'esusdata').getByRole('heading', { name: 'Esusdata' })).toBeInViewport();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('[data-district-select="esusdata"]')).toBeFocused();
+  await expect(page.locator('[data-district-select="esusdata"]')).toBeInViewport();
+});
+
+test('returning to a directly loaded fragment restores focus to its map label', async ({ page }) => {
+  await page.goto('/explore/#district-cnesdata');
+  await expect(panel(page, 'cnesdata')).toBeVisible();
+  await page.locator('[data-district-select="limnopulse"]').click();
+  await panel(page, 'limnopulse').getByRole('link', { name: 'Explore Limnopulse' }).focus();
+  await page.goBack();
+  await expect(panel(page, 'cnesdata')).toBeVisible();
+  await expect(link(page, 'cnesdata')).toBeFocused();
+
+  await page.locator('[data-district-select="limnopulse"]').click();
+  await page.keyboard.press('Escape');
+  await expect(panel(page, 'limnopulse')).toBeHidden();
+  await page.goBack();
+  await expect(panel(page, 'cnesdata')).toBeVisible();
+  await panel(page, 'cnesdata').getByRole('link', { name: 'Explore CnesData' }).focus();
+  await page.goForward();
+  await expect(panel(page, 'cnesdata')).toBeHidden();
+  await expect(link(page, 'cnesdata')).toBeFocused();
+});
+
 test('closing a pushed panel returns to the base history entry and modified clicks stay native', async ({ page }) => {
   await page.goto('/about/');
   await page.goto('/explore/');

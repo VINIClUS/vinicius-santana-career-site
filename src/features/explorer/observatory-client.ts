@@ -7,6 +7,7 @@ const root = document.querySelector<HTMLElement>('[data-observatory]');
 if (root) {
   const controller = createObservatoryController();
   const links = [...root.querySelectorAll<HTMLAnchorElement>('[data-district-link]')];
+  const selectors = [...root.querySelectorAll<HTMLAnchorElement>('[data-district-select]')];
   const articles = [...root.querySelectorAll<HTMLElement>('[data-district-detail]')];
   const closeLinks = [...root.querySelectorAll<HTMLAnchorElement>('[data-district-close]')];
   const map = root.querySelector<HTMLElement>('.observatory-map')!;
@@ -20,6 +21,17 @@ if (root) {
   let stopped = false;
   let loadingDeadline: ReturnType<typeof setTimeout> | undefined;
   let focusedPanelDistrictId: DistrictId | null = null;
+  // Focus returns to the control family that opened each history entry's panel.
+  type Trigger = 'index' | 'map';
+  let activeTrigger: Trigger = 'map';
+  const entryTrigger = (): Trigger | undefined => {
+    const value = (history.state as { __atlasTrigger?: unknown } | null)?.__atlasTrigger;
+    return value === 'index' || value === 'map' ? value : undefined;
+  };
+  // Index activation scrolls away from the index, so only map labels keep their scroll position.
+  const focusTrigger = (districtId: DistrictId | null) => activeTrigger === 'index'
+    ? selectors.find(selector => selector.dataset.districtSelect === districtId)?.focus()
+    : links.find(link => link.dataset.districtLink === districtId)?.focus({ preventScroll: true });
   const pending = new AbortController();
 
   const render = () => {
@@ -30,6 +42,12 @@ if (root) {
       if (selected) link.setAttribute('aria-current', 'true');
       else link.removeAttribute('aria-current');
     }
+    for (const selector of selectors) {
+      const selected = selector.dataset.districtSelect === selectedDistrictId;
+      selector.setAttribute('aria-expanded', String(selected));
+      if (selected) selector.setAttribute('aria-current', 'true');
+      else selector.removeAttribute('aria-current');
+    }
     for (const article of articles) article.dataset.selected = String(article.dataset.districtDetail === selectedDistrictId);
     for (const region of regions) region.dataset.selected = String(region.dataset.region === selectedDistrictId);
   };
@@ -37,8 +55,10 @@ if (root) {
     const districtId = districtIds.find(id => location.hash === `#district-${id}`) ?? null;
     const previousDistrictId = controller.getState().selectedDistrictId;
     const restoreFocus = focusedPanelDistrictId === previousDistrictId && districtId !== previousDistrictId;
+    // Untagged fragments come from the map; fragment-free entries keep the family being left.
+    if (districtId) activeTrigger = entryTrigger() ?? 'map';
     controller.dispatch({ type: 'SELECT_DISTRICT', districtId });
-    if (restoreFocus) links.find(link => link.dataset.districtLink === (districtId ?? previousDistrictId))?.focus({ preventScroll: true });
+    if (restoreFocus) focusTrigger(districtId ?? previousDistrictId);
   };
   const historyDepth = () => {
     const value = (history.state as { __atlasPanelDepth?: unknown } | null)?.__atlasPanelDepth;
@@ -51,15 +71,16 @@ if (root) {
     if (depth > 0) history.go(-depth);
     else history.replaceState(history.state, '', `${location.pathname}${location.search}`);
     controller.dispatch({ type: 'SELECT_DISTRICT', districtId: null });
-    if (restoreFocus) links.find(link => link.dataset.districtLink === selectedDistrictId)?.focus({ preventScroll: true });
+    if (restoreFocus) focusTrigger(selectedDistrictId);
   };
-  const selectDistrict = (districtId: DistrictId, source: 'label' | 'scene') => {
+  const selectDistrict = (districtId: DistrictId, source: 'label' | 'index' | 'scene') => {
+    activeTrigger = source === 'index' ? 'index' : 'map';
     const repeated = controller.getState().selectedDistrictId === districtId;
     if (repeated) { closePanel(); return; }
     trackJourney('project_select', { project_id: districtId, source, atlas_mode: root.dataset.sceneState === 'ready' ? '3d' : '2d' });
     const depth = historyDepth();
     const nextDepth = depth > 0 ? depth + 1 : location.hash === '' ? 1 : 0;
-    history.pushState({ ...history.state, __atlasPanelDepth: nextDepth }, '', `#district-${districtId}`);
+    history.pushState({ ...history.state, __atlasPanelDepth: nextDepth, __atlasTrigger: activeTrigger }, '', `#district-${districtId}`);
     controller.dispatch({ type: 'ACTIVATE_DISTRICT', districtId });
   };
   const use2D = () => {
@@ -101,6 +122,15 @@ if (root) {
       event.preventDefault();
       const districtId = districtIds.find(id => id === link.dataset.districtLink);
       if (districtId) selectDistrict(districtId, 'label');
+    }, { signal });
+    // The index sits above the map, so bring the opened panel itself into view.
+    for (const selector of selectors) selector.addEventListener('click', event => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();
+      const districtId = districtIds.find(id => id === selector.dataset.districtSelect);
+      if (!districtId) return;
+      selectDistrict(districtId, 'index');
+      if (controller.getState().selectedDistrictId === districtId) articles.find(article => article.dataset.districtDetail === districtId)?.scrollIntoView({ block: 'start' });
     }, { signal });
     for (const closeLink of closeLinks) closeLink.addEventListener('click', event => {
       if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
