@@ -12,9 +12,10 @@ permissions:
   pages: write
   id-token: write
 
+# Per-ref builds: PR runs must never displace a queued main deployment.
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
@@ -43,8 +44,8 @@ jobs:
       - name: Build
         run: npm run build
 
-      #- name: Smoke test
-      #  run: npm run smoke
+      - name: Smoke test
+        run: npm run smoke
 
       - name: Explorer browser smoke
         run: npm run test:explorer
@@ -70,6 +71,9 @@ jobs:
 
   deploy:
     if: github.ref == 'refs/heads/main'
+    concurrency:
+      group: pages
+      cancel-in-progress: false
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

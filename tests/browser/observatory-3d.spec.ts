@@ -634,7 +634,8 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     await page.getByRole('button', { name: 'Reset view', exact: true }).click();
     await expect.poll(positions).toEqual(initial);
     if (viewport.width === 390) {
-      await page.evaluate(() => scrollTo(0, 0));
+      // Put the canvas top near the viewport's upper quarter so the swipe starts and ends on it.
+      await canvas(page).evaluate(element => scrollTo(0, element.getBoundingClientRect().top + scrollY - innerHeight * .25));
       const before = await page.evaluate(() => scrollY);
       const client = await page.context().newCDPSession(page);
       const canvasBox = await canvas(page).boundingBox();

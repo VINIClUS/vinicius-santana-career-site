@@ -24,12 +24,12 @@ export const navLinks = [
 
 export const roleFit = [
   {
-    title: 'Data Engineering',
-    text: 'Pipelines, reconciliation, PostgreSQL models, data-quality checks and operational reporting.'
+    title: 'Backend Engineering',
+    text: 'FastAPI and Spring Boot services, PostgreSQL models, validation and reconciliation engines, and retry-safe data pipelines.'
   },
   {
-    title: 'Software Engineering',
-    text: 'Backend APIs, automation tooling, testable workflows and maintainable service boundaries.'
+    title: 'Full Stack',
+    text: 'Multi-tenant React/TypeScript dashboards with TanStack Query over FastAPI APIs, tested end to end with Vitest and Playwright.'
   }
 ];
 
@@ -65,7 +65,7 @@ export const experience = {
   ]
 };
 
-export const homeHighlights = [0, 4, 5, 2].map((index) => experience.roles[0].highlights[index]);
+export const homeHighlights = [0, 4, 5, 2, 1, 3].map((index) => experience.roles[0].highlights[index]);
 
 export const familyBusinessExperience = {
   organization: 'Irmãos Santana',
