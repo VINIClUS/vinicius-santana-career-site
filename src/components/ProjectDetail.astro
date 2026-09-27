@@ -41,7 +41,7 @@ const evidenceChapter = resultsChapter + 1;
         {caseStudy.technologies.map(technology => <li>{technology}</li>)}
       </ul>
       <div class="hero-evidence">
-        {caseStudy.evidence.slice(0, 2).map(item => <ExternalLink href={item.url} ariaLabel={`Open ${item.label} in a new tab`}>{item.label} ↗</ExternalLink>)}
+        {caseStudy.evidence.slice(0, 2).map(item => <ExternalLink href={item.url} ariaLabel={`Open ${item.label} in a new tab`} data-journey="evidence_click" data-journey-location="case_study_hero" data-journey-project={caseStudy.id} data-journey-evidence={item.label}>{item.label} ↗</ExternalLink>)}
       </div>
     </header>
 
@@ -97,7 +97,7 @@ const evidenceChapter = resultsChapter + 1;
             {caseStudy.evidence.map(item => <article class="evidence-card">
               <span class={`status status-${item.status}`}>{statusLabels[item.status]}</span>
               <h4>{item.label}</h4><p>{item.description}</p>
-              <ExternalLink class="evidence-link" href={item.url} ariaLabel={`Open ${item.label} in a new tab`}>Open public evidence ↗</ExternalLink>
+              <ExternalLink class="evidence-link" href={item.url} ariaLabel={`Open ${item.label} in a new tab`} data-journey="evidence_click" data-journey-location="case_study_evidence" data-journey-project={caseStudy.id} data-journey-evidence={item.label}>Open public evidence ↗</ExternalLink>
             </article>)}
           </div>
         </div>

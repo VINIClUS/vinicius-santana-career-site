@@ -576,6 +576,26 @@ for (const { slug, title } of caseStudies) {
 }
 console.log('Explorer static routes and transcripts passed.');
 
+const journeyLinks = (page, event) => [...page.matchAll(new RegExp(`<a\\b[^>]*data-journey="${event}"[^>]*>`, 'g'))].map(match => match[0]);
+const journeyLocations = (page, event) => journeyLinks(page, event).map(link => link.match(/data-journey-location="([^"]+)"/)?.[1]);
+assert.deepEqual(journeyLocations(html, 'email_click'), ['home_contact', 'footer'], 'home tags every email link');
+assert.deepEqual(journeyLocations(html, 'resume_click'), ['home_contact', 'footer'], 'home tags every resume link');
+assert.deepEqual(journeyLocations(editorialPages.about, 'email_click'), ['about', 'footer'], 'About tags every email link');
+for (const [file, pageHtml] of builtHtmlFiles.map((file, index) => [file, builtHtmlPages[index]])) {
+  const untagged = [...pageHtml.matchAll(/<a\b[^>]*href="(?:mailto:|\/assets\/vinicius-santana-resume\.pdf)[^"]*"[^>]*>/g)].filter(match => !match[0].includes('data-journey='));
+  assert.equal(untagged.length, 0, `${file} has no untracked email or resume links`);
+}
+for (const project of explorerProjects) {
+  const caseStudy = await readBuiltPage(`dist/explore/${project.id}/index.html`);
+  const locations = journeyLocations(caseStudy, 'evidence_click');
+  assert.equal(locations.filter(location => location === 'case_study_hero').length, Math.min(2, project.evidence.length), `${project.id} tags hero evidence links`);
+  assert.equal(locations.filter(location => location === 'case_study_evidence').length, project.evidence.length, `${project.id} tags every evidence card link`);
+  for (const link of journeyLinks(caseStudy, 'evidence_click')) assert.match(link, new RegExp(`data-journey-project="${project.id}"`), `${project.id} evidence links carry the project`);
+}
+assert.match(html, /addEventListener\('click', trackJourneyLink, true\)/, 'analytics snippet tracks journey link clicks');
+assert.match(editorialPages.privacy, /anonymous interaction events/i, 'Privacy must disclose journey events');
+console.log('Journey measurement tags passed.');
+
 // SO-09 release: the Observatory is a first-class route, and the supporting
 // pages share its technical visual system rather than reverting to the former
 // editorial shell. These assertions operate on built HTML, so they protect the

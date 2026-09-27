@@ -1,3 +1,4 @@
+import { trackJourney } from '../analytics/journey.ts';
 import { districtIds, type DistrictId } from './districts.ts';
 import { createObservatoryController } from './observatory-controller.ts';
 import type { ObservatoryScene } from './scene/renderer.tsx';
@@ -52,9 +53,10 @@ if (root) {
     controller.dispatch({ type: 'SELECT_DISTRICT', districtId: null });
     if (restoreFocus) links.find(link => link.dataset.districtLink === selectedDistrictId)?.focus({ preventScroll: true });
   };
-  const selectDistrict = (districtId: DistrictId) => {
+  const selectDistrict = (districtId: DistrictId, source: 'label' | 'scene') => {
     const repeated = controller.getState().selectedDistrictId === districtId;
     if (repeated) { closePanel(); return; }
+    trackJourney('project_select', { project_id: districtId, source, atlas_mode: root.dataset.sceneState === 'ready' ? '3d' : '2d' });
     const depth = historyDepth();
     const nextDepth = depth > 0 ? depth + 1 : location.hash === '' ? 1 : 0;
     history.pushState({ ...history.state, __atlasPanelDepth: nextDepth }, '', `#district-${districtId}`);
@@ -98,7 +100,7 @@ if (root) {
       if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       event.preventDefault();
       const districtId = districtIds.find(id => id === link.dataset.districtLink);
-      if (districtId) selectDistrict(districtId);
+      if (districtId) selectDistrict(districtId, 'label');
     }, { signal });
     for (const closeLink of closeLinks) closeLink.addEventListener('click', event => {
       if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -117,6 +119,7 @@ if (root) {
   };
   connectNavigation();
   root.dataset.controllerReady = 'true';
+  trackJourney('atlas_open', { initial_project: controller.getState().selectedDistrictId ?? undefined });
   toolbar.addEventListener('click', event => {
     const action = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-scene-action]')?.dataset.sceneAction;
     if (action === 'fallback') use2D();
@@ -153,7 +156,7 @@ if (root) {
       scene = mountObservatoryScene({
         host: map, controller,
         onSelect(districtId: DistrictId) {
-          selectDistrict(districtId);
+          selectDistrict(districtId, 'scene');
         },
         onReady() {
           if (stopped) return;

@@ -1,13 +1,15 @@
 ---
-interface Props {
+import type { HTMLAttributes } from 'astro/types';
+
+interface Props extends HTMLAttributes<'a'> {
   href: string;
   class?: string;
   ariaLabel?: string;
 }
 
-const { href, class: className, ariaLabel } = Astro.props;
+const { href, class: className, ariaLabel, ...attributes } = Astro.props;
 ---
 
-<a href={href} class={className} aria-label={ariaLabel} target="_blank" rel="noopener noreferrer">
+<a {...attributes} href={href} class={className} aria-label={ariaLabel} target="_blank" rel="noopener noreferrer">
   <slot />
 </a>
