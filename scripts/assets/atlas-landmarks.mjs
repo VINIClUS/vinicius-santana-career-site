@@ -27,12 +27,14 @@ for (const [name, color, roughness, metalness] of [
   ['equipment', '#34454d', 0.8, 0.15], ['bank', '#58645a', 1, 0],
   ['stone', '#7b8174', 1, 0], ['foliage', '#35584d', 1, 0],
   ['reeds', '#65775c', 1, 0], ['shallow', '#347582', 0.55, 0.08],
-  ['deepWater', '#173c50', 0.42, 0.12],
+  ['deepWater', '#173c50', 0.42, 0.12], ['paving', '#34454a', 1, 0],
+  ['concrete', '#6f7c7a', 0.95, 0], ['bark', '#4a4038', 1, 0],
 ]) materials[name] = new T.MeshStandardMaterial({ color, roughness, metalness });
 for (const [name, color, intensity] of [
   ['cnesLight', '#a1fff0', 1.8], ['stationLight', '#ffdb9d', 1.5],
   ['infraLight', '#c5bbff', 1.6], ['waterLight', '#8ccddd', 0.45],
-  ['esusLight', '#e9bd88', 0.6],
+  ['esusLight', '#e9bd88', 0.6], ['esusWindow', '#f2c68c', 0.95],
+  ['esusGlow', '#ffd9a3', 1.6],
 ]) materials[name] = new T.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: intensity, roughness: 0.5 });
 function mesh(parent, name, geometry, material, position = [0, 0, 0], scale = [1, 1, 1]) {
   const object = new T.Mesh(geometry, materials[material]);
@@ -89,6 +91,16 @@ function decoration(parent) {
       const geometry = cylinderGeometry.toNonIndexed();
       geometry.scale(...scale);
       geometry.translate(...position);
+      add(material, geometry);
+    },
+    // A thin box reduced to its camera-facing +x, +y or +z side: 4 vertices instead of 24.
+    face(material, position, scale) {
+      const axis = scale.indexOf(Math.min(...scale));
+      const geometry = new T.PlaneGeometry(1, 1).toNonIndexed();
+      if (axis === 0) geometry.rotateY(Math.PI / 2);
+      if (axis === 1) geometry.rotateX(-Math.PI / 2);
+      geometry.scale(...scale.map((size, i) => i === axis ? 1 : size));
+      geometry.translate(...position.map((value, i) => i === axis ? value + scale[axis] / 2 : value));
       add(material, geometry);
     },
     rock(material, position, scale) {
@@ -157,6 +169,27 @@ function shorelineGeometry(outline) {
   geometry.setIndex(indices);
   geometry.computeVertexNormals();
   return geometry;
+}
+
+// A three-blade rotor as its own animated node; blades are one draw above a static housing.
+function fanRotor(parent, name, position, speed, span) {
+  const rotor = new T.Group();
+  rotor.name = name;
+  rotor.position.fromArray(position);
+  rotor.userData.atlasMotion = { kind: 'rotate', speed, phase: 0 };
+  const blades = [];
+  for (let blade = 0; blade < 3; blade++) {
+    const geometry = new T.BoxGeometry(span * 0.55, 0.009, span * 0.2).toNonIndexed();
+    geometry.translate(span * 0.27, 0, 0);
+    geometry.rotateY(blade * Math.PI * 2 / 3);
+    geometry.deleteAttribute('uv');
+    blades.push(geometry);
+  }
+  const merged = mergeGeometries(blades);
+  mesh(rotor, 'fan-blades', mergeVertices(merged), 'metal');
+  merged.dispose();
+  blades.forEach(geometry => geometry.dispose());
+  parent.add(rotor);
 }
 
 export function makeAtlasLandmark(id) {
@@ -373,25 +406,168 @@ export function makeAtlasLandmark(id) {
   }
   if (id === 'esusdata') {
     // A disconnected PEC source feeds one read-only bridge into the local observatory.
+    // Paved yards and contact footprints seat each building on the raised pad.
+    detail.box('paving', [-2.45, 0.145, -0.72], [1.9, 0.03, 2.75]);
+    detail.box('paving', [0.45, 0.145, -0.95], [2.9, 0.03, 1.5]);
+    detail.box('paving', [0.3, 0.145, 1.5], [3.1, 0.03, 2.15]);
+    detail.box('paving', [2.4, 0.145, 1.2], [1.1, 0.03, 1.2]);
+    detail.box('concrete', [1.15, 0.15, -0.15], [0.36, 0.03, 1.25]);
+    detail.box('concrete', [-0.45, 0.15, 2.52], [0.7, 0.03, 0.28]);
+    for (const [x, z, w, d] of [[-2.45, -0.95, 1.62, 1.72], [-0.3, -0.95, 1.46, 1.39], [1.2, -0.95, 1.28, 1.26], [0.3, 1.35, 2.86, 1.81], [2.45, 1.18, 0.72, 0.89]]) {
+      detail.box('contact', [x, 0.163, z], [w, 0.006, d]);
+    }
+
+    // PEC source: an external depot with a loading dock, rooftop chiller and uplink mast.
     box(g, 'pec-source', 'equipment', [-2.45, 0.55, -0.95], [1.45, 0.72, 1.55]);
     box(g, 'pec-source-roof', 'metal', [-2.45, 0.94, -0.95], [1.58, 0.08, 1.68]);
+    detail.face('esusLight', [-2.45, 0.93, -0.11], [1.5, 0.018, 0.012]);
+    detail.face('esusLight', [-1.66, 0.93, -0.95], [0.012, 0.018, 1.6]);
     for (const z of [-1.45, -1.05, -0.65]) detail.box('esusLight', [-1.68, 0.59, z], [0.03, 0.09, 0.17]);
+    for (let row = 0; row < 4; row++) detail.box('dark', [-1.715, 0.3 + row * 0.05, -1.05], [0.02, 0.022, 0.9]);
+    detail.face('dark', [-2.8, 0.39, -0.165], [0.56, 0.4, 0.025]);
+    for (let row = 0; row < 5; row++) detail.box('metal', [-2.8, 0.24 + row * 0.07, -0.15], [0.54, 0.014, 0.012]);
+    detail.box('metal', [-2.8, 0.64, -0.08], [0.74, 0.03, 0.2]);
+    detail.face('esusGlow', [-2.8, 0.618, -0.03], [0.2, 0.012, 0.05]);
+    detail.box('concrete', [-2.8, 0.18, -0.02], [0.7, 0.07, 0.3]);
+    detail.face('esusWindow', [-2.05, 0.35, -0.163], [0.2, 0.3, 0.02]);
+    detail.face('metal', [-2.05, 0.52, -0.14], [0.3, 0.025, 0.08]);
+    detail.box('equipment', [-2.1, 1.07, -1.25], [0.62, 0.18, 0.5]);
+    detail.face('metal', [-2.1, 1.165, -1.25], [0.66, 0.02, 0.54]);
+    detail.cylinder('dark', [-2.1, 1.18, -1.25], [0.17, 0.012, 0.17]);
+    fanRotor(g, 'pec-fan', [-2.1, 1.195, -1.25], 1.2, 0.15);
+    detail.box('metal', [-3.0, 1.35, -1.4], [0.035, 0.78, 0.035]);
+    detail.box('metal', [-3.0, 1.4, -1.4], [0.18, 0.015, 0.015]);
+    detail.box('metal', [-3.0, 0.99, -1.4], [0.14, 0.03, 0.14]);
+    const beacon = new T.Group();
+    beacon.name = 'pec-beacon';
+    beacon.position.set(-3.0, 1.77, -1.4);
+    beacon.userData.atlasMotion = { kind: 'bob', speed: 1.3, amplitude: 0.018, phase: 0 };
+    mesh(beacon, 'beacon-lamp', cylinderGeometry, 'esusGlow', [0, 0, 0], [0.035, 0.05, 0.035]);
+    g.add(beacon);
+    // A service van waits at the dock; the fenced yard marks the source as external.
+    detail.box('wall', [-2.8, 0.27, 0.28], [0.34, 0.24, 0.52]);
+    detail.box('wall', [-2.8, 0.23, 0.62], [0.34, 0.16, 0.17]);
+    detail.face('glass', [-2.8, 0.28, 0.705], [0.28, 0.07, 0.012]);
+    detail.box('esusGlow', [-2.8, 0.2, 0.708], [0.26, 0.018, 0.01]);
+    for (const x of [-3.3, -3.0, -2.7, -2.1, -1.8]) detail.box('metal', [x, 0.25, 0.95], [0.022, 0.24, 0.022]);
+    for (const y of [0.22, 0.35]) {
+      detail.box('metal', [-3.0, y, 0.95], [0.6, 0.012, 0.012]);
+      detail.box('metal', [-1.95, y, 0.95], [0.3, 0.012, 0.012]);
+    }
+
+    // The read-only bridge: a raised cable tray through a one-way gate.
     box(g, 'read-only-link', 'esusdata', [-1.35, 0.2, -0.95], [0.75, 0.045, 0.07]);
+    for (const x of [-1.62, -1.08]) detail.box('metal', [x, 0.16, -0.95], [0.035, 0.06, 0.13]);
+    for (const x of [-1.55, -1.15]) detail.face('esusGlow', [x, 0.226, -0.95], [0.05, 0.008, 0.03]);
     box(g, 'read-only-gate', 'dark', [-1.35, 0.37, -0.95], [0.12, 0.34, 0.26]);
+    for (const z of [-1.1, -0.8]) detail.box('metal', [-1.35, 0.39, z], [0.05, 0.4, 0.04]);
+    detail.box('metal', [-1.35, 0.605, -0.95], [0.08, 0.035, 0.36]);
+    detail.face('esusGlow', [-1.285, 0.47, -0.95], [0.012, 0.05, 0.12]);
+
+    // Rust acquisition: a technical block with a lit instrument band and rooftop air handling.
     beveledBox(g, 'rust-acquisition', 'metal', [-0.3, 0.61, -0.95], [1.32, 0.8, 1.25]);
     detail.box('esusLight', [-0.3, 0.83, -0.305], [0.9, 0.07, 0.03]);
+    detail.box('dark', [-0.3, 0.2, -0.95], [1.38, 0.08, 1.31]);
+    detail.face('glass', [-0.3, 0.55, -0.314], [1.12, 0.24, 0.02]);
+    detail.face('glass', [0.37, 0.55, -0.95], [0.02, 0.24, 1.05]);
+    for (let b = 0; b <= 5; b++) detail.face('metal', [-0.86 + b * 0.224, 0.55, -0.305], [0.03, 0.26, 0.025]);
+    for (let b = 0; b <= 4; b++) detail.face('metal', [0.38, 0.55, -1.475 + b * 0.2625], [0.025, 0.26, 0.03]);
+    for (const [x, lit] of [[-0.75, 1], [-0.526, 0], [-0.302, 1], [-0.078, 1], [0.146, 0]]) {
+      if (lit) detail.face('esusWindow', [x, 0.55, -0.302], [0.18, 0.2, 0.012]);
+    }
+    for (const z of [-1.345, -0.82]) detail.face('esusWindow', [0.382, 0.55, z], [0.012, 0.2, 0.22]);
+    detail.box('metal', [-0.3, 1.035, -0.33], [1.32, 0.05, 0.04]);
+    detail.box('metal', [0.345, 1.035, -0.95], [0.04, 0.05, 1.25]);
+    detail.box('equipment', [-0.55, 1.1, -1.15], [0.56, 0.17, 0.46]);
+    detail.face('metal', [-0.55, 1.19, -1.15], [0.6, 0.02, 0.5]);
+    detail.cylinder('dark', [-0.55, 1.205, -1.15], [0.15, 0.012, 0.15]);
+    fanRotor(g, 'acquisition-fan', [-0.55, 1.22, -1.15], -1.5, 0.13);
+    for (const x of [0.02, 0.18]) detail.box('metal', [x, 1.09, -0.62], [0.06, 0.14, 0.06]);
+
+    // Verified extract: a sealed vault framed in steel on a dark plinth.
+    detail.box('dark', [1.2, 0.19, -0.95], [1.24, 0.06, 1.22]);
     box(g, 'verified-extract', 'glass', [1.2, 0.34, -0.95], [1.1, 0.21, 1.08]);
+    for (const x of [0.66, 1.74]) for (const z of [-1.48, -0.42]) detail.box('metal', [x, 0.35, z], [0.045, 0.24, 0.045]);
+    detail.box('metal', [1.2, 0.455, -0.41], [1.13, 0.03, 0.04]);
+    detail.box('metal', [1.755, 0.455, -0.95], [0.04, 0.03, 1.1]);
     box(g, 'extract-seal', 'esusdata', [1.2, 0.47, -0.95], [0.65, 0.04, 0.65]);
+    detail.face('esusGlow', [1.2, 0.494, -0.95], [0.22, 0.01, 0.22]);
+    detail.face('metal', [1.2, 0.5, -0.95], [0.14, 0.012, 0.14]);
     box(g, 'local-path', 'esusdata', [1.15, 0.2, -0.15], [0.07, 0.035, 1.1]);
+    for (const z of [-0.5, -0.2, 0.1, 0.35]) detail.face('esusGlow', [1.15, 0.22, z], [0.05, 0.008, 0.04]);
+
+    // Java core: two occupied floors, a recessed penthouse and a solar roof.
     beveledBox(g, 'java-core', 'equipment', [0.3, 0.76, 1.35], [2.7, 1.06, 1.65]);
     detail.box('metal', [0.3, 1.32, 1.35], [2.82, 0.08, 1.78]);
-    for (const x of [-0.6, -0.15, 0.3, 0.75, 1.2]) detail.box('esusLight', [x, 0.88, 2.19], [0.24, 0.2, 0.025]);
+    detail.box('dark', [0.3, 0.2, 1.35], [2.76, 0.08, 1.71]);
+    const frontLit = [[1, 0, 1, 1, 0, 0, 1, 0, 1, 1], [0, 1, 1, 0, 1, 1, 1, 0, 0, 1]];
+    for (const [floor, y] of [[0, 0.62], [1, 1.02]]) {
+      detail.face('glass', [0.3, y, 2.184], [2.56, 0.24, 0.02]);
+      detail.face('glass', [1.659, y, 1.35], [0.02, 0.24, 1.5]);
+      for (let b = 0; b <= 10; b++) detail.face('metal', [-0.98 + b * 0.256, y, 2.194], [0.03, 0.26, 0.025]);
+      for (let b = 0; b <= 5; b++) detail.face('metal', [1.668, y, 0.6 + b * 0.3], [0.025, 0.26, 0.03]);
+      frontLit[floor].forEach((lit, b) => {
+        if (lit) detail.face('esusWindow', [-0.852 + b * 0.256, y, 2.197], [0.21, 0.2, 0.012]);
+      });
+      for (let b = 0; b < 5; b++) {
+        if ((b + floor) % 3 !== 1) detail.face('esusWindow', [1.671, y, 0.75 + b * 0.3], [0.012, 0.2, 0.25]);
+      }
+    }
+    for (const y of [0.82, 1.2]) detail.box('metal', [0.3, y, 2.195], [2.66, 0.035, 0.03]);
+    detail.box('metal', [1.668, 0.82, 1.35], [0.03, 0.035, 1.6]);
+    detail.box('esusLight', [0.3, 1.255, 2.2], [2.62, 0.022, 0.018]);
+    detail.box('esusLight', [1.675, 1.255, 1.35], [0.018, 0.022, 1.56]);
+    detail.face('esusGlow', [-0.45, 0.35, 2.186], [0.46, 0.24, 0.02]);
+    detail.box('metal', [-0.45, 0.35, 2.198], [0.025, 0.24, 0.02]);
+    detail.box('metal', [-0.45, 0.5, 2.38], [0.82, 0.035, 0.42]);
+    detail.box('esusLight', [-0.45, 0.482, 2.585], [0.72, 0.012, 0.012]);
+    for (const x of [-0.8, -0.1]) detail.box('metal', [x, 0.33, 2.55], [0.022, 0.34, 0.022]);
+    detail.box('equipment', [-0.15, 1.5, 1.15], [1.3, 0.28, 0.85]);
+    detail.box('metal', [-0.15, 1.655, 1.15], [1.38, 0.035, 0.93]);
+    detail.face('esusWindow', [-0.15, 1.5, 1.581], [1.0, 0.09, 0.012]);
+    detail.face('esusWindow', [0.506, 1.5, 1.15], [0.012, 0.09, 0.6]);
+    detail.box('equipment', [-0.6, 1.72, 1.0], [0.4, 0.1, 0.36]);
+    detail.cylinder('dark', [-0.6, 1.775, 1.0], [0.12, 0.01, 0.12]);
+    fanRotor(g, 'core-fan', [-0.6, 1.785, 1.0], 1.35, 0.11);
+    for (let row = 0; row < 2; row++) {
+      for (let col = 0; col < 3; col++) {
+        const [x, z] = [0.95 + col * 0.25, 0.85 + row * 0.62];
+        detail.face('metal', [x, 1.372, z], [0.23, 0.014, 0.52]);
+        detail.face('dark', [x, 1.382, z], [0.2, 0.012, 0.48]);
+      }
+    }
+    for (const [x, z] of [[-0.85, 0.72], [-0.85, 2.0]]) detail.box('metal', [x, 1.52, z], [0.02, 0.36, 0.02]);
+
+    // Indicator and authorized panel: a processing kiosk beside a lit bar-chart display.
     box(g, 'indicator-result', 'esusdata', [2.45, 0.58, 1.18], [0.58, 0.68, 0.75]);
+    detail.box('metal', [2.45, 0.94, 1.18], [0.64, 0.04, 0.81]);
+    detail.box('dark', [2.45, 0.19, 1.18], [0.66, 0.06, 0.83]);
+    for (const y of [0.4, 0.55, 0.7]) detail.face('dark', [2.742, y, 1.18], [0.012, 0.03, 0.6]);
+    for (const [y, material] of [[0.4, 'esusGlow'], [0.55, 'esusLight'], [0.7, 'esusGlow']]) detail.box(material, [2.746, y, 0.95], [0.01, 0.022, 0.05]);
+    detail.face('dark', [2.45, 0.66, 1.557], [0.4, 0.3, 0.012]);
+    detail.face('esusWindow', [2.45, 0.7, 1.562], [0.32, 0.14, 0.008]);
     box(g, 'authorized-panel', 'glass', [2.4, 0.84, 2.25], [1.3, 1.13, 0.18]);
     detail.box('metal', [2.4, 0.2, 2.25], [1.55, 0.15, 0.7]);
-    detail.box('esusLight', [2.4, 1.08, 2.36], [0.86, 0.075, 0.025]);
-    for (const x of [2.05, 2.34, 2.63]) detail.box('esusdata', [x, 0.76, 2.36], [0.15, 0.2, 0.025]);
-    for (const [x, z] of [[-3.15, 1.2], [-2.9, 2.15], [3.1, -1.5]]) detail.rock('foliage', [x, 0.3, z], [0.22, 0.25, 0.2]);
+    for (const x of [1.72, 3.08]) detail.box('metal', [x, 0.84, 2.25], [0.07, 1.18, 0.22]);
+    detail.box('metal', [2.4, 1.43, 2.25], [1.43, 0.06, 0.22]);
+    detail.face('esusLight', [2.4, 1.3, 2.346], [1.1, 0.06, 0.012]);
+    detail.box('metal', [2.4, 0.46, 2.346], [1.14, 0.012, 0.01]);
+    [0.12, 0.2, 0.16, 0.3, 0.24, 0.38].forEach((height, i) => {
+      detail.box(i === 5 ? 'esusGlow' : 'esusdata', [1.94 + i * 0.184, 0.47 + height / 2, 2.347], [0.12, height, 0.012]);
+    });
+
+    // Site life: street lights along the paths, planting at the edges of the pad.
+    for (const [x, z] of [[0.85, -0.45], [1.45, 0.25], [-1.25, 2.55], [1.7, 2.6], [2.1, 0.3], [-1.55, 0.35]]) {
+      detail.box('metal', [x, 0.37, z], [0.026, 0.46, 0.026]);
+      detail.box('esusGlow', [x, 0.6, z], [0.07, 0.03, 0.07]);
+    }
+    for (const [x, z, size] of [[-3.15, 1.3, 0.24], [-2.7, 1.85, 0.2], [-3.3, 0.35, 0.18], [3.05, -1.25, 0.22], [2.65, -1.9, 0.19], [-0.65, -2.25, 0.2], [0.8, -2.35, 0.17], [3.1, 0.35, 0.18]]) {
+      detail.box('bark', [x, 0.13 + size, z], [0.045, size * 1.3, 0.045]);
+      detail.rock('foliage', [x, 0.2 + size * 1.55, z], [size, size * 1.1, size]);
+      detail.rock('foliage', [x + size * 0.45, 0.2 + size * 1.2, z + size * 0.3], [size * 0.65, size * 0.75, size * 0.65]);
+    }
+    for (const x of [-0.95, -0.7, 0.05, 0.3, 0.55, 0.8]) detail.rock('foliage', [x, 0.2, 2.47], [0.09, 0.08, 0.08]);
+    for (const [x, z] of [[-3.15, 1.2], [-2.9, 2.15], [3.1, -1.5], [2.95, 0.7]]) detail.rock('stone', [x, 0.18, z], [0.12, 0.08, 0.1]);
   }
   detail.finish();
   return g;
