@@ -150,7 +150,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
       await expect(toggle).toBeFocused();
       await expect(toggle).toHaveAttribute('aria-expanded', 'false');
     }
-    await page.getByRole('link', { name: 'Explore my work', exact: true }).focus();
+    await page.getByRole('link', { name: 'View projects', exact: true }).focus();
     await page.keyboard.press('Enter');
     await expect(page).toHaveURL(/\/explore\/$/);
     await expect(page.locator('[data-district-link]')).toHaveCount(4);
@@ -210,3 +210,18 @@ test('header socials, Home actions, and detail transcripts remain usable without
   await expect(page.locator('[data-life-next]')).toBeDisabled();
   await context.close();
 });
+
+for (const viewport of [{ width: 390, height: 844 }, { width: 375, height: 667 }]) {
+  test(`Home primary actions fit the first ${viewport.width}x${viewport.height} viewport`, async ({ browser, baseURL }) => {
+    const context = await browser.newContext({ baseURL, viewport });
+    const page = await context.newPage();
+    await page.goto('/');
+    const actions = page.locator('#top .hero-actions a');
+    await expect(actions).toHaveText(['View projects →', 'Resume', 'Contact']);
+    for (const action of await actions.all()) {
+      const box = (await action.boundingBox())!;
+      expect(box.y + box.height).toBeLessThanOrEqual(viewport.height);
+    }
+    await context.close();
+  });
+}

@@ -15,23 +15,22 @@ const legacyAnchors = ['case-cnesdata', 'case-aquafarm', 'case-esus-pec-bootstra
   <section class="observatory-hero section" id="top" aria-labelledby="hero-title">
     <div class="shell observatory-hero-grid">
       <div class="hero-content">
-        <p class="eyebrow">Building better systems</p>
         <h1 id="hero-title">Vinicius<br />Santana</h1>
-        <p class="hero-role">Software &amp; Data Engineer</p>
-        <p class="hero-positioning">I build reliable systems where software, data and infrastructure meet.</p>
-        <ul class="domain-pillars" aria-label="Engineering domains">
-          <li><span aria-hidden="true">◫</span>Data Systems</li>
-          <li><span aria-hidden="true">⌘</span>Distributed Infrastructure</li>
-          <li><span aria-hidden="true">▤</span>Backend Engineering</li>
-          <li><span aria-hidden="true">♧</span>Public Health</li>
+        <p class="hero-role">{profile.title}</p>
+        <p class="hero-positioning">Backend engineer building Python/FastAPI and Java/Spring services for municipal public-health systems.</p>
+        <ul class="hero-proof" aria-label="Results">
+          <li>Claim rejections cut from 12%+ to below 1% across 8 billing cycles</li>
+          <li>Workforce reconciliation cut from 240+ to about 4 person-hours per cycle</li>
         </ul>
+        <div class="hero-actions" aria-label="Primary actions">
+          <a class="button" href="/explore/">View projects <span aria-hidden="true">→</span></a>
+          <a class="button button-secondary" href={profile.resume} download data-journey="resume_click" data-journey-location="home_hero">Resume</a>
+          <a class="button button-ghost" href="#contact">Contact</a>
+        </div>
         <div id="projects" class="atlas-introduction" aria-labelledby="projects-title">
           {legacyAnchors.map(id => <span id={id} class="atlas-legacy-anchor" aria-hidden="true"></span>)}
           <p class="eyebrow" id="projects-title">Systems Atlas</p>
           <p>Explore the systems, engineering decisions and evidence behind my work.</p>
-          <div class="hero-actions" aria-label="Primary actions">
-            <a class="button" href="/explore/">Explore my work <span aria-hidden="true">→</span></a>
-          </div>
         </div>
         <p class="hero-location">{profile.location} · Software, data &amp; operations</p>
       </div>

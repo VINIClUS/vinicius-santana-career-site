@@ -48,7 +48,7 @@ for (const viewport of viewports) {
       await expect(menu).toHaveAttribute('aria-expanded', 'false');
     }
 
-    await page.getByRole('link', { name: 'Explore my work', exact: true }).focus();
+    await page.getByRole('link', { name: 'View projects', exact: true }).focus();
     await page.keyboard.press('Enter');
     await expect(page).toHaveURL(/\/explore\/$/);
     for (const slug of ['cnesdata', 'limnopulse', 'infrastructure', 'esusdata']) {

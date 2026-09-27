@@ -4,7 +4,7 @@ const mailBody = encodeURIComponent('Hi Vinicius, I found your career site and w
 
 export const profile = {
   name: 'Vinicius Santana',
-  title: 'Software & Data Engineer',
+  title: 'Software Engineer — Backend & Full Stack',
   location: 'Brazil, UTC-3',
   email,
   mailto: `mailto:${email}?subject=${mailSubject}&body=${mailBody}`,
