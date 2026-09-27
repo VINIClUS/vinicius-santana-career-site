@@ -588,7 +588,7 @@ for (const failure of ['import', 'initialization', 'overview', 'context']) {
     await expect(canvas(page)).toHaveCount(0);
     await selected(page, 'cnesdata').click();
     await expect(page.locator('#district-cnesdata')).toBeVisible();
-    await expect(page.locator('#district-cnesdata a.button')).toHaveAttribute('href', '/explore/cnesdata/');
+    await expect(page.locator('#district-cnesdata a.button-primary')).toHaveAttribute('href', '/explore/cnesdata/');
   });
 }
 

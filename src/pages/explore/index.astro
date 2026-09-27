@@ -5,6 +5,7 @@ import ExternalLink from '../../components/ExternalLink.astro';
 import { districtIds } from '../../features/explorer/districts.ts';
 import { overview } from '../../content/scenes/index.ts';
 import { projectToPoster } from '../../features/explorer/observatory-projection.ts';
+import { isPublicRepository } from '../../content/publicRepository.js';
 import '../../features/explorer/explorer.css';
 import '../../features/explorer/observatory.css';
 const { poster, layouts } = overview;
@@ -42,6 +43,7 @@ const positionStyle = (desktop: { x: number; y: number }, mobile: { x: number; y
         </svg>)}
         <span class="observatory-hub" aria-hidden="true" style={positionStyle(projectToPoster(layouts.desktop.hubPosition, layouts.desktop.camera), projectToPoster(layouts.mobile.hubPosition, layouts.mobile.camera))}>00</span>
         <div class="district-selectors">
+          <p class="district-selectors-title eyebrow" aria-hidden="true">Projects</p>
           {selectorProjects.map((project, index) => <a
             class={`district-link district-link-${project.id}`}
             href={`#district-${project.id}`}
@@ -60,7 +62,11 @@ const positionStyle = (desktop: { x: number; y: number }, mobile: { x: number; y
           <ul class="district-technologies" aria-label="Main technologies">
             {project.technologies.slice(0, 4).map(technology => <li>{technology}</li>)}
           </ul>
-          <a class="button button-primary" href={`/explore/${project.id}/`}>Explore {project.title}</a>
+          <p class="district-status">Built: {project.preview.built}{project.preview.next && ` · Next: ${project.preview.next}`}</p>
+          <div class="district-actions">
+            <a class="button button-primary" href={`/explore/${project.id}/`} aria-label={`${project.title} case study`}>Case study</a>
+            <ExternalLink href={project.evidence.find(isPublicRepository)!.url} class="button button-secondary" ariaLabel={`${project.title} code on GitHub`}>Code</ExternalLink>
+          </div>
         </article>)}
       </div>
     </div>

@@ -5,7 +5,7 @@ test('project navigation and keyboard component selection', async ({ page }) => 
   await page.goto('/explore/');
   await openTechnicalDetails(page);
   await page.locator('[data-district-link="cnesdata"]').click();
-  await page.getByRole('link', { name: 'Explore CnesData', exact: true }).click();
+  await page.getByRole('link', { name: 'CnesData case study', exact: true }).click();
   await openTechnicalDetails(page);
   const component = page.locator('[data-component-diagram]').nth(1);
   await component.focus();
@@ -49,7 +49,7 @@ test('static navigation, details and every transcript without JavaScript', async
   await page.goto('/explore/');
   await openTechnicalDetails(page);
   await page.locator('[data-district-link="cnesdata"]').click();
-  await page.getByRole('link', { name: 'Explore CnesData', exact: true }).focus();
+  await page.getByRole('link', { name: 'CnesData case study', exact: true }).focus();
   await page.keyboard.press('Enter');
   await expect(page).toHaveURL(/\/explore\/cnesdata\/$/);
   await openTechnicalDetails(page);

@@ -21,6 +21,11 @@ const evidenceItem = z.object({
   description: nonEmptyText
 });
 
+const previewItem = z.object({
+  built: nonEmptyText,
+  next: nonEmptyText.optional()
+});
+
 const caseStudies = defineCollection({
   loader: file('src/content/case-studies.yaml'),
   schema: z.object({
@@ -30,6 +35,7 @@ const caseStudies = defineCollection({
     eyebrow: nonEmptyText,
     summary: nonEmptyText,
     currentStatus: nonEmptyText,
+    preview: previewItem,
     brief: z.object({ contribution: nonEmptyText, decision: nonEmptyText }),
     technologies: z.array(nonEmptyText).min(1),
     problem: nonEmptyText,
