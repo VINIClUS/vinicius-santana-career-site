@@ -120,6 +120,16 @@ test('returning to a directly loaded fragment restores focus to its map label', 
   await page.goBack();
   await expect(panel(page, 'cnesdata')).toBeVisible();
   await expect(link(page, 'cnesdata')).toBeFocused();
+
+  await page.locator('[data-district-select="limnopulse"]').click();
+  await page.keyboard.press('Escape');
+  await expect(panel(page, 'limnopulse')).toBeHidden();
+  await page.goBack();
+  await expect(panel(page, 'cnesdata')).toBeVisible();
+  await panel(page, 'cnesdata').getByRole('link', { name: 'Explore CnesData' }).focus();
+  await page.goForward();
+  await expect(panel(page, 'cnesdata')).toBeHidden();
+  await expect(link(page, 'cnesdata')).toBeFocused();
 });
 
 test('closing a pushed panel returns to the base history entry and modified clicks stay native', async ({ page }) => {

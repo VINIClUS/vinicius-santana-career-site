@@ -54,8 +54,8 @@ if (root) {
     const districtId = districtIds.find(id => location.hash === `#district-${id}`) ?? null;
     const previousDistrictId = controller.getState().selectedDistrictId;
     const restoreFocus = focusedPanelDistrictId === previousDistrictId && districtId !== previousDistrictId;
-    // Untagged fragments come from the map; the fragment-free base keeps the family being left.
-    activeTrigger = entryTrigger() ?? (districtId ? 'map' : activeTrigger);
+    // Untagged fragments come from the map; fragment-free entries keep the family being left.
+    if (districtId) activeTrigger = entryTrigger() ?? 'map';
     controller.dispatch({ type: 'SELECT_DISTRICT', districtId });
     if (restoreFocus) triggerFor(districtId ?? previousDistrictId)?.focus({ preventScroll: true });
   };
