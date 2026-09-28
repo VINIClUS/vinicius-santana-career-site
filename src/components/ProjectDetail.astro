@@ -13,15 +13,8 @@ interface Props {
 }
 const { caseStudy, presentation, projects } = Astro.props;
 const canonicalPath = `/explore/${presentation.id}/`;
-const statusLabels = {
-  implemented: 'Implemented', documented: 'Documented', planned: 'Planned',
-  historical: 'Historical', illustrative: 'Illustrative'
-} as const;
 const sections = [{ id: 'overview', label: 'Context & contribution' }, { id: 'engineering', label: 'Engineering' }, { id: 'results', label: 'Current state' }, { id: 'evidence', label: 'Evidence' }, { id: 'simulation', label: 'Lifecycle' }, { id: 'limitations', label: 'Limitations & details' }, { id: 'system', label: 'System View' }];
 const repositories = caseStudy.evidence.filter(isPublicRepository);
-const statusGroups = (['implemented', 'documented', 'planned', 'illustrative', 'historical'] as const)
-  .map(status => ({ status, items: caseStudy.architecture.filter(item => item.status === status) }))
-  .filter(group => group.items.length > 0);
 ---
 
 <EditorialLayout title={`${caseStudy.title} — Vinicius Santana`} description={caseStudy.summary} canonicalPath={canonicalPath} currentPath={canonicalPath} observatory>
@@ -50,7 +43,6 @@ const statusGroups = (['implemented', 'documented', 'planned', 'illustrative', '
         <div><dt>Problem</dt><dd>{caseStudy.problem}</dd></div>
         <div><dt>Contribution</dt><dd>{caseStudy.brief.contribution}</dd></div>
         <div><dt>Key decision</dt><dd>{caseStudy.brief.decision}</dd></div>
-        <div><dt>Status</dt><dd>{caseStudy.currentStatus}</dd></div>
         <div><dt>Repository</dt><dd class="brief-repositories">{repositories.map(item => <ExternalLink href={item.url} ariaLabel={`Open ${item.label} in a new tab`}>{item.label} ↗</ExternalLink>)}</dd></div>
       </dl>
     </section>
@@ -82,12 +74,6 @@ const statusGroups = (['implemented', 'documented', 'planned', 'illustrative', '
         <div class="chapter-heading"><p class="eyebrow">03 / Current state</p><h2 id="results-heading">Current state</h2></div>
         <div class="chapter-content">
           <h3 id="outcomes-heading">Outcomes</h3><ul class="detail-list">{caseStudy.outcomes.map(item => <li>{item}</li>)}</ul>
-          <div class="status-groups">
-            {statusGroups.map(group => <div class="status-group">
-              <span class={`status status-${group.status}`}>{statusLabels[group.status]}</span>
-              <ul class="detail-list">{group.items.map(item => <li>{item.title}</li>)}</ul>
-            </div>)}
-          </div>
         </div>
       </section>
 
@@ -96,7 +82,6 @@ const statusGroups = (['implemented', 'documented', 'planned', 'illustrative', '
         <div class="chapter-content">
           <div class="evidence-grid">
             {caseStudy.evidence.map(item => <article class="evidence-card">
-              <span class={`status status-${item.status}`}>{statusLabels[item.status]}</span>
               <h3>{item.label}</h3><p>{item.description}</p>
               <ExternalLink class="evidence-link" href={item.url} ariaLabel={`Open ${item.label} in a new tab`} data-journey="evidence_click" data-journey-location="case_study_evidence" data-journey-project={caseStudy.id} data-journey-evidence={item.label}>Open public evidence ↗</ExternalLink>
             </article>)}
@@ -162,16 +147,11 @@ const statusGroups = (['implemented', 'documented', 'planned', 'illustrative', '
   .decision-card dl { margin: 0 0 12px; }
   .decision-card dt { margin-bottom: 4px; color: var(--accent); font-size: .66rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
   .decision-card dd { margin: 0 0 14px; color: var(--muted-strong); font-size: .88rem; line-height: 1.75; }
-  .status-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; margin-top: 32px; }
-  .status-group .detail-list { margin-top: 14px; }
   .simulation-intro { max-width: 780px; padding-top: 48px; }
   .simulation-intro p:last-child { color: var(--muted-strong); font-size: .88rem; line-height: 1.75; }
   .system-details { margin-top: 32px; }
   .overview-grid, .evidence-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
   .evidence-card { padding: 20px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-soft); }
-  .status { display: inline-flex; width: fit-content; flex: 0 0 auto; padding: 5px 7px; border: 1px solid var(--line-strong); border-radius: 4px; color: var(--accent); background: rgba(132,244,230,.06); font-size: .6rem; font-weight: 700; letter-spacing: .06em; line-height: 1; text-transform: uppercase; }
-  .status-planned, .status-illustrative { color: #e8c990; border-color: rgba(232,201,144,.3); background: rgba(232,201,144,.05); }
-  .status-documented, .status-historical { color: #b7c4f3; border-color: rgba(183,196,243,.3); background: rgba(183,196,243,.05); }
   .detail-list { display: grid; gap: 12px; margin: 0; }
   .detail-list li { position: relative; padding-left: 16px; }
   .detail-list li::before { position: absolute; top: .8em; left: 0; width: 4px; height: 4px; border-radius: 50%; background: var(--accent); content: ''; }
