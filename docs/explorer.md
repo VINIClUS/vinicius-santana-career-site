@@ -1,6 +1,6 @@
 # Systems Atlas and project explorer contracts
 
-Astro renders a Systems Atlas overview and four canonical project routes using the case-study collection. Architecture IDs live in `src/content/case-studies.yaml`; titles, descriptions and evidence statuses are reused from that collection. `src/features/explorer/projects.ts` supplies project IDs, areas, ordered diagram stages, primary component IDs and directed relationships with short labels.
+Astro renders a Systems Atlas overview and four canonical project routes using the case-study collection. Architecture IDs live in `src/content/case-studies.yaml`; titles and descriptions are reused from that collection. `src/features/explorer/projects.ts` supplies project IDs, areas, ordered diagram stages, primary component IDs and directed relationships with short labels.
 
 `createExplorerController(projectId)` exposes `getState()`, `dispatch(command)` and `subscribe(listener)`, which returns an unsubscribe function. State holds `projectId`, `selectedComponentId` and the corresponding optional `simulation` (CnesData) or `infrastructureSimulation`. `SELECT_COMPONENT` changes selection independently of simulation. `SELECT_SCENARIO` and `STEP` affect only CnesData; `FAIL_NODE` affects only Infrastructure. `RESET` resets the current project's simulation. LimnoPulse ignores simulation commands. Project switching uses ordinary route navigation and creates a fresh controller with default state, without persistence.
 
@@ -94,8 +94,8 @@ See [SA-05 validation](design/sa-05/validation.md) for measurements and checks.
 
 `/explore/cnesdata/`, `/explore/limnopulse/`, `/explore/infrastructure/` and `/explore/esusdata/`
 combine the complete case-study narrative with their shared System View.
-`ProjectDetail.astro` renders Hero → Brief (problem, contribution, key decision, status, repositories) → Context and contribution →
-Engineering decisions (three problem/decision/evidence entries) → Current state (outcomes and components by status) → Public evidence →
+`ProjectDetail.astro` renders Hero → Brief (problem, contribution, key decision, repositories) → Context and contribution →
+Engineering decisions (three problem/decision/evidence entries) → Current state (outcomes) → Public evidence →
 optional Lifecycle → Limitations & details (limitations, reliability, System View disclosure), using
 collection-backed content at build time. The case-study collection remains
 the authority for facts.

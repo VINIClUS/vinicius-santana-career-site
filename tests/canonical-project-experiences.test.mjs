@@ -36,7 +36,7 @@ try {
     assert.ok(html.indexOf(brief) < html.indexOf('id="simulation"'), `${caseStudy.id} shows its brief before the lifecycle`);
     const repositories = caseStudy.evidence.filter(isPublicRepository);
     assert.ok(repositories.length > 0, `${caseStudy.id} brief links at least one repository`);
-    for (const text of [caseStudy.problem, caseStudy.brief.contribution, caseStudy.brief.decision, caseStudy.currentStatus, ...repositories.map(item => `href="${item.url}"`)]) {
+    for (const text of [caseStudy.problem, caseStudy.brief.contribution, caseStudy.brief.decision, ...repositories.map(item => `href="${item.url}"`)]) {
       assert.ok(brief.includes(text), `${caseStudy.id} brief includes: ${text}`);
     }
     assert.match(html, /data-component-disclosure/);

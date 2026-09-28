@@ -90,7 +90,6 @@
 [data-observatory]:not([data-controller-ready]):has(.district-details article:target) .observatory-regions { z-index: 2; }
 [data-observatory]:has(.district-details article[data-selected="true"]) .observatory-hub,
 [data-observatory]:not([data-controller-ready]):has(.district-details article:target) .observatory-hub { opacity: 0; }
-.district-status { margin: 0 0 20px; color: var(--muted-strong); font-size: .9rem; line-height: 1.5; }
 .district-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 @media (min-width: 701px) {
   [data-observatory]:has(.district-details article[data-selected="true"]) .district-selectors,

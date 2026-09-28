@@ -4,16 +4,11 @@
   eyebrow: Distributed health-data platform
   summary: >-
     A contract-led platform for moving municipal source extracts from edge environments into a tenant-isolated central data layer.
-  currentStatus: >-
-    Edge extraction, central API, tenant isolation and dashboard are implemented; Parquet-to-Gold processing and Kubernetes deployment remain planned.
   brief:
     contribution: >-
       Built the edge-to-central path: Go extraction agent, manifest registration, central API and dashboard on shared generated contracts.
     decision: >-
       Generate contracts from source models and keep tenant context at the storage boundary, not only in application filters.
-  preview:
-    built: edge extraction, central API and dashboard
-    next: full processing path
   technologies:
     - Python
     - FastAPI
@@ -99,16 +94,11 @@
   eyebrow: Tenant-scoped telemetry and alerting
   summary: >-
     An API and evaluation runtime for authorized telemetry reads, alert rules, durable incidents, and notification delivery.
-  currentStatus: >-
-    API, evaluator and notification workers are implemented with a local MQTT scaffold; the cloud path is documented as OpenTofu and the production device layer remains planned.
   brief:
     contribution: >-
       Built tenant-scoped telemetry access, versioned alert rules, a replayable Go evaluator and separate email/Telegram delivery.
     decision: >-
       Treat durable domain state as the authority and queues as at-least-once transports, with a one-shot evaluator so replay stays observable.
-  preview:
-    built: telemetry API, alert rules and notifications
-    next: production device and broker layer
   technologies:
     - Python
     - FastAPI
@@ -207,15 +197,11 @@
   eyebrow: Reusable automation and operational contracts
   summary: >-
     Public infrastructure work that separates reusable automation, image-building, and system runbooks from private runtime configuration.
-  currentStatus: >-
-    Reusable Ansible roles, Packer templates and runbooks are public; the topology is illustrative, with no live environment state published.
   brief:
     contribution: >-
       Wrote reusable Ansible roles, Packer image templates with validation, and e-SUS PEC bootstrap runbooks.
     decision: >-
       Separate generic infrastructure contracts from system-specific bootstraps and rebuild images through Packer instead of manual changes.
-  preview:
-    built: Ansible contracts and reproducible images
   technologies:
     - Ansible
     - Packer
@@ -292,16 +278,11 @@
   eyebrow: Observatório APS · local primary-care observatory
   summary: >-
     A local, read-only path from e-SUS PEC acquisition to verifiable extracts and versioned primary-care indicators, with publication controlled by evidence and methodology.
-  currentStatus: >-
-    The local acquisition-to-result path is implemented and tested against documented PEC versions; real C1 publication is blocked pending methodological validation.
   brief:
     contribution: >-
       Built a bounded Rust acquisition plane, a reproducible C1 calculation, and Java/SQLite coordination for authorization and staged publication.
     decision: >-
       Keep the PEC immutable and stage technical results apart from publication, which needs both evidence and methodological approval.
-  preview:
-    built: PEC extract, C1 rule and authorized dashboard
-    next: approved C1 publication
   technologies:
     - Java 21
     - Spring Boot

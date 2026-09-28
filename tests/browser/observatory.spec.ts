@@ -313,7 +313,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     await context.close();
   });
 }
-test('an open preview turns the map labels into a projects list and states what is built', async ({ page }) => {
+test('an open preview turns the map labels into a projects list', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/explore/');
   await expect(page.locator('.district-selectors-title')).toBeHidden();
@@ -327,7 +327,7 @@ test('an open preview turns the map labels into a projects list and states what 
   const ys = [...boxes.map(box => box!.y)].sort((left, right) => left - right);
   for (let index = 1; index < ys.length; index += 1) expect(ys[index]).toBeGreaterThan(ys[index - 1]);
 
-  await expect(panel(page, 'cnesdata').locator('.district-status')).toHaveText('Built: edge extraction, central API and dashboard · Next: full processing path');
+  await expect(panel(page, 'cnesdata').locator('.district-status')).toHaveCount(0);
   await expect(panel(page, 'cnesdata').getByRole('link', { name: 'CnesData code on GitHub' })).toHaveAttribute('href', 'https://github.com/VINIClUS/CnesData');
   await expect(panel(page, 'cnesdata').getByRole('link', { name: 'CnesData case study' })).toHaveAttribute('href', '/explore/cnesdata/');
 });

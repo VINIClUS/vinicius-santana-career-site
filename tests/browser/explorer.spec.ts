@@ -142,7 +142,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
   });
 }
 
-test('system views retain components, connectors, evidence status and transcripts without JavaScript at 360px', async ({ browser, baseURL }) => {
+test('system views retain components, connectors and transcripts without JavaScript at 360px', async ({ browser, baseURL }) => {
   const context = await browser.newContext({ baseURL, viewport: { width: 360, height: 844 }, javaScriptEnabled: false });
   const page = await context.newPage();
 
@@ -153,7 +153,7 @@ test('system views retain components, connectors, evidence status and transcript
     await expect(page.locator('[data-component-detail]').last()).toBeVisible();
     await expect(page.locator('[data-graph-connector]').first()).toBeAttached();
     await expect(page.locator('[data-component-detail] .component-status')).toHaveCount(0);
-    await expect(page.locator('#evidence .status').first()).toBeVisible();
+    await expect(page.locator('#evidence .status')).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   }
 

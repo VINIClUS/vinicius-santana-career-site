@@ -555,7 +555,7 @@ for (const [id, href] of Object.entries(districtDestinations)) {
   assert.deepEqual(offsets, [...offsets].sort((left, right) => left - right), `${project.title} must preserve technology order`);
   assert.ok(article.includes(`aria-label="${escapeHtmlText(project.title)} case study">Case study</a>`), `${id} must use the canonical CTA label`);
   assert.ok(article.includes(`href="${project.evidence.find(entry => entry.label.endsWith('public repository')).url}"`), `${id} preview must link to its code`);
-  assert.ok(article.includes(`<p class="district-status">Built: ${escapeHtmlText(project.preview.built)}`), `${id} preview must state what is built`);
+  assert.doesNotMatch(article, /district-status/, `${id} preview has no status line`);
   const technologyOffset = article.indexOf(technologyList);
   assert.ok(
     (article.slice(0, technologyOffset).match(/<\/p>/g) || []).length === 2
@@ -568,7 +568,7 @@ const projectCards = [...overview.matchAll(/<article class="project-card project
 assert.deepEqual(projectCards.map(match => match[1]), ['cnesdata', 'esusdata', 'infrastructure', 'limnopulse'], 'overview renders direct project cards in order');
 for (const [card, id] of projectCards) {
   const project = explorerProjects.find(entry => entry.id === id);
-  assert.ok(card.includes(escapeHtmlText(project.currentStatus)), `${id} card shows its current status`);
+  assert.doesNotMatch(card, /<dt>Status<\/dt>/, `${id} card has no status field`);
   assert.ok(card.includes(`href="${escapeHtmlText(project.evidence[0].url)}"`), `${id} card links its public proof`);
   assert.match(card, new RegExp(`href="/explore/${id}/"`), `${id} card links its project page`);
   const stack = card.match(/<ul class="project-card-stack"[^>]*>[\s\S]*?<\/ul>/)?.[0];
@@ -767,7 +767,7 @@ for (const evidence of limno.evidence) {
   assert.ok(article, `${evidence.label} has an evidence card`);
   assert.ok(article.includes(escapeHtml(evidence.description)));
   assert.ok(article.includes(`aria-label="Open ${evidence.label} in a new tab"`));
-  assert.match(article, new RegExp(evidence.status, 'i'));
+  assert.doesNotMatch(article, /class="status/, `${evidence.label} has no status badge`);
 }
 assert.match(canonicalLimno, /docs\/architecture.md/);
 assert.match(canonicalLimno, /docs\/notifications-phase-3c-b.md/);
